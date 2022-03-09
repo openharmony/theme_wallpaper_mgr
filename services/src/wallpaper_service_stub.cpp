@@ -75,7 +75,6 @@ int32_t WallpaperServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data
 }
 int32_t WallpaperServiceStub::OnSetWallpaperByMap(MessageParcel &data, MessageParcel &reply)
 {
-    int32_t ret = -1;
     HILOG_INFO("WallpaperServiceStub::SetWallpaperUri start.");
 
     int fd = data.ReadFileDescriptor();
@@ -84,12 +83,11 @@ int32_t WallpaperServiceStub::OnSetWallpaperByMap(MessageParcel &data, MessagePa
     bool bFlag = SetWallpaperByMap(fd, wallpaperType, length);
     reply.WriteBool(bFlag);
 
-    ret = bFlag == true ? 0:-1;
+    int32_t ret = bFlag == true ? 0:-1;
     return ret;
 }
 int32_t WallpaperServiceStub::OnSetWallpaperUriByFD(MessageParcel &data, MessageParcel &reply)
 {
-int32_t ret = -1;
 HILOG_INFO("WallpaperServiceStub::SetWallpaperUri start.");
 
 int fd = data.ReadFileDescriptor();
@@ -100,7 +98,7 @@ HILOG_INFO("SetWallpaperByFD start");
 bool bFlag = SetWallpaperByFD(fd, wallpaperType, length);
 reply.WriteBool(bFlag);
 
-ret = bFlag == true ? 0:-1;
+int32_t ret = bFlag == true ? 0:-1;
 return ret;
 }
 

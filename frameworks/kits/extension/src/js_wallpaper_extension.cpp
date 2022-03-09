@@ -31,7 +31,6 @@ namespace OHOS {
 namespace AbilityRuntime {
 namespace {
 constexpr size_t ARGC_ONE = 1;
-constexpr size_t ARGC_TWO = 2;
 }
 JsWallpaperExtension* JsWallpaperExtension::jsWallpaperExtension = NULL;
 using namespace OHOS::AppExecFwk;
@@ -224,17 +223,6 @@ void JsWallpaperExtension::OnCommand(const AAFwk::Want &want, bool restart, int 
         __func__,
         restart ? "true" : "false",
         startId);
-    // wrap want
-    HandleScope handleScope(jsRuntime_);
-    NativeEngine* nativeEngine = &jsRuntime_.GetNativeEngine();
-    napi_value napiWant = OHOS::AppExecFwk::WrapWant(reinterpret_cast<napi_env>(nativeEngine), want);
-    NativeValue* nativeWant = reinterpret_cast<NativeValue*>(napiWant);
-    // wrap startId
-    napi_value napiStartId = nullptr;
-    napi_create_int32(reinterpret_cast<napi_env>(nativeEngine), startId, &napiStartId);
-    NativeValue* nativeStartId = reinterpret_cast<NativeValue*>(napiStartId);
-    NativeValue* argv[] = {nativeWant, nativeStartId};
-    CallObjectMethod("onRequest", argv, ARGC_TWO);
     HILOG_INFO("%{public}s end.", __func__);
 }
 

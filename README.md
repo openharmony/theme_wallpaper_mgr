@@ -5,6 +5,23 @@
 
 2、Provide the framework and interface for developers to develop wallpaper, and develop wallpaper applications;
 
+**subsystem architecture diagram**   
+![](figures/subsystem_architecture.png "subsystem architecture diagram")
+
+#### Warehouse path
+/base/miscservices/wallpaper
+
+#### Introduction to framework code
+/base/miscservices/wallpaper
+├── figures                  # architecture diagram
+├── frameworks/innerkitsimpl # interface provided for app 
+├── interfaces               # interface code provided by module
+│   ├── innerkits            # inter service interface
+│   └── kits                 # napi interface
+├── sa_profile               # module contains the config files of system services and processes
+├── services                 # implementation of wallpaper manager service
+├── test                     # unit test of interface
+└── utils                    # module contains log printing and constants for ordered commonEvent
 
 #### Interface Introduction
 **Table 1**  Main method of wallpaper service
@@ -51,6 +68,60 @@
 </tbody>
 </table>
 
+JS APIs instructions
+```
+//get pixelmap callback with callback
+wallpaper.getPixelMap(WALLPAPER_SYSTEM, function (err, data) {
+            console.info('wallpaperXTS ===> testGetPixelMapCallbackSystem err : ' + JSON.stringify(err));
+            console.info('wallpaperXTS ===> testGetPixelMapCallbackSystem data : ' + JSON.stringify(data));
+            if(err){
+                expect(null).assertFail();
+            }
+            if((data != undefined) && (data != null) && (data != '')){
+                expect(true).assertTrue();
+            }
+        })
+
+//get pixelmap callback with Promise
+wallpaper.getPixelMap(WALLPAPER_SYSTEM).then((data) => {
+            console.info('wallpaperXTS ===> testGetPixelMapPromiseSystem data : ' + data);
+            console.info('wallpaperXTS ===> testGetPixelMapPromiseSystem data : ' + JSON.stringify(data));
+            if((data != undefined) && (data != null) && (data != '')){
+                expect(true).assertTrue();
+            }
+        }).catch((err) => {
+            console.info('wallpaperXTS ===> testGetPixelMapPromiseSystem err : ' + err);
+            console.info('wallpaperXTS ===> testGetPixelMapPromiseSystem err : ' + JSON.stringify(err));
+            if(err){
+                expect(null).assertFail();
+            }
+        });
+
+//set pixelmap callback with callback
+wallpaper.setWallpaper(pixelmap, WALLPAPER_SYSTEM, function (err, data) {
+                console.info('wallpaperXTS ===> testSetWallpaperPixelMapCallbackSystem err : ' + JSON.stringify(err));
+                console.info('wallpaperXTS ===> testSetWallpaperPixelMapCallbackSystem data : ' + JSON.stringify(data));
+                if(err){
+                    expect(null).assertFail();
+                }
+                if((data != undefined) && (data != null) && (data != '')){
+                    expect(true).assertTrue();
+                }
+            });
+
+//set pixelmap callback with Promise
+wallpaper.setWallpaper(pixelmap, WALLPAPER_SYSTEM).then((data) => {
+                console.info('wallpaperXTS ===> testSetWallpaperPixelMapPromiseSystem data : ' + JSON.stringify(data));
+                if((data != undefined) && (data != null) && (data != '')){
+                    expect(true).assertTrue();
+                }
+            }).catch((err) => {
+                console.info('wallpaperXTS ===> testSetWallpaperPixelMapPromiseSystem err : ' + JSON.stringify(err));
+                if(err){
+                    expect(null).assertFail();
+                }
+            });
+```
 
 #### Participation contribution
 
