@@ -130,3 +130,4 @@ wallpaper.setWallpaper(pixelmap, WALLPAPER_SYSTEM).then((data) => {
 3. Create a new pull request
 4. Commit is complete
 
+
