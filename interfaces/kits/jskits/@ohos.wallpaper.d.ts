@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 import {AsyncCallback} from './basic';
-import image from './@ohos.multimedia.image'
+import image from './@ohos.multimedia.image';
 
 /**
  * System wallpaper
  * @sysCap SystemCapability.Miscservices.Wallpaper
  * @devices phone, tablet, tv, wearable, car
- * @import import wallpaper from '@ohos.wallpaper';
+ * @import import wallpaper from '@ohos.app.wallpaper';
  * @since 7
  */
 declare namespace wallpaper {
