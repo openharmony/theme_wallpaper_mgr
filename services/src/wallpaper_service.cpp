@@ -152,7 +152,7 @@ void WallpaperService::OnStart()
     }
     HILOG_INFO("RegisterSubscriber end");
 
-    std::thread(&WallpaperService::StartExt,this).detach();
+    std::thread(&WallpaperService::StartExt, this).detach();
     return;
 }
 
@@ -493,6 +493,9 @@ bool WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
 
 std::unique_ptr<OHOS::Media::ImageSource> WallpaperService::GetImageSource(int length, int fd)
 {
+    if (length == 0 || length > FOO_MAX_LEN) {
+        return nullptr;
+    }
     char* paperBuf = new char[length];
     int32_t bufsize = read(fd, paperBuf, length);
     if (bufsize <= 0) {
