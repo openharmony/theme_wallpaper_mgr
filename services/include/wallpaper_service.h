@@ -37,7 +37,6 @@
 #include "ipc_skeleton.h"
 #include "accesstoken_kit.h"
 
-
 namespace OHOS {
 namespace WallpaperMgrService {
 enum class ServiceRunningState {

@@ -663,6 +663,7 @@ IWallpaperService::mapFD  WallpaperService::GetPixelMap(int wallpaperType)
         mtx.unlock();
         return mapFd;
     }
+    
     mapFd.size = length;
     int fset = fseek(pixmap, 0, SEEK_SET);
     if (fset != 0) {
@@ -948,15 +949,18 @@ bool WallpaperService::WPCheckCallingPermission(const std::string &permissionNam
     bool bflag = false;
     int result;
     Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
-    if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken ) == Security::AccessToken::TOKEN_NATIVE) {
-       result =  Security::AccessToken::AccessTokenKit::VerifyNativeToken(callerToken, WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
-    } else if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken ) == Security::AccessToken::TOKEN_HAP) {
-       result =  Security::AccessToken::AccessTokenKit::VerifyAccessToken(callerToken, WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
+    if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken) == Security::AccessToken::TOKEN_NATIVE) {
+        result =  Security::AccessToken::AccessTokenKit::VerifyNativeToken(callerToken,
+        WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
+    } else if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken) ==
+        Security::AccessToken::TOKEN_HAP) {
+        result =  Security::AccessToken::AccessTokenKit::VerifyAccessToken(callerToken,
+        WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     } else {
-       HILOG_INFO("Check permission tokenId ilegal");
-       return false;
+        HILOG_INFO("Check permission tokenId ilegal");
+        return false;
     }
-    if(result == Security::AccessToken::TypePermissionState::PERMISSION_GRANTED) {
+    if (result == Security::AccessToken::TypePermissionState::PERMISSION_GRANTED) {
         bflag = true;
     } else {
         bflag = false;
