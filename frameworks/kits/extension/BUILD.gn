@@ -37,6 +37,7 @@ config("ability_config") {
     "//foundation/aafwk/standard/frameworks/kits/fmskit/native/include",
     "//foundation/aafwk/standard/frameworks/kits/app/native/app/include",
     "//foundation/aafwk/standard/services/common/include",
+
     #"//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
     "//foundation/aafwk/standard/interfaces/innerkits/uri/include",
     "//base/global/resmgr_standard/interfaces/innerkits/include",
@@ -109,11 +110,10 @@ ohos_shared_library("wallpaperextension") {
   ]
 
   sources = [
-    "//base/miscservices/wallpaper/frameworks/kits/extension/src/js_wallpaper_extension_context.cpp",
     "//base/miscservices/wallpaper/frameworks/kits/extension/src/js_wallpaper_extension.cpp",
-    "//base/miscservices/wallpaper/frameworks/kits/extension/src/wallpaper_extension_context.cpp",
+    "//base/miscservices/wallpaper/frameworks/kits/extension/src/js_wallpaper_extension_context.cpp",
     "//base/miscservices/wallpaper/frameworks/kits/extension/src/wallpaper_extension.cpp",
-
+    "//base/miscservices/wallpaper/frameworks/kits/extension/src/wallpaper_extension_context.cpp",
   ]
   configs = [ ":ability_config" ]
   public_configs = [
@@ -122,14 +122,14 @@ ohos_shared_library("wallpaperextension") {
   ]
 
   deps = [
-    "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
-    "//foundation/aafwk/standard/frameworks/kits/ability/native:static_subscriber_ipc",
-    "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
     "${INNERKITS_PATH}/base:base",
     "${INNERKITS_PATH}/want:want",
+    "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
     "//foundation/aafwk/standard/common/task_dispatcher:task_dispatcher",
     "//foundation/aafwk/standard/frameworks/kits/ability/ability_runtime:ability_context_native",
+    "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
+    "//foundation/aafwk/standard/frameworks/kits/ability/native:static_subscriber_ipc",
     "//foundation/aafwk/standard/frameworks/kits/appkit:app_context",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
     "//foundation/aafwk/standard/interfaces/innerkits/app_manager:app_manager",
@@ -138,6 +138,7 @@ ohos_shared_library("wallpaperextension") {
     "//foundation/appexecfwk/standard/common:libappexecfwk_common",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
+
     #"//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     #"//foundation/aafwk/standard/interfaces/innerkits/uri/include",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
@@ -146,11 +147,11 @@ ohos_shared_library("wallpaperextension") {
   ]
 
   external_deps = [
+    "ability_base:zuri",
     "ability_runtime:ability_context_native",
     "ability_runtime:app_manager",
     "ability_runtime:napi_base_context",
     "ability_runtime:runtime",
-    "ability_base:zuri",
     "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_innerkits",
     "form_runtime:fmskit_native",
@@ -179,11 +180,10 @@ ohos_shared_library("wallpaperextension") {
   part_name = "wallpaper_native"
 }
 
-
 ohos_shared_library("wallpaper_extension_module") {
-  include_dirs =
-      [ "//foundation/aafwk/standard/frameworks/kits/ability/native/include",
-        "//foundation/aafwk/standard/frameworks/kits/ability/native/include/ability_runtime",
+  include_dirs = [
+    "//foundation/aafwk/standard/frameworks/kits/ability/native/include",
+    "//foundation/aafwk/standard/frameworks/kits/ability/native/include/ability_runtime",
   ]
 
   sources = [ "//base/miscservices/wallpaper/frameworks/kits/extension/src/wallpaper_extension_module_loader.cpp" ]
@@ -192,12 +192,12 @@ ohos_shared_library("wallpaper_extension_module") {
   public_configs = [ ":ability_public_config" ]
 
   deps = [
-    "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
     ":wallpaperextension",
+    "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
     "//foundation/appexecfwk/standard/common:libappexecfwk_common",
-    "//utils/native/base:utils",
-    "//foundation/windowmanager/wm:libwm",
     "//foundation/windowmanager/utils:libwmutil",
+    "//foundation/windowmanager/wm:libwm",
+    "//utils/native/base:utils",
   ]
 
   external_deps = [
