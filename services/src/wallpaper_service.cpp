@@ -452,10 +452,47 @@ bool WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
 {
     mtx.lock();
     HILOG_INFO("SetWallpaperByMap");
+    bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
+    if (!permissionSet) {
+        HILOG_INFO("SetWallpaperByMap no set permission!");
+        mtx.unlock();
+        return false;
+    }
     std::unique_ptr<OHOS::Media::PixelMap> tmp;
     std::string url = wallpaperTmpFullPath_;
     if (length == 0 || length > FOO_MAX_LEN) {
+        mtx.unlock();
         return false;
+    }
+
+    std::unique_ptr<OHOS::Media::ImageSource> imageSource = GetImageSource(length, fd);
+    if (imageSource == nullptr) {
+        mtx.unlock();
+        return false;
+    }
+    OHOS::Media::DecodeOptions decodeOpts;
+    uint32_t errorCode = 0;
+    HILOG_INFO(" CreatePixelMap");
+    tmp = imageSource->CreatePixelMap(decodeOpts, errorCode);
+    if (errorCode != 0) {
+        HILOG_ERROR("ImageSource::CreatePixelMap failed,errcode= %{public}d", errorCode);
+        mtx.unlock();
+        return false;
+    }
+    int64_t packedSize = WritePixelMapToFile(url, std::move(tmp));
+    if (packedSize <= 0) {
+        HILOG_ERROR("WritePixelMapToFile faild");
+        mtx.unlock();
+        return false;
+    }
+    mtx.unlock();
+    return SetWallpaperBackupData(url, wallpaperType);
+}
+
+std::unique_ptr<OHOS::Media::ImageSource> WallpaperService::GetImageSource(int length, int fd)
+{
+    if (length == 0 || length > FOO_MAX_LEN) {
+        return nullptr;
     }
     char* paperBuf = new char[length];
     int32_t bufsize = read(fd, paperBuf, length);
@@ -463,7 +500,7 @@ bool WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
         HILOG_ERROR("read fd faild");
         delete[] paperBuf;
         close(fd);
-        return false;
+        return nullptr;
     }
     close(fd);
     std::stringbuf *stringBuf = new std::stringbuf();
@@ -481,31 +518,22 @@ bool WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
     delete[] paperBuf;
     if (errorCode != 0) {
         HILOG_ERROR("ImageSource::CreateImageSource failed,errcode= %{public}d", errorCode);
-        mtx.unlock();
-        return false;
+        return nullptr;
     }
 
-    OHOS::Media::DecodeOptions decodeOpts;
-    HILOG_INFO(" CreatePixelMap");
-    tmp = imageSource->CreatePixelMap(decodeOpts, errorCode);
-    if (errorCode != 0) {
-        HILOG_ERROR("ImageSource::CreatePixelMap failed,errcode= %{public}d", errorCode);
-        mtx.unlock();
-        return false;
-    }
-    int64_t packedSize = WritePixelMapToFile(url, std::move(tmp));
-    if (packedSize <= 0) {
-        HILOG_ERROR("WritePixelMapToFile faild");
-        mtx.unlock();
-        return false;
-    }
-    mtx.unlock();
-    return SetWallpaperBackupData(url, wallpaperType);
+    return imageSource;
 }
+
 bool WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length)
 {
     mtx.lock();
     HILOG_INFO("SetWallpaperByFD");
+    bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
+    if (!permissionSet) {
+        HILOG_INFO("SetWallpaperByFD no set permission!");
+        mtx.unlock();
+        return false;
+    }
     std::string url = wallpaperTmpFullPath_;
     if (length == 0 || length > FOO_MAX_LEN) {
         close(fd);
@@ -608,6 +636,13 @@ IWallpaperService::mapFD  WallpaperService::GetPixelMap(int wallpaperType)
     mtx.lock();
     mapFD mapFd;
     HILOG_INFO("WallpaperService::getPixelMap --> start ");
+    bool perGet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
+    bool perUserStorage = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_READ_USER_STORAGE);
+    if (!perGet || !perUserStorage) {
+        HILOG_INFO("GetPixelMap no get or no user read permission!");
+        mtx.unlock();
+        return mapFd;
+    }
 
     std::string filePath = "";
 
@@ -642,6 +677,7 @@ IWallpaperService::mapFD  WallpaperService::GetPixelMap(int wallpaperType)
         mtx.unlock();
         return mapFd;
     }
+    
     mapFd.size = length;
     int fset = fseek(pixmap, 0, SEEK_SET);
     if (fset != 0) {
@@ -696,21 +732,14 @@ int  WallpaperService::GetWallpaperMinWidth()
 
 bool WallpaperService::IsChangePermitted()
 {
-    bool bFlag = false;
-    string permissionName = WALLPAPER_PERMISSION_NAME_SET_WALLPAPER;
-    std::int32_t uid = IPCSkeleton::GetCallingUid();
-    std::string bundleName;
-    if (!WPGetBundleNameByUid(uid, bundleName)) {
-        return false;
-    }
-
-    HILOG_INFO("Check permission: %{public}s", permissionName.c_str());
-    bFlag = Security::Permission::PermissionKit::CanRequestPermission(bundleName, permissionName, userId_);
+    HILOG_INFO("IsChangePermitted wallpaper Start!");
+    bool bFlag = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     return bFlag;
 }
 
 bool WallpaperService::IsOperationAllowed()
 {
+    HILOG_INFO("IsOperationAllowed wallpaper Start!");
     bool bFlag = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     return bFlag;
 }
@@ -718,6 +747,11 @@ bool WallpaperService::IsOperationAllowed()
 bool WallpaperService::ResetWallpaper(int wallpaperType)
 {
     HILOG_INFO("reset wallpaper Start!");
+    bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
+    if (!permissionSet) {
+        HILOG_INFO("reset wallpaper no set permission!");
+        return false;
+    }
     bool bFlag = false;
     if (wallpaperType != WALLPAPER_LOCKSCREEN && wallpaperType != WALLPAPER_SYSTEM) {
         HILOG_INFO("wallpaperType = %{public}d type not support ", wallpaperType);
@@ -922,20 +956,27 @@ void WallpaperService::ClearWallpaperLocked(int userId, int wpType)
 
 bool WallpaperService::WPCheckCallingPermission(const std::string &permissionName)
 {
-    if (permissionName.empty()) {
+    bool bflag = false;
+    int result;
+    Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken) == Security::AccessToken::TOKEN_NATIVE) {
+        result =  Security::AccessToken::AccessTokenKit::VerifyNativeToken(callerToken,
+        WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
+    } else if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken) ==
+        Security::AccessToken::TOKEN_HAP) {
+        result =  Security::AccessToken::AccessTokenKit::VerifyAccessToken(callerToken,
+        WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
+    } else {
+        HILOG_INFO("Check permission tokenId ilegal");
         return false;
     }
-
-    std::int32_t uid = IPCSkeleton::GetCallingUid();
-    std::string bundleName;
-    if (!WPGetBundleNameByUid(uid, bundleName)) {
-        return false;
+    if (result == Security::AccessToken::TypePermissionState::PERMISSION_GRANTED) {
+        bflag = true;
+    } else {
+        bflag = false;
     }
-
-    HILOG_INFO("Check permission: %{public}s", permissionName.c_str());
-
-    return (Security::Permission::PermissionKit::VerifyPermission(bundleName, permissionName, userId_) ==
-        Security::Permission::PermissionState::PERMISSION_GRANTED);
+    HILOG_INFO("Check permission result %{public}d", result);
+    return bflag;
 }
 
 bool WallpaperService::WPGetBundleNameByUid(std::int32_t uid, std::string &bname)
