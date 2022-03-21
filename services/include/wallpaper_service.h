@@ -116,7 +116,6 @@ private:
     bool WPGetBundleNameByUid(std::int32_t uid, std::string &bname);
     bool MakeCropWallpaper(int wallpaperType);
     bool SetWallpaperBackupData(std::string uriOrPixelMap, int wallpaperType);
-    std::unique_ptr<OHOS::Media::ImageSource> GetImageSource(int length, int fd);
 
 private:
     void StartExt();

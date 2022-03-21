@@ -460,70 +460,44 @@ bool WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
         mtx.unlock();
         return false;
     }
-    std::unique_ptr<OHOS::Media::PixelMap> tmp;
+
+    if (length == 0 || length > FOO_MAX_LEN) {
+        mtx.unlock();
+        return false;
+    }
     std::string url = wallpaperTmpFullPath_;
-    if (length == 0 || length > FOO_MAX_LEN) {
-        mtx.unlock();
-        return false;
-    }
-
-    std::unique_ptr<OHOS::Media::ImageSource> imageSource = GetImageSource(length, fd);
-    if (imageSource == nullptr) {
-        mtx.unlock();
-        return false;
-    }
-    OHOS::Media::DecodeOptions decodeOpts;
-    uint32_t errorCode = 0;
-    HILOG_INFO(" CreatePixelMap");
-    tmp = imageSource->CreatePixelMap(decodeOpts, errorCode);
-    if (errorCode != 0) {
-        HILOG_ERROR("ImageSource::CreatePixelMap failed,errcode= %{public}d", errorCode);
-        mtx.unlock();
-        return false;
-    }
-    int64_t packedSize = WritePixelMapToFile(url, std::move(tmp));
-    if (packedSize <= 0) {
-        HILOG_ERROR("WritePixelMapToFile faild");
-        mtx.unlock();
-        return false;
-    }
-    mtx.unlock();
-    return SetWallpaperBackupData(url, wallpaperType);
-}
-
-std::unique_ptr<OHOS::Media::ImageSource> WallpaperService::GetImageSource(int length, int fd)
-{
-    if (length == 0 || length > FOO_MAX_LEN) {
-        return nullptr;
-    }
     char* paperBuf = new char[length];
     int32_t bufsize = read(fd, paperBuf, length);
     if (bufsize <= 0) {
         HILOG_ERROR("read fd faild");
         delete[] paperBuf;
         close(fd);
-        return nullptr;
+        return false;
     }
-    close(fd);
-    std::stringbuf *stringBuf = new std::stringbuf();
-    stringBuf->sputn(paperBuf, length);
-    std::istream pixelmapStream(stringBuf);
-    std::unique_ptr<std::istream> tmpStream(&pixelmapStream);
+    int fdw = open(url.c_str(), O_WRONLY | O_CREAT, 0770);
+    if (fdw == -1) {
+        HILOG_ERROR("WallpaperService:: fdw fail");
+        delete[] paperBuf;
+        close(fd);
+        mtx.unlock();
+        return false;
+    }
+    int writeSize = write(fdw, paperBuf, length);
 
-    uint32_t errorCode = 0;
-    OHOS::Media::SourceOptions opts;
-    opts.formatHint = "image/jpeg";
-    HILOG_INFO(" CreateImageSource");
-    std::unique_ptr<OHOS::Media::ImageSource> imageSource =
-        OHOS::Media::ImageSource::CreateImageSource(std::move(tmpStream), opts, errorCode);
-    delete stringBuf;
+    if (writeSize <= 0) {
+        HILOG_ERROR("WritefdToFile faild");
+        delete[] paperBuf;
+        close(fd);
+        close(fdw);
+        mtx.unlock();
+        return false;
+    }
     delete[] paperBuf;
-    if (errorCode != 0) {
-        HILOG_ERROR("ImageSource::CreateImageSource failed,errcode= %{public}d", errorCode);
-        return nullptr;
-    }
-
-    return imageSource;
+    close(fd);
+    close(fdw);
+    mtx.unlock();
+    HILOG_ERROR("set wallpaperbymap url: %{public}s", url.c_str());
+    return SetWallpaperBackupData(url, wallpaperType);
 }
 
 bool WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length)
