@@ -638,10 +638,9 @@ IWallpaperService::mapFD  WallpaperService::GetPixelMap(int wallpaperType)
     mtx.lock();
     mapFD mapFd;
     HILOG_INFO("WallpaperService::getPixelMap --> start ");
-    bool perGet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
-    bool perUserStorage = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_READ_USER_STORAGE);
-    if (!perGet || !perUserStorage) {
-        HILOG_INFO("GetPixelMap no get or no user read permission!");
+    bool perGet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER);
+    if (!perGet) {
+        HILOG_INFO("GetPixelMap no get permission!");
         mtx.unlock();
         return mapFd;
     }
@@ -666,36 +665,19 @@ IWallpaperService::mapFD  WallpaperService::GetPixelMap(int wallpaperType)
         return mapFd;
     }
     int fend = fseek(pixmap, 0, SEEK_END);
-    if (fend != 0) {
-        HILOG_ERROR("fseek faild");
-        fclose(pixmap);
-        mtx.unlock();
-        return mapFd;
-    }
     int length = ftell(pixmap);
-    if (length <= 0) {
-        HILOG_ERROR("ftell faild");
+    int fset = fseek(pixmap, 0, SEEK_SET);
+    if (length <= 0 || fend != 0 || fset != 0) {
+        HILOG_ERROR("ftell faild or fseek faild");
         fclose(pixmap);
         mtx.unlock();
         return mapFd;
     }
     
     mapFd.size = length;
-    int fset = fseek(pixmap, 0, SEEK_SET);
-    if (fset != 0) {
-        HILOG_ERROR("fseek faild");
-        fclose(pixmap);
-        mtx.unlock();
-        return mapFd;
-    }
     int closeRes = fclose(pixmap);
-    if (closeRes != 0) {
-        HILOG_ERROR("fclose faild");
-        mtx.unlock();
-        return mapFd;
-    }
     int fd = open(filePath.c_str(), O_RDONLY, 0770);
-    if (fd < 0) {
+    if (closeRes != 0 || fd < 0) {
         HILOG_ERROR("open faild");
         mtx.unlock();
         return mapFd;
@@ -967,11 +949,11 @@ bool WallpaperService::WPCheckCallingPermission(const std::string &permissionNam
     Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
     if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken) == Security::AccessToken::TOKEN_NATIVE) {
         result =  Security::AccessToken::AccessTokenKit::VerifyNativeToken(callerToken,
-        WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
+        permissionName);
     } else if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken) ==
         Security::AccessToken::TOKEN_HAP) {
         result =  Security::AccessToken::AccessTokenKit::VerifyAccessToken(callerToken,
-        WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
+        permissionName);
     } else {
         HILOG_INFO("Check permission tokenId ilegal");
         return false;
