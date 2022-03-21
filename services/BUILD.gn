@@ -63,7 +63,6 @@ ohos_shared_library("wallpaper_service") {
     "//foundation/graphic/standard/rosen/modules/render_service_client/core",
     "//third_party/flutter/engine/flutter/lib/ui/painting",
   ]
-  ldflags = [ "-Wl,-rpath=/system/lib/module/graphic/" ]
   deps = [
     "${utils_path}:wallpaper_utils",
     "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",

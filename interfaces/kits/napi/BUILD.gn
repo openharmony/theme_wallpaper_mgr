@@ -33,7 +33,6 @@ ohos_shared_library("wallpaperability") {
     "async_call.cpp",
     "wallpaper_js_util.cpp",
   ]
-  ldflags = [ "-Wl,-rpath=/system/lib/module/multimedia/" ]
   deps = [
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
     "//foundation/ace/napi:ace_napi",
