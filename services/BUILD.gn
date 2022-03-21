@@ -11,13 +11,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//build/ohos.gni")
 import("//base/miscservices/wallpaper/wallpaper.gni")
+import("//build/ohos.gni")
 
 config("wallpaper_service_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "include",
+
     #"//foundation/multimodalinput/input/interfaces/native/innerkits/common/include",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
   ]
@@ -27,26 +28,31 @@ config("wallpaper_service_config") {
 
 ohos_shared_library("wallpaper_service") {
   sources = [
-    "src/wallpaper_service.cpp",
-    "src/wallpaper_service_stub.cpp",
-    "src/wallpaper_service_cb_proxy.cpp",
-    "src/wallpaper_data.cpp",
     "src/component_name.cpp",
     "src/wallpaper_common_event.cpp",
+    "src/wallpaper_data.cpp",
+    "src/wallpaper_service.cpp",
+    "src/wallpaper_service_cb_proxy.cpp",
+    "src/wallpaper_service_stub.cpp",
   ]
   public_configs = [
     "//utils/native/base:utils_config",
     ":wallpaper_service_config",
   ]
-   include_dirs = [
+  include_dirs = [
     #"//foundation/graphic/standard/interfaces/innerkits/surface",
     "//third_party/json/include",
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/miscservices/wallpaper/utils/include",
+
     #"//foundation/graphic/standard/interfaces/innerkits/wmclient",
+    "//base/security/access_token/interfaces/innerkits",
+    "//foundation/windowmanager/interfaces/innerkits/dm",
+
     #"//foundation/windowmanager/interfaces/innerkits/wm",
     "//foundation/graphic/standard/rosen/modules/2d_graphics/include",
     "//foundation/graphic/standard/rosen/modules/2d_graphics/src",
+
     #"//foundation/multimodalinput/input/service/window_manager/include",
     #"//foundation/graphic/ui/interfaces/kits/common",
     #"//foundation/graphic/utils/interfaces/kits",
@@ -59,43 +65,48 @@ ohos_shared_library("wallpaper_service") {
   ]
   ldflags = [ "-Wl,-rpath=/system/lib/module/graphic/" ]
   deps = [
-    "//utils/native/base:utils",
-    "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
-    "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",
     "${utils_path}:wallpaper_utils",
+    "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",
+    "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
+    "//foundation/aafwk/standard/services/abilitymgr:abilityms",
+    "//foundation/graphic/standard/frameworks/surface:surface",
+    "//foundation/graphic/standard/rosen/modules/2d_graphics:2d_graphics",
     "//foundation/graphic/standard/rosen/modules/render_service_client:librender_service_client",
-    #"//foundation/graphic/standard/frameworks/wm:libwmclient",
-    "//foundation/windowmanager/wm:libwm",
-    #"//foundation/windowmanager/interfaces/innerkits:wm_interface",
-    "//foundation/windowmanager/utils:libwmutil",
+
     #"//foundation/graphic/ui:lite_ui",
     #"//foundation/graphic/ui:ui",
     #"//foundation/graphic/standard:libwms_client",
     "//foundation/multimedia/image_standard:image_framework",
     "//foundation/multimedia/image_standard/interfaces/innerkits:image",
     "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
-    "//foundation/graphic/standard/frameworks/surface:surface",
-    "//foundation/graphic/standard/rosen/modules/2d_graphics:2d_graphics",
+    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
+
+    #"//foundation/windowmanager/interfaces/innerkits:wm_interface",
+    "//foundation/windowmanager/utils:libwmutil",
+
+    #"//foundation/graphic/standard/frameworks/wm:libwmclient",
+    "//foundation/windowmanager/wm:libwm",
     "//third_party/libxkbcommon:libxkbcommon",
     "//third_party/wayland_standard:libwayland_server",
     "//third_party/weston:libweston",
-    "//foundation/aafwk/standard/services/abilitymgr:abilityms",
-    
+    "//utils/native/base:utils",
   ]
   external_deps = [
-    "ability_runtime:ability_manager",
     "ability_base:want",
+    "ability_runtime:ability_manager",
+    "access_token:libaccesstoken_sdk",
+    "ces_standard:cesfwk_innerkits",
+
     #"appexecfwk_standard:appexecfwk_base",
     #"appexecfwk_standard:appexecfwk_core",
     #"appexecfwk_standard:libeventhandler",
     "eventhandler:libeventhandler",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
     "permission_standard:libpermissionsdk_standard",
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
-    "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_core",
-    "ces_standard:cesfwk_innerkits",
+
     #"graphic:libwms_client",
   ]
   subsystem_name = "miscservices"
