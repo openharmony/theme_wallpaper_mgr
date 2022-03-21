@@ -483,7 +483,6 @@ bool WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
         return false;
     }
     int writeSize = write(fdw, paperBuf, length);
-
     if (writeSize <= 0) {
         HILOG_ERROR("WritefdToFile faild");
         delete[] paperBuf;
