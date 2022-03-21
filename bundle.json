@@ -13,7 +13,7 @@
       "name": "wallpaper_native",
       "subsystem": "miscservices",
       "syscap": [
-        "SystemCapability.Miscservices.WallpaperFrameworks"
+        "SystemCapability.Miscservices.Wallpaper"
       ],
       "features": [
       ],
