@@ -11,8 +11,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//build/ohos.gni")
 import("//base/miscservices/wallpaper/wallpaper.gni")
+import("//build/ohos.gni")
 
 ohos_shared_library("wallpaperability") {
   include_dirs = [
@@ -28,29 +28,29 @@ ohos_shared_library("wallpaperability") {
   ]
 
   sources = [
+    "async_call.cpp",
     "napi_wallpaper_ability.cpp",
     "native_module.cpp",
-    "async_call.cpp",
     "wallpaper_js_util.cpp",
   ]
   deps = [
+    "${utils_path}:wallpaper_utils",
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
+    "//foundation/aafwk/standard/frameworks/kits/appkit:appkit_native",
+    "//foundation/aafwk/standard/services/appmgr:libams",
     "//foundation/ace/napi:ace_napi",
     "//foundation/appexecfwk/standard/common:libappexecfwk_common",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
-    "//foundation/aafwk/standard/frameworks/kits/appkit:appkit_native",
     "//foundation/appexecfwk/standard/libs/libeventhandler:libeventhandler_target",
-    "//foundation/aafwk/standard/services/appmgr:libams",
     "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//foundation/multimedia/image_standard/interfaces/innerkits:image",
     "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
-    "//utils/native/base:utils",
     "//third_party/libuv:uv_static",
-    "${utils_path}:wallpaper_utils",
+    "//utils/native/base:utils",
   ]
 
   external_deps = [
