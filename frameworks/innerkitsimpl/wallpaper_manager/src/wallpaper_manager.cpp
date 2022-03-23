@@ -171,7 +171,7 @@ bool WallpaperManager::SetWallpaper(std::string url, int wallpaperType)
         return false;
     }
 
-    int fd = open(url.c_str(), O_RDONLY, 0770);
+    int fd = open(url.c_str(), O_RDONLY, 0660);
     if (fd < 0) {
         HILOG_ERROR("open file failed");
         return false;

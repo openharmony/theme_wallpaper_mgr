@@ -88,18 +88,18 @@ int32_t WallpaperServiceStub::OnSetWallpaperByMap(MessageParcel &data, MessagePa
 }
 int32_t WallpaperServiceStub::OnSetWallpaperUriByFD(MessageParcel &data, MessageParcel &reply)
 {
-HILOG_INFO("WallpaperServiceStub::SetWallpaperUri start.");
+    HILOG_INFO("WallpaperServiceStub::SetWallpaperUri start.");
 
-int fd = data.ReadFileDescriptor();
-int wallpaperType  = data.ReadInt32();
-HILOG_INFO("wallpaperType= %{public}d", wallpaperType);
-int length = data.ReadInt32();
-HILOG_INFO("SetWallpaperByFD start");
-bool bFlag = SetWallpaperByFD(fd, wallpaperType, length);
-reply.WriteBool(bFlag);
+    int fd = data.ReadFileDescriptor();
+    int wallpaperType  = data.ReadInt32();
+    HILOG_INFO("wallpaperType= %{public}d", wallpaperType);
+    int length = data.ReadInt32();
+    HILOG_INFO("SetWallpaperByFD start");
+    bool bFlag = SetWallpaperByFD(fd, wallpaperType, length);
+    reply.WriteBool(bFlag);
 
-int32_t ret = bFlag == true ? 0:-1;
-return ret;
+    int32_t ret = bFlag == true ? 0:-1;
+    return ret;
 }
 
 
