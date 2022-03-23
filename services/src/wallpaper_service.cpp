@@ -73,7 +73,7 @@ constexpr int DOUBLE = 2;
 constexpr int THREE = 3;
 constexpr int FORE = 4;
 constexpr int FIVE = 5;
-constexpr int six = 6;
+constexpr int SIX = 6;
 constexpr int TEN = 10;
 constexpr int FIFTY = 50;
 constexpr int HUNDRED = 100;
@@ -221,11 +221,11 @@ void WallpaperService::StartExt()
         if (ret == 0 || time == TEN) {
             break;
         }
-        sleep(six);
+        sleep(SIX);
         HILOG_INFO("WallpaperService::StartAbility %{public}d", time);
     }
     if (ret != 0) {
-            HILOG_INFO("WallpaperService::StartAbility --> faild ");
+            HILOG_ERROR("WallpaperService::StartAbility --> failed ");
     }
 }
 void WallpaperService::OnBootPhase()
@@ -424,7 +424,7 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     int32_t pictrueWidth = wallpaperPixelMap->GetWidth();
     int pyScrWidth = GetWallpaperMinWidth();
     int pyScrHeight = GetWallpaperMinHeight();
-    if (pictrueHeight > pyScrHeight && pictrueWidth > pyScrWidth) {
+    if (pictrueHeight > pyScrHeight || pictrueWidth > pyScrWidth) {
         decodeOpts.CropRect.top = (pictrueHeight - pyScrHeight)/HALF;
         decodeOpts.CropRect.width = pyScrWidth;
         decodeOpts.CropRect.left = (pictrueWidth - pyScrWidth)/HALF;
@@ -452,29 +452,28 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
 
 bool WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
 {
-    mtx.lock();
+    
     HILOG_INFO("SetWallpaperByMap");
     bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     if (!permissionSet) {
         HILOG_INFO("SetWallpaperByMap no set permission!");
-        mtx.unlock();
         return false;
     }
-
     if (length == 0 || length > FOO_MAX_LEN) {
-        mtx.unlock();
         return false;
     }
     std::string url = wallpaperTmpFullPath_;
     char* paperBuf = new char[length];
+    mtx.lock();
     int32_t bufsize = read(fd, paperBuf, length);
     if (bufsize <= 0) {
-        HILOG_ERROR("read fd faild");
+        HILOG_ERROR("read fd failed");
         delete[] paperBuf;
         close(fd);
+        mtx.unlock();
         return false;
     }
-    int fdw = open(url.c_str(), O_WRONLY | O_CREAT, 0770);
+    int fdw = open(url.c_str(), O_WRONLY | O_CREAT, 0660);
     if (fdw == -1) {
         HILOG_ERROR("WallpaperService:: fdw fail");
         delete[] paperBuf;
@@ -483,39 +482,35 @@ bool WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
         return false;
     }
     int writeSize = write(fdw, paperBuf, length);
+    mtx.unlock();
     if (writeSize <= 0) {
-        HILOG_ERROR("WritefdToFile faild");
+        HILOG_ERROR("WritefdToFile failed");
         delete[] paperBuf;
         close(fd);
         close(fdw);
-        mtx.unlock();
         return false;
     }
     delete[] paperBuf;
     close(fd);
     close(fdw);
-    mtx.unlock();
-    HILOG_ERROR("set wallpaperbymap url: %{public}s", url.c_str());
     return SetWallpaperBackupData(url, wallpaperType);
 }
 
 bool WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length)
 {
-    mtx.lock();
     HILOG_INFO("SetWallpaperByFD");
     bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     if (!permissionSet) {
         HILOG_INFO("SetWallpaperByFD no set permission!");
-        mtx.unlock();
         return false;
     }
     std::string url = wallpaperTmpFullPath_;
     if (length == 0 || length > FOO_MAX_LEN) {
         close(fd);
-        mtx.unlock();
         return false;
     }
     char* paperBuf = new char[length];
+    mtx.lock();
     int readSize = read(fd, paperBuf, length);
     if (readSize <= 0) {
         HILOG_ERROR("read from fd fail");
@@ -525,7 +520,7 @@ bool WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length)
         return false;
     }
 
-    int fdw = open(url.c_str(), O_WRONLY | O_CREAT, 0770);
+    int fdw = open(url.c_str(), O_WRONLY | O_CREAT, 0660);
     if (fdw == -1) {
         HILOG_ERROR("WallpaperService:: fdw fail");
         delete[] paperBuf;
@@ -534,17 +529,16 @@ bool WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length)
         return false;
     }
     int writeSize = write(fdw, paperBuf, length);
+    mtx.unlock();
     if (writeSize <= 0) {
         HILOG_ERROR("write to fdw fail");
         close(fd);
         close(fdw);
         delete[] paperBuf;
-        mtx.unlock();
         return false;
     }
     close(fd);
     close(fdw);
-    mtx.unlock();
     delete[] paperBuf;
     return SetWallpaperBackupData(url, wallpaperType);
 }
@@ -552,15 +546,12 @@ bool WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length)
 
 bool WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int wallpaperType)
 {
-    mtx.lock();
     HILOG_INFO("set wallpaper and backup data Start.");
     if (wallpaperType != WALLPAPER_LOCKSCREEN && wallpaperType != WALLPAPER_SYSTEM) {
-        mtx.unlock();
         return false;
     }
 
     if (!OHOS::FileExists(uriOrPixelMap)) {
-        mtx.unlock();
         return false;
     }
     WallpaperData tmpWP(userId_,
@@ -569,6 +560,7 @@ bool WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int wal
     (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemCropFileFullPath_:
         wallpaperLockScreenCropFileFullPath_));
 
+    mtx.lock();
     bool ret = GetWallpaperSafeLocked(userId_, wallpaperType, tmpWP);
     if (!ret) {
         HILOG_ERROR("GetWallpaperSafeLocked failed !");
@@ -581,6 +573,7 @@ bool WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int wal
     bool retFileCp = CopyFile(uriOrPixelMap, (wallpaperType ==
         WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_:wallpaperLockScreenFileFullPath_));
     bool retCropFileCp = MakeCropWallpaper(wallpaperType);
+    mtx.unlock();
     if (wallpaperType == WALLPAPER_SYSTEM) {
         wallpaperMap_.insert(std::pair<int, WallpaperData>(userId_, tmpWP));
         WallpaperCommonEvent::SendWallpaperSystemSettingMessage();
@@ -596,25 +589,20 @@ bool WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int wal
             callbackProxy->OnCall(wallpaperType);
         }
     } else {
-        mtx.unlock();
         return false;
     }
     if (remove(uriOrPixelMap.c_str()) < 0) {
-        mtx.unlock();
         return false;
     }
-    mtx.unlock();
     return !retFileCp && !retCropFileCp;
 }
 IWallpaperService::mapFD  WallpaperService::GetPixelMap(int wallpaperType)
 {
-    mtx.lock();
     mapFD mapFd;
     HILOG_INFO("WallpaperService::getPixelMap --> start ");
-    bool perGet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER);
-    if (!perGet) {
+    bool permissionGet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER);
+    if (!permissionGet) {
         HILOG_INFO("GetPixelMap no get permission!");
-        mtx.unlock();
         return mapFd;
     }
 
@@ -628,12 +616,12 @@ IWallpaperService::mapFD  WallpaperService::GetPixelMap(int wallpaperType)
 
     if (!OHOS::FileExists(filePath)) {
         HILOG_ERROR("file is not exist!");
-        mtx.unlock();
         return mapFd;
     }
+    mtx.lock();
     FILE *pixmap = fopen(filePath.c_str(), "rb");
     if (pixmap == nullptr) {
-        HILOG_ERROR("fopen faild");
+        HILOG_ERROR("fopen failed");
         mtx.unlock();
         return mapFd;
     }
@@ -641,23 +629,22 @@ IWallpaperService::mapFD  WallpaperService::GetPixelMap(int wallpaperType)
     int length = ftell(pixmap);
     int fset = fseek(pixmap, 0, SEEK_SET);
     if (length <= 0 || fend != 0 || fset != 0) {
-        HILOG_ERROR("ftell faild or fseek faild");
+        HILOG_ERROR("ftell failed or fseek failed");
         fclose(pixmap);
         mtx.unlock();
         return mapFd;
     }
-    
+
     mapFd.size = length;
     int closeRes = fclose(pixmap);
-    int fd = open(filePath.c_str(), O_RDONLY, 0770);
+    int fd = open(filePath.c_str(), O_RDONLY, 0440);
+    mtx.unlock();
     if (closeRes != 0 || fd < 0) {
-        HILOG_ERROR("open faild");
-        mtx.unlock();
+        HILOG_ERROR("open failed");
         return mapFd;
     }
     mapFd.fd = fd;
     HILOG_INFO("mapFd.fd = %{public}d",mapFd.fd);
-    mtx.unlock();
     return mapFd;
 }
 
