@@ -37,7 +37,7 @@ napi_value NAPI_GetColors(napi_env env, napi_callback_info info)
     auto context = std::make_shared<GetContextInfo>();
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(env, argc == 1 || argc == 2, " should 1 or 2 parameters!", napi_invalid_arg);
-        HILOG_DEBUG("input ---- argc : %{public}d", argc);
+        HILOG_DEBUG("input ---- argc : %{public}zu", argc);
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[0], &valueType);
         NAPI_ASSERT_BASE(env, valueType == napi_number, "param type wrong!", napi_invalid_arg);
@@ -54,7 +54,7 @@ napi_value NAPI_GetColors(napi_env env, napi_callback_info info)
     auto exec = [context](AsyncCall::Context *ctx) {
         HILOG_DEBUG("exec ---- GetColors");
         context->colors = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(context->wallpaperType);
-        HILOG_DEBUG("exec ---- GetColors colors size : %{public}d", context->colors.size());
+        HILOG_DEBUG("exec ---- GetColors colors size : %{public}zu", context->colors.size());
         if (!context->colors.empty()) {
             context->status = napi_ok;
         }
@@ -70,7 +70,7 @@ napi_value NAPI_GetId(napi_env env, napi_callback_info info)
     auto context = std::make_shared<GetContextInfo>();
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(env, argc == 1 || argc == 2, " should 1 or 2 parameters!", napi_invalid_arg);
-        HILOG_DEBUG("input ---- argc : %{public}d", argc);
+        HILOG_DEBUG("input ---- argc : %{public}zu", argc);
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[0], &valueType);
         NAPI_ASSERT_BASE(env, valueType == napi_number, "param type wrong!", napi_invalid_arg);
@@ -101,7 +101,7 @@ napi_value NAPI_GetPixelMap(napi_env env, napi_callback_info info)
     auto context = std::make_shared<GetContextInfo>();
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(env, argc == 1 || argc == 2, " should 1 or 2 parameters!", napi_invalid_arg);
-        HILOG_DEBUG("input ---- argc : %{public}d", argc);
+        HILOG_DEBUG("input ---- argc : %{public}zu", argc);
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[0], &valueType);
         NAPI_ASSERT_BASE(env, valueType == napi_number, "param type wrong!", napi_invalid_arg);
@@ -238,7 +238,7 @@ napi_value NAPI_Reset(napi_env env, napi_callback_info info)
     auto context = std::make_shared<SetContextInfo>();
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(env, argc == 1 || argc == 2, " should 1 or 2 parameters!", napi_invalid_arg);
-        HILOG_DEBUG("input ---- argc : %{public}d", argc);
+        HILOG_DEBUG("input ---- argc : %{public}zu", argc);
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[0], &valueType);
         NAPI_ASSERT_BASE(env, valueType == napi_number, "param type wrong!", napi_invalid_arg);
@@ -265,7 +265,7 @@ napi_value NAPI_SetWallpaper(napi_env env, napi_callback_info info)
     auto context = std::make_shared<SetContextInfo>();
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(env, argc == 2 || argc == 3, " should 2 or 3 parameters!", napi_invalid_arg);
-        HILOG_DEBUG("input ---- argc : %{public}d", argc);
+        HILOG_DEBUG("input ---- argc : %{public}zu", argc);
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[0], &valueType);
         NAPI_ASSERT_BASE(env, valueType == napi_string || valueType == napi_object, "first param type wrong!",
