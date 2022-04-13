@@ -371,7 +371,7 @@ bool WallpaperServiceProxy::RegisterWallpaperCallback(const sptr<IWallpaperCallb
         HILOG_ERROR("callback is nullptr");
         return false;
     }
-    if (!data.WriteParcelable(callback->AsObject())) {
+    if (!data.WriteRemoteObject(callback->AsObject())) {
         HILOG_ERROR("write subscribe type or parcel failed.");
         return false;
     }

@@ -273,7 +273,7 @@ int32_t WallpaperServiceStub::OnWallpaperOff(MessageParcel &data, MessageParcel 
 int32_t WallpaperServiceStub::OnRegisterWallpaperCallback(MessageParcel &data, MessageParcel &reply)
 {
     HILOG_INFO("  WallpaperServiceStub::OnRegisterWallpaperCallback start");
-    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<IRemoteObject> object = data.ReadRemoteObject();
 
     sptr<IWallpaperCallback> callbackProxy = iface_cast<IWallpaperCallback>(object);
     if (callbackProxy == nullptr) {
