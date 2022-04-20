@@ -30,7 +30,6 @@ public:
 
     int32_t OnCall(const int32_t num) override;
 };
-
 } // namespace WallpaperMgrService
 } // namespace OHOS
 #endif // SERVICES_INCLUDE_WALLPAPER_SERVICE_CB_PROXY_H
