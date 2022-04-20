@@ -16,9 +16,9 @@ import("//build/test.gni")
 ohos_unittest("wallpaper_test") {
   module_out_path = "wallpaper_native/wallpaper_test"
   sources = [
-             "unittest/wallpaper_test.cpp"
-            #"unittest/wallpaperpermissontest.cpp", 
-            #"unittest/image_source_picture_test.cpp", 
+    "unittest/wallpaper_test.cpp",
+    #"unittest/wallpaperpermissontest.cpp",
+    #"unittest/image_source_picture_test.cpp",
   ]
 
   include_dirs = [
@@ -31,27 +31,26 @@ ohos_unittest("wallpaper_test") {
     #"//foundation/multimedia/image_standard/interfaces/innerkits/include",
   ]
   deps = [
-    "//utils/native/base:utils",
-    "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",
-    "//foundation/windowmanager/wm:libwm",
-    "//foundation/windowmanager/utils:libwmutil",
+    "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
+    "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
     "//foundation/multimedia/image_standard:image_framework",
     "//foundation/multimedia/image_standard/interfaces/innerkits:image",
     "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
-    "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
+    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
+    "//foundation/windowmanager/utils:libwmutil",
+    "//foundation/windowmanager/wm:libwm",
+    "//utils/native/base:utils",
   ]
   external_deps = [
-
-    "ability_runtime:ability_manager",
     "ability_base:want",
+    "ability_runtime:ability_manager",
+    "common_event_service:cesfwk_innerkits",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
     "permission_standard:libpermissionsdk_standard",
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
-    "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_core",
-    "ces_standard:cesfwk_innerkits",
   ]
 }
 
@@ -61,7 +60,3 @@ group("unittest") {
   testonly = true
   deps = [ ":wallpaper_test" ]
 }
-
-
-
-

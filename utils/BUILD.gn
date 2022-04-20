@@ -13,22 +13,18 @@
 
 import("//build/ohos.gni")
 ohos_shared_library("wallpaper_utils") {
-  sources = [
-    "src/file_deal.cpp",
-  ]
-   include_dirs = [
-    "include",
-  ]
+  sources = [ "src/file_deal.cpp" ]
+  include_dirs = [ "include" ]
   deps = [
-    "//utils/native/base:utils",
     "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",
+    "//utils/native/base:utils",
   ]
   external_deps = [
     "ability_base:want",
-    "samgr_standard:samgr_proxy",
+    "common_event_service:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "ces_standard:cesfwk_innerkits",
+    "samgr_standard:samgr_proxy",
   ]
   subsystem_name = "miscservices"
   part_name = "wallpaper_native"
