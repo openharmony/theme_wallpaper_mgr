@@ -51,9 +51,6 @@ config("ability_config") {
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include/continuation",
     "//foundation/aafwk/standard/frameworks/kits/ability/native/include/continuation/kits",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include",
-    "//foundation/aafwk/standard/common/task_dispatcher/include/dispatcher",
-    "//foundation/aafwk/standard/common/task_dispatcher/include/task",
-    "//foundation/aafwk/standard/common/task_dispatcher/include/threading",
     "//foundation/aafwk/standard/frameworks/kits/appkit/native/app/include/task",
     "//foundation/aafwk/standard/interfaces/kits/napi/aafwk/inner/napi_common",
   ]
@@ -126,7 +123,6 @@ ohos_shared_library("wallpaperextension") {
     "${INNERKITS_PATH}/want:want",
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
-    "//foundation/aafwk/standard/common/task_dispatcher:task_dispatcher",
     "//foundation/aafwk/standard/frameworks/kits/ability/ability_runtime:ability_context_native",
     "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
     "//foundation/aafwk/standard/frameworks/kits/ability/native:static_subscriber_ipc",
