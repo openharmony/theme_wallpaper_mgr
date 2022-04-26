@@ -18,9 +18,7 @@ config("wallpaper_service_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "include",
-
     #"//foundation/multimodalinput/input/interfaces/native/innerkits/common/include",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
   ]
 
   cflags_cc = [ "-fexceptions" ]
