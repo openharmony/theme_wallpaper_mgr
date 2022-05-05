@@ -37,7 +37,7 @@ ohos_shared_library("wallpaperability") {
     "${utils_path}:wallpaper_utils",
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
     "//foundation/aafwk/standard/frameworks/kits/appkit:appkit_native",
-    "//foundation/aafwk/standard/services/appmgr:libams",
+    "//foundation/aafwk/standard/services/appmgr:libappms",
     "//foundation/arkui/napi:ace_napi",
     "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
