@@ -20,12 +20,10 @@ config("ability_config") {
   include_dirs = [
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/miscservices/wallpaper/frameworks/kits/extension/include",
-    "${INNERKITS_PATH}/base/include",
     "//utils/native/base/include",
     "${SUBSYSTEM_DIR}/include",
     "//foundation/aafwk/standard/frameworks/kits/appkit/native/app/include",
     "//foundation/aafwk/standard/interfaces/innerkits/app_manager/include/appmgr",
-    "${INNERKITS_PATH}/want/include/ohos/aafwk/content",
     "${INNERKITS_PATH}/ability_manager/include",
     "//foundation/aafwk/standard/services/abilitymgr/include",
     "//foundation/aafwk/standard/frameworks/kits/appkit/native/ability_runtime/app",
@@ -35,7 +33,6 @@ config("ability_config") {
     "//foundation/aafwk/standard/services/common/include",
 
     #"//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
-    "//foundation/aafwk/standard/interfaces/innerkits/uri/include",
     "//base/global/resource_management/interfaces/inner_api/include",
     "//foundation/aafwk/standard/interfaces/kits/napi/aafwk/featureAbility",
     "//foundation/arkui/napi/interfaces/kits",
@@ -74,7 +71,6 @@ config("ability_public_config") {
     "${SUBSYSTEM_DIR}/include",
     "//third_party/libuv/include",
     "//foundation/aafwk/standard/frameworks/kits/appkit/native/ability_runtime/context",
-    "//foundation/aafwk/standard/interfaces/innerkits/base/include/ohos/aafwk/base",
     "//foundation/aafwk/standard/frameworks/kits/ability/native/include/continuation/remote_register_service",
     "//foundation/aafwk/standard/frameworks/kits/ability/native/include/continuation/distributed",
     "//foundation/aafwk/standard/frameworks/kits/ability/native/include/distributed_ability_runtime",
@@ -93,7 +89,6 @@ ohos_shared_library("wallpaperextension") {
   include_dirs = [
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/miscservices/wallpaper/frameworks/kits/extension/include",
-    "//foundation/aafwk/standard/interfaces/innerkits/uri/include",
     "//foundation/distributeddatamgr/appdatamgr/frameworks/js/napi/rdb/include",
     "//foundation/distributeddatamgr/appdatamgr/frameworks/js/napi/common/include",
     "//foundation/distributeddatamgr/appdatamgr/frameworks/js/napi/dataability/include",
@@ -114,8 +109,6 @@ ohos_shared_library("wallpaperextension") {
   ]
 
   deps = [
-    "${INNERKITS_PATH}/base:base",
-    "${INNERKITS_PATH}/want:want",
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
     "//foundation/aafwk/standard/frameworks/kits/ability/ability_runtime:ability_context_native",
@@ -126,15 +119,13 @@ ohos_shared_library("wallpaperextension") {
     "//foundation/aafwk/standard/interfaces/innerkits/app_manager:app_manager",
     "//foundation/aafwk/standard/interfaces/innerkits/dataobs_manager:dataobs_manager",
     "//foundation/arkui/napi:ace_napi",
-
-    #"//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
-    #"//foundation/aafwk/standard/interfaces/innerkits/uri/include",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//foundation/multimodalinput/input/frameworks/proxy:libmmi-common",
     "//third_party/icu/icu4c:shared_icuuc",
   ]
 
   external_deps = [
+    "ability_base:want",
     "ability_base:zuri",
     "ability_runtime:ability_context_native",
     "ability_runtime:app_manager",
@@ -185,6 +176,9 @@ ohos_shared_library("wallpaper_extension_module") {
   ]
 
   external_deps = [
+    "ability_base:base",
+    "ability_base:want",
+    "ability_base:zuri",
     "ability_runtime:runtime",
     "hiviewdfx_hilog_native:libhilog",
   ]
