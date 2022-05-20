@@ -85,9 +85,9 @@ public:
 
     /**
      * @brief Called back when Wallpaper is started.
-     * This method can be called only by Wallpaper. You can use the StartAbility(ohos.aafwk.content.Want) method to start
-     * Wallpaper. Then the system calls back the current method to use the transferred want parameter to execute its own
-     * logic.
+     * This method can be called only by Wallpaper. You can use the StartAbility(ohos.aafwk.content.Want) method
+     * to start Wallpaper. Then the system calls back the current method to use the transferred want parameter
+     * to execute its own logic.
      *
      * @param want Indicates the want of Wallpaper to start.
      * @param restart Indicates the startup mode. The value true indicates that Wallpaper is restarted after being
@@ -107,7 +107,7 @@ public:
     virtual void OnStop() override;
 
 private:
-    NativeValue* CallObjectMethod(const char* name, NativeValue* const* argv = nullptr, size_t argc = 0);
+    NativeValue* CallObjectMethod(const char* name, NativeValue * const *argv = nullptr, size_t argc = 0);
 
     void GetSrcPath(std::string &srcPath);
 

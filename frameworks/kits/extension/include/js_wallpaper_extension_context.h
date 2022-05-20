@@ -28,7 +28,8 @@ class NativeReference;
 
 namespace OHOS {
 namespace AbilityRuntime {
-NativeValue* CreateJsWallpaperExtensionContext(NativeEngine& engine, std::shared_ptr<WallpaperExtensionContext> context);
+NativeValue* CreateJsWallpaperExtensionContext(NativeEngine& engine,
+    std::shared_ptr<WallpaperExtensionContext> context);
 
 class JSWallpaperExtensionConnection : public AbilityConnectCallback {
 public:

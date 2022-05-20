@@ -45,7 +45,8 @@ void WallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &record,
     const std::shared_ptr<OHOSApplication> &application,
     std::shared_ptr<AbilityHandler> &handler,
     const sptr<IRemoteObject> &token)
-{   HILOG_INFO("jws WallpaperExtension begin init context");
+{
+    HILOG_INFO("jws WallpaperExtension begin init context");
     ExtensionBase<WallpaperExtensionContext>::Init(record, application, handler, token);
     HILOG_INFO("WallpaperExtension begin init context");
 }

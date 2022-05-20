@@ -38,7 +38,6 @@
 #include "accesstoken_kit.h"
 #include "image_source.h"
 
-
 namespace OHOS {
 namespace WallpaperMgrService {
 enum class ServiceRunningState {
@@ -122,6 +121,8 @@ private:
     int32_t Init();
     ServiceRunningState state_;
     void InitServiceHandler();
+    bool CopySystemWallpaper();
+    bool CopyScreenLockWallpaper();
     static std::mutex instanceLock_;
     static sptr<WallpaperService> instance_;
     static std::shared_ptr<AppExecFwk::EventHandler> serviceHandler_;

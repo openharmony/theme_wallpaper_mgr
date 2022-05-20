@@ -117,9 +117,8 @@ void JsWallpaperExtension::OnStart(const AAFwk::Want &want)
     NativeValue* argv[] = {nativeWant};
     CallObjectMethod("onCreated", argv, ARGC_ONE);
     CallObjectMethod("createWallpaperWin");
-    WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterWallpaperCallback
-        ([](int WallpaperType)->bool
-        {
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterWallpaperCallback(
+        [](int WallpaperType)->bool {
             HILOG_INFO("  jsWallpaperExtension->CallObjectMethod");
             HandleScope handleScope(jsWallpaperExtension->jsRuntime_);
             NativeEngine* nativeEng = &(jsWallpaperExtension->jsRuntime_).GetNativeEngine();
