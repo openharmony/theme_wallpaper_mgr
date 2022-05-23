@@ -15,15 +15,12 @@
 #ifndef SERVICES_INCLUDE_WALLPAPER_SERVICE_CB_PROXY_H
 #define SERVICES_INCLUDE_WALLPAPER_SERVICE_CB_PROXY_H
 
-
 #include "iremote_proxy.h"
 #include "iremote_object.h"
 #include "i_wallpaper_callback.h"
 
-
 namespace OHOS {
 namespace WallpaperMgrService {
-
 class WallpaperServiceCbProxy : public IRemoteProxy<IWallpaperCallback> {
 public:
     explicit WallpaperServiceCbProxy(const sptr<IRemoteObject> &object) : IRemoteProxy<IWallpaperCallback>(object) {}
@@ -33,7 +30,6 @@ public:
 
     int32_t OnCall(const int32_t num) override;
 };
-
 } // namespace WallpaperMgrService
 } // namespace OHOS
 #endif // SERVICES_INCLUDE_WALLPAPER_SERVICE_CB_PROXY_H

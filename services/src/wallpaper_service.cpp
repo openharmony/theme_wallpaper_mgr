@@ -45,11 +45,11 @@
 #include "image_source.h"
 #include "canvas.h"
 #include "pen.h"
-#include "wallpaper_service.h"
 #include "surface.h"
 #include "window.h"
 #include "wallpaper_service_cb_proxy.h"
 #include "ability_manager_client.h"
+#include "wallpaper_service.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -143,7 +143,8 @@ void WallpaperService::OnStart()
     matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
     HILOG_INFO("WallpaperCommonEvent::subscriberInfo");
     OHOS::EventFwk::CommonEventSubscribeInfo subscriberInfo(matchingSkills);
-    std::shared_ptr<EventFwk::CommonEventSubscriber> subscriberPtr_ = std::make_shared<WallpaperCommonEvent>(subscriberInfo);
+    std::shared_ptr<EventFwk::CommonEventSubscriber> subscriberPtr_ =
+        std::make_shared<WallpaperCommonEvent>(subscriberInfo);
     bool subRes = OHOS::EventFwk::CommonEventManager::SubscribeCommonEvent(subscriberPtr_);
     if (subRes == false) {
         HILOG_INFO("RegisterSubscriber failed");
@@ -213,8 +214,7 @@ void WallpaperService::StartExt()
     want.SetElementName("com.example.ohosproject.hmservice", "WallpaperExtAbility");
     AAFwk::AbilityManagerClient::GetInstance()->Connect();
     HILOG_INFO("WallpaperService::Startwhile");
-    while (1)
-    {
+    while (1) {
         HILOG_INFO("WallpaperService::StartAbility");
         time++;
         ret = AAFwk::AbilityManagerClient::GetInstance()->StartAbility(want);
@@ -643,7 +643,7 @@ IWallpaperService::mapFD  WallpaperService::GetPixelMap(int wallpaperType)
         return mapFd;
     }
     mapFd.fd = fd;
-    HILOG_INFO("mapFd.fd = %{public}d",mapFd.fd);
+    HILOG_INFO("mapFd.fd = %{public}d", mapFd.fd);
     return mapFd;
 }
 
@@ -723,54 +723,67 @@ bool WallpaperService::ResetWallpaper(int wallpaperType)
     return bFlag;
 }
 
+bool WallpaperService::CopySystemWallpaper()
+{
+    bool ret = false;
+    if (!OHOS::FileExists(wallpaperSystemFilePath_)) {
+        if (!OHOS::ForceCreateDirectory(wallpaperSystemFilePath_)) {
+            return false;
+        }
+    }
+    if (OHOS::FileExists(WALLPAPER_DEFAULT_FILEFULLPATH)) {
+        ret = CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemCropFileFullPath_);
+        if (ret == true) {
+            return false;
+        }
+        ret = CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemFileFullPath_);
+        if (ret == true) {
+            return false;
+        }
+        WallpaperCommonEvent::SendWallpaperSystemSettingMessage();
+        HILOG_INFO("SetDefaultDateForWallpaper callbackProxy->OnCall start");
+        if (callbackProxy != nullptr) {
+            callbackProxy->OnCall(WALLPAPER_SYSTEM);
+        }
+    }
+    return ret;
+}
+bool WallpaperService::CopyScreenLockWallpaper()
+{
+    bool ret = false;
+    if (!OHOS::FileExists(wallpaperLockScreenFilePath_)) {
+        if (!OHOS::ForceCreateDirectory(wallpaperLockScreenFilePath_)) {
+            return false;
+        }
+    }
+    if (OHOS::FileExists(WALLPAPER_DEFAULT_FILEFULLPATH)) {
+        if (CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperLockScreenCropFileFullPath_)) {
+            return false;
+        }
+        ret = CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperLockScreenFileFullPath_);
+        if (ret == true) {
+            return false;
+        }
+        WallpaperCommonEvent::SendWallpaperLockSettingMessage();
+        HILOG_INFO("SetDefaultDateForWallpaper callbackProxy->OnCall start");
+        if (callbackProxy != nullptr) {
+            callbackProxy->OnCall(WALLPAPER_LOCKSCREEN);
+        }
+    }
+    return ret;
+}
+
 bool WallpaperService::SetDefaultDateForWallpaper(int userId, int wpType)
 {
     std::string tmpPath = "";
     std::string tmpCropPath = "";
     bool ret = false;
     if (wpType == WALLPAPER_LOCKSCREEN) {
-        if (!OHOS::FileExists(wallpaperLockScreenFilePath_)) {
-            if (!OHOS::ForceCreateDirectory(wallpaperLockScreenFilePath_)) {
-                return false;
-            }
-        }
-        if (OHOS::FileExists(WALLPAPER_DEFAULT_FILEFULLPATH)) {
-            if (CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperLockScreenCropFileFullPath_)) {
-                return false;
-            }
-            ret = CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperLockScreenFileFullPath_);
-            if (ret == true) {
-                return false;
-            }
-            WallpaperCommonEvent::SendWallpaperLockSettingMessage();
-            HILOG_INFO("SetDefaultDateForWallpaper callbackProxy->OnCall start");
-            if (callbackProxy != nullptr) {
-                callbackProxy->OnCall(wpType);
-            }
-        }
+        CopyScreenLockWallpaper();
         tmpPath = wallpaperLockScreenFileFullPath_;
         tmpCropPath = wallpaperLockScreenCropFileFullPath_;
     } else {
-        if (!OHOS::FileExists(wallpaperSystemFilePath_)) {
-            if (!OHOS::ForceCreateDirectory(wallpaperSystemFilePath_)) {
-                return false;
-            }
-        }
-        if (OHOS::FileExists(WALLPAPER_DEFAULT_FILEFULLPATH)) {
-            ret = CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemCropFileFullPath_);
-            if (ret == true) {
-                return false;
-            }
-            ret = CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemFileFullPath_);
-            if (ret == true) {
-                return false;
-            }
-            WallpaperCommonEvent::SendWallpaperSystemSettingMessage();
-            HILOG_INFO("SetDefaultDateForWallpaper callbackProxy->OnCall start");
-            if (callbackProxy != nullptr) {
-            callbackProxy->OnCall(wpType);
-            }
-        }
+        CopySystemWallpaper();
         tmpPath = wallpaperSystemFileFullPath_;
         tmpCropPath = wallpaperSystemCropFileFullPath_;
     }

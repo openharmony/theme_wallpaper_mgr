@@ -19,7 +19,6 @@
 #include "hilog_wrapper.h"
 #include "directory_ex.h"
 
-
 constexpr int SYSTYEM = 0;
 constexpr int LOCKSCREEN = 1;
 constexpr int HUNDRED = 100;
@@ -29,7 +28,6 @@ using namespace OHOS::HiviewDFX;
 
 namespace OHOS {
 namespace WallpaperMgrService {
-
 class WallpaperTest : public testing::Test {
 public:
     static void SetUpTestCase(void);

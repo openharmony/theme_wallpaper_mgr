@@ -45,7 +45,9 @@ constexpr size_t ARGC_FOUR = 4;
 
 class JsWallpaperExtensionContext final {
 public:
-    JsWallpaperExtensionContext(const std::shared_ptr<WallpaperExtensionContext>& context) : context_(context) {}
+    explicit JsWallpaperExtensionContext(const std::shared_ptr<WallpaperExtensionContext>& context) : context_(context)
+    {
+    }
     ~JsWallpaperExtensionContext() = default;
 
     static void Finalizer(NativeEngine* engine, void* data, void* hint)

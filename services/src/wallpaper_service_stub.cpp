@@ -286,6 +286,5 @@ int32_t WallpaperServiceStub::OnRegisterWallpaperCallback(MessageParcel &data, M
     reply.WriteInt32(0);
     return 0;
 }
-
 }
 } // namespace OHOS

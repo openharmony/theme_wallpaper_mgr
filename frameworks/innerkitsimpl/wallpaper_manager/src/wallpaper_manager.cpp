@@ -378,7 +378,7 @@ bool WallpaperManager::On(std::shared_ptr<WallpaperColorChangeListener> listener
     }
     bool status = wpServerProxy->On(ipcListener);
     if (status == false) {
-        const auto temp = registeredListeners_.insert({listener.get(), ipcListener});
+        const auto temp = registeredListeners_.insert({ listener.get(), ipcListener });
         if (!temp.second) {
             HILOG_ERROR("local insert error");
             return false;
