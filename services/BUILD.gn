@@ -38,27 +38,27 @@ ohos_shared_library("wallpaper_service") {
     ":wallpaper_service_config",
   ]
   include_dirs = [
-    #"//foundation/graphic/graphic/interfaces/innerkits/surface",
+    #"//foundation/graphic/graphic_2d/interfaces/innerkits/surface",
     "//third_party/json/include",
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/miscservices/wallpaper/utils/include",
 
-    #"//foundation/graphic/graphic/interfaces/innerkits/wmclient",
+    #"//foundation/graphic/graphic_2d/interfaces/innerkits/wmclient",
     "//base/security/access_token/interfaces/innerkits",
     "//foundation/windowmanager/interfaces/innerkits/dm",
 
     #"//foundation/windowmanager/interfaces/innerkits/wm",
-    "//foundation/graphic/graphic/rosen/modules/2d_graphics/include",
-    "//foundation/graphic/graphic/rosen/modules/2d_graphics/src",
+    "//foundation/graphic/graphic_2d/rosen/modules/2d_graphics/include",
+    "//foundation/graphic/graphic_2d/rosen/modules/2d_graphics/src",
 
     #"//foundation/multimodalinput/input/service/window_manager/include",
     #"//foundation/graphic/ui/interfaces/kits/common",
     #"//foundation/graphic/utils/interfaces/kits",
     #"//foundation/graphic/utils/interfaces/innerkits",
-    "//foundation/graphic/graphic/rosen/modules/2d_graphics/include/draw",
-    "//foundation/graphic/graphic/rosen/modules/2d_graphics/src",
-    "//foundation/graphic/graphic/rosen/modules/render_service_client/core/ui",
-    "//foundation/graphic/graphic/rosen/modules/render_service_client/core",
+    "//foundation/graphic/graphic_2d/rosen/modules/2d_graphics/include/draw",
+    "//foundation/graphic/graphic_2d/rosen/modules/2d_graphics/src",
+    "//foundation/graphic/graphic_2d/rosen/modules/render_service_client/core/ui",
+    "//foundation/graphic/graphic_2d/rosen/modules/render_service_client/core",
     "//third_party/flutter/engine/flutter/lib/ui/painting",
   ]
   deps = [
@@ -66,13 +66,13 @@ ohos_shared_library("wallpaper_service") {
     "${aafwk_services_path}/abilitymgr:abilityms",
     "${utils_path}:wallpaper_utils",
     "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",
-    "//foundation/graphic/graphic/frameworks/surface:surface",
-    "//foundation/graphic/graphic/rosen/modules/2d_graphics:2d_graphics",
-    "//foundation/graphic/graphic/rosen/modules/render_service_client:librender_service_client",
+    "//foundation/graphic/graphic_2d/frameworks/surface:surface",
+    "//foundation/graphic/graphic_2d/rosen/modules/2d_graphics:2d_graphics",
+    "//foundation/graphic/graphic_2d/rosen/modules/render_service_client:librender_service_client",
 
     #"//foundation/graphic/ui:lite_ui",
     #"//foundation/graphic/ui:ui",
-    #"//foundation/graphic/graphic:libwms_client",
+    #"//foundation/graphic/graphic_2d:libwms_client",
     "//foundation/multimedia/image_standard:image_framework",
     "//foundation/multimedia/image_standard/interfaces/innerkits:image",
     "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
@@ -81,7 +81,7 @@ ohos_shared_library("wallpaper_service") {
     #"//foundation/windowmanager/interfaces/innerkits:wm_interface",
     "//foundation/windowmanager/utils:libwmutil",
 
-    #"//foundation/graphic/graphic/frameworks/wm:libwmclient",
+    #"//foundation/graphic/graphic_2d/frameworks/wm:libwmclient",
     "//foundation/windowmanager/wm:libwm",
     "//third_party/libxkbcommon:libxkbcommon",
     "//third_party/wayland_standard:libwayland_server",

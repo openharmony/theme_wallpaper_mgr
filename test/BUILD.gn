@@ -27,7 +27,7 @@ ohos_unittest("wallpaper_test") {
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/miscservices/wallpaper/utils/include",
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager/include",
-    "//foundation/graphic/graphic/interfaces/innerkits/wm",
+    "//foundation/graphic/graphic_2d/interfaces/innerkits/wm",
 
     #"//foundation/multimedia/image_standard/interfaces/innerkits/include",
   ]
