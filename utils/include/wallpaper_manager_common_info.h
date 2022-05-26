@@ -18,7 +18,7 @@
 
 #include <string>
 
-static const std::string WALLPAPER_USERID_PATH = "/data/accounts/account_";
+static const std::string WALLPAPER_USERID_PATH = "/data/service/el1/0/";
 static const std::string WALLPAPER_LOCKSCREEN_KVFILENAME = "wallpaper_lockscreen";
 static const std::string WALLPAPER_SYSTEM_KVFILENAME = "wallpaper_system";
 static const std::string WALLPAPER_DIRNAME = "wallpaper";
