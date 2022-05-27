@@ -193,9 +193,9 @@ void WallpaperService::InitData()
     userId_ = GetUserId();
     std::string userIdPath = GetWallpaperDir(userId_);
     this->wallpaperLockScreenFilePath_ = userIdPath +
-        "/" + WALLPAPER_DIRNAME + "/" + WALLPAPER_LOCKSCREEN_DIRNAME;
+        "/" + WALLPAPER_LOCKSCREEN_DIRNAME;
     this->wallpaperSystemFilePath_ = userIdPath +
-        "/" + WALLPAPER_DIRNAME + "/" + WALLPAPER_SYSTEM_DIRNAME;
+        "/" + WALLPAPER_SYSTEM_DIRNAME;
     wallpaperLockScreenFileFullPath_ = wallpaperLockScreenFilePath_ + "/" + WALLPAPER_LOCK_ORIG;
     wallpaperLockScreenCropFileFullPath_ = wallpaperLockScreenFilePath_ + "/" + WALLPAPER_LOCK_CROP;
     wallpaperSystemCropFileFullPath_ = wallpaperSystemFilePath_ + "/" + WALLPAPER_CROP;
