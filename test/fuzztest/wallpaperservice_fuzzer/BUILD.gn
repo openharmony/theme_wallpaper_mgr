@@ -46,8 +46,8 @@ ohos_fuzztest("WallpaperServiceFuzzTest") {
   deps = [
     "${utils_path}:wallpaper_utils",
     "//base/miscservices/wallpaper/services:wallpaper_service",
-    "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
-    "//foundation/aafwk/standard/services/abilitymgr:abilityms",
+    "//foundation/ability/ability_runtime/frameworks/kits/ability/native:abilitykit_native",
+    "//foundation/ability/ability_runtime/services/abilitymgr:abilityms",
     "//foundation/windowmanager/utils:libwmutil",
     "//foundation/windowmanager/wm:libwm",
   ]
