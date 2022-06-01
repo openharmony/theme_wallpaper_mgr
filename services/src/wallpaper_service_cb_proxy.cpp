@@ -32,7 +32,7 @@ namespace WallpaperMgrService {
             return -1;
         }
         HILOG_INFO("  WallpaperServiceCbProxy::Remote()->SendRequest");
-        int32_t result = Remote()->SendRequest(ONCALL, data, reply, option);
+        Remote()->SendRequest(ONCALL, data, reply, option);
         return 0;
     }
 }
