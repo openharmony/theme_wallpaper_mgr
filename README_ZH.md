@@ -144,8 +144,8 @@ wallpaper.setWallpaper(pixelmap, WALLPAPER_SYSTEM).then((data) => {
 
 js 应用接口使用说明
 ```
-import Extension from '@ohos.application.WallpaperExtension'
-import wallPaper from '@ohos.app.wallpaperability'
+import Extension from '@ohos.WallpaperExtension'
+import wallPaper from '@ohos.wallpaper'
 
 export default class WallpaperExtAbility extends Extension {
     onCreated(want) {
