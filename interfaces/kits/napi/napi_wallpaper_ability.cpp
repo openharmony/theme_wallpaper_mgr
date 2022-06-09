@@ -324,12 +324,10 @@ napi_value NAPI_ScreenshotLiveWallpaper(napi_env env, napi_callback_info info)
     // wallpapertyepe WALLPAPER_SYSTEM:2 or WALLPAPER_LOCKSCREEN:1
     NAPI_CALL(env, napi_get_value_int32(env, argv[0], &value0));
 
-    bool callBackMode = false;
     if (argc >= THREE) {
         napi_valuetype valuetype = napi_valuetype::napi_null;
         NAPI_CALL(env, napi_typeof(env, argv[TWO], &valuetype));
         NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
-        callBackMode = true;
     }
 
     napi_value ret = 0;

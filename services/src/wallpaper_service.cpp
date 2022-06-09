@@ -234,7 +234,7 @@ void WallpaperService::OnBootPhase()
     AAFwk::Want want;
     want.SetElementName("com.example.ohosproject.hmservice", "WallpaperExtAbility");
     AAFwk::AbilityManagerClient::GetInstance()->Connect();
-    ErrCode ret = AAFwk::AbilityManagerClient::GetInstance()->StartAbility(want);
+    AAFwk::AbilityManagerClient::GetInstance()->StartAbility(want);
 }
 
 int WallpaperService::GetUserId()
