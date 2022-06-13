@@ -91,10 +91,10 @@ ohos_shared_library("wallpaperextension") {
   include_dirs = [
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/miscservices/wallpaper/frameworks/kits/extension/include",
-    "//foundation/distributeddatamgr/appdatamgr/frameworks/js/napi/rdb/include",
-    "//foundation/distributeddatamgr/appdatamgr/frameworks/js/napi/common/include",
-    "//foundation/distributeddatamgr/appdatamgr/frameworks/js/napi/dataability/include",
-    "//foundation/distributeddatamgr/appdatamgr/frameworks/js/napi/resultset/include",
+    "//foundation/distributeddatamgr/appdatamgr/relational_store/frameworks/js/napi/rdb/include",
+    "//foundation/distributeddatamgr/appdatamgr/relational_store/frameworks/js/napi/common/include",
+    "//foundation/distributeddatamgr/appdatamgr/relational_store/frameworks/js/napi/dataability/include",
+    "//foundation/distributeddatamgr/appdatamgr/relational_store/frameworks/js/napi/resultset/include",
     "//base/global/i18n/frameworks/intl/include",
   ]
 
@@ -134,12 +134,12 @@ ohos_shared_library("wallpaperextension") {
     "ability_runtime:napi_base_context",
     "ability_runtime:runtime",
     "common_event_service:cesfwk_innerkits",
-    "dataability:native_dataability",
     "hitrace_native:hitrace_meter",
     "input:libmmi-client",
     "ipc:ipc_core",
     "ipc_js:rpc",
     "relational_store:native_appdatafwk",
+    "relational_store:native_dataability",
     "relational_store:native_rdb",
     "utils_base:utils",
   ]
