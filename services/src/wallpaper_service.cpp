@@ -214,13 +214,11 @@ void WallpaperService::StartExt()
     want.SetElementName("com.example.ohosproject.hmservice", "WallpaperExtAbility");
     AAFwk::AbilityManagerClient::GetInstance()->Connect();
     HILOG_INFO("WallpaperService::Startwhile");
-    bool flag = true;
-    while (flag) {
+    while (1) {
         HILOG_INFO("WallpaperService::StartAbility");
         time++;
         ret = AAFwk::AbilityManagerClient::GetInstance()->StartAbility(want);
         if (ret == 0 || time == TEN) {
-            flag = false;
             break;
         }
         sleep(SIX);
