@@ -14,7 +14,7 @@
 import("//base/miscservices/wallpaper/wallpaper.gni")
 import("//build/ohos.gni")
 
-ohos_shared_library("wallpaperability") {
+ohos_shared_library("wallpaper") {
   include_dirs = [
     "//foundation/arkui/napi/interfaces/kits",
     "//third_party/node/src",
@@ -53,7 +53,7 @@ ohos_shared_library("wallpaperability") {
     "ipc:ipc_core",
   ]
 
-  relative_install_dir = "module/app"
+  relative_install_dir = "module"
   subsystem_name = "miscservices"
   part_name = "wallpaper_native"
 }

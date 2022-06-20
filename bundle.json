@@ -50,7 +50,7 @@
           "//base/miscservices/wallpaper/frameworks/kits/extension:wallpaper_extension_module",
           "//base/miscservices/wallpaper/interfaces/kits/napi/wallpaperextension:wallpaperextension_napi",
           "//base/miscservices/wallpaper/interfaces/kits/napi/wallpaper_extension_context:wallpaperextensioncontext_napi",
-          "//base/miscservices/wallpaper/interfaces/kits/napi:wallpaperability",
+          "//base/miscservices/wallpaper/interfaces/kits/napi:wallpaper",
           "//base/miscservices/wallpaper/utils:wallpaper_utils",
           "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpaperdefault.jpeg",
           "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpaperlockdefault.jpeg"
