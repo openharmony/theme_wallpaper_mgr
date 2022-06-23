@@ -147,7 +147,6 @@ ohos_shared_library("wallpaperextension") {
     "//base/global/resource_management/frameworks/resmgr:global_resmgr",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
     "//foundation/arkui/napi:ace_napi",
-    "//foundation/graphic/graphic_2d:libwmclient",
     "//foundation/windowmanager/interfaces/kits/napi/window_runtime:windowstage_kit",
     "//foundation/windowmanager/wm:libwm",
   ]

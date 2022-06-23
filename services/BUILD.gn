@@ -84,8 +84,6 @@ ohos_shared_library("wallpaper_service") {
     #"//foundation/graphic/graphic_2d/frameworks/wm:libwmclient",
     "//foundation/windowmanager/wm:libwm",
     "//third_party/libxkbcommon:libxkbcommon",
-    "//third_party/wayland_standard:libwayland_server",
-    "//third_party/weston:libweston",
     "//utils/native/base:utils",
   ]
   external_deps = [
