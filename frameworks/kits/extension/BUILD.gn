@@ -14,8 +14,8 @@
 import("//base/miscservices/wallpaper/wallpaper.gni")
 import("//build/ohos.gni")
 
-AAFWK_KITS_DIR = "${aafwk_kits_path}/ability/native"
-AAFWK_INNERKITS_PATH = "${aafwk_inner_api_path}"
+AAFWK_KITS_DIR = "${ability_runtime_kits_path}/ability/native"
+AAFWK_INNERKITS_PATH = "${ability_runtime_inner_api_path}"
 
 config("ability_config") {
   visibility = [ ":*" ]
@@ -24,19 +24,19 @@ config("ability_config") {
     "//base/miscservices/wallpaper/frameworks/kits/extension/include",
     "//utils/native/base/include",
     "${AAFWK_KITS_DIR}/include",
-    "${aafwk_kits_path}/appkit/native/app/include",
+    "${ability_runtime_kits_path}/appkit/native/app/include",
     "${AAFWK_INNERKITS_PATH}/app_manager/include/appmgr",
     "${AAFWK_INNERKITS_PATH}/ability_manager/include",
-    "${aafwk_services_path}/abilitymgr/include",
-    "${aafwk_kits_path}/appkit/native/ability_runtime/app",
-    "${aafwk_kits_path}/appkit/native/app/include",
-    "${aafwk_kits_path}/fmskit/native/include",
-    "${aafwk_kits_path}/app/native/app/include",
-    "${aafwk_services_path}/common/include",
+    "${ability_runtime_services_path}/abilitymgr/include",
+    "${ability_runtime_kits_path}/appkit/native/ability_runtime/app",
+    "${ability_runtime_kits_path}/appkit/native/app/include",
+    "${ability_runtime_kits_path}/fmskit/native/include",
+    "${ability_runtime_kits_path}/app/native/app/include",
+    "${ability_runtime_services_path}/common/include",
 
     #"//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
     "//base/global/resource_management/interfaces/inner_api/include",
-    "//foundation/ability/ability_runtime/frameworks/js/napi/aafwk/featureAbility",
+    "${ability_runtime_napi_path}/featureAbility",
     "//foundation/arkui/napi/interfaces/kits",
     "//third_party/node/src",
     "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
@@ -45,8 +45,8 @@ config("ability_config") {
     "${AAFWK_KITS_DIR}/include/distributed_ability_runtime",
     "${AAFWK_INNERKITS_PATH}/ability_manager/include/continuation",
     "${AAFWK_KITS_DIR}/include/continuation/kits",
-    "${aafwk_kits_path}/appkit/native/app/include/task",
-    "//foundation/ability/ability_runtime/frameworks/js/napi/aafwk/inner/napi_common",
+    "${ability_runtime_kits_path}/appkit/native/app/include/task",
+    "${ability_runtime_napi_path}/inner/napi_common",
   ]
 
   cflags = []
@@ -65,20 +65,20 @@ config("ability_public_config") {
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/miscservices/wallpaper/frameworks/kits/extension/include",
     "${AAFWK_INNERKITS_PATH}/base/include",
-    "${aafwk_kits_path}/appkit/native",
-    "${aafwk_kits_path}/appkit/native/ability_runtime/app",
-    "${aafwk_kits_path}/appkit/native/app/include",
-    "${aafwk_kits_path}/appkit/native/ability_runtime",
+    "${ability_runtime_kits_path}/appkit/native",
+    "${ability_runtime_kits_path}/appkit/native/ability_runtime/app",
+    "${ability_runtime_kits_path}/appkit/native/app/include",
+    "${ability_runtime_kits_path}/appkit/native/ability_runtime",
     "${AAFWK_KITS_DIR}/include",
     "//third_party/libuv/include",
-    "${aafwk_kits_path}/appkit/native/ability_runtime/context",
+    "${ability_runtime_kits_path}/appkit/native/ability_runtime/context",
     "${AAFWK_KITS_DIR}/include/continuation/remote_register_service",
     "${AAFWK_KITS_DIR}/include/continuation/distributed",
     "${AAFWK_KITS_DIR}/include/distributed_ability_runtime",
     "${AAFWK_INNERKITS_PATH}/ability_manager/include/continuation",
     "//base/global/resource_management/interfaces/inner_api/include",
     "${AAFWK_KITS_DIR}/include/continuation/kits",
-    "${aafwk_kits_path}/fmskit/native/include",
+    "${ability_runtime_kits_path}/fmskit/native/include",
     "//foundation/windowmanager/interfaces/innerkits/wm",
     "//foundation/windowmanager/interfaces/kits/napi/window_runtime/window_stage_napi",
     "//third_party/jsoncpp/include",
@@ -106,7 +106,7 @@ ohos_shared_library("wallpaperextension") {
   configs = [ ":ability_config" ]
   public_configs = [
     ":ability_public_config",
-    "${aafwk_kits_path}/ability/ability_runtime:ability_context_public_config",
+    "${ability_runtime_kits_path}/ability/ability_runtime:ability_context_public_config",
   ]
 
   deps = [
@@ -115,8 +115,8 @@ ohos_shared_library("wallpaperextension") {
     "${AAFWK_INNERKITS_PATH}/dataobs_manager:dataobs_manager",
     "${AAFWK_KITS_DIR}:abilitykit_native",
     "${AAFWK_KITS_DIR}:static_subscriber_ipc",
-    "${aafwk_kits_path}/ability/ability_runtime:ability_context_native",
-    "${aafwk_kits_path}/appkit:app_context",
+    "${ability_runtime_kits_path}/ability/ability_runtime:ability_context_native",
+    "${ability_runtime_kits_path}/appkit:app_context",
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
     "//foundation/arkui/napi:ace_napi",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",

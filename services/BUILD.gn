@@ -62,8 +62,8 @@ ohos_shared_library("wallpaper_service") {
     "//third_party/flutter/engine/flutter/lib/ui/painting",
   ]
   deps = [
-    "${aafwk_kits_path}/ability/native:abilitykit_native",
-    "${aafwk_services_path}/abilitymgr:abilityms",
+    "${ability_runtime_kits_path}/ability/native:abilitykit_native",
+    "${ability_runtime_services_path}/abilitymgr:abilityms",
     "${utils_path}:wallpaper_utils",
     "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",
     "//foundation/graphic/graphic_2d/frameworks/surface:surface",
