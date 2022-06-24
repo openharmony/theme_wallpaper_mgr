@@ -32,7 +32,7 @@ ohos_unittest("wallpaper_test") {
     #"//foundation/multimedia/image_standard/interfaces/innerkits/include",
   ]
   deps = [
-    "${aafwk_kits_path}/ability/native:abilitykit_native",
+    "${aafwk_path}/frameworks/native/ability/native:abilitykit_native",
     "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
     "//foundation/multimedia/image_standard:image_framework",

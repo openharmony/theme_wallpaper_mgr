@@ -18,6 +18,8 @@ aafwk_kits_path = "//foundation/ability/ability_runtime/frameworks/kits"
 
 aafwk_services_path = "//foundation/ability/ability_runtime/services"
 
+aafwk_path = "//foundation/ability/ability_runtime"
+
 wallpaper_path = "//base/miscservices/wallpaper"
 
 adapter_path = "${wallpaper_path}/adapter"
