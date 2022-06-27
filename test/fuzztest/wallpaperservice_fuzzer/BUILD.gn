@@ -46,13 +46,16 @@ ohos_fuzztest("WallpaperServiceFuzzTest") {
   deps = [
     "${utils_path}:wallpaper_utils",
     "//base/miscservices/wallpaper/services:wallpaper_service",
-    "${ability_runtime_kits_path}/ability/native:abilitykit_native",
+    "${ability_runtime_path}/frameworks/native/ability/native:abilitykit_native",
     "${ability_runtime_services_path}/abilitymgr:abilityms",
     "//foundation/windowmanager/utils:libwmutil",
     "//foundation/windowmanager/wm:libwm",
   ]
 
-  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+  external_deps = [
+    "graphic_standard:surface",
+    "hiviewdfx_hilog_native:libhilog",
+  ]
 }
 
 ###############################################################################

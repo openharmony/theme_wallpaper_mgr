@@ -62,7 +62,7 @@ ohos_shared_library("wallpaper_service") {
     "//third_party/flutter/engine/flutter/lib/ui/painting",
   ]
   deps = [
-    "${ability_runtime_kits_path}/ability/native:abilitykit_native",
+    "${ability_runtime_path}/frameworks/native/ability/native:abilitykit_native",
     "${ability_runtime_services_path}/abilitymgr:abilityms",
     "${utils_path}:wallpaper_utils",
     "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",
@@ -83,9 +83,6 @@ ohos_shared_library("wallpaper_service") {
 
     #"//foundation/graphic/graphic_2d/frameworks/wm:libwmclient",
     "//foundation/windowmanager/wm:libwm",
-    "//third_party/libxkbcommon:libxkbcommon",
-    "//third_party/wayland_standard:libwayland_server",
-    "//third_party/weston:libweston",
     "//utils/native/base:utils",
   ]
   external_deps = [

@@ -34,7 +34,7 @@ ohos_shared_library("wallpaper") {
     "wallpaper_js_util.cpp",
   ]
   deps = [
-    "${ability_runtime_kits_path}/appkit:appkit_native",
+    "${ability_runtime_path}/frameworks/native/appkit:appkit_native",
     "${ability_runtime_services_path}/appmgr:libappms",
     "${utils_path}:wallpaper_utils",
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",

@@ -64,9 +64,6 @@ const std::string WallpaperService::WALLPAPER_LOCK_ORIG = "wallpaper_lock_orig";
 const std::string WallpaperService::WALLPAPER_LOCK_CROP = "wallpaper_lock";
 
 const std::int64_t INIT_INTERVAL = 10000L;
-constexpr int SCREEN_WIDTH = 480;
-constexpr int SCREEN_HEIGHT = 960;
-
 constexpr int HALF = 2;
 constexpr int DOUBLE = 2;
 constexpr int THREE = 3;
@@ -776,7 +773,6 @@ bool WallpaperService::SetDefaultDateForWallpaper(int userId, int wpType)
 {
     std::string tmpPath = "";
     std::string tmpCropPath = "";
-    bool ret = false;
     if (wpType == WALLPAPER_LOCKSCREEN) {
         CopyScreenLockWallpaper();
         tmpPath = wallpaperLockScreenFileFullPath_;
