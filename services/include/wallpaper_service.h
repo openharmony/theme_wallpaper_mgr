@@ -37,6 +37,7 @@
 #include "ipc_skeleton.h"
 #include "accesstoken_kit.h"
 #include "image_source.h"
+#include "reporter.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -70,10 +71,13 @@ public:
     bool On(sptr<IWallpaperColorChangeListener> listener) override;
     bool Off(sptr<IWallpaperColorChangeListener> listener) override;
     bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) override;
+    int Dump(int fd, const std::vector<std::u16string> &args) override;
 public:
     void WallpaperDump(int fd);
     bool SetLockWallpaperCallback(IWallpaperManagerCallback* cb);
     static void OnBootPhase();
+    void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
+    void ReporterUsageTimeStatisic();
 
 protected:
     void OnStart() override;
@@ -148,6 +152,7 @@ private:
     static const std::string WALLPAPER_CROP;
     static const std::string WALLPAPER_LOCK_ORIG;
     static const std::string WALLPAPER_LOCK_CROP;
+    static const std::string WALLPAPER_BUNDLE_NAME;
     sptr<IWallpaperCallback> callbackProxy = nullptr;
 
     std::string name_;

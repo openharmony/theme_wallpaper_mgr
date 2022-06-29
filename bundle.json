@@ -59,6 +59,9 @@
           "//base/miscservices/wallpaper/test:wallpaper_test",
           "//base/miscservices/wallpaper/test/fuzztest:fuzztest"
         ]
-      }
+      },
+      "hisysevent_config": [
+        "//base/miscservices/wallpaper/hisysevent.yaml"
+      ]
     }
   }

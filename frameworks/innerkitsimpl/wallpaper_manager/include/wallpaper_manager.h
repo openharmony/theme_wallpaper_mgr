@@ -24,9 +24,11 @@
 #include "ipc_skeleton.h"
 #include "wallpaper_manager_kits.h"
 #include "singleton.h"
+#include "reporter.h"
 
 using JScallback = bool (*) (int);
 namespace OHOS {
+using namespace MiscServices;
 namespace WallpaperMgrService {
 class WallpaperManager final : public WallpaperManagerkits, public DelayedRefSingleton<WallpaperManager> {
     DECLARE_DELAYED_REF_SINGLETON(WallpaperManager);
@@ -136,6 +138,8 @@ public:
     JScallback GetCallback() final;
 
     void SetCallback(bool (*cb) (int)) final;
+
+    void ReporterFault(FaultType faultType, FaultCode faultCode);
 
 private:
     class DeathRecipient final : public IRemoteObject::DeathRecipient {

@@ -14,10 +14,13 @@
  */
 
 #include <gtest/gtest.h>
+#include <ctime>
 #include "wallpaper_manager_kits.h"
 #include "wallpaper_manager.h"
 #include "hilog_wrapper.h"
 #include "directory_ex.h"
+#include "dfx_types.h"
+#include "reporter.h"
 
 constexpr int SYSTYEM = 0;
 constexpr int LOCKSCREEN = 1;
@@ -25,6 +28,7 @@ constexpr int HUNDRED = 100;
 using namespace testing::ext;
 using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
+using namespace OHOS::MiscServices;
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -402,5 +406,49 @@ HWTEST_F(WallpaperTest, GetPiexlMap002, TestSize.Level0)
     EXPECT_TRUE(PixelMap);
 }
 /*********************   GetPiexlMap   *********************/
+
+/*********************   DFX   *********************/
+/**
+* @tc.name: DFX001
+* @tc.desc: check wallpaper dfx report
+* @tc.type: send data
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(WallpaperTest, DFX001, TestSize.Level0)
+{
+    HILOG_INFO(" DFX001 ReportServiceFault begin");
+    FaultMsg msg;
+    msg.faultType = FaultType::SERVICE_FAULT;
+    msg.errorCode = FaultCode::SF_SERVICE_UNAVAIABLE;
+    msg.moduleName = "com.ohos.wallpaper";
+    ReportStatus repStatus = Reporter::GetInstance().Fault().ReportServiceFault(msg);
+    EXPECT_TRUE(repStatus == ReportStatus::SUCCESS);
+}
+
+HWTEST_F(WallpaperTest, DFX002, TestSize.Level0)
+{
+    HILOG_INFO(" DFX002 ReportRuntimeFault begin");
+    FaultMsg msg;
+    msg.faultType = FaultType::SET_WALLPAPER_FAULT;
+    msg.errorCode = FaultCode::RF_DROP_FAILED;
+    msg.moduleName = "com.ohos.wallpaper";
+    ReportStatus repStatus = Reporter::GetInstance().Fault().ReportRuntimeFault(msg);
+    EXPECT_TRUE(repStatus == ReportStatus::SUCCESS);
+}
+
+HWTEST_F(WallpaperTest, DFX003, TestSize.Level0)
+{
+    HILOG_INFO(" DFX002 ReportUsageTimeStatistic begin");
+    
+    int userId = static_cast<int>(IPCSkeleton::GetCallingUid());
+    UsageTimeStat timeStat;
+    timeStat.packagesName = "unittest";
+    timeStat.startTime = time(nullptr);
+    Reporter::GetInstance().UsageTimeStatistic().ReportUsageTimeStatistic(userId, timeStat);
+    ReportStatus repStatus = Reporter::GetInstance().UsageTimeStatistic().InvokeUsageTime(time(nullptr));
+    EXPECT_TRUE(repStatus == ReportStatus::SUCCESS);
+}
+/*********************   DFX   *********************/
 } // wallpaperservice
 } // OHOS

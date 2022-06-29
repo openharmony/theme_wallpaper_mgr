@@ -17,7 +17,10 @@ import("//build/ohos.gni")
 config("wallpaper_service_config") {
   visibility = [ ":*" ]
   include_dirs = [
+    "dfx/hidumper_adapter",
+    "dfx/hisysevent_adapter",
     "include",
+
     #"//foundation/multimodalinput/input/interfaces/native/innerkits/common/include",
   ]
 
@@ -26,6 +29,10 @@ config("wallpaper_service_config") {
 
 ohos_shared_library("wallpaper_service") {
   sources = [
+    "dfx/hidumper_adapter/dump_helper.cpp",
+    "dfx/hisysevent_adapter/fault_reporter.cpp",
+    "dfx/hisysevent_adapter/reporter.cpp",
+    "dfx/hisysevent_adapter/statistic_reporter.cpp",
     "src/component_name.cpp",
     "src/wallpaper_common_event.cpp",
     "src/wallpaper_data.cpp",
@@ -95,6 +102,8 @@ ohos_shared_library("wallpaper_service") {
     #"appexecfwk_standard:appexecfwk_core",
     #"appexecfwk_standard:libeventhandler",
     "eventhandler:libeventhandler",
+    "hisysevent_native:libhisysevent",
+    "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "safwk:system_ability_fwk",
