@@ -52,6 +52,7 @@
 #include "reporter.h"
 #include "dfx_types.h"
 #include "dump_helper.h"
+#include "bundle_mgr_proxy.h"
 #include "wallpaper_service.h"
 
 namespace OHOS {
@@ -616,8 +617,13 @@ bool WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int wal
 void WallpaperService::ReporterUsageTimeStatisic()
 {
     int userId = static_cast<int>(IPCSkeleton::GetCallingUid());
+    std::string  bundleName;
+    bool bRet = WPGetBundleNameByUid(userId, bundleName);
+    if (!bRet){
+        bundleName = WALLPAPER_BUNDLE_NAME;
+    }
     UsageTimeStat timeStat;
-    timeStat.packagesName = WALLPAPER_BUNDLE_NAME;
+    timeStat.packagesName = bundleName;
     timeStat.startTime = time(nullptr);
     Reporter::GetInstance().UsageTimeStatistic().ReportUsageTimeStatistic(userId, timeStat);
 }
@@ -1001,7 +1007,13 @@ void WallpaperService::WallpaperDump(int fd)
     dprintf(fd, " * heigh = %d\n", height);
     int32_t width = GetWallpaperMinWidth();
     dprintf(fd, " * heigh = %d\n", width);
-    dprintf(fd, " * WallpaperExtension = ExtensionInfo{%s}\n", WALLPAPER_BUNDLE_NAME.c_str());
+    int uid = static_cast<int>(IPCSkeleton::GetCallingUid());
+    std::string  bundleName;
+    bool bRet = WPGetBundleNameByUid(uid, bundleName);
+    if (!bRet){
+        bundleName = WALLPAPER_BUNDLE_NAME;
+    }
+    dprintf(fd, " * WallpaperExtension = ExtensionInfo{%s}\n", bundleName.c_str());
 }
 
 void WallpaperService::ReporterFault(FaultType faultType, FaultCode faultCode)
@@ -1029,7 +1041,11 @@ int WallpaperService::Dump(int fd, const std::vector<std::u16string> &args)
     int uid = static_cast<int>(IPCSkeleton::GetCallingUid());
     const int maxUid = 10000;
     if (uid > maxUid) {
-        return 0;
+        Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+        if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken)
+            != Security::AccessToken::TOKEN_NATIVE) {
+            return 1;
+        }
     }
 
     std::vector<std::string> argsStr;

@@ -22,12 +22,12 @@ constexpr const char *SERVICE_FAULT = "SERVICE_FAULT";
 constexpr const char *RUNTIME_FAULT = "RUNTIME_FAULT";
 constexpr const char *FAULT_TYPE = "FAULT_TYPE";
 constexpr const char *MODULE_NAME = "MODULE_NAME";
-constexpr const char *ERROR_REASON = "ERROR_REASON";
+constexpr const char *ERROR_TYPE = "ERROR_TYPE";
 
 ReportStatus FaultReporter::ReportServiceFault(const FaultMsg &msg)
 {
     int nRet = HiSysEvent::Write(HiSysEvent::Domain::MISC_WALLPAPER, SERVICE_FAULT, HiSysEvent::EventType::FAULT,
-        FAULT_TYPE, static_cast<int>(msg.faultType), MODULE_NAME, msg.moduleName, ERROR_REASON,
+        FAULT_TYPE, static_cast<int>(msg.faultType), MODULE_NAME, msg.moduleName, ERROR_TYPE,
         static_cast<int>(msg.errorCode));
     return nRet == 0 ? ReportStatus::SUCCESS : ReportStatus::ERROR;
 }
@@ -35,7 +35,7 @@ ReportStatus FaultReporter::ReportServiceFault(const FaultMsg &msg)
 ReportStatus FaultReporter::ReportRuntimeFault(const FaultMsg &msg)
 {
     int nRet = HiSysEvent::Write(HiSysEvent::Domain::MISC_WALLPAPER, RUNTIME_FAULT, HiSysEvent::EventType::FAULT,
-        FAULT_TYPE, static_cast<int>(msg.faultType), ERROR_REASON, static_cast<int>(msg.errorCode));
+        FAULT_TYPE, static_cast<int>(msg.faultType), ERROR_TYPE, static_cast<int>(msg.errorCode));
     return nRet == 0 ? ReportStatus::SUCCESS : ReportStatus::ERROR;
 }
 } // namespace MiscServices
