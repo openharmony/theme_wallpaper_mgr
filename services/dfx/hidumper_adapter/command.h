@@ -35,4 +35,4 @@ private:
 };
 } // namespace MiscServices
 } // namespace OHOS
-#endif //CMDRESOLVER_COMMAND_H
+#endif // CMDRESOLVER_COMMAND_H
