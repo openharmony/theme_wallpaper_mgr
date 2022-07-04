@@ -37,7 +37,7 @@
 #   Example of some hiviewdfx events definition     #
 #####################################################
 
-domain: MISC_WALLPAPER
+domain: THEME
 
 SERVICE_FAULT:
   __BASE: {type: FAULT, level: CRITICAL, desc: The event is service fault }
@@ -51,5 +51,5 @@ RUNTIME_FAULT:
   ERROR_TYPE: {type: INT32, desc: error type }
 
 USAGETIME_STATISTIC:
-  __BASE: {type: STATISTIC, level: CRITICAL, desc: The event is usagetime statistic }
+  __BASE: {type: STATISTIC, level: MINOR, desc: The event is usagetime statistic }
   WALLPAPER_INFO: {type: STRING, desc: wallpaper infomation }

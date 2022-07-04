@@ -21,7 +21,6 @@ config("wallpaper_service_config") {
     "dfx/hisysevent_adapter",
     "include",
 
-    #"//foundation/multimodalinput/input/interfaces/native/innerkits/common/include",
   ]
 
   cflags_cc = [ "-fexceptions" ]
@@ -74,7 +73,6 @@ ohos_shared_library("wallpaper_service") {
     "${aafwk_services_path}/abilitymgr:abilityms",
     "${utils_path}:wallpaper_utils",
     "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",
-    "//foundation/bundlemanager/bundle_framework/interfaces/inner_api/appexecfwk_core:appexecfwk_core",
     "//foundation/graphic/graphic_2d/frameworks/surface:surface",
     "//foundation/graphic/graphic_2d/rosen/modules/2d_graphics:2d_graphics",
     "//foundation/graphic/graphic_2d/rosen/modules/render_service_client:librender_service_client",
@@ -101,7 +99,7 @@ ohos_shared_library("wallpaper_service") {
     "common_event_service:cesfwk_innerkits",
 
     #"appexecfwk_standard:appexecfwk_base",
-    #"appexecfwk_standard:appexecfwk_core",
+    "appexecfwk_standard:appexecfwk_core",
     #"appexecfwk_standard:libeventhandler",
     "eventhandler:libeventhandler",
     "hisysevent_native:libhisysevent",

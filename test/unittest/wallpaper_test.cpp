@@ -264,7 +264,7 @@ HWTEST_F(WallpaperTest, On001, TestSize.Level1)
 */
 HWTEST_F(WallpaperTest, GetColors001, TestSize.Level0)
 {
-    HILOG_INFO(" GetColors001 GetColors001 begin");
+    HILOG_INFO("GetColors001 GetColors001 begin");
 
     std::vector<RgbaColor> Color = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
         GetColors(SYSTYEM);
@@ -281,7 +281,7 @@ HWTEST_F(WallpaperTest, GetColors001, TestSize.Level0)
 */
 HWTEST_F(WallpaperTest, GetColors002, TestSize.Level0)
 {
-    HILOG_INFO(" GetColors002 GetColors001 begin");
+    HILOG_INFO("GetColors002 GetColors001 begin");
     std::vector<RgbaColor> Color = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
         GetColors(LOCKSCREEN);
     bool result = Color.empty();
@@ -299,7 +299,7 @@ HWTEST_F(WallpaperTest, GetColors002, TestSize.Level0)
 */
 HWTEST_F(WallpaperTest, GetId001, TestSize.Level0)
 {
-    HILOG_INFO(" GetId001 GetId001 begin");
+    HILOG_INFO("GetId001 GetId001 begin");
     bool result = false;
     int ida = HUNDRED;
     ida = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
@@ -319,7 +319,7 @@ HWTEST_F(WallpaperTest, GetId001, TestSize.Level0)
 */
 HWTEST_F(WallpaperTest, GetId002, TestSize.Level0)
 {
-    HILOG_INFO(" GetId002 GetId002 begin");
+    HILOG_INFO("GetId002 GetId002 begin");
     bool result = false;
     int ida = HUNDRED;
     ida = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
@@ -341,7 +341,7 @@ HWTEST_F(WallpaperTest, GetId002, TestSize.Level0)
 */
 HWTEST_F(WallpaperTest, getMinHeight001, TestSize.Level0)
 {
-    HILOG_INFO(" WallpaperReset001  begin");
+    HILOG_INFO("WallpaperReset001  begin");
     bool result = false;
     int hight = 0;
     hight = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
@@ -363,7 +363,7 @@ HWTEST_F(WallpaperTest, getMinHeight001, TestSize.Level0)
 */
 HWTEST_F(WallpaperTest, getMinWidth001, TestSize.Level0)
 {
-    HILOG_INFO(" getMinWidth001  begin");
+    HILOG_INFO("getMinWidth001  begin");
     bool result = false;
     int width = 0;
     width = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
@@ -385,7 +385,7 @@ HWTEST_F(WallpaperTest, getMinWidth001, TestSize.Level0)
 */
 HWTEST_F(WallpaperTest, GetPiexlMap001, TestSize.Level0)
 {
-    HILOG_INFO(" SetWallpaper&GetPiexlMap001  begin");
+    HILOG_INFO("SetWallpaper&GetPiexlMap001  begin");
     auto PixelMap = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
         GetPixelMap(SYSTYEM);
     EXPECT_TRUE(PixelMap);
@@ -400,7 +400,7 @@ HWTEST_F(WallpaperTest, GetPiexlMap001, TestSize.Level0)
 */
 HWTEST_F(WallpaperTest, GetPiexlMap002, TestSize.Level0)
 {
-    HILOG_INFO(" SetWallpaper&GetPiexlMap002  begin");
+    HILOG_INFO("SetWallpaper&GetPiexlMap002  begin");
     auto PixelMap = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
         GetPixelMap(LOCKSCREEN);
     EXPECT_TRUE(PixelMap);
@@ -410,14 +410,14 @@ HWTEST_F(WallpaperTest, GetPiexlMap002, TestSize.Level0)
 /*********************   DFX   *********************/
 /**
 * @tc.name: DFX001
-* @tc.desc: check wallpaper dfx report
+* @tc.desc: check ReportServiceFault
 * @tc.type: send data
 * @tc.require:
 * @tc.author:
 */
 HWTEST_F(WallpaperTest, DFX001, TestSize.Level0)
 {
-    HILOG_INFO(" DFX001 ReportServiceFault begin");
+    HILOG_INFO("DFX001 ReportServiceFault begin");
     FaultMsg msg;
     msg.faultType = FaultType::SERVICE_FAULT;
     msg.errorCode = FaultCode::SF_SERVICE_UNAVAIABLE;
@@ -426,9 +426,16 @@ HWTEST_F(WallpaperTest, DFX001, TestSize.Level0)
     EXPECT_TRUE(repStatus == ReportStatus::SUCCESS);
 }
 
+/**
+* @tc.name: DFX002
+* @tc.desc: check ReportRuntimeFault
+* @tc.type: send data
+* @tc.require:
+* @tc.author:
+*/
 HWTEST_F(WallpaperTest, DFX002, TestSize.Level0)
 {
-    HILOG_INFO(" DFX002 ReportRuntimeFault begin");
+    HILOG_INFO("DFX002 ReportRuntimeFault begin");
     FaultMsg msg;
     msg.faultType = FaultType::SET_WALLPAPER_FAULT;
     msg.errorCode = FaultCode::RF_DROP_FAILED;
@@ -436,9 +443,16 @@ HWTEST_F(WallpaperTest, DFX002, TestSize.Level0)
     EXPECT_TRUE(repStatus == ReportStatus::SUCCESS);
 }
 
+/**
+* @tc.name: DFX002
+* @tc.desc: check ReportUsageTimeStatistic
+* @tc.type: send data
+* @tc.require:
+* @tc.author:
+*/
 HWTEST_F(WallpaperTest, DFX003, TestSize.Level0)
 {
-    HILOG_INFO(" DFX002 ReportUsageTimeStatistic begin");
+    HILOG_INFO("DFX002 ReportUsageTimeStatistic begin");
     
     int userId = static_cast<int>(IPCSkeleton::GetCallingUid());
     UsageTimeStat timeStat;

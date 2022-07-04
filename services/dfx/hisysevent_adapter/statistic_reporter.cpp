@@ -42,7 +42,7 @@ void StatisticReporter::ReportUsageTimeStatistic(int userId, const UsageTimeStat
     if (iter != usageTimeStat_.end()) {
         UsageTimeStat &timeStat = iter->second.back();
         int nDiff = stat.startTime - timeStat.startTime;
-        timeStat.cumulativeTime = std::to_string(nDiff / WAIT_TIME);
+        timeStat.cumulativeTime = std::to_string(nDiff / ONE_HOUR_IN_SECONDS);
         iter->second.push_back(stat);
     } else {
         std::vector<UsageTimeStat> vecUsageTime;
@@ -53,24 +53,25 @@ void StatisticReporter::ReportUsageTimeStatistic(int userId, const UsageTimeStat
 
 void StatisticReporter::StartTimerThread()
 {
-    if (running_) {
-        return;
+    {
+        std::lock_guard<std::mutex> lock(runMutex_);
+        if (running_) {
+            return;
+        }
+        running_ = true;
     }
-    std::lock_guard<std::mutex> lock(runMutex_);
-    if (running_) {
-        return;
-    }
-    running_ = true;
     auto fun = []() {
         while (true) {
             time_t current = time(nullptr);
             if (current == -1) {
-                return;
+                sleep(ONE_HOUR_IN_SECONDS);
+                continue;
             }
             
             tm localTime = { 0 };
             tm *result = localtime_r(&current, &localTime);
             if (result == nullptr) {
+                sleep(ONE_HOUR_IN_SECONDS);
                 continue;
             }
             int currentHour = localTime.tm_hour;
@@ -78,17 +79,24 @@ void StatisticReporter::StartTimerThread()
             if ((EXEC_MIN_TIME - currentMin) != EXEC_MIN_TIME) {
                 int nHours = EXEC_HOUR_TIME - currentHour;
                 int nMin = EXEC_MIN_TIME - currentMin;
-                int nTime = (nMin)*SIXTY_SEC + (nHours)*WAIT_TIME;
+                int nTime = (nMin)*ONE_MINUTE_IN_SECONDS + (nHours)*ONE_HOUR_IN_SECONDS;
                 HILOG_INFO(
                     " StartTimerThread if nHours=%{public}d,nMin=%{public}d,nTime=%{public}d", nHours, nMin, nTime);
                 sleep(nTime);
                 current = time(nullptr);
                 if (current == -1) {
-                    return;
+                    sleep(ONE_HOUR_IN_SECONDS);
+                    continue;
                 }
                 InvokeUsageTime(current);
             } else {
-                sleep(WAIT_TIME * (TWENTY_FOUR_HOURS - currentHour));
+                sleep(ONE_HOUR_IN_SECONDS * (ONE_DAY_IN_HOURS - currentHour));
+                current = time(nullptr);
+                if (current == -1) {
+                    sleep(ONE_HOUR_IN_SECONDS);
+                    continue;
+                }
+                InvokeUsageTime(current);
             }
         }
     };
@@ -108,20 +116,20 @@ ReportStatus StatisticReporter::InvokeUsageTime(time_t curTime)
             std::string cumulativeTime(stat.cumulativeTime);
             if (cumulativeTime.empty()) {
                 int nDiff = curTime - stat.startTime;
-                cumulativeTime = std::to_string(nDiff / WAIT_TIME);
+                cumulativeTime = std::to_string(nDiff / ONE_HOUR_IN_SECONDS);
             }
 
             statisicMsg.append(PACKAGES_NAME)
                 .append(":" + stat.packagesName + ",")
                 .append(CUMULATIVE_TIME)
-                .append(":" + cumulativeTime + ",");
+                .append(":" + cumulativeTime + "hours,");
         }
     }
     if (statisicMsg.empty()) {
         return ReportStatus::ERROR;
     }
 
-    int nRet = HiSysEvent::Write(HiSysEvent::Domain::MISC_WALLPAPER, USAGETIME_STATISTIC,
+    int nRet = HiSysEvent::Write(HiSysEvent::Domain::THEME, USAGETIME_STATISTIC,
         HiSysEvent::EventType::STATISTIC, WALLPAPER_INFO, statisicMsg);
     HILOG_INFO(" InvokeUsageTime nRet = %{public}d.", nRet);
     return nRet == 0 ? ReportStatus::SUCCESS : ReportStatus::ERROR;

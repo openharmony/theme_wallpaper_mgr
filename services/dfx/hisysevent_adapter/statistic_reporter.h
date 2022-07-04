@@ -33,14 +33,12 @@ private:
 
     static std::mutex runMutex_;
     static bool running_;
-    static const inline int TWENTY_FOUR_HOURS = 24;
+    static const inline int ONE_DAY_IN_HOURS = 24;
+    static const inline int ONE_MINUTE_IN_SECONDS = 60;
+    static const inline int ONE_HOUR_IN_SECONDS = 1 * 60 * 60;          // 1 hours
+
     static const inline int EXEC_HOUR_TIME = 23;
     static const inline int EXEC_MIN_TIME = 60;
-    static const inline int SIXTY_SEC = 60;
-    static const inline int ZERO_TIME = 0;
-
-    static const inline int WAIT_TIME = 1 * 60 * 60;          // 1 hours
-    static const inline int PERIOD_TIME_US = 1 * 1000 * 1000; // 1 s
 };
 } // namespace MiscServices
 } // namespace OHOS

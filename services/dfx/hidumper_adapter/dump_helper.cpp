@@ -24,7 +24,7 @@ DumpHelper &DumpHelper::GetInstance()
     return instance;
 }
 
-void DumpHelper::RegisterCommand(Command &cmd)
+void DumpHelper::RegisterCommand(std::shared_ptr<Command> &cmd)
 {
     std::string strCmd = cmd.GetOption();
     cmdHandler_.insert(std::make_pair(cmd.GetOption(), cmd));

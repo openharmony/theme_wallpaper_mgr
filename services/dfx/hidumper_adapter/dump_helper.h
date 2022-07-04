@@ -26,7 +26,7 @@ namespace MiscServices {
 class DumpHelper {
 public:
     static DumpHelper &GetInstance();
-    void RegisterCommand(Command &cmd);
+    void RegisterCommand(std::shared_ptr<Command> &cmd);
     bool Dispatch(int fd, const std::vector<std::string> &args);
 
 private:

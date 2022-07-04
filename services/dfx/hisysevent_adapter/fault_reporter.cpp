@@ -26,7 +26,7 @@ constexpr const char *ERROR_TYPE = "ERROR_TYPE";
 
 ReportStatus FaultReporter::ReportServiceFault(const FaultMsg &msg)
 {
-    int nRet = HiSysEvent::Write(HiSysEvent::Domain::MISC_WALLPAPER, SERVICE_FAULT, HiSysEvent::EventType::FAULT,
+    int nRet = HiSysEvent::Write(HiSysEvent::Domain::THEME, SERVICE_FAULT, HiSysEvent::EventType::FAULT,
         FAULT_TYPE, static_cast<int>(msg.faultType), MODULE_NAME, msg.moduleName, ERROR_TYPE,
         static_cast<int>(msg.errorCode));
     return nRet == 0 ? ReportStatus::SUCCESS : ReportStatus::ERROR;
@@ -34,7 +34,7 @@ ReportStatus FaultReporter::ReportServiceFault(const FaultMsg &msg)
 
 ReportStatus FaultReporter::ReportRuntimeFault(const FaultMsg &msg)
 {
-    int nRet = HiSysEvent::Write(HiSysEvent::Domain::MISC_WALLPAPER, RUNTIME_FAULT, HiSysEvent::EventType::FAULT,
+    int nRet = HiSysEvent::Write(HiSysEvent::Domain::THEME, RUNTIME_FAULT, HiSysEvent::EventType::FAULT,
         FAULT_TYPE, static_cast<int>(msg.faultType), ERROR_TYPE, static_cast<int>(msg.errorCode));
     return nRet == 0 ? ReportStatus::SUCCESS : ReportStatus::ERROR;
 }
