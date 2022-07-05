@@ -18,6 +18,7 @@ config("wallpaper_manager_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "include",
+    "//base/miscservices/wallpaper/services/dfx/hisysevent_adapter",
     "//base/miscservices/wallpaper/services/include",
     "//base/miscservices/wallpaper/utils/include",
   ]
@@ -48,6 +49,8 @@ ohos_shared_library("wallpapermanager") {
     "//utils/native/base:utils",
   ]
   external_deps = [
+    "hisysevent_native:libhisysevent",
+    "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "safwk:system_ability_fwk",

@@ -24,7 +24,9 @@
 #include <cstdio>
 #include <cstring>
 #include <cerrno>
+#include "dfx_types.h"
 #include "hilog_wrapper.h"
+#include "hitrace_meter.h"
 #include "wallpaper_service_proxy.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
@@ -40,6 +42,7 @@
 #include "wallpaper_manager.h"
 
 namespace OHOS {
+using namespace MiscServices;
 namespace WallpaperMgrService {
 constexpr int OPTION_QUALITY = 100;
 WallpaperManager::WallpaperManager() {}
@@ -173,9 +176,13 @@ bool WallpaperManager::SetWallpaper(std::string url, int wallpaperType)
     int fd = open(url.c_str(), O_RDONLY, 0660);
     if (fd < 0) {
         HILOG_ERROR("open file failed");
+        ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         return false;
     }
-    return wpServerProxy->SetWallpaperByFD(fd, wallpaperType, length);
+    StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
+    bool bRet = wpServerProxy->SetWallpaperByFD(fd, wallpaperType, length);
+    FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
+    return bRet;
 }
 
 bool WallpaperManager::SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int wallpaperType)
@@ -204,6 +211,7 @@ bool WallpaperManager::SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixe
     int32_t writeSize = write(fd[1], buffer, mapSize);
     if (writeSize != mapSize) {
         HILOG_ERROR("write to fd faild");
+        ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         return false;
     }
     close(fd[1]);
@@ -425,7 +433,7 @@ void WallpaperManager::SetCallback(bool (*cb) (int))
     callback = cb;
 }
 
-bool WallpaperManager::RegisterWallpaperCallback(bool (*callback) (int))
+bool WallpaperManager::RegisterWallpaperCallback(bool (*callback)(int))
 {
     HILOG_ERROR("  WallpaperManager::RegisterWallpaperCallback statrt");
     SetCallback(callback);
@@ -449,5 +457,13 @@ bool WallpaperManager::RegisterWallpaperCallback(bool (*callback) (int))
 
     return 0;
 }
+
+void WallpaperManager::ReporterFault(FaultType faultType, FaultCode faultCode)
+{
+    MiscServices::FaultMsg msg;
+    msg.faultType = faultType;
+    msg.errorCode = faultCode;
+    Reporter::GetInstance().Fault().ReportRuntimeFault(msg);
 }
-}
+} // namespace WallpaperMgrService
+} // namespace OHOS

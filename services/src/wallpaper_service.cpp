@@ -48,6 +48,12 @@
 #include "window.h"
 #include "wallpaper_service_cb_proxy.h"
 #include "ability_manager_client.h"
+#include "hitrace_meter.h"
+#include "reporter.h"
+#include "command.h"
+#include "dfx_types.h"
+#include "dump_helper.h"
+#include "bundle_mgr_proxy.h"
 #include "wallpaper_service.h"
 
 namespace OHOS {
@@ -57,6 +63,7 @@ REGISTER_SYSTEM_ABILITY_BY_ID(WallpaperService, WALLPAPER_MANAGER_SERVICE_ID, tr
 using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX::FileUtil;
 using namespace OHOS::HiviewDFX::TimeUtil;
+using namespace OHOS::MiscServices;
 
 const std::string WallpaperService::WALLPAPER = "wallpaper_orig";
 const std::string WallpaperService::WALLPAPER_CROP = "wallpaper";
@@ -112,6 +119,7 @@ int32_t WallpaperService::Init()
     bool ret = Publish(WallpaperService::GetInstance());
     if (!ret) {
         HILOG_ERROR("Publish failed.");
+        ReporterFault(FaultType::SERVICE_FAULT, FaultCode::SF_SERVICE_UNAVAIABLE);
         return -1;
     }
     HILOG_INFO("Publish success.");
@@ -145,12 +153,26 @@ void WallpaperService::OnStart()
     bool subRes = OHOS::EventFwk::CommonEventManager::SubscribeCommonEvent(subscriberPtr_);
     if (subRes == false) {
         HILOG_INFO("RegisterSubscriber failed");
+        ReporterFault(FaultType::SERVICE_FAULT, FaultCode::SF_SERVICE_SUBSCRIBECOMMINEVENT);
     } else {
         HILOG_INFO("RegisterSubscriber success");
     }
-    HILOG_INFO("RegisterSubscriber end");
 
     std::thread(&WallpaperService::StartExt, this).detach();
+    int uid = static_cast<int>(IPCSkeleton::GetCallingUid());
+    auto cmd = std::make_shared<Command>(std::vector<std::string>({ "-all" }), "Show all",
+        [this, uid](const std::vector<std::string> &input, std::string &output) -> bool {
+            int32_t height = GetWallpaperMinHeight();
+            int32_t width = GetWallpaperMinWidth();
+            std::string bundleName(WALLPAPER_BUNDLE_NAME);
+            WPGetBundleNameByUid(uid, bundleName);
+            output.append("height\t\t\t: " + std::to_string(height) + "\n")
+                .append("width\t\t\t: " + std::to_string(width) + "\n")
+                .append("WallpaperExtension\t: ExtensionInfo{" + bundleName + "}\n");
+            return true;
+        });
+    DumpHelper::GetInstance().RegisterCommand(cmd);
+    Reporter::GetInstance().UsageTimeStatistic().StartTimerThread();
     return;
 }
 
@@ -222,7 +244,8 @@ void WallpaperService::StartExt()
         HILOG_INFO("WallpaperService::StartAbility %{public}d", time);
     }
     if (ret != 0) {
-            HILOG_ERROR("WallpaperService::StartAbility --> failed ");
+        HILOG_ERROR("WallpaperService::StartAbility --> failed ");
+        ReporterFault(FaultType::SERVICE_FAULT, FaultCode::SF_STARTABILITY_FAILED);
     }
 }
 void WallpaperService::OnBootPhase()
@@ -449,6 +472,7 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
 
 bool WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
 {
+    StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByMap", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_MAP));
     HILOG_INFO("SetWallpaperByMap");
     bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     if (!permissionSet) {
@@ -481,6 +505,7 @@ bool WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
     mtx.unlock();
     if (writeSize <= 0) {
         HILOG_ERROR("WritefdToFile failed");
+        ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
         delete[] paperBuf;
         close(fd);
         close(fdw);
@@ -489,11 +514,14 @@ bool WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
     delete[] paperBuf;
     close(fd);
     close(fdw);
-    return SetWallpaperBackupData(url, wallpaperType);
+    bool bRet = SetWallpaperBackupData(url, wallpaperType);
+    FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByMap", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_MAP));
+    return bRet;
 }
 
 bool WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length)
 {
+    StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByFD", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_FD));
     HILOG_INFO("SetWallpaperByFD");
     bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     if (!permissionSet) {
@@ -528,6 +556,7 @@ bool WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length)
     mtx.unlock();
     if (writeSize <= 0) {
         HILOG_ERROR("write to fdw fail");
+        ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
         close(fd);
         close(fdw);
         delete[] paperBuf;
@@ -536,9 +565,10 @@ bool WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length)
     close(fd);
     close(fdw);
     delete[] paperBuf;
-    return SetWallpaperBackupData(url, wallpaperType);
+    bool bRet = SetWallpaperBackupData(url, wallpaperType);
+    FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByFD", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_FD));
+    return bRet;
 }
-
 
 bool WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int wallpaperType)
 {
@@ -565,14 +595,15 @@ bool WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int wal
     }
 
     tmpWP.wallpaperId_ = MakeWallpaperIdLocked();
-
     bool retFileCp = CopyFile(uriOrPixelMap, (wallpaperType ==
         WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_:wallpaperLockScreenFileFullPath_));
     bool retCropFileCp = MakeCropWallpaper(wallpaperType);
     mtx.unlock();
+
     if (wallpaperType == WALLPAPER_SYSTEM) {
         wallpaperMap_.insert(std::pair<int, WallpaperData>(userId_, tmpWP));
         WallpaperCommonEvent::SendWallpaperSystemSettingMessage();
+        ReporterUsageTimeStatisic();
         HILOG_INFO("  SetWallpaperBackupData callbackProxy->OnCall start");
         if (callbackProxy != nullptr) {
             callbackProxy->OnCall(wallpaperType);
@@ -580,6 +611,7 @@ bool WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int wal
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.insert(std::pair<int, WallpaperData>(userId_, tmpWP));
         WallpaperCommonEvent::SendWallpaperLockSettingMessage();
+        ReporterUsageTimeStatisic();
         HILOG_INFO("  SetWallpaperBackupData callbackProxy->OnCall start");
         if (callbackProxy != nullptr) {
             callbackProxy->OnCall(wallpaperType);
@@ -592,6 +624,21 @@ bool WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int wal
     }
     return !retFileCp && !retCropFileCp;
 }
+
+void WallpaperService::ReporterUsageTimeStatisic()
+{
+    int userId = static_cast<int>(IPCSkeleton::GetCallingUid());
+    std::string  bundleName;
+    bool bRet = WPGetBundleNameByUid(userId, bundleName);
+    if (!bRet) {
+        bundleName = WALLPAPER_BUNDLE_NAME;
+    }
+    UsageTimeStat timeStat;
+    timeStat.packagesName = bundleName;
+    timeStat.startTime = time(nullptr);
+    Reporter::GetInstance().UsageTimeStatistic().ReportUsageTimeStatistic(userId, timeStat);
+}
+
 IWallpaperService::mapFD  WallpaperService::GetPixelMap(int wallpaperType)
 {
     mapFD mapFd;
@@ -637,6 +684,7 @@ IWallpaperService::mapFD  WallpaperService::GetPixelMap(int wallpaperType)
     mtx.unlock();
     if (closeRes != 0 || fd < 0) {
         HILOG_ERROR("open failed");
+        ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         return mapFd;
     }
     mapFd.fd = fd;
@@ -959,18 +1007,52 @@ bool WallpaperService::WPGetBundleNameByUid(std::int32_t uid, std::string &bname
         HILOG_ERROR("Get bundle name failed");
         return false;
     }
-
+    HILOG_INFO("Get bundle name is %{public}s", bname.c_str());
     return true;
 }
-void WallpaperService::WallpaperDump(int fd)
+
+void WallpaperService::ReporterFault(FaultType faultType, FaultCode faultCode)
 {
-    dprintf(fd, "\n - Wallpaper System State :\n");
-    dprintf(fd, " * UserId = %d\n", userId_);
-    dprintf(fd, " * WallpaperId = %d\n", wallpaperId_);
-    int32_t height = GetWallpaperMinHeight();
-    dprintf(fd, " * heigh = %d\n", height);
-    int32_t width = GetWallpaperMinWidth();
-    dprintf(fd, " * heigh = %d\n", width);
+    FaultMsg msg;
+    msg.faultType = faultType;
+    msg.errorCode = faultCode;
+    ReportStatus nRet = ReportStatus::ERROR;
+    if (faultType == FaultType::SERVICE_FAULT) {
+        msg.moduleName = "WallpaperService";
+        nRet = Reporter::GetInstance().Fault().ReportServiceFault(msg);
+    } else {
+        nRet = Reporter::GetInstance().Fault().ReportRuntimeFault(msg);
+    }
+
+    if (nRet == ReportStatus::SUCCESS) {
+        HILOG_INFO("ReporterFault success");
+    } else {
+        HILOG_ERROR("ReporterFault failed");
+    }
 }
+
+int WallpaperService::Dump(int fd, const std::vector<std::u16string> &args)
+{
+    int uid = static_cast<int>(IPCSkeleton::GetCallingUid());
+    const int maxUid = 10000;
+    if (uid > maxUid) {
+        Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+        if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken)
+            != Security::AccessToken::TOKEN_NATIVE) {
+            return 1;
+        }
+    }
+
+    std::vector<std::string> argsStr;
+    for (auto item : args) {
+        argsStr.emplace_back(Str16ToStr8(item));
+    }
+
+    if (DumpHelper::GetInstance().Dispatch(fd, argsStr)) {
+        HILOG_ERROR("DumpHelper Dispatch failed");
+        return 0;
+    }
+    return 1;
 }
-}
+} // namespace WallpaperMgrService
+} // namespace OHOS
