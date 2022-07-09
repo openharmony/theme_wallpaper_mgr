@@ -78,8 +78,8 @@ config("ability_public_config") {
     "//base/global/resource_management/interfaces/inner_api/include",
     "${ability_runtime_path}/interfaces/kits/native/ability/native/continuation/kits",
     "${ability_runtime_kits_path}/fmskit/native/include",
-    "//foundation/windowmanager/interfaces/innerkits/wm",
-    "//foundation/windowmanager/interfaces/kits/napi/window_runtime/window_stage_napi",
+    "//foundation/window/window_manager/interfaces/innerkits/wm",
+    "//foundation/window/window_manager/interfaces/kits/napi/window_runtime/window_stage_napi",
     "//third_party/jsoncpp/include",
     "//third_party/json/include",
   ]
@@ -149,8 +149,8 @@ ohos_shared_library("wallpaperextension") {
     "//base/global/resource_management/frameworks/resmgr:global_resmgr",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
     "//foundation/arkui/napi:ace_napi",
-    "//foundation/windowmanager/interfaces/kits/napi/window_runtime:windowstage_kit",
-    "//foundation/windowmanager/wm:libwm",
+    "//foundation/window/window_manager/interfaces/kits/napi/window_runtime:windowstage_kit",
+    "//foundation/window/window_manager/wm:libwm",
   ]
 
   subsystem_name = "miscservices"
@@ -171,8 +171,8 @@ ohos_shared_library("wallpaper_extension_module") {
   deps = [
     ":wallpaperextension",
     "${ability_runtime_path}/frameworks/native/ability/native:abilitykit_native",
-    "//foundation/windowmanager/utils:libwmutil",
-    "//foundation/windowmanager/wm:libwm",
+    "//foundation/window/window_manager/utils:libwmutil",
+    "//foundation/window/window_manager/wm:libwm",
     "//utils/native/base:utils",
   ]
 

@@ -30,7 +30,7 @@ ohos_fuzztest("WallpaperServiceFuzzTest") {
     "//base/security/access_token/interfaces/innerkits/accesstoken/include",
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/miscservices/wallpaper/utils/include",
-    "//foundation/windowmanager/interfaces/innerkits/dm",
+    "//foundation/window/window_manager/interfaces/innerkits/dm",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk",
   ]
 
@@ -48,8 +48,8 @@ ohos_fuzztest("WallpaperServiceFuzzTest") {
     "${ability_runtime_services_path}/abilitymgr:abilityms",
     "${utils_path}:wallpaper_utils",
     "//base/miscservices/wallpaper/services:wallpaper_service",
-    "//foundation/windowmanager/utils:libwmutil",
-    "//foundation/windowmanager/wm:libwm",
+    "//foundation/window/window_manager/utils:libwmutil",
+    "//foundation/window/window_manager/wm:libwm",
   ]
 
   external_deps = [
