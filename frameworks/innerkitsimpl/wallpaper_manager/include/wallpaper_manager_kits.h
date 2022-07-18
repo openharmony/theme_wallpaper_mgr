@@ -16,19 +16,13 @@
 
 #ifndef INNERKITS_WALLPAPER_MANAGER_KITS_H
 #define INNERKITS_WALLPAPER_MANAGER_KITS_H
-#include <mutex>
+#include <cstdint>
 #include <string>
 #include <vector>
-#include<list>
-#include<map>
-
-#include "i_wallpaper_service.h"
+#include <memory>
 #include "pixel_map.h"
-#include "refbase.h"
-#include "wallpaper_manager_common_info.h"
 #include "wallpaper_color_change_listener.h"
-#include "iwallpaper_color_change_listener.h"
-#include "wallpaper_color_change_listener_client.h"
+#include "wallpaper_manager_common_info.h"
 
 /**
  * Interfaces for ohos account subsystem.

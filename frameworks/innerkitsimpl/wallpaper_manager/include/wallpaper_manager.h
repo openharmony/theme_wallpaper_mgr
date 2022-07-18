@@ -23,6 +23,7 @@
 #include <map>
 #include "ipc_skeleton.h"
 #include "wallpaper_manager_kits.h"
+#include "i_wallpaper_service.h"
 #include "singleton.h"
 #include "reporter.h"
 

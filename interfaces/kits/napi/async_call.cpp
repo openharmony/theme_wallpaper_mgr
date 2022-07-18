@@ -14,7 +14,6 @@
  */
 #define LOG_TAG "AsyncCall"
 #include "async_call.h"
-#include <utility>
 #include "hilog_wrapper.h"
 
 namespace OHOS::WallpaperNAPI {

@@ -14,7 +14,6 @@
  */
 #define LOG_TAG "WallpaperJSUtil"
 #include "wallpaper_js_util.h"
-#include "hilog_wrapper.h"
 
 namespace OHOS::WallpaperNAPI {
 const static int32_t ARRAY_LENGTH = 4;

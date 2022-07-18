@@ -16,10 +16,13 @@
 #ifndef I_WALLPAPER_COLOR_CHANGE_LISTENER_H
 #define I_WALLPAPER_COLOR_CHANGE_LISTENER_H
 
-#include "wallpaper_color_change_listener.h"
+#include <cstdint>
+#include <vector>
 #include "iremote_broker.h"
 #include "iremote_proxy.h"
 #include "iremote_stub.h"
+#include "refbase.h"
+#include "wallpaper_manager_common_info.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {

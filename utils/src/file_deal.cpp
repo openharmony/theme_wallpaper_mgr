@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 #include <dirent.h>
-#include <sys/types.h>
 #include <cstdio>
 #include <unistd.h>
 #include <sys/stat.h>

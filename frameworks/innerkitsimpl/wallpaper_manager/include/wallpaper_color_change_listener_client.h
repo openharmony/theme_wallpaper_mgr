@@ -17,9 +17,10 @@
 #define WALLPAPER_COLOR_CHANGE_LISTENER_CLIENT_H
 
 #include <memory>
+#include <vector>
 #include "iwallpaper_color_change_listener.h"
 #include "wallpaper_color_change_listener.h"
-#include "refbase.h"
+#include "wallpaper_manager_common_info.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
