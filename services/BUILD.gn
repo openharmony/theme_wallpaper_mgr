@@ -44,68 +44,37 @@ ohos_shared_library("wallpaper_service") {
     ":wallpaper_service_config",
   ]
   include_dirs = [
-    #"//foundation/graphic/graphic_2d/interfaces/innerkits/surface",
     "//third_party/json/include",
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/miscservices/wallpaper/utils/include",
-
-    #"//foundation/graphic/graphic_2d/interfaces/innerkits/wmclient",
     "//base/security/access_token/interfaces/innerkits",
     "//foundation/window/window_manager/interfaces/innerkits/dm",
-
-    #"//foundation/window/window_manager/interfaces/innerkits/wm",
     "//foundation/graphic/graphic_2d/rosen/modules/2d_graphics/include",
     "//foundation/graphic/graphic_2d/rosen/modules/2d_graphics/src",
-
-    #"//foundation/multimodalinput/input/service/window_manager/include",
-    #"//foundation/graphic/ui/interfaces/kits/common",
-    #"//foundation/graphic/utils/interfaces/kits",
-    #"//foundation/graphic/utils/interfaces/innerkits",
     "//foundation/graphic/graphic_2d/rosen/modules/2d_graphics/include/draw",
-    "//foundation/graphic/graphic_2d/rosen/modules/2d_graphics/src",
     "//foundation/graphic/graphic_2d/rosen/modules/render_service_client/core/ui",
     "//foundation/graphic/graphic_2d/rosen/modules/render_service_client/core",
     "//third_party/flutter/engine/flutter/lib/ui/painting",
   ]
   deps = [
-    "${ability_runtime_path}/frameworks/native/ability/native:abilitykit_native",
-    "${ability_runtime_services_path}/abilitymgr:abilityms",
     "${utils_path}:wallpaper_utils",
-    "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",
-    "//foundation/graphic/graphic_2d/frameworks/surface:surface",
     "//foundation/graphic/graphic_2d/rosen/modules/2d_graphics:2d_graphics",
     "//foundation/graphic/graphic_2d/rosen/modules/render_service_client:librender_service_client",
-
-    #"//foundation/graphic/ui:lite_ui",
-    #"//foundation/graphic/ui:ui",
-    #"//foundation/graphic/graphic_2d:libwms_client",
-    "//foundation/multimedia/image_standard:image_framework",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
-
-    #"//foundation/window/window_manager/interfaces/innerkits:wm_interface",
-    "//foundation/window/window_manager/utils:libwmutil",
-
-    #"//foundation/graphic/graphic_2d/frameworks/wm:libwmclient",
-    "//foundation/window/window_manager/wm:libwm",
-    "//utils/native/base:utils",
   ]
   external_deps = [
     "ability_base:want",
     "ability_runtime:ability_manager",
+    "ability_runtime:abilitykit_native",
     "access_token:libaccesstoken_sdk",
     "bundle_framework:appexecfwk_core",
     "common_event_service:cesfwk_innerkits",
-    "eventhandler:libeventhandler",
+    "graphic_standard:surface",
     "hisysevent_native:libhisysevent",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
-
-    #"graphic:libwms_client",
   ]
   subsystem_name = "miscservices"
   part_name = "wallpaper_native"

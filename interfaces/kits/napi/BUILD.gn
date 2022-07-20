@@ -34,25 +34,16 @@ ohos_shared_library("wallpaper") {
     "wallpaper_js_util.cpp",
   ]
   deps = [
-    "${ability_runtime_path}/frameworks/native/appkit:appkit_native",
-    "${ability_runtime_services_path}/appmgr:libappms",
     "${utils_path}:wallpaper_utils",
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
-    "//foundation/arkui/napi:ace_napi",
-    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
-    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
-    "//third_party/libuv:uv_static",
-    "//utils/native/base:utils",
   ]
 
   external_deps = [
-    "hisysevent_native:libhisysevent",
-    "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_core",
+    "multimedia_image_standard:image",
+    "multimedia_image_standard:image_native",
+    "napi:ace_napi",
+    "utils_base:utils",
   ]
 
   relative_install_dir = "module"

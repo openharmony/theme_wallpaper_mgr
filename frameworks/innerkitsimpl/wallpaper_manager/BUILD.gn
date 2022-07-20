@@ -33,8 +33,6 @@ ohos_shared_library("wallpapermanager") {
     "src/wallpaper_manager_kits.cpp",
     "src/wallpaper_service_cb_stub.cpp",
     "src/wallpaper_service_proxy.cpp",
-
-    #"src/wallpaper_callback_stub.cpp",
   ]
   public_configs = [ ":wallpaper_manager_config" ]
   include_dirs = []
@@ -42,18 +40,14 @@ ohos_shared_library("wallpapermanager") {
     "${utils_path}:wallpaper_utils",
     "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",
     "//base/miscservices/wallpaper/services:wallpaper_service",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
-    "//third_party/libuv:uv_static",
-    "//third_party/zlib:libz",
-    "//utils/native/base:utils",
   ]
   external_deps = [
     "hisysevent_native:libhisysevent",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "safwk:system_ability_fwk",
+    "multimedia_image_standard:image",
+    "multimedia_image_standard:image_native",
     "samgr_standard:samgr_proxy",
   ]
   subsystem_name = "miscservices"
