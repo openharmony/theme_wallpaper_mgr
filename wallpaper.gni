@@ -21,7 +21,7 @@ ability_runtime_napi_path = "${ability_runtime_path}/frameworks/js/napi"
 
 ability_runtime_services_path = "${ability_runtime_path}/services"
 
-wallpaper_path = "//base/miscservices/wallpaper"
+wallpaper_path = "//base/theme/wallpaper_mgr"
 
 adapter_path = "${wallpaper_path}/adapter"
 utils_path = "${wallpaper_path}/utils"

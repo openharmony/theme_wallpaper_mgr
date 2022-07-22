@@ -17,6 +17,6 @@ ohos_shared_library("wallpaper_utils") {
   include_dirs = [ "include" ]
   deps = [ "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility" ]
   external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
-  subsystem_name = "miscservices"
-  part_name = "wallpaper_native"
+  subsystem_name = "theme"
+  part_name = "wallpaper_mgr"
 }

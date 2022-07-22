@@ -11,7 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//base/miscservices/wallpaper/wallpaper.gni")
+import("//base/theme/wallpaper_mgr/wallpaper.gni")
 import("//build/ohos.gni")
 
 config("wallpaper_service_config") {
@@ -45,8 +45,8 @@ ohos_shared_library("wallpaper_service") {
   ]
   include_dirs = [
     "//third_party/json/include",
-    "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager/include",
-    "//base/miscservices/wallpaper/utils/include",
+    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
+    "//base/theme/wallpaper_mgr/utils/include",
     "//base/security/access_token/interfaces/innerkits",
     "//foundation/window/window_manager/interfaces/innerkits/dm",
     "//foundation/graphic/graphic_2d/rosen/modules/2d_graphics/include",
@@ -76,6 +76,6 @@ ohos_shared_library("wallpaper_service") {
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
   ]
-  subsystem_name = "miscservices"
-  part_name = "wallpaper_native"
+  subsystem_name = "theme"
+  part_name = "wallpaper_mgr"
 }

@@ -11,7 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//base/miscservices/wallpaper/wallpaper.gni")
+import("//base/theme/wallpaper_mgr/wallpaper.gni")
 
 #####################hydra-fuzz###################
 import("//build/config/features.gni")
@@ -20,16 +20,16 @@ import("//build/test.gni")
 
 ##############################fuzztest##########################################
 ohos_fuzztest("WallpaperServiceFuzzTest") {
-  module_out_path = "miscservices/wallpaper"
+  module_out_path = "theme/wallpaper"
 
   fuzz_config_file =
-      "//base/miscservices/wallpaper/test/fuzztest/wallpaperservice_fuzzer"
+      "//base/theme/wallpaper_mgr/test/fuzztest/wallpaperservice_fuzzer"
 
   include_dirs = [
-    "//base/miscservices/wallpaper/services/include",
+    "//base/theme/wallpaper_mgr/services/include",
     "//base/security/access_token/interfaces/innerkits/accesstoken/include",
-    "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager/include",
-    "//base/miscservices/wallpaper/utils/include",
+    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
+    "//base/theme/wallpaper_mgr/utils/include",
     "//foundation/window/window_manager/interfaces/innerkits/dm",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk",
   ]
@@ -47,7 +47,7 @@ ohos_fuzztest("WallpaperServiceFuzzTest") {
     "${ability_runtime_path}/frameworks/native/ability/native:abilitykit_native",
     "${ability_runtime_services_path}/abilitymgr:abilityms",
     "${utils_path}:wallpaper_utils",
-    "//base/miscservices/wallpaper/services:wallpaper_service",
+    "//base/theme/wallpaper_mgr/services:wallpaper_service",
     "//foundation/window/window_manager/utils:libwmutil",
     "//foundation/window/window_manager/wm:libwm",
   ]

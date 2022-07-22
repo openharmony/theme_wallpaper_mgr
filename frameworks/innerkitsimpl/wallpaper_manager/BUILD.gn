@@ -11,16 +11,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//base/miscservices/wallpaper/wallpaper.gni")
+import("//base/theme/wallpaper_mgr/wallpaper.gni")
 import("//build/ohos.gni")
 
 config("wallpaper_manager_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "include",
-    "//base/miscservices/wallpaper/services/dfx/hisysevent_adapter",
-    "//base/miscservices/wallpaper/services/include",
-    "//base/miscservices/wallpaper/utils/include",
+    "//base/theme/wallpaper_mgr/services/dfx/hisysevent_adapter",
+    "//base/theme/wallpaper_mgr/services/include",
+    "//base/theme/wallpaper_mgr/utils/include",
   ]
   cflags_cc = [ "-fexceptions" ]
 }
@@ -39,7 +39,7 @@ ohos_shared_library("wallpapermanager") {
   deps = [
     "${utils_path}:wallpaper_utils",
     "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",
-    "//base/miscservices/wallpaper/services:wallpaper_service",
+    "//base/theme/wallpaper_mgr/services:wallpaper_service",
   ]
   external_deps = [
     "hisysevent_native:libhisysevent",
@@ -50,17 +50,17 @@ ohos_shared_library("wallpapermanager") {
     "multimedia_image_standard:image_native",
     "samgr_standard:samgr_proxy",
   ]
-  subsystem_name = "miscservices"
-  part_name = "wallpaper_native"
+  subsystem_name = "theme"
+  part_name = "wallpaper_mgr"
 }
 
 ohos_prebuilt_etc("wallpaperdefault.jpeg") {
   source = "data/wallpaperdefault.jpeg"
-  part_name = "wallpaper_native"
-  subsystem_name = "miscservices"
+  part_name = "wallpaper_mgr"
+  subsystem_name = "theme"
 }
 ohos_prebuilt_etc("wallpaperlockdefault.jpeg") {
   source = "data/wallpaperlockdefault.jpeg"
-  part_name = "wallpaper_native"
-  subsystem_name = "miscservices"
+  part_name = "wallpaper_mgr"
+  subsystem_name = "theme"
 }

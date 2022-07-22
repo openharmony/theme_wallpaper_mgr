@@ -1,17 +1,17 @@
 {
-    "name": "@ohos/wallpaper",
+    "name": "@ohos/wallpaper_mgr",
     "description": "Allowing apps to use OS wallpaper get/set functions",
     "version": "3.1",
     "license": "Apache License 2.0",
     "publishAs": "code-segment",
     "segment": {
-      "destPath": "base/miscservices/wallpaper"
+      "destPath": "base/theme/wallpaper_mgr"
     },
     "dirs": {},
     "scripts": {},
     "component": {
-      "name": "wallpaper_native",
-      "subsystem": "miscservices",
+      "name": "wallpaper_mgr",
+      "subsystem": "theme",
       "syscap": [
         "SystemCapability.MiscServices.Wallpaper"
       ],
@@ -49,24 +49,24 @@
       },
       "build": {
         "sub_component": [
-          "//base/miscservices/wallpaper:wallpaper_native_packages",
-          "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
-          "//base/miscservices/wallpaper/frameworks/kits/extension:wallpaperextension",
-          "//base/miscservices/wallpaper/frameworks/kits/extension:wallpaper_extension_module",
-          "//base/miscservices/wallpaper/interfaces/kits/napi/wallpaperextension:wallpaperextension_napi",
-          "//base/miscservices/wallpaper/interfaces/kits/napi/wallpaper_extension_context:wallpaperextensioncontext_napi",
-          "//base/miscservices/wallpaper/interfaces/kits/napi:wallpaper",
-          "//base/miscservices/wallpaper/utils:wallpaper_utils",
-          "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpaperdefault.jpeg",
-          "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpaperlockdefault.jpeg"
+          "//base/theme/wallpaper_mgr:wallpaper_mgr_packages",
+          "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
+          "//base/theme/wallpaper_mgr/frameworks/kits/extension:wallpaperextension",
+          "//base/theme/wallpaper_mgr/frameworks/kits/extension:wallpaper_extension_module",
+          "//base/theme/wallpaper_mgr/interfaces/kits/napi/wallpaperextension:wallpaperextension_napi",
+          "//base/theme/wallpaper_mgr/interfaces/kits/napi/wallpaper_extension_context:wallpaperextensioncontext_napi",
+          "//base/theme/wallpaper_mgr/interfaces/kits/napi:wallpaper",
+          "//base/theme/wallpaper_mgr/utils:wallpaper_utils",
+          "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpaperdefault.jpeg",
+          "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpaperlockdefault.jpeg"
         ],
         "test": [
-          "//base/miscservices/wallpaper/test:wallpaper_test",
-          "//base/miscservices/wallpaper/test/fuzztest:fuzztest"
+          "//base/theme/wallpaper_mgr/test:wallpaper_test",
+          "//base/theme/wallpaper_mgr/test/fuzztest:fuzztest"
         ]
       },
       "hisysevent_config": [
-        "//base/miscservices/wallpaper/hisysevent.yaml"
+        "//base/theme/wallpaper_mgr/hisysevent.yaml"
       ]
     }
   }

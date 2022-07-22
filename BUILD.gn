@@ -14,7 +14,7 @@
 import("//build/ohos.gni")
 
 ################################################################################
-group("wallpaper_native_packages") {
+group("wallpaper_mgr_packages") {
   if (is_standard_system) {
     deps = [
       "etc/init:wallpaperservice.rc",

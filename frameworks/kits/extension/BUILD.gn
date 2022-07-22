@@ -11,7 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//base/miscservices/wallpaper/wallpaper.gni")
+import("//base/theme/wallpaper_mgr/wallpaper.gni")
 import("//build/ohos.gni")
 
 ABILITY_RUNTIME_INNERKITS_PATH = "${ability_runtime_inner_api_path}"
@@ -19,8 +19,8 @@ ABILITY_RUNTIME_INNERKITS_PATH = "${ability_runtime_inner_api_path}"
 config("ability_config") {
   visibility = [ ":*" ]
   include_dirs = [
-    "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager/include",
-    "//base/miscservices/wallpaper/frameworks/kits/extension/include",
+    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
+    "//base/theme/wallpaper_mgr/frameworks/kits/extension/include",
     "//utils/native/base/include",
     "${ability_runtime_path}/interfaces/kits/native/ability/native",
     "${ability_runtime_path}/interfaces/kits/native/appkit/app",
@@ -61,8 +61,8 @@ config("ability_config") {
 config("ability_public_config") {
   visibility = [ ":*" ]
   include_dirs = [
-    "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager/include",
-    "//base/miscservices/wallpaper/frameworks/kits/extension/include",
+    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
+    "//base/theme/wallpaper_mgr/frameworks/kits/extension/include",
     "${ABILITY_RUNTIME_INNERKITS_PATH}/base/include",
     "${ability_runtime_path}/interfaces/kits/native",
     "${ability_runtime_path}/interfaces/kits/native/appkit/ability_runtime/app",
@@ -87,16 +87,16 @@ config("ability_public_config") {
 
 ohos_shared_library("wallpaperextension") {
   include_dirs = [
-    "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager/include",
-    "//base/miscservices/wallpaper/frameworks/kits/extension/include",
+    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
+    "//base/theme/wallpaper_mgr/frameworks/kits/extension/include",
     "//base/global/i18n/frameworks/intl/include",
   ]
 
   sources = [
-    "//base/miscservices/wallpaper/frameworks/kits/extension/src/js_wallpaper_extension.cpp",
-    "//base/miscservices/wallpaper/frameworks/kits/extension/src/js_wallpaper_extension_context.cpp",
-    "//base/miscservices/wallpaper/frameworks/kits/extension/src/wallpaper_extension.cpp",
-    "//base/miscservices/wallpaper/frameworks/kits/extension/src/wallpaper_extension_context.cpp",
+    "//base/theme/wallpaper_mgr/frameworks/kits/extension/src/js_wallpaper_extension.cpp",
+    "//base/theme/wallpaper_mgr/frameworks/kits/extension/src/js_wallpaper_extension_context.cpp",
+    "//base/theme/wallpaper_mgr/frameworks/kits/extension/src/wallpaper_extension.cpp",
+    "//base/theme/wallpaper_mgr/frameworks/kits/extension/src/wallpaper_extension_context.cpp",
   ]
   configs = [ ":ability_config" ]
   public_configs = [
@@ -106,7 +106,7 @@ ohos_shared_library("wallpaperextension") {
 
   deps = [
     "${ability_runtime_path}/frameworks/native/appkit:app_context",
-    "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
+    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
   ]
 
   external_deps = [
@@ -130,8 +130,8 @@ ohos_shared_library("wallpaperextension") {
     "//foundation/window/window_manager/wm:libwm",
   ]
 
-  subsystem_name = "miscservices"
-  part_name = "wallpaper_native"
+  subsystem_name = "theme"
+  part_name = "wallpaper_mgr"
 }
 
 ohos_shared_library("wallpaper_extension_module") {
@@ -140,7 +140,7 @@ ohos_shared_library("wallpaper_extension_module") {
     "${ability_runtime_path}/interfaces/kits/native/ability/native/ability_runtime",
   ]
 
-  sources = [ "//base/miscservices/wallpaper/frameworks/kits/extension/src/wallpaper_extension_module_loader.cpp" ]
+  sources = [ "//base/theme/wallpaper_mgr/frameworks/kits/extension/src/wallpaper_extension_module_loader.cpp" ]
 
   configs = [ ":ability_config" ]
   public_configs = [ ":ability_public_config" ]
@@ -163,6 +163,6 @@ ohos_shared_library("wallpaper_extension_module") {
     "hiviewdfx_hilog_native:libhilog",
   ]
 
-  subsystem_name = "miscservices"
-  part_name = "wallpaper_native"
+  subsystem_name = "theme"
+  part_name = "wallpaper_mgr"
 }
