@@ -89,10 +89,6 @@ ohos_shared_library("wallpaperextension") {
   include_dirs = [
     "//base/miscservices/wallpaper/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/miscservices/wallpaper/frameworks/kits/extension/include",
-    "//foundation/distributeddatamgr/appdatamgr/relational_store/frameworks/js/napi/rdb/include",
-    "//foundation/distributeddatamgr/appdatamgr/relational_store/frameworks/js/napi/common/include",
-    "//foundation/distributeddatamgr/appdatamgr/relational_store/frameworks/js/napi/dataability/include",
-    "//foundation/distributeddatamgr/appdatamgr/relational_store/frameworks/js/napi/resultset/include",
     "//base/global/i18n/frameworks/intl/include",
   ]
 
