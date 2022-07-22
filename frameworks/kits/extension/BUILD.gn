@@ -33,7 +33,7 @@ config("ability_config") {
     "${ability_runtime_path}/interfaces/kits/native/appkit/app",
     "${ability_runtime_services_path}/common/include",
 
-    #"//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
+    #"//foundation/systemabilitymgr/dmsfwk/services/dtbschedmgr/include",
     "//base/global/resource_management/interfaces/inner_api/include",
     "${ability_runtime_napi_path}/featureAbility",
     "//foundation/arkui/napi/interfaces/kits",
