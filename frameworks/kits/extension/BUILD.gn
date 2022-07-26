@@ -21,7 +21,7 @@ config("ability_config") {
   include_dirs = [
     "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/theme/wallpaper_mgr/frameworks/kits/extension/include",
-    "//utils/native/base/include",
+    "//commonlibrary/c_utils/base/include",
     "${ability_runtime_path}/interfaces/kits/native/ability/native",
     "${ability_runtime_path}/interfaces/kits/native/appkit/app",
     "${ABILITY_RUNTIME_INNERKITS_PATH}/app_manager/include/appmgr",
@@ -115,10 +115,10 @@ ohos_shared_library("wallpaperextension") {
     "ability_runtime:ability_manager",
     "ability_runtime:abilitykit_native",
     "ability_runtime:runtime",
+    "c_utils:utils",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc_js:rpc",
-    "utils_base:utils",
   ]
 
   public_deps = [
@@ -150,7 +150,6 @@ ohos_shared_library("wallpaper_extension_module") {
     "${ability_runtime_path}/frameworks/native/ability/native:abilitykit_native",
     "//foundation/window/window_manager/utils:libwmutil",
     "//foundation/window/window_manager/wm:libwm",
-    "//utils/native/base:utils",
   ]
 
   external_deps = [
@@ -158,6 +157,7 @@ ohos_shared_library("wallpaper_extension_module") {
     "ability_base:want",
     "ability_base:zuri",
     "ability_runtime:runtime",
+    "c_utils:utils",
     "hisysevent_native:libhisysevent",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",

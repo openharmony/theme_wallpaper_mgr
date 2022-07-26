@@ -44,11 +44,11 @@ ohos_unittest("wallpaper_test") {
     "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//foundation/window/window_manager/utils:libwmutil",
     "//foundation/window/window_manager/wm:libwm",
-    "//utils/native/base:utils",
   ]
   external_deps = [
     "ability_base:want",
     "ability_runtime:ability_manager",
+    "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
     "hisysevent_native:libhisysevent",
     "hitrace_native:hitrace_meter",
