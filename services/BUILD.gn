@@ -40,7 +40,7 @@ ohos_shared_library("wallpaper_service") {
     "src/wallpaper_service_stub.cpp",
   ]
   public_configs = [
-    "//utils/native/base:utils_config",
+    "//commonlibrary/c_utils/base:utils_config",
     ":wallpaper_service_config",
   ]
   include_dirs = [

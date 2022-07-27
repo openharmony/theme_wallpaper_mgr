@@ -41,7 +41,7 @@
           "napi",
           "ability_base",
           "hiviewdfx_hilog_native",
-          "utils_base"
+          "c_utils"
         ],
         "third_party": [
           "jsoncpp"
