@@ -13,10 +13,25 @@
 
 import("//build/ohos.gni")
 ohos_shared_library("wallpaper_utils") {
-  sources = [ "src/file_deal.cpp" ]
-  include_dirs = [ "include" ]
+  sources = [ 
+    "src/file_deal.cpp",
+    "dfx/hidumper_adapter/command.cpp",
+    "dfx/hidumper_adapter/dump_helper.cpp",
+    "dfx/hisysevent_adapter/fault_reporter.cpp",
+    "dfx/hisysevent_adapter/reporter.cpp",
+    "dfx/hisysevent_adapter/statistic_reporter.cpp",
+  ]
+  include_dirs = [
+    "dfx/hidumper_adapter",
+    "dfx/hisysevent_adapter",
+    "include",
+  ]
   deps = [ "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility" ]
-  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+  external_deps = [ 
+    "hiviewdfx_hilog_native:libhilog",
+    "hisysevent_native:libhisysevent",
+    "hitrace_native:hitrace_meter",
+  ]
   subsystem_name = "theme"
   part_name = "wallpaper_mgr"
 }
