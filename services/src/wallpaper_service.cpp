@@ -424,14 +424,20 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     int32_t pictrueWidth = wallpaperPixelMap->GetWidth();
     int pyScrWidth = GetWallpaperMinWidth();
     int pyScrHeight = GetWallpaperMinHeight();
-    if (pictrueHeight > pyScrHeight || pictrueWidth > pyScrWidth) {
+    bool needCropHeight = false;
+    bool needCropWidth = false;
+    if (pictrueHeight > pyScrHeight) {
         decodeOpts.CropRect.top = (pictrueHeight - pyScrHeight)/HALF;
-        decodeOpts.CropRect.width = pyScrWidth;
-        decodeOpts.CropRect.left = (pictrueWidth - pyScrWidth)/HALF;
-        decodeOpts.CropRect.height = pyScrHeight;
-        decodeOpts.desiredSize.width = pyScrWidth;
-        decodeOpts.desiredSize.height = pyScrHeight;
+        needCropHeight = true;
     }
+    if (pictrueWidth > pyScrWidth) {
+        decodeOpts.CropRect.left = (pictrueWidth - pyScrWidth)/HALF;
+        needCropWidth = true;
+    }
+    decodeOpts.CropRect.height = needCropHeight ? pyScrHeight : pictrueHeight;
+    decodeOpts.desiredSize.height = decodeOpts.CropRect.height;
+    decodeOpts.CropRect.width = needCropWidth ? pyScrWidth : pictrueHeight;
+    decodeOpts.desiredSize.width = decodeOpts.CropRect.width;
     wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     if (errorCode != 0) {
         ret = false;

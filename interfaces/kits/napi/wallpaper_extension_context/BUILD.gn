@@ -44,7 +44,7 @@ ohos_shared_library("wallpaperextensioncontext_napi") {
 
   external_deps = [ "napi:ace_napi" ]
 
-  relative_install_dir = "module/application"
+  relative_install_dir = "module"
   subsystem_name = "miscservices"
   part_name = "wallpaper_native"
 }
