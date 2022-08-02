@@ -82,7 +82,7 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
     }
     HILOG_INFO("JsWallpaperExtension::Init CreateJsWallpaperExtensionContext.");
     NativeValue* contextObj = CreateJsWallpaperExtensionContext(engine, context);
-    auto shellContextRef = jsRuntime_.LoadSystemModule("application.WallpaperExtensionContext", &contextObj, ARGC_ONE);
+    auto shellContextRef = jsRuntime_.LoadSystemModule("WallpaperExtensionContext", &contextObj, ARGC_ONE);
     contextObj = shellContextRef->Get();
     HILOG_INFO("JsWallpaperExtension::Init Bind.");
     context->Bind(jsRuntime_, shellContextRef.release());

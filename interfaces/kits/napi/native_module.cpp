@@ -37,10 +37,14 @@ EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports)
 {
     HILOG_INFO("napi_moudule Init start...");
+    napi_value WallpaperType = nullptr;
     napi_value wpType_system = nullptr;
     napi_value wpType_lockscreen = nullptr;
-    napi_create_int32(env, static_cast<int32_t>(WALLPAPER_SYSTEM), &wpType_system);
-    napi_create_int32(env, static_cast<int32_t>(WALLPAPER_LOCKSCREEN), &wpType_lockscreen);
+    NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(WALLPAPER_SYSTEM), &wpType_system));
+    NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(WALLPAPER_LOCKSCREEN), &wpType_lockscreen));
+    NAPI_CALL(env, napi_create_object(env, &WallpaperType));
+    NAPI_CALL(env, napi_set_named_property(env, WallpaperType, "WALLPAPER_SYSTEM", wpType_system));
+    NAPI_CALL(env, napi_set_named_property(env, WallpaperType, "WALLPAPER_LOCKSCREEN", wpType_lockscreen));
     napi_property_descriptor desc[]  = {
         DECLARE_NAPI_FUNCTION("getColors", NAPI_GetColors),
         DECLARE_NAPI_FUNCTION("getId", NAPI_GetId),
@@ -54,8 +58,7 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("screenshotLiveWallpaper", NAPI_ScreenshotLiveWallpaper),
         DECLARE_NAPI_FUNCTION("on", NAPI_On),
         DECLARE_NAPI_FUNCTION("off", NAPI_Off),
-        DECLARE_NAPI_STATIC_PROPERTY("WALLPAPER_SYSTEM", wpType_system),
-        DECLARE_NAPI_STATIC_PROPERTY("WALLPAPER_LOCKSCREEN", wpType_lockscreen),
+        DECLARE_NAPI_STATIC_PROPERTY("WallpaperType", WallpaperType),
     };
 
     NAPI_CALL(env, napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc));
