@@ -110,7 +110,7 @@ napi_value NAPI_GetPixelMap(napi_env env, napi_callback_info info)
         return napi_ok;
     };
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
-        napi_value pixelVal = PixelMapNapi::CreatePixelMap(env, context->pixelMap);
+        napi_value pixelVal = PixelMapNapi::CreatePixelMap(env, std::move(context->pixelMap));
         HILOG_DEBUG("output ---- PixelMapNapi::CreatePixelMap != nullptr[%{public}d]", pixelVal != nullptr);
         *result = pixelVal;
         return napi_ok;
