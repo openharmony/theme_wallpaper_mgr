@@ -29,38 +29,23 @@ namespace OHOS {
 namespace WallpaperNAPI {
 const int32_t ONE = 1;
 const int32_t TWO = 2;
-const int32_t THREE = 3;
 
 napi_value NAPI_GetColors(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetColors in");
     auto context = std::make_shared<GetContextInfo>();
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
-        NAPI_ASSERT_BASE(env, argc == 1 || argc == 2, " should 1 or 2 parameters!", napi_invalid_arg);
-        HILOG_DEBUG("input ---- argc : %{public}d", argc);
-        napi_valuetype valueType = napi_undefined;
-        napi_typeof(env, argv[0], &valueType);
-        NAPI_ASSERT_BASE(env, valueType == napi_number, "param type wrong!", napi_invalid_arg);
-        napi_get_value_int32(env, argv[0], &context->wallpaperType);
-        HILOG_DEBUG("input ---- wallpaperType : %{public}d", context->wallpaperType);
         return napi_ok;
     };
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
-        napi_value data = WallpaperJSUtil::Convert2JSRgbaArray(env, context->colors);
-        HILOG_DEBUG("output ---- Convert2JSRgbaArray data != nullptr[%{public}d]", data != nullptr);
-        *result = data;
         return napi_ok;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
-        HILOG_DEBUG("exec ---- GetColors");
-        context->colors = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(context->wallpaperType);
-        HILOG_DEBUG("exec ---- GetColors colors size : %{public}d", context->colors.size());
-        if (!context->colors.empty()) {
-            context->status = napi_ok;
-        }
+        context->SetErrInfo(AsyncCall::ErrorCode::NOT_SUPPORT, "not support");
+        HILOG_DEBUG("exec-----NAPI_GetColors in");
     };
     context->SetAction(std::move(input), std::move(output));
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), ONE);
     return asyncCall.Call(env, exec);
 }
 
@@ -315,26 +300,21 @@ napi_value NAPI_SetWallpaper(napi_env env, napi_callback_info info)
 
 napi_value NAPI_ScreenshotLiveWallpaper(napi_env env, napi_callback_info info)
 {
-    napi_value argv[3] = {nullptr};
-    size_t argc = 3;
-    napi_valuetype valuetype0 = napi_valuetype::napi_null;
-    NAPI_CALL(env, napi_typeof(env, argv[0], &valuetype0));
-    NAPI_ASSERT(env, valuetype0 == napi_number, "Wrong argument type. Numbers expected.");
-    int32_t value0 = 0;
-    // wallpapertyepe WALLPAPER_SYSTEM:2 or WALLPAPER_LOCKSCREEN:1
-    NAPI_CALL(env, napi_get_value_int32(env, argv[0], &value0));
-
-    bool callBackMode = false;
-    if (argc >= THREE) {
-        napi_valuetype valuetype = napi_valuetype::napi_null;
-        NAPI_CALL(env, napi_typeof(env, argv[TWO], &valuetype));
-        NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
-        callBackMode = true;
-    }
-
-    napi_value ret = 0;
-    NAPI_CALL(env, napi_create_int32(env, 0, &ret));
-    return ret;
+    HILOG_DEBUG("NAPI_ScreenshotLiveWallpaper in");
+    auto context = std::make_shared<GetContextInfo>();
+    auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
+        return napi_ok;
+    };
+    auto output = [context](napi_env env, napi_value *result) -> napi_status {
+        return napi_ok;
+    };
+    auto exec = [context](AsyncCall::Context *ctx) {
+        context->SetErrInfo(AsyncCall::ErrorCode::NOT_SUPPORT, "not support");
+        HILOG_DEBUG("exec-----NAPI_ScreenshotLiveWallpaper in");
+    };
+    context->SetAction(std::move(input), std::move(output));
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), TWO);
+    return asyncCall.Call(env, exec);
 }
 
 std::shared_ptr<WallpaperMgrService::WallpaperColorChangeListener> colorChangeListener_;
@@ -342,88 +322,59 @@ std::shared_ptr<WallpaperMgrService::WallpaperColorChangeListener> colorChangeLi
 napi_value NAPI_On(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_On in");
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr};
-    napi_value thisVar = nullptr;
-    void *data = nullptr;
-    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
-    NAPI_ASSERT(env, argc == TWO, "Wrong number of arguments, requires 2");
-
-    napi_valuetype valuetype;
-    NAPI_CALL(env, napi_typeof(env, argv[0], &valuetype));
-    NAPI_ASSERT(env, valuetype == napi_string, "type is not a string");
-    std::string type = WallpaperJSUtil::Convert2String(env, argv[0]);
-    HILOG_DEBUG("type : %{public}s", type.c_str());
-
-    valuetype = napi_undefined;
-    napi_typeof(env, argv[1], &valuetype);
-    NAPI_ASSERT(env, valuetype == napi_function, "callback is not a function");
-
-    std::shared_ptr<WallpaperMgrService::WallpaperColorChangeListener> listener =
-        std::make_shared<NapiWallpaperAbility>(env, argv[1]);
-
-    bool status = WallpaperMgrService::WallpaperManagerkits::GetInstance().On(listener);
-    if (!status) {
-        HILOG_ERROR("WallpaperMgrService::WallpaperManagerkits::GetInstance().On failed!");
-        return nullptr;
-    }
-
-    if (colorChangeListener_ != nullptr) {
-        HILOG_DEBUG("WallpaperMgrService::WallpaperManagerkits::GetInstance().Off");
-        WallpaperMgrService::WallpaperManagerkits::GetInstance().Off(listener);
-    }
-
-    colorChangeListener_ = std::move(listener);
-    
-    napi_value result = nullptr;
-    napi_get_undefined(env, &result);
-    return result;
+    auto context = std::make_shared<GetContextInfo>();
+    auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
+        return napi_ok;
+    };
+    auto output = [context](napi_env env, napi_value *result) -> napi_status {
+        return napi_ok;
+    };
+    auto exec = [context](AsyncCall::Context *ctx) {
+        context->SetErrInfo(AsyncCall::ErrorCode::NOT_SUPPORT, "not support");
+        HILOG_DEBUG("exec-----NAPI_On in");
+    };
+    context->SetAction(std::move(input), std::move(output));
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), ONE);
+    return asyncCall.Call(env, exec);
 }
 
 napi_value NAPI_Off(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_Off in");
-    size_t argc = 2;
-    napi_value argv[2] = {nullptr};
-    napi_value thisVar = nullptr;
-    void *data = nullptr;
-    napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    NAPI_ASSERT(env, argc == ONE || argc == TWO, "Wrong number of arguments, requires 1 or 2");
+    auto context = std::make_shared<GetContextInfo>();
+    auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
+        return napi_ok;
+    };
+    auto output = [context](napi_env env, napi_value *result) -> napi_status {
+        return napi_ok;
+    };
+    auto exec = [context](AsyncCall::Context *ctx) {
+        context->SetErrInfo(AsyncCall::ErrorCode::NOT_SUPPORT, "not support");
+        HILOG_DEBUG("exec-----NAPI_Off in");
+    };
+    context->SetAction(std::move(input), std::move(output));
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), ONE);
+    return asyncCall.Call(env, exec);
+}
 
-    napi_valuetype valuetype;
-    NAPI_CALL(env, napi_typeof(env, argv[0], &valuetype));
-    NAPI_ASSERT(env, valuetype == napi_string, "type is not a string");
-    std::string type = WallpaperJSUtil::Convert2String(env, argv[0]);
-    HILOG_DEBUG("type : %{public}s", type.c_str());
+napi_value NAPI_GetFile(napi_env env, napi_callback_info info)
+{
+    HILOG_DEBUG("NAPI_GetFile in");
+    auto context = std::make_shared<GetFileContextInfo>();
+    auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
+        return napi_ok;
+    };
 
-    std::shared_ptr<WallpaperMgrService::WallpaperColorChangeListener> listener = nullptr;
-    if (argc == TWO) {
-        valuetype = napi_undefined;
-        napi_typeof(env, argv[1], &valuetype);
-        NAPI_ASSERT(env, valuetype == napi_function, "callback is not a function");
-        listener = std::make_shared<NapiWallpaperAbility>(env, argv[1]);
-    }
-
-    if (colorChangeListener_ != nullptr) {
-        listener = std::move(colorChangeListener_);
-    }
-
-    if (listener == nullptr) {
-        HILOG_ERROR("listener is null");
-        return nullptr;
-    }
-
-    bool status = WallpaperMgrService::WallpaperManagerkits::GetInstance().Off(listener);
-    if (!status) {
-        HILOG_ERROR("WallpaperMgrService::WallpaperManagerkits::GetInstance().Off failed!");
-        return nullptr;
-    }
-
-    colorChangeListener_ = nullptr;
-
-    napi_value result = nullptr;
-    napi_get_undefined(env, &result);
-    return result;
+    auto output = [context](napi_env env, napi_value *result) -> napi_status {
+        return napi_ok;
+    };
+    auto exec = [context](AsyncCall::Context *ctx) {
+        context->SetErrInfo(AsyncCall::ErrorCode::NOT_SUPPORT, "not support");
+        HILOG_DEBUG("exec ---- NAPI_GetFile in");
+    };
+    context->SetAction(std::move(input), std::move(output));
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1);
+    return asyncCall.Call(env, exec);
 }
 
 NapiWallpaperAbility::NapiWallpaperAbility(napi_env env, napi_value callback)
