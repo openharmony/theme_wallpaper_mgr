@@ -58,6 +58,7 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("screenshotLiveWallpaper", NAPI_ScreenshotLiveWallpaper),
         DECLARE_NAPI_FUNCTION("on", NAPI_On),
         DECLARE_NAPI_FUNCTION("off", NAPI_Off),
+        DECLARE_NAPI_FUNCTION("getFile", NAPI_GetFile),
         DECLARE_NAPI_STATIC_PROPERTY("WallpaperType", WallpaperType),
     };
 

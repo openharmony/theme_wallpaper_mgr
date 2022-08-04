@@ -43,6 +43,12 @@ public:
             SetAction(nullptr, std::move(output));
         }
 
+        void SetErrInfo(int32_t errCode, std::string errMsg)
+        {
+            errCode_ = errCode;
+            errMsg_ = errMsg;
+        }
+
         virtual napi_status operator()(napi_env env, size_t argc, napi_value *argv, napi_value self)
         {
             if (input_ == nullptr) {
@@ -72,6 +78,8 @@ public:
         InputAction input_ = nullptr;
         OutputAction output_ = nullptr;
         ExecAction exec_ = nullptr;
+        int32_t errCode_ = 0;
+        std::string errMsg_;
     };
 
     // The default AsyncCallback in the parameters is at the end position.
@@ -80,6 +88,11 @@ public:
     ~AsyncCall();
     napi_value Call(napi_env env, Context::ExecAction exec = nullptr);
     napi_value SyncCall(napi_env env, Context::ExecAction exec = nullptr);
+    
+    enum ErrorCode : int32_t {
+        OK = napi_ok,
+        NOT_SUPPORT = 801
+    };
 private:
     enum arg : int {
         ARG_ERROR,
