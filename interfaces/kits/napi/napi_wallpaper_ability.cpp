@@ -424,6 +424,26 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info)
     return result;
 }
 
+napi_value NAPI_GetFile(napi_env env, napi_callback_info info)
+{
+    HILOG_DEBUG("NAPI_GetFile in");
+    auto context = std::make_shared<GetFileContextInfo>();
+    auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
+        return napi_ok;
+    };
+
+    auto output = [context](napi_env env, napi_value *result) -> napi_status {
+        return napi_ok;
+    };
+    auto exec = [context](AsyncCall::Context *ctx) {
+        context->SetErrInfo(801, "not support");
+        HILOG_DEBUG("exec ---- NAPI_GetFile");
+    };
+    context->SetAction(std::move(input), std::move(output));
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1);
+    return asyncCall.Call(env, exec);
+}
+
 NapiWallpaperAbility::NapiWallpaperAbility(napi_env env, napi_value callback)
     : env_(env)
 {
