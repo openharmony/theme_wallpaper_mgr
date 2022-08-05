@@ -9,10 +9,10 @@
 ![](figures/subsystem_architecture.png "subsystem architecture diagram")
 
 #### Warehouse path
-/base/miscservices/wallpaper
+/base/theme/wallpaper_mgr
 
 #### Introduction to framework code
-/base/miscservices/wallpaper
+/base/theme/wallpaper_mgr
 ├── figures                  # architecture diagram
 ├── frameworks/innerkitsimpl # interface provided for app 
 ├── interfaces               # interface code provided by module
