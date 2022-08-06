@@ -62,7 +62,6 @@ public:
         * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
         * @return image.PixelMap png type The bitmap file of wallpaper
         * @permission ohos.permission.GET_WALLPAPER
-        * @permission ohos.permission.READ_USER_STORAGE
         * @systemapi Hide this for inner system use.
     */
     virtual std::shared_ptr<OHOS::Media::PixelMap> GetPixelMap(int wallpaperType) = 0;
