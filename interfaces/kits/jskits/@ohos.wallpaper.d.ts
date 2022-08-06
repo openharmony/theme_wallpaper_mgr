@@ -102,7 +102,6 @@ declare namespace wallpaper {
      * @param wallpaperType Indicates the wallpaper type.
      * @return the default pixel map.
      * @permission ohos.permission.GET_WALLPAPER
-     * @permission ohos.permission.READ_USER_STORAGE
      * @systemapi Hide this for inner system use.
      */
     function getPixelMap(wallpaperType: WallpaperType, callback: AsyncCallback<image.PixelMap>): void;
