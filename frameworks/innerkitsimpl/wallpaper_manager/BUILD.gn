@@ -47,7 +47,7 @@ ohos_shared_library("wallpapermanager") {
     "ipc:ipc_core",
     "multimedia_image_standard:image",
     "multimedia_image_standard:image_native",
-    "samgr_standard:samgr_proxy",
+    "samgr:samgr_proxy",
   ]
   subsystem_name = "theme"
   part_name = "wallpaper_mgr"

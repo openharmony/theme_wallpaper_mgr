@@ -28,7 +28,7 @@
           "distributeddatamgr",
           "graphic_standard",
           "libuv",
-          "samgr_standard",
+          "samgr",
           "common_event_service",
           "hiview",
           "ipc",

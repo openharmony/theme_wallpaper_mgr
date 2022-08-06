@@ -31,7 +31,7 @@ ohos_fuzztest("WallpaperServiceFuzzTest") {
     "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/theme/wallpaper_mgr/utils/include",
     "//foundation/window/window_manager/interfaces/innerkits/dm",
-    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk",
+    "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk",
   ]
 
   cflags = [
