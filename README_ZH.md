@@ -11,12 +11,12 @@
 
 #### 仓路径
 
-/base/miscservices/wallpaper
+/base/theme/wallpaper_mgr
 
 ## 目录
 
 ```
-/base/miscservices/wallpaper
+/base/theme/wallpaper_mgr
 ├── figures                  # 构架图
 ├── frameworks/innerkitsimpl # 对应用提供的接口
 ├── interfaces/kits          # 组件对外提供的接口代码
@@ -194,5 +194,8 @@ export default class WallpaperExtAbility extends Extension {
 ```
 
 ## 相关仓
-[miscservices_wallpaper](https://gitee.com/openharmony/miscservices_wallpaper/blob/master/README_ZH.md)
+
+**主题框架子系统**
+
+[theme_wallpaper](https://gitee.com/openharmony/theme_wallpaper_mgr)
 
