@@ -166,19 +166,19 @@ void WallpaperService::OnStart()
 void WallpaperService::OnAddSystemAbility(int32_t systemAbilityId, const std::string &deviceId)
 {
     HILOG_INFO("OnAddSystemAbility systemAbilityId:%{public}d added!", systemAbilityId);
-    if (systemAbilityId == COMMON_EVENT_SERVICE_ID){
-        RegisterSubscriber();
+    if (systemAbilityId == COMMON_EVENT_SERVICE_ID) {
+        int times = 0;
+        RegisterSubscriber(times);
     }
 }
 
-void WallpaperService::RegisterSubscriber()
+void WallpaperService::RegisterSubscriber(int times)
 {
-    static int times = 0;
     times++;
     bool subRes = WallpaperCommonEvent::RegisterSubscriber();
     if (subRes == false && times <= MAX_RETRY_TIMES) {
         HILOG_INFO("RegisterSubscriber failed");
-        auto callback = [this]() { RegisterSubscriber(); };
+        auto callback = [this, times]() { RegisterSubscriber(times); };
         serviceHandler_->PostTask(callback, DELAY_TIME);
     }
 }

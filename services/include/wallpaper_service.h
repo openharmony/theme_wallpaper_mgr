@@ -77,7 +77,7 @@ public:
     static void OnBootPhase();
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
     void ReporterUsageTimeStatisic();
-    void RegisterSubscriber();
+    void RegisterSubscriber(int times);
 
 protected:
     void OnStart() override;
