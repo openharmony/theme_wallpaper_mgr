@@ -141,6 +141,9 @@ public:
 
     void ReporterFault(FaultType faultType, FaultCode faultCode);
 
+    void SetWpProxy(sptr<IWallpaperService> wpProxyMock);
+
+    void ResetWpProxy();
 private:
     class DeathRecipient final : public IRemoteObject::DeathRecipient {
     public:

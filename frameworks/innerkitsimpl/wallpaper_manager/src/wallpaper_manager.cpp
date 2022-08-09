@@ -95,6 +95,18 @@ sptr<IWallpaperService> WallpaperManager::GetService()
     return wpProxy_;
 }
 
+void WallpaperManager::SetWpProxy(sptr<IWallpaperService> wpProxyMock)
+{
+    std::lock_guard<std::mutex> lock(wpProxyLock_);
+    wpProxy_ = wpProxyMock;
+}
+
+void WallpaperManager::ResetWpProxy()
+{
+    std::lock_guard<std::mutex> lock(wpProxyLock_);
+    wpProxy_ = nullptr;
+}
+
 void WallpaperManager::DeathRecipient::OnRemoteDied(const wptr<IRemoteObject>& remote)
 {
     DelayedRefSingleton<WallpaperManager>::GetInstance().ResetService(remote);

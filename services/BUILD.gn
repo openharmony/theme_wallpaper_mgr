@@ -18,6 +18,7 @@ config("wallpaper_service_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "include",
+    "src/adapter",
     "//base/theme/wallpaper_mgr/utils/dfx/hisysevent_adapter",
     "//base/theme/wallpaper_mgr/utils/dfx/hidumper_adapter",
   ]
@@ -27,6 +28,7 @@ config("wallpaper_service_config") {
 
 ohos_shared_library("wallpaper_service") {
   sources = [
+    "src/adapter/accesstoken_adapter.cpp",
     "src/component_name.cpp",
     "src/wallpaper_common_event.cpp",
     "src/wallpaper_data.cpp",

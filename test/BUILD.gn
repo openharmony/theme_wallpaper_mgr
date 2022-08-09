@@ -24,11 +24,13 @@ ohos_unittest("wallpaper_test") {
 
   include_dirs = [
     "//third_party/json/include",
+    "//third_party/googletest/googlemock/include",
     "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/theme/wallpaper_mgr/utils/include",
     "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/theme/wallpaper_mgr/services/dfx/hidumper_adapter",
     "//base/theme/wallpaper_mgr/services/dfx/hisysevent_adapter",
+    "//base/theme/wallpaper_mgr/services/src/adapter",
     "//foundation/graphic/graphic_2d/interfaces/innerkits/wm",
 
     #"//foundation/multimedia/image_standard/interfaces/innerkits/include",
@@ -44,12 +46,15 @@ ohos_unittest("wallpaper_test") {
     "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//foundation/window/window_manager/utils:libwmutil",
     "//foundation/window/window_manager/wm:libwm",
+    "//third_party/googletest:gmock",
   ]
   external_deps = [
     "ability_base:want",
     "ability_runtime:ability_manager",
+    "access_token:libaccesstoken_sdk",
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
+    "graphic_standard:surface",
     "hisysevent_native:libhisysevent",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
