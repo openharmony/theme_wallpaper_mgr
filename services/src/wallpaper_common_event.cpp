@@ -18,7 +18,6 @@
 #include "wallpaper_service.h"
 namespace OHOS {
 namespace WallpaperMgrService {
-constexpr int FIVETIMES = 5;
 std::shared_ptr<WallpaperCommonEvent> WallpaperCommonEvent::subscriber = nullptr;
 
 void WallpaperCommonEvent::OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data)
@@ -50,30 +49,14 @@ void WallpaperCommonEvent::UnregisterSubscriber(std::shared_ptr<OHOS::EventFwk::
     }
 }
 
-void WallpaperCommonEvent::RegisterSubscriber()
+bool WallpaperCommonEvent::RegisterSubscriber()
 {
     HILOG_INFO("WallpaperCommonEvent::RegisterSubscriber");
     OHOS::EventFwk::MatchingSkills matchingSkills;
-    HILOG_INFO("WallpaperCommonEvent::AddEvent");
     matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
-    HILOG_INFO("WallpaperCommonEvent::subscriberInfo");
     OHOS::EventFwk::CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     subscriber = std::make_shared<WallpaperCommonEvent>(subscriberInfo);
-    int time = 0;
-    HILOG_INFO("WallpaperCommonEvent::SubscribeCommonEvent");
-    bool subscribeResult = false;
-    while (1) {
-        subscribeResult = OHOS::EventFwk::CommonEventManager::SubscribeCommonEvent(subscriber);
-        time++;
-        if (subscribeResult || time >= FIVETIMES) {
-            break;
-        }
-    }
-    if (subscribeResult) {
-        HILOG_INFO("WallpaperCommonEvent::subscribeResult == true");
-    } else {
-        HILOG_INFO("WallpaperCommonEvent::time out");
-    }
+    return OHOS::EventFwk::CommonEventManager::SubscribeCommonEvent(subscriber);
 }
 
 void WallpaperCommonEvent::SendWallpaperLockSettingMessage()

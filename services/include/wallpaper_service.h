@@ -77,10 +77,12 @@ public:
     static void OnBootPhase();
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
     void ReporterUsageTimeStatisic();
+    void RegisterSubscriber();
 
 protected:
     void OnStart() override;
     void OnStop() override;
+    void OnAddSystemAbility(int32_t systemAbilityId, const std::string &deviceId) override;
 
 private:
     /**
