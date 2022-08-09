@@ -24,7 +24,6 @@ namespace WallpaperMgrService {
 static const std::string WALLPAPER_BUNDLE_NAME = "ohos";
 static const std::string WALLPAPER_PERMISSION_NAME_GET_WALLPAPER = "ohos.permission.GET_WALLPAPER";
 static const std::string WALLPAPER_PERMISSION_NAME_SET_WALLPAPER = "ohos.permission.SET_WALLPAPER";
-static const std::string WALLPAPER_PERMISSION_NAME_READ_USER_STORAGE = "ohos.permission.READ_MEDIA";
 static const std::string WALLPAPER_PERMISSION_NAME_CAPTURE_SCREEN = "ohos.permission.CAPTURE_SCREEN";
 
 static const std::string TEST_LABEL = "test label";
