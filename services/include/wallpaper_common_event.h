@@ -40,7 +40,7 @@ public:
     void OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data) override;
     static bool PublishEvent(const OHOS::AAFwk::Want &want, int eventCode, const std::string &eventData);
     static void UnregisterSubscriber(std::shared_ptr<OHOS::EventFwk::CommonEventSubscriber> subscriber);
-    static void RegisterSubscriber();
+    static bool RegisterSubscriber();
     static void SendWallpaperLockSettingMessage();
     static void SendWallpaperSystemSettingMessage();
 private:

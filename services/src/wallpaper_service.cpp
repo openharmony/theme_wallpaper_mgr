@@ -72,6 +72,7 @@ const std::string WallpaperService::WALLPAPER_LOCK_CROP = "wallpaper_lock";
 const std::string WallpaperService::WALLPAPER_BUNDLE_NAME = "com.ohos.wallpaper";
 
 const std::int64_t INIT_INTERVAL = 10000L;
+const std::int64_t DELAY_TIME = 1000L;
 constexpr int HALF = 2;
 constexpr int DOUBLE = 2;
 constexpr int THREE = 3;
@@ -83,6 +84,7 @@ constexpr int FIFTY = 50;
 constexpr int HUNDRED = 100;
 constexpr int HUNDRED_FIFTY = 150;
 constexpr int FOO_MAX_LEN = 52428800;
+constexpr int MAX_RETRY_TIMES = 20;
 std::mutex WallpaperService::instanceLock_;
 
 sptr<WallpaperService> WallpaperService::instance_;
@@ -142,22 +144,7 @@ void WallpaperService::OnStart()
         HILOG_ERROR("Init failed. Try again 10s later");
         return;
     }
-    HILOG_INFO("RegisterSubscriber");
-    OHOS::EventFwk::MatchingSkills matchingSkills;
-    HILOG_INFO("WallpaperCommonEvent::AddEvent");
-    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
-    HILOG_INFO("WallpaperCommonEvent::subscriberInfo");
-    OHOS::EventFwk::CommonEventSubscribeInfo subscriberInfo(matchingSkills);
-    std::shared_ptr<EventFwk::CommonEventSubscriber> subscriberPtr_ =
-        std::make_shared<WallpaperCommonEvent>(subscriberInfo);
-    bool subRes = OHOS::EventFwk::CommonEventManager::SubscribeCommonEvent(subscriberPtr_);
-    if (subRes == false) {
-        HILOG_INFO("RegisterSubscriber failed");
-        ReporterFault(FaultType::SERVICE_FAULT, FaultCode::SF_SERVICE_SUBSCRIBECOMMINEVENT);
-    } else {
-        HILOG_INFO("RegisterSubscriber success");
-    }
-
+    AddSystemAbilityListener(COMMON_EVENT_SERVICE_ID);
     std::thread(&WallpaperService::StartExt, this).detach();
     int uid = static_cast<int>(IPCSkeleton::GetCallingUid());
     auto cmd = std::make_shared<Command>(std::vector<std::string>({ "-all" }), "Show all",
@@ -174,6 +161,26 @@ void WallpaperService::OnStart()
     DumpHelper::GetInstance().RegisterCommand(cmd);
     Reporter::GetInstance().UsageTimeStatistic().StartTimerThread();
     return;
+}
+
+void WallpaperService::OnAddSystemAbility(int32_t systemAbilityId, const std::string &deviceId)
+{
+    HILOG_INFO("OnAddSystemAbility systemAbilityId:%{public}d added!", systemAbilityId);
+    if (systemAbilityId == COMMON_EVENT_SERVICE_ID) {
+        int times = 0;
+        RegisterSubscriber(times);
+    }
+}
+
+void WallpaperService::RegisterSubscriber(int times)
+{
+    times++;
+    bool subRes = WallpaperCommonEvent::RegisterSubscriber();
+    if (subRes == false && times <= MAX_RETRY_TIMES) {
+        HILOG_INFO("RegisterSubscriber failed");
+        auto callback = [this, times]() { RegisterSubscriber(times); };
+        serviceHandler_->PostTask(callback, DELAY_TIME);
+    }
 }
 
 void WallpaperService::InitServiceHandler()
