@@ -23,6 +23,7 @@
 #include "pixel_map.h"
 #include "wallpaper_color_change_listener.h"
 #include "wallpaper_manager_common_info.h"
+#include "i_wallpaper_service.h"
 
 /**
  * Interfaces for ohos account subsystem.
@@ -145,6 +146,9 @@ public:
 
     virtual void SetCallback(bool (*cb) (int)) = 0;
 
+    virtual void SetWpProxy(sptr<IWallpaperService> wpProxyMock) = 0;
+
+    virtual void ResetWpProxy() = 0;
 protected:
     WallpaperManagerkits() = default;
 };

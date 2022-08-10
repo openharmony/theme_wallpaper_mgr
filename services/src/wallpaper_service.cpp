@@ -54,6 +54,7 @@
 #include "dfx_types.h"
 #include "dump_helper.h"
 #include "bundle_mgr_proxy.h"
+#include "accesstoken_adapter.h"
 #include "wallpaper_service.h"
 
 namespace OHOS {
@@ -975,13 +976,10 @@ bool WallpaperService::WPCheckCallingPermission(const std::string &permissionNam
     bool bflag = false;
     int result;
     Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
-    if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken) == Security::AccessToken::TOKEN_NATIVE) {
-        result =  Security::AccessToken::AccessTokenKit::VerifyNativeToken(callerToken,
-        permissionName);
-    } else if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken) ==
-        Security::AccessToken::TOKEN_HAP) {
-        result =  Security::AccessToken::AccessTokenKit::VerifyAccessToken(callerToken,
-        permissionName);
+    auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken);
+    if (tokenType == Security::AccessToken::TOKEN_NATIVE || tokenType == Security::AccessToken::TOKEN_SHELL
+        || tokenType == Security::AccessToken::TOKEN_HAP) {
+        result = AccessTokenProxy::VerifyAccessToken(callerToken, permissionName);
     } else {
         HILOG_INFO("Check permission tokenId ilegal");
         return false;
@@ -1049,8 +1047,8 @@ int WallpaperService::Dump(int fd, const std::vector<std::u16string> &args)
     const int maxUid = 10000;
     if (uid > maxUid) {
         Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
-        if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken)
-            != Security::AccessToken::TOKEN_NATIVE) {
+        auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken);
+        if (tokenType != Security::AccessToken::TOKEN_NATIVE && tokenType != Security::AccessToken::TOKEN_SHELL) {
             return 1;
         }
     }

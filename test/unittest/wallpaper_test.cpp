@@ -13,45 +13,90 @@
  * limitations under the License.
  */
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <ctime>
-#include "wallpaper_manager_kits.h"
-#include "wallpaper_manager.h"
-#include "hilog_wrapper.h"
+#include "accesstoken_adapter.h"
 #include "directory_ex.h"
+#include "hilog_wrapper.h"
+#include "iremote_object.h"
+#include "iservice_registry.h"
+#include "wallpaper_manager.h"
+#include "wallpaper_manager_kits.h"
+#include "wallpaper_service.h"
+#include "wallpaper_service_proxy.h"
 
 constexpr int SYSTYEM = 0;
 constexpr int LOCKSCREEN = 1;
 constexpr int HUNDRED = 100;
 using namespace testing::ext;
+using namespace testing;
 using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
 using namespace OHOS::MiscServices;
 
 namespace OHOS {
 namespace WallpaperMgrService {
+class AccessTokenMock : public AccessTokenAdapter {
+public:
+    AccessTokenMock() = default;
+    virtual ~AccessTokenMock() = default;
+
+    MOCK_METHOD2(VerifyAccessToken, int(Security::AccessToken::AccessTokenID, const std::string &));
+};
+
+class RemoteObjectMock : public WallpaperService {
+public:
+    RemoteObjectMock() = default;
+    virtual ~RemoteObjectMock() = default;
+
+    virtual bool ResetWallpaper(int wallpaperType)
+    {
+        return WallpaperService::GetInstance()->ResetWallpaper(wallpaperType);
+    }
+    virtual mapFD GetPixelMap(int wallpaperType)
+    {
+        return WallpaperService::GetInstance()->GetPixelMap(wallpaperType);
+    }
+};
+
 class WallpaperTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
     static void TearDownTestCase(void);
     void SetUp();
     void TearDown();
+
+    static std::shared_ptr<AccessTokenMock> accessTokenMock_;
+    static sptr<RemoteObjectMock> remoteObjMock_;
 };
 
+std::shared_ptr<AccessTokenMock> WallpaperTest::accessTokenMock_;
+sptr<RemoteObjectMock> WallpaperTest::remoteObjMock_;
 const std::string VALID_SCHEMA_STRICT_DEFINE = "{\"SCHEMA_VERSION\":\"1.0\","
-        "\"SCHEMA_MODE\":\"STRICT\","
-        "\"SCHEMA_SKIPSIZE\":0,"
-        "\"SCHEMA_DEFINE\":{"
-            "\"age\":\"INTEGER, NOT NULL\""
-        "},"
-        "\"SCHEMA_INDEXES\":[\"$.age\"]}";
+                                               "\"SCHEMA_MODE\":\"STRICT\","
+                                               "\"SCHEMA_SKIPSIZE\":0,"
+                                               "\"SCHEMA_DEFINE\":{"
+                                               "\"age\":\"INTEGER, NOT NULL\""
+                                               "},"
+                                               "\"SCHEMA_INDEXES\":[\"$.age\"]}";
 
 void WallpaperTest::SetUpTestCase(void)
 {
+    HILOG_INFO("SetUpTestCase");
+    accessTokenMock_ = std::make_shared<AccessTokenMock>();
+    AccessTokenProxy::Set(accessTokenMock_);
+    EXPECT_CALL(*accessTokenMock_, VerifyAccessToken(_, _)).WillRepeatedly(Return(0));
+    remoteObjMock_ = new RemoteObjectMock();
+    HILOG_INFO("SetUpTestCase end");
 }
 
 void WallpaperTest::TearDownTestCase(void)
 {
+    HILOG_INFO("TearDownTestCase");
+    accessTokenMock_.reset();
+    AccessTokenProxy::Set(nullptr);
+    remoteObjMock_ = nullptr;
 }
 
 void WallpaperTest::SetUp(void)
@@ -124,9 +169,13 @@ unsigned long WallpaperColorChangeListenerTestImpl::GetCallCount() const
 */
 HWTEST_F(WallpaperTest, Reset001, TestSize.Level1)
 {
+    HILOG_INFO("Reset001.");
     int wallpaperType = 0;
-    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
-        ResetWallpaper(wallpaperType), true) << "should reset successfully.";
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWpProxy(
+        iface_cast<WallpaperServiceProxy>(this->remoteObjMock_));
+    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType), true)
+        << "should reset successfully.";
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWpProxy();
 }
 
 /**
@@ -139,8 +188,11 @@ HWTEST_F(WallpaperTest, Reset001, TestSize.Level1)
 HWTEST_F(WallpaperTest, Reset002, TestSize.Level1)
 {
     int wallpaperType = 1;
-    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
-        ResetWallpaper(wallpaperType), true) << "should reset successfully.";
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWpProxy(
+        iface_cast<WallpaperServiceProxy>(this->remoteObjMock_));
+    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType), true)
+        << "should reset successfully.";
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWpProxy();
 }
 
 /**
@@ -153,8 +205,11 @@ HWTEST_F(WallpaperTest, Reset002, TestSize.Level1)
 HWTEST_F(WallpaperTest, Reset003, TestSize.Level1)
 {
     int wallpaperType = 2;
-    EXPECT_NE(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
-        ResetWallpaper(wallpaperType), true) << "shouldn't reset successfully.";
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWpProxy(
+        iface_cast<WallpaperServiceProxy>(this->remoteObjMock_));
+    EXPECT_NE(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType), true)
+        << "shouldn't reset successfully.";
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWpProxy();
 }
 
 /**
@@ -167,11 +222,14 @@ HWTEST_F(WallpaperTest, Reset003, TestSize.Level1)
 HWTEST_F(WallpaperTest, Reset004, TestSize.Level1)
 {
     int wallpaperType = 0;
-    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
-        ResetWallpaper(wallpaperType), true) << "should reset successfully.";
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWpProxy(
+        iface_cast<WallpaperServiceProxy>(this->remoteObjMock_));
+    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType), true)
+        << "should reset successfully.";
     /* duplicate reset */
-    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
-        ResetWallpaper(wallpaperType), true) << "should reset successfully.";
+    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType), true)
+        << "should reset successfully.";
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWpProxy();
 }
 
 /**
@@ -184,16 +242,17 @@ HWTEST_F(WallpaperTest, Reset004, TestSize.Level1)
 HWTEST_F(WallpaperTest, Reset005, TestSize.Level1)
 {
     int wallpaperType = 1;
-    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
-        ResetWallpaper(wallpaperType), true) << "should reset successfully.";
-    int firstId = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
-        GetWallpaperId(wallpaperType);
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWpProxy(
+        iface_cast<WallpaperServiceProxy>(this->remoteObjMock_));
+    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType), true)
+        << "should reset successfully.";
+    int firstId = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(wallpaperType);
     /* duplicate reset */
-    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
-        ResetWallpaper(wallpaperType), true) << "should reset successfully.";
-    int secondId = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
-        GetWallpaperId(wallpaperType);
+    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType), true)
+        << "should reset successfully.";
+    int secondId = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(wallpaperType);
     EXPECT_EQ(firstId, secondId) << "Id should be same one.";
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWpProxy();
 }
 
 /*********************   ResetWallpaper   *********************/
@@ -384,9 +443,11 @@ HWTEST_F(WallpaperTest, getMinWidth001, TestSize.Level0)
 HWTEST_F(WallpaperTest, GetPiexlMap001, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaper&GetPiexlMap001  begin");
-    auto PixelMap = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
-        GetPixelMap(SYSTYEM);
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWpProxy(
+        iface_cast<WallpaperServiceProxy>(this->remoteObjMock_));
+    auto PixelMap = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(SYSTYEM);
     EXPECT_TRUE(PixelMap);
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWpProxy();
 }
 
 /**
@@ -399,9 +460,11 @@ HWTEST_F(WallpaperTest, GetPiexlMap001, TestSize.Level0)
 HWTEST_F(WallpaperTest, GetPiexlMap002, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaper&GetPiexlMap002  begin");
-    auto PixelMap = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().
-        GetPixelMap(LOCKSCREEN);
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWpProxy(
+        iface_cast<WallpaperServiceProxy>(this->remoteObjMock_));
+    auto PixelMap = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(LOCKSCREEN);
     EXPECT_TRUE(PixelMap);
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWpProxy();
 }
 /*********************   GetPiexlMap   *********************/
 } // wallpaperservice
