@@ -486,14 +486,16 @@ NativeValue* CreateJsWallpaperExtensionContext(NativeEngine& engine, std::shared
     // make handler
     handler_ = std::make_shared<AppExecFwk::EventHandler>(AppExecFwk::EventRunner::GetMainEventRunner());
 
-    BindNativeFunction(engine, *object, "startAbility", JsWallpaperExtensionContext::StartAbility);
-    BindNativeFunction(engine, *object, "terminateSelf", JsWallpaperExtensionContext::TerminateAbility);
-    BindNativeFunction(engine, *object, "connectAbility", JsWallpaperExtensionContext::ConnectAbility);
-    BindNativeFunction(engine, *object, "disconnectAbility", JsWallpaperExtensionContext::DisconnectAbility);
-    BindNativeFunction(
-        engine, *object, "startAbilityWithAccount", JsWallpaperExtensionContext::StartAbilityWithAccount);
-    BindNativeFunction(
-        engine, *object, "connectAbilityWithAccount", JsWallpaperExtensionContext::ConnectAbilityWithAccount);
+    const char *moduleName = "JsWallpaperExtensionContext";
+    BindNativeFunction(engine, *object, "startAbility", moduleName, JsWallpaperExtensionContext::StartAbility);
+    BindNativeFunction(engine, *object, "terminateSelf", moduleName, JsWallpaperExtensionContext::TerminateAbility);
+    BindNativeFunction(engine, *object, "connectAbility", moduleName, JsWallpaperExtensionContext::ConnectAbility);
+    BindNativeFunction(engine, *object,
+        "disconnectAbility", moduleName, JsWallpaperExtensionContext::DisconnectAbility);
+    BindNativeFunction(engine, *object,
+        "startAbilityWithAccount", moduleName, JsWallpaperExtensionContext::StartAbilityWithAccount);
+    BindNativeFunction(engine, *object,
+        "connectAbilityWithAccount", moduleName, JsWallpaperExtensionContext::ConnectAbilityWithAccount);
 
     if (context) {
         HILOG_INFO("Set ExtensionAbilityInfo Property");
