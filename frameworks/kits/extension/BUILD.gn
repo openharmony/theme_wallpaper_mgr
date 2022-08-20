@@ -95,6 +95,7 @@ ohos_shared_library("wallpaperextension") {
   sources = [
     "//base/theme/wallpaper_mgr/frameworks/kits/extension/src/js_wallpaper_extension.cpp",
     "//base/theme/wallpaper_mgr/frameworks/kits/extension/src/js_wallpaper_extension_context.cpp",
+    "//base/theme/wallpaper_mgr/frameworks/kits/extension/src/uv_queue.cpp",
     "//base/theme/wallpaper_mgr/frameworks/kits/extension/src/wallpaper_extension.cpp",
     "//base/theme/wallpaper_mgr/frameworks/kits/extension/src/wallpaper_extension_context.cpp",
   ]

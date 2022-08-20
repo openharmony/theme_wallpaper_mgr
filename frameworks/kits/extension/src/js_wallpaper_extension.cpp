@@ -17,22 +17,31 @@
 
 #include "ability_info.h"
 #include "hilog_wrapper.h"
+#include "hitrace_meter.h"
 #include "js_runtime.h"
 #include "js_runtime_utils.h"
 #include "js_wallpaper_extension_context.h"
 #include "napi/native_api.h"
 #include "napi/native_node_api.h"
+#include "napi_common_util.h"
 #include "napi_common_want.h"
 #include "napi_remote_object.h"
+#include "uv_queue.h"
 #include "wallpaper_manager.h"
-#include "napi_common_util.h"
-#include "hitrace_meter.h"
 
 namespace OHOS {
 namespace AbilityRuntime {
 namespace {
 constexpr size_t ARGC_ONE = 1;
 }
+struct WorkData {
+    NativeEngine *nativeEng_;
+    int wallpaperType_;
+    WorkData(NativeEngine *nativeEng, int wallpaperType) : nativeEng_(nativeEng), wallpaperType_(wallpaperType)
+    {
+    }
+};
+
 JsWallpaperExtension* JsWallpaperExtension::jsWallpaperExtension = NULL;
 using namespace OHOS::AppExecFwk;
 using namespace OHOS::MiscServices;
@@ -126,17 +135,22 @@ void JsWallpaperExtension::OnStart(const AAFwk::Want &want)
     CallObjectMethod("onCreated", argv, ARGC_ONE);
     FinishAsyncTrace(HITRACE_TAG_MISC, "onCreated", static_cast<int32_t>(TraceTaskId::ONCREATE_EXTENSION));
     CallObjectMethod("createWallpaperWin");
-    WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterWallpaperCallback(
-        [](int WallpaperType)->bool {
-            HILOG_INFO("  jsWallpaperExtension->CallObjectMethod");
-            HandleScope handleScope(jsWallpaperExtension->jsRuntime_);
-            NativeEngine* nativeEng = &(jsWallpaperExtension->jsRuntime_).GetNativeEngine();
-            napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(nativeEng), WallpaperType);
-            NativeValue* nativeType = reinterpret_cast<NativeValue*>(type);
-            NativeValue* arg[] = {nativeType};
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterWallpaperCallback([](int wallpaperType) -> bool {
+        HILOG_INFO("jsWallpaperExtension->CallObjectMethod");
+        HandleScope handleScope(jsWallpaperExtension->jsRuntime_);
+        NativeEngine *nativeEng = &(jsWallpaperExtension->jsRuntime_).GetNativeEngine();
+        WorkData *workData = new WorkData(nativeEng, wallpaperType);
+        uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
+            WorkData *workData = reinterpret_cast<WorkData *>(work->data);
+            napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(
+                reinterpret_cast<napi_env>(workData->nativeEng_), workData->wallpaperType_);
+            NativeValue *nativeType = reinterpret_cast<NativeValue *>(type);
+            NativeValue *arg[] = { nativeType };
             jsWallpaperExtension->CallObjectMethod("onWallpaperChanged", arg, ARGC_ONE);
-            return true;
-        });
+        };
+        UvQueue::Call(reinterpret_cast<napi_env>(nativeEng), workData, afterCallback);
+        return true;
+    });
     HILOG_INFO("%{public}s end.", __func__);
     FinishAsyncTrace(HITRACE_TAG_MISC, "onCreated", static_cast<int32_t>(TraceTaskId::ONSTART_EXTENSION));
 }
