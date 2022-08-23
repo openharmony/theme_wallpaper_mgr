@@ -26,6 +26,14 @@ Extension *WallpaperExtensionModuleLoader::Create(const std::unique_ptr<Runtime>
     return WallpaperExtension::Create(runtime);
 }
 
+std::map<std::string, std::string> WallpaperExtensionModuleLoader::GetParams()
+{
+    std::map<std::string, std::string> params;
+    params.insert(std::pair<std::string, std::string>("type", "8"));
+    params.insert(std::pair<std::string, std::string>("name", "WallpaperExtension"));
+    return params;
+}
+
 extern "C" __attribute__((visibility("default"))) void* OHOS_EXTENSION_GetExtensionModule()
 {
     return &WallpaperExtensionModuleLoader::GetInstance();

@@ -163,6 +163,7 @@ ohos_shared_library("wallpaper_extension_module") {
     "hiviewdfx_hilog_native:libhilog",
   ]
 
+  relative_install_dir = "extensionability/"
   subsystem_name = "theme"
   part_name = "wallpaper_mgr"
 }
