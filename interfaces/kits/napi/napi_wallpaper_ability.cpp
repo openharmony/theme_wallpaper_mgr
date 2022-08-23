@@ -13,16 +13,17 @@
  * limitations under the License.
  */
 
+#include "napi_wallpaper_ability.h"
 #include <pthread.h>
 #include <unistd.h>
+#include <uv.h>
 #include <map>
 #include <string>
 #include <vector>
-#include <uv.h>
 #include "hilog_wrapper.h"
+#include "uv_queue.h"
 #include "wallpaper_manager.h"
 #include "wallpaper_manager_common_info.h"
-#include "napi_wallpaper_ability.h"
 
 using namespace OHOS::Media;
 namespace OHOS {
@@ -30,6 +31,14 @@ namespace WallpaperNAPI {
 const int32_t ONE = 1;
 const int32_t TWO = 2;
 const int32_t THREE = 3;
+
+struct WorkData {
+    napi_env env_;
+    napi_ref callback_;
+    WorkData(napi_env env, napi_ref callback) : env_(env), callback_(callback)
+    {
+    }
+};
 
 napi_value NAPI_GetColors(napi_env env, napi_callback_info info)
 {
@@ -453,7 +462,12 @@ NapiWallpaperAbility::NapiWallpaperAbility(napi_env env, napi_value callback)
 
 NapiWallpaperAbility::~NapiWallpaperAbility()
 {
-    napi_delete_reference(env_, callback_);
+    WorkData *workData = new WorkData(env_, callback_);
+    uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
+        WorkData *workData = reinterpret_cast<WorkData *>(work->data);
+        napi_delete_reference(workData->env_, workData->callback_);
+    };
+    MiscServices::UvQueue::Call(env_, workData, afterCallback);
 }
 
 void NapiWallpaperAbility::onColorsChange(std::vector<RgbaColor> color, int wallpaperType)
