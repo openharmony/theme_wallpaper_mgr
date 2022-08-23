@@ -21,6 +21,7 @@ config("wallpaper_manager_config") {
     "//base/theme/wallpaper_mgr/utils/dfx/hisysevent_adapter",
     "//base/theme/wallpaper_mgr/services/include",
     "//base/theme/wallpaper_mgr/utils/include",
+    "//third_party/libuv/include",
   ]
   cflags_cc = [ "-fexceptions" ]
 }
@@ -28,6 +29,7 @@ config("wallpaper_manager_config") {
 ohos_shared_library("wallpapermanager") {
   sources = [
     "src/iwallpaper_color_change_listener.cpp",
+    "src/uv_queue.cpp",
     "src/wallpaper_color_change_listener_client.cpp",
     "src/wallpaper_manager.cpp",
     "src/wallpaper_manager_kits.cpp",
@@ -47,6 +49,7 @@ ohos_shared_library("wallpapermanager") {
     "ipc:ipc_core",
     "multimedia_image_standard:image",
     "multimedia_image_standard:image_native",
+    "napi:ace_napi",
     "samgr:samgr_proxy",
   ]
   subsystem_name = "theme"
