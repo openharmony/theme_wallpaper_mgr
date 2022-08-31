@@ -55,6 +55,30 @@ std::vector<RgbaColor> WallpaperServiceProxy::GetColors(int wallpaperType)
     return Colors;
 }
 
+int WallpaperServiceProxy::GetFile(int wallpaperType)
+{
+    int wallpaperFd = -1;
+    MessageParcel data, reply;
+    MessageOption option;
+
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        HILOG_ERROR(" Failed to write parcelable ");
+        return wallpaperFd;
+    }
+    if (!data.WriteInt32(wallpaperType)) {
+        HILOG_ERROR(" Failed to WriteInt32 ");
+        return wallpaperFd;
+    }
+
+    int32_t result = Remote()->SendRequest(GET_FILE, data, reply, option);
+    if (result != ERR_NONE) {
+        HILOG_ERROR(" get file result = %{public}d ", result);
+    }
+
+    wallpaperFd = reply.ReadFileDescriptor();
+    return wallpaperFd;
+}
+
 std::string WallpaperServiceProxy::getUrl()
 {
     return FWReadUrl;

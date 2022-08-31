@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include <unistd.h>
 #include "wallpaper_service_stub.h"
 #include "parcel.h"
 #include "ipc_skeleton.h"
@@ -33,6 +34,7 @@ WallpaperServiceStub::WallpaperServiceStub()
     memberFuncMap_[GET_PIXELMAP] = &WallpaperServiceStub::OnGetPixelMap;
     memberFuncMap_[GET_COLORS] = &WallpaperServiceStub::OnGetColors;
     memberFuncMap_[GET_WALLPAPER_ID] = &WallpaperServiceStub::OnGetWallpaperId;
+    memberFuncMap_[GET_FILE] = &WallpaperServiceStub::OnGetFile;
     memberFuncMap_[GET_WALLPAPER_MIN_HEIGHT] = &WallpaperServiceStub::OnGetWallpaperMinHeight;
     memberFuncMap_[GET_WALLPAPER_MIN_WIDTH] = &WallpaperServiceStub::OnGetWallpaperMinWidth;
     memberFuncMap_[SCREEN_SHOT_LIVE_WALLPAPER] = &WallpaperServiceStub::OnScreenshotLiveWallpaper;
@@ -142,6 +144,19 @@ int32_t WallpaperServiceStub::OnGetColors(MessageParcel &data, MessageParcel &re
         vecWallpaperColors[size-1].green, vecWallpaperColors[size-1].alpha);
 
     ret = (size == 0) ? 0:-1;
+    return ret;
+}
+
+int32_t WallpaperServiceStub::OnGetFile(MessageParcel &data, MessageParcel &reply)
+{
+    int32_t ret = -1;
+    HILOG_INFO("WallpaperServiceStub::OnGetFile start.");
+
+    int wallpaperType = data.ReadInt32();
+    int wallpaperFd = GetFile(wallpaperType);
+    reply.WriteFileDescriptor(wallpaperFd);
+
+    ret = (wallpaperFd >= 0) ? 0:-1;
     return ret;
 }
 

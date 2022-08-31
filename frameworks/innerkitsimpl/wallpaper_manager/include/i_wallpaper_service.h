@@ -39,6 +39,7 @@ public:
         GET_PIXELMAPFILE,
         GET_COLORS,
         GET_WALLPAPER_ID,
+        GET_FILE,
         GET_WALLPAPER_MIN_HEIGHT,
         GET_WALLPAPER_MIN_WIDTH,
         RESET_WALLPAPER,
@@ -74,6 +75,8 @@ public:
      * @return RgbaColor type of array callback function
      */
     virtual std::vector<RgbaColor> GetColors(int wallpaperType)=0;
+
+    virtual int GetFile(int wallpaperType)=0;
 
     /**
      * Obtains the ID of the wallpaper of the specified type.

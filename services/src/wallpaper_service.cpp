@@ -409,6 +409,12 @@ std::vector<RgbaColor> WallpaperService::GetColors(int wallpaperType)
     return Colors;
 }
 
+int WallpaperService::GetFile(int wallpaperType)
+{   
+    mapFD wallpaperFd = GetPixelMap(wallpaperType);
+    return wallpaperFd.fd; 
+}
+
 int64_t WallpaperService::WritePixelMapToFile(const std::string &filePath, std::unique_ptr<PixelMap> pixelMap)
 {
     ImagePacker imagePacker;

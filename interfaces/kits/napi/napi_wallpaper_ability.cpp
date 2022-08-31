@@ -438,15 +438,30 @@ napi_value NAPI_GetFile(napi_env env, napi_callback_info info)
     HILOG_DEBUG("NAPI_GetFile in");
     auto context = std::make_shared<GetFileContextInfo>();
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
+        NAPI_ASSERT_BASE(env, argc == 1 || argc == 2, " should 1 or 2 parameters!", napi_invalid_arg);
+        HILOG_DEBUG("input ---- argc : %{public}zu", argc);
+        napi_valuetype valueType = napi_undefined;
+        napi_typeof(env, argv[0], &valueType);
+        NAPI_ASSERT_BASE(env, valueType == napi_number, "param type wrong!", napi_invalid_arg);
+        napi_get_value_int32(env, argv[0], &context->wallpaperType);
+        HILOG_DEBUG("input ---- wallpaperType : %{public}d", context->wallpaperType);
         return napi_ok;
     };
 
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
+        napi_value data = nullptr;
+        napi_create_int32(env, context->wallpaperFd, &data);
+        HILOG_DEBUG("output [%{public}d]", data != nullptr);
+        *result = data;
         return napi_ok;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
-        context->SetErrInfo(801, "not support");
-        HILOG_DEBUG("exec ---- NAPI_GetFile");
+        HILOG_DEBUG("exec ---- GetFile");
+        context->wallpaperFd = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(context->wallpaperType);
+        HILOG_DEBUG("exec ---- GetFile fd: %{public}d", context->wallpaperFd);
+        if (context->wallpaperFd >= 0) {
+            context->status = napi_ok;
+        }
     };
     context->SetAction(std::move(input), std::move(output));
     AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1);

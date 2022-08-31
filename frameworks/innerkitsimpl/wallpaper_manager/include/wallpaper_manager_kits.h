@@ -81,6 +81,8 @@ public:
      */
     virtual int  GetWallpaperId(int wallpaperType) = 0;
 
+    virtual int GetFile(int wallpaperType) = 0;
+
     /**
      * Obtains the minimum height of the wallpaper.
      * @return number type of callback function
@@ -149,6 +151,8 @@ public:
     virtual void SetWpProxy(sptr<IWallpaperService> wpProxyMock) = 0;
 
     virtual void ResetWpProxy() = 0;
+
+    virtual void CloseWallpaperFd(int wallpaperType) = 0;
 protected:
     WallpaperManagerkits() = default;
 };
