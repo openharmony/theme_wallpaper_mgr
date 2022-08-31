@@ -13,14 +13,16 @@
  * limitations under the License.
  */
 
-#include <unistd.h>
 #include "wallpaper_service_stub.h"
-#include "parcel.h"
-#include "ipc_skeleton.h"
-#include "hilog_wrapper.h"
-#include "wallpaper_common.h"
-#include "pixel_map.h"
+
+#include <unistd.h>
+
 #include "ashmem.h"
+#include "hilog_wrapper.h"
+#include "ipc_skeleton.h"
+#include "parcel.h"
+#include "pixel_map.h"
+#include "wallpaper_common.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {

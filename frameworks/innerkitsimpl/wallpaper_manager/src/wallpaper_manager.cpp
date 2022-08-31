@@ -164,8 +164,8 @@ int WallpaperManager::GetFile(int wallpaperType)
     std::map<int, int>::iterator iter =  wallpaperFdMap_.find(wallpaperType);
     int fd = wpServerProxy->GetFile(wallpaperType);
     if (iter != wallpaperFdMap_.end() && fcntl(iter->second, F_GETFL) != -1) {
-       close(iter->second);
-       wallpaperFdMap_.erase(iter);
+        close(iter->second);
+        wallpaperFdMap_.erase(iter);
     }
     wallpaperFdMap_.insert(std::pair<int, int>(wallpaperType, fd));
     return fd;
