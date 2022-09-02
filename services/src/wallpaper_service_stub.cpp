@@ -15,7 +15,7 @@
 
 #include "wallpaper_service_stub.h"
 
-#include <cunistd>
+#include <unistd.h>
 
 #include "ashmem.h"
 #include "hilog_wrapper.h"
