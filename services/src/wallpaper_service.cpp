@@ -244,7 +244,7 @@ void WallpaperService::StartExt()
     while (1) {
         HILOG_INFO("WallpaperService::StartAbility");
         time++;
-        ret = AAFwk::AbilityManagerClient::GetInstance()->StartAbility(want);
+        ret = WallpaperService::GetInstance()->ConnectAbility(want);
         if (ret == 0 || time == TEN) {
             break;
         }
@@ -1063,6 +1063,26 @@ int WallpaperService::Dump(int fd, const std::vector<std::u16string> &args)
         return 0;
     }
     return 1;
+}
+
+int32_t WallpaperService::ConnectAbility(const AAFwk::Want &want)
+{
+    HILOG_DEBUG("ConnectAdapter");
+    ErrCode errCode = AAFwk::AbilityManagerClient::GetInstance()->Connect();
+    if (errCode != ERR_OK) {
+        HILOG_ERROR("connect ability server failed errCode=%{public}d", errCode);
+        return errCode;
+    }
+    std::vector<int> ids;
+    ErrCode ret = AccountSA::OsAccountManager::QueryActiveOsAccountIds(ids);
+    if (ret != ERR_OK || ids.empty()) {
+        HILOG_ERROR("connect accountManager failed errCode=%{public}d", ret);
+        return AAFwk::INVALID_PARAMETERS_ERR;
+    }
+    const sptr<AAFwk::IAbilityConnection> connection = new AbilityConnectionStub();
+    ret = AAFwk::AbilityManagerClient::GetInstance()->ConnectExtensionAbility(want, connection, ids[0]);
+    HILOG_INFO("connect mgrConnect errCode=%{public}d", ret);
+    return ret;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

@@ -29,6 +29,7 @@ config("wallpaper_service_config") {
 ohos_shared_library("wallpaper_service") {
   sources = [
     "src/adapter/accesstoken_adapter.cpp",
+    "src/ability_connection_stub.cpp",
     "src/component_name.cpp",
     "src/wallpaper_common_event.cpp",
     "src/wallpaper_data.cpp",
@@ -69,6 +70,7 @@ ohos_shared_library("wallpaper_service") {
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "os_account:os_account_innerkits",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
