@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,26 +12,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "ability_connection_stub.h"
 #include "hilog_wrapper.h"
+#include "wallpaper_extension_ability_connection.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
 using namespace AAFwk;
-namespace {
-const std::string TAG = "AbilityConnectionStub";
-}
 
-void AbilityConnectionStub::OnAbilityConnectDone(
+void WallpaperExtensionAbilityConnection::OnAbilityConnectDone(
     const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int32_t resultCode)
 {
     HILOG_INFO("ability connection OnAbilityConnectDone");
 }
 
-void AbilityConnectionStub::OnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int32_t resultCode)
+void WallpaperExtensionAbilityConnection::OnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int32_t resultCode)
 {
     HILOG_INFO("ability connection RemoveDeathRecipient");
-    WallpaperService::GetInstance()->StartExt();
+    WallpaperService::GetInstance()->StartWallpaperExtension();
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

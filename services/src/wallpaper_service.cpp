@@ -146,7 +146,7 @@ void WallpaperService::OnStart()
         return;
     }
     AddSystemAbilityListener(COMMON_EVENT_SERVICE_ID);
-    std::thread(&WallpaperService::StartExt, this).detach();
+    std::thread(&WallpaperService::StartWallpaperExtension, this).detach();
     int uid = static_cast<int>(IPCSkeleton::GetCallingUid());
     auto cmd = std::make_shared<Command>(std::vector<std::string>({ "-all" }), "Show all",
         [this, uid](const std::vector<std::string> &input, std::string &output) -> bool {
@@ -232,9 +232,9 @@ void WallpaperService::InitData()
     LoadSettingsLocked(userId_, true);
     HILOG_INFO("WallpaperService::initData --> end ");
 }
-void WallpaperService::StartExt()
+void WallpaperService::StartWallpaperExtension()
 {
-    HILOG_INFO("WallpaperService StartExt");
+    HILOG_INFO("WallpaperService StartWallpaperExtension");
     int time = 0;
     ErrCode ret = 0;
     AAFwk::Want want;
@@ -244,7 +244,7 @@ void WallpaperService::StartExt()
     while (1) {
         HILOG_INFO("WallpaperService::StartAbility");
         time++;
-        ret = WallpaperService::GetInstance()->ConnectAbility(want);
+        ret = WallpaperService::GetInstance()->ConnectExtensionAbility(want);
         if (ret == 0 || time == TEN) {
             break;
         }
@@ -1065,7 +1065,7 @@ int WallpaperService::Dump(int fd, const std::vector<std::u16string> &args)
     return 1;
 }
 
-int32_t WallpaperService::ConnectAbility(const AAFwk::Want &want)
+int32_t WallpaperService::ConnectExtensionAbility(const AAFwk::Want &want)
 {
     HILOG_DEBUG("ConnectAdapter");
     ErrCode errCode = AAFwk::AbilityManagerClient::GetInstance()->Connect();
@@ -1079,7 +1079,7 @@ int32_t WallpaperService::ConnectAbility(const AAFwk::Want &want)
         HILOG_ERROR("connect accountManager failed errCode=%{public}d", ret);
         return AAFwk::INVALID_PARAMETERS_ERR;
     }
-    const sptr<AAFwk::IAbilityConnection> connection = new AbilityConnectionStub();
+    const sptr<AAFwk::IAbilityConnection> connection = new WallpaperExtensionAbilityConnection();
     ret = AAFwk::AbilityManagerClient::GetInstance()->ConnectExtensionAbility(want, connection, ids[0]);
     HILOG_INFO("connect mgrConnect errCode=%{public}d", ret);
     return ret;

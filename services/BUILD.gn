@@ -29,10 +29,10 @@ config("wallpaper_service_config") {
 ohos_shared_library("wallpaper_service") {
   sources = [
     "src/adapter/accesstoken_adapter.cpp",
-    "src/ability_connection_stub.cpp",
     "src/component_name.cpp",
     "src/wallpaper_common_event.cpp",
     "src/wallpaper_data.cpp",
+    "src/wallpaper_extension_ability_connection.cpp",
     "src/wallpaper_service.cpp",
     "src/wallpaper_service_cb_proxy.cpp",
     "src/wallpaper_service_stub.cpp",
