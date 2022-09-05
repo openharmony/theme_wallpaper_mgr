@@ -162,12 +162,14 @@ int WallpaperManager::GetFile(int wallpaperType)
     }
     std::lock_guard<std::mutex> lock(wpFdLock_);
     std::map<int, int>::iterator iter =  wallpaperFdMap_.find(wallpaperType);
-    int fd = wpServerProxy->GetFile(wallpaperType);
     if (iter != wallpaperFdMap_.end() && fcntl(iter->second, F_GETFL) != -1) {
         close(iter->second);
         wallpaperFdMap_.erase(iter);
     }
-    wallpaperFdMap_.insert(std::pair<int, int>(wallpaperType, fd));
+    int fd = wpServerProxy->GetFile(wallpaperType);
+    if (fd != -1 ) {
+        wallpaperFdMap_.insert(std::pair<int, int>(wallpaperType, fd));
+    }
     return fd;
 }
 
