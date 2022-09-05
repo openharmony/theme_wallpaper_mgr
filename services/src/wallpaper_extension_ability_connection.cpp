@@ -25,7 +25,8 @@ void WallpaperExtensionAbilityConnection::OnAbilityConnectDone(
     HILOG_INFO("ability connection OnAbilityConnectDone");
 }
 
-void WallpaperExtensionAbilityConnection::OnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int32_t resultCode)
+void WallpaperExtensionAbilityConnection::OnAbilityDisconnectDone(
+    const AppExecFwk::ElementName &element, int32_t resultCode)
 {
     HILOG_INFO("ability connection RemoveDeathRecipient");
     WallpaperService::GetInstance()->StartWallpaperExtension();
