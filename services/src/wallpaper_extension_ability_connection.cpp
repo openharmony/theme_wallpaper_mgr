@@ -12,8 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "hilog_wrapper.h"
 #include "wallpaper_extension_ability_connection.h"
+
+#include "hilog_wrapper.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -22,13 +23,13 @@ using namespace AAFwk;
 void WallpaperExtensionAbilityConnection::OnAbilityConnectDone(
     const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int32_t resultCode)
 {
-    HILOG_INFO("ability connection OnAbilityConnectDone");
+    HILOG_INFO("on ability connected");
 }
 
 void WallpaperExtensionAbilityConnection::OnAbilityDisconnectDone(
     const AppExecFwk::ElementName &element, int32_t resultCode)
 {
-    HILOG_INFO("ability connection RemoveDeathRecipient");
+    HILOG_INFO("on ability disconnected");
     WallpaperService::GetInstance()->StartWallpaperExtension();
 }
 } // namespace WallpaperMgrService

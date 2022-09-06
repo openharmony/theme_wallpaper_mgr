@@ -1076,12 +1076,12 @@ int32_t WallpaperService::ConnectExtensionAbility(const AAFwk::Want &want)
     std::vector<int> ids;
     ErrCode ret = AccountSA::OsAccountManager::QueryActiveOsAccountIds(ids);
     if (ret != ERR_OK || ids.empty()) {
-        HILOG_ERROR("connect accountManager failed errCode=%{public}d", ret);
+        HILOG_ERROR("query active user failed errCode=%{public}d", ret);
         return AAFwk::INVALID_PARAMETERS_ERR;
     }
     const sptr<AAFwk::IAbilityConnection> connection = new WallpaperExtensionAbilityConnection();
     ret = AAFwk::AbilityManagerClient::GetInstance()->ConnectExtensionAbility(want, connection, ids[0]);
-    HILOG_INFO("connect mgrConnect errCode=%{public}d", ret);
+    HILOG_INFO("ConnectExtensionAbility errCode=%{public}d", ret);
     return ret;
 }
 } // namespace WallpaperMgrService
