@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef WALLPAPER_ABILITY_CONNECTION_STUB_H
-#define WALLPAPER_ABILITY_CONNECTION_STUB_H
+#ifndef WALLPAPER_EXTENSION_ABILITY_CONNECTION_H
+#define WALLPAPER_EXTENSION_ABILITY_CONNECTION_H
 #include "ability_connect_callback_interface.h"
 
 #include "nocopyable.h"
@@ -39,4 +39,4 @@ private:
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
-#endif //WALLPAPER_ABILITY_CONNECTION_STUB_H
+#endif //WALLPAPER_EXTENSION_ABILITY_CONNECTION_H

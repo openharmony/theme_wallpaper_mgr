@@ -55,6 +55,7 @@ ohos_fuzztest("WallpaperServiceFuzzTest") {
   external_deps = [
     "graphic_standard:surface",
     "hiviewdfx_hilog_native:libhilog",
+    "os_account:os_account_innerkits",
   ]
 }
 
