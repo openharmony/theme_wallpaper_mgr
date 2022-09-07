@@ -32,6 +32,7 @@ ohos_shared_library("wallpaper_service") {
     "src/component_name.cpp",
     "src/wallpaper_common_event.cpp",
     "src/wallpaper_data.cpp",
+    "src/wallpaper_extension_ability_connection.cpp",
     "src/wallpaper_service.cpp",
     "src/wallpaper_service_cb_proxy.cpp",
     "src/wallpaper_service_stub.cpp",
@@ -69,6 +70,7 @@ ohos_shared_library("wallpaper_service") {
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "os_account:os_account_innerkits",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]

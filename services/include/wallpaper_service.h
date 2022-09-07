@@ -38,6 +38,11 @@
 #include "accesstoken_kit.h"
 #include "image_source.h"
 #include "reporter.h"
+#include "want.h"
+#include "wallpaper_extension_ability_connection.h"
+#include "ability_manager_errors.h"
+#include "os_account_manager.h"
+#include "ability_connect_callback_interface.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -78,6 +83,7 @@ public:
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
     void ReporterUsageTimeStatisic();
     void RegisterSubscriber(int times);
+    void StartWallpaperExtension();
 
 protected:
     void OnStart() override;
@@ -115,14 +121,15 @@ private:
     void ClearWallpaperLocked(int userId, int wpType);
     bool SetDefaultDateForWallpaper(int userId, int wpType);
     int MakeWallpaperIdLocked();
-    bool  ChangingToSame(ComponentName componentName, WallpaperData wallpaper);
+    bool ChangingToSame(ComponentName componentName, WallpaperData wallpaper);
     bool WPCheckCallingPermission(const std::string &promissionName);
     bool WPGetBundleNameByUid(std::int32_t uid, std::string &bname);
     bool MakeCropWallpaper(int wallpaperType);
     bool SetWallpaperBackupData(std::string uriOrPixelMap, int wallpaperType);
+    int32_t ConnectExtensionAbility(const OHOS::AAFwk::Want& want);
 
 private:
-    void StartExt();
+
     int32_t Init();
     ServiceRunningState state_;
     void InitServiceHandler();
