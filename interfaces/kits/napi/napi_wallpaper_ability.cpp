@@ -46,24 +46,24 @@ napi_value NAPI_GetColors(napi_env env, napi_callback_info info)
     auto context = std::make_shared<GetContextInfo>();
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(env, argc == 1 || argc == 2, " should 1 or 2 parameters!", napi_invalid_arg);
-        HILOG_DEBUG("input ---- argc : %{public}zu", argc);
+        HILOG_DEBUG("input  argc : %{public}zu", argc);
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[0], &valueType);
         NAPI_ASSERT_BASE(env, valueType == napi_number, "param type wrong!", napi_invalid_arg);
         napi_get_value_int32(env, argv[0], &context->wallpaperType);
-        HILOG_DEBUG("input ---- wallpaperType : %{public}d", context->wallpaperType);
+        HILOG_DEBUG("input  wallpaperType : %{public}d", context->wallpaperType);
         return napi_ok;
     };
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
         napi_value data = WallpaperJSUtil::Convert2JSRgbaArray(env, context->colors);
-        HILOG_DEBUG("output ---- Convert2JSRgbaArray data != nullptr[%{public}d]", data != nullptr);
+        HILOG_DEBUG("output  Convert2JSRgbaArray data != nullptr[%{public}d]", data != nullptr);
         *result = data;
         return napi_ok;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
-        HILOG_DEBUG("exec ---- GetColors");
+        HILOG_DEBUG("exec  GetColors");
         context->colors = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(context->wallpaperType);
-        HILOG_DEBUG("exec ---- GetColors colors size : %{public}zu", context->colors.size());
+        HILOG_DEBUG("exec  GetColors colors size : %{public}zu", context->colors.size());
         if (!context->colors.empty()) {
             context->status = napi_ok;
         }
@@ -79,24 +79,24 @@ napi_value NAPI_GetId(napi_env env, napi_callback_info info)
     auto context = std::make_shared<GetContextInfo>();
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(env, argc == 1 || argc == 2, " should 1 or 2 parameters!", napi_invalid_arg);
-        HILOG_DEBUG("input ---- argc : %{public}zu", argc);
+        HILOG_DEBUG("input  argc : %{public}zu", argc);
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[0], &valueType);
         NAPI_ASSERT_BASE(env, valueType == napi_number, "param type wrong!", napi_invalid_arg);
         napi_get_value_int32(env, argv[0], &context->wallpaperType);
-        HILOG_DEBUG("input ---- wallpaperType : %{public}d", context->wallpaperType);
+        HILOG_DEBUG("input  wallpaperType : %{public}d", context->wallpaperType);
         return napi_ok;
     };
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
         napi_status status = napi_create_int32(env, context->wallpaperId, result);
-        HILOG_DEBUG("output ---- napi_create_int32[%{public}d]", status);
+        HILOG_DEBUG("output  napi_create_int32[%{public}d]", status);
         return status;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
-        HILOG_DEBUG("exec ---- GetWallpaperId");
+        HILOG_DEBUG("exec  GetWallpaperId");
         context->wallpaperId = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(
             context->wallpaperType);
-        HILOG_DEBUG("exec ---- GetWallpaperId wallpaperId : %{public}d", context->wallpaperId);
+        HILOG_DEBUG("exec  GetWallpaperId wallpaperId : %{public}d", context->wallpaperId);
         context->status = napi_ok;
     };
     context->SetAction(std::move(input), std::move(output));
@@ -110,30 +110,30 @@ napi_value NAPI_GetPixelMap(napi_env env, napi_callback_info info)
     auto context = std::make_shared<GetContextInfo>();
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(env, argc == 1 || argc == 2, " should 1 or 2 parameters!", napi_invalid_arg);
-        HILOG_DEBUG("input ---- argc : %{public}zu", argc);
+        HILOG_DEBUG("input  argc : %{public}zu", argc);
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[0], &valueType);
         NAPI_ASSERT_BASE(env, valueType == napi_number, "param type wrong!", napi_invalid_arg);
         napi_get_value_int32(env, argv[0], &context->wallpaperType);
-        HILOG_DEBUG("input ---- wallpaperType : %{public}d", context->wallpaperType);
+        HILOG_DEBUG("input  wallpaperType : %{public}d", context->wallpaperType);
         return napi_ok;
     };
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
         napi_value pixelVal = PixelMapNapi::CreatePixelMap(env, std::move(context->pixelMap));
-        HILOG_DEBUG("output ---- PixelMapNapi::CreatePixelMap != nullptr[%{public}d]", pixelVal != nullptr);
+        HILOG_DEBUG("output  PixelMapNapi::CreatePixelMap != nullptr[%{public}d]", pixelVal != nullptr);
         *result = pixelVal;
         return napi_ok;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
-        HILOG_DEBUG("exec ---- GetPixelMap");
+        HILOG_DEBUG("exec  GetPixelMap");
         auto pixel =
             WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(context->wallpaperType);
-        HILOG_DEBUG("exec ---- CreatPixelMap end");
+        HILOG_DEBUG("exec  CreatPixelMap end");
         if (pixel != nullptr) {
-            HILOG_DEBUG("exec ---- GetPixelMap pixel != nullptr");
+            HILOG_DEBUG("exec  GetPixelMap pixel != nullptr");
             context->status = napi_ok;
             context->pixelMap = std::move(pixel);
-            HILOG_DEBUG("exec ---- GetPixelMap pixel != nullptr");
+            HILOG_DEBUG("exec  GetPixelMap pixel != nullptr");
         }
     };
     context->SetAction(std::move(input), std::move(output));
@@ -151,13 +151,13 @@ napi_value NAPI_GetMinHeight(napi_env env, napi_callback_info info)
     };
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
         napi_status status = napi_create_int32(env, context->minHeight, result);
-        HILOG_DEBUG("output ---- napi_create_int32[%{public}d]", status);
+        HILOG_DEBUG("output  napi_create_int32[%{public}d]", status);
         return status;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
-        HILOG_DEBUG("exec ---- GetWallpaperMinHeight");
+        HILOG_DEBUG("exec  GetWallpaperMinHeight");
         context->minHeight = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperMinHeight();
-        HILOG_DEBUG("exec ---- GetWallpaperMinHeight minHeight : %{public}d", context->minHeight);
+        HILOG_DEBUG("exec  GetWallpaperMinHeight minHeight : %{public}d", context->minHeight);
         if (context->minHeight) {
             context->status = napi_ok;
         }
@@ -177,13 +177,13 @@ napi_value NAPI_GetMinWidth(napi_env env, napi_callback_info info)
     };
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
         napi_status status = napi_create_int32(env, context->minWidth, result);
-        HILOG_DEBUG("output ---- napi_create_int32[%{public}d]", status);
+        HILOG_DEBUG("output  napi_create_int32[%{public}d]", status);
         return status;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
-        HILOG_DEBUG("exec ---- GetWallpaperMinWidth");
+        HILOG_DEBUG("exec  GetWallpaperMinWidth");
         context->minWidth = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperMinWidth();
-        HILOG_DEBUG("exec ---- GetWallpaperMinWidth minWidth : %{public}d", context->minWidth);
+        HILOG_DEBUG("exec  GetWallpaperMinWidth minWidth : %{public}d", context->minWidth);
         if (context->minWidth) {
             context->status = napi_ok;
         }
@@ -203,13 +203,13 @@ napi_value NAPI_IsChangePermitted(napi_env env, napi_callback_info info)
     };
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
         napi_status status = napi_get_boolean(env, context->isChangePermitted, result);
-        HILOG_DEBUG("output ---- napi_get_boolean[%{public}d]", status);
+        HILOG_DEBUG("output  napi_get_boolean[%{public}d]", status);
         return status;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
-        HILOG_DEBUG("exec ---- IsChangePermitted");
+        HILOG_DEBUG("exec  IsChangePermitted");
         context->isChangePermitted = WallpaperMgrService::WallpaperManagerkits::GetInstance().IsChangePermitted();
-        HILOG_DEBUG("exec ---- IsChangePermitted : %{public}d", context->isChangePermitted);
+        HILOG_DEBUG("exec  IsChangePermitted : %{public}d", context->isChangePermitted);
         context->status = napi_ok;
     };
     context->SetAction(std::move(input), std::move(output));
@@ -227,13 +227,13 @@ napi_value NAPI_IsOperationAllowed(napi_env env, napi_callback_info info)
     };
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
         napi_status status = napi_get_boolean(env, context->isOperationAllowed, result);
-        HILOG_DEBUG("output ---- napi_get_boolean[%{public}d]", status);
+        HILOG_DEBUG("output  napi_get_boolean[%{public}d]", status);
         return status;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
-        HILOG_DEBUG("exec ---- IsOperationAllowed");
+        HILOG_DEBUG("exec  IsOperationAllowed");
         context->isOperationAllowed = WallpaperMgrService::WallpaperManagerkits::GetInstance().IsOperationAllowed();
-        HILOG_DEBUG("exec ---- IsOperationAllowed[%{public}d]", context->isOperationAllowed);
+        HILOG_DEBUG("exec  IsOperationAllowed[%{public}d]", context->isOperationAllowed);
         context->status = napi_ok;
     };
     context->SetAction(std::move(input), std::move(output));
@@ -247,22 +247,22 @@ napi_value NAPI_Reset(napi_env env, napi_callback_info info)
     auto context = std::make_shared<SetContextInfo>();
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(env, argc == 1 || argc == 2, " should 1 or 2 parameters!", napi_invalid_arg);
-        HILOG_DEBUG("input ---- argc : %{public}zu", argc);
+        HILOG_DEBUG("input  argc : %{public}zu", argc);
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[0], &valueType);
         NAPI_ASSERT_BASE(env, valueType == napi_number, "param type wrong!", napi_invalid_arg);
         napi_get_value_int32(env, argv[0], &context->wallpaperType);
-        HILOG_DEBUG("input ---- wallpaperType : %{public}d", context->wallpaperType);
+        HILOG_DEBUG("input  wallpaperType : %{public}d", context->wallpaperType);
         return napi_ok;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
-        HILOG_DEBUG("exec ---- ResetWallpaper");
+        HILOG_DEBUG("exec  ResetWallpaper");
         bool status = WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(context->wallpaperType);
-        HILOG_DEBUG("exec ---- ResetWallpaper[%{public}d]", status);
+        HILOG_DEBUG("exec  ResetWallpaper[%{public}d]", status);
         if (status) {
             context->status = napi_ok;
         }
-        HILOG_DEBUG("exec ---- status[%{public}d], context->status[%{public}d]", status, context->status);
+        HILOG_DEBUG("exec  status[%{public}d], context->status[%{public}d]", status, context->status);
     };
     context->SetAction(std::move(input));
     AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1);
@@ -274,7 +274,7 @@ napi_value NAPI_SetWallpaper(napi_env env, napi_callback_info info)
     auto context = std::make_shared<SetContextInfo>();
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(env, argc == 2 || argc == 3, " should 2 or 3 parameters!", napi_invalid_arg);
-        HILOG_DEBUG("input ---- argc : %{public}zu", argc);
+        HILOG_DEBUG("input  argc : %{public}zu", argc);
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[0], &valueType);
         NAPI_ASSERT_BASE(env, valueType == napi_string || valueType == napi_object, "first param type wrong!",
@@ -296,26 +296,26 @@ napi_value NAPI_SetWallpaper(napi_env env, napi_callback_info info)
         napi_typeof(env, argv[1], &valueType);
         NAPI_ASSERT_BASE(env, valueType == napi_number, "second param type wrong!", napi_invalid_arg);
         napi_get_value_int32(env, argv[1], &context->wallpaperType);
-        HILOG_DEBUG("input ---- wallpaperType : %{public}d", context->wallpaperType);
+        HILOG_DEBUG("input  wallpaperType : %{public}d", context->wallpaperType);
         return napi_ok;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
         bool urlret = false;
         if (context->url.length() == 0) {
-            HILOG_DEBUG("exec ---- setWallpaper by pixelMap");
+            HILOG_DEBUG("exec  setWallpaper by pixelMap");
             if (!context->isPixelEmp) {
                 urlret = WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(context->pixelMap,
                     context->wallpaperType);
             }
         } else {
-            HILOG_DEBUG("exec ---- setWallpaper by url");
+            HILOG_DEBUG("exec  setWallpaper by url");
             urlret = WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(context->url,
                 context->wallpaperType);
         }
         if (urlret) {
             context->status = napi_ok;
         }
-        HILOG_DEBUG("exec ---- context->status[%{public}d]", context->status);
+        HILOG_DEBUG("exec  context->status[%{public}d]", context->status);
     };
     context->SetAction(std::move(input));
     AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), TWO);
@@ -439,12 +439,12 @@ napi_value NAPI_GetFile(napi_env env, napi_callback_info info)
     auto context = std::make_shared<GetFileContextInfo>();
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         NAPI_ASSERT_BASE(env, argc == 1 || argc == 2, " should 1 or 2 parameters!", napi_invalid_arg);
-        HILOG_DEBUG("input ---- argc : %{public}zu", argc);
+        HILOG_DEBUG("input  argc : %{public}zu", argc);
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[0], &valueType);
         NAPI_ASSERT_BASE(env, valueType == napi_number, "param type wrong!", napi_invalid_arg);
         napi_get_value_int32(env, argv[0], &context->wallpaperType);
-        HILOG_DEBUG("input ---- wallpaperType : %{public}d", context->wallpaperType);
+        HILOG_DEBUG("input  wallpaperType : %{public}d", context->wallpaperType);
         return napi_ok;
     };
 
@@ -456,9 +456,9 @@ napi_value NAPI_GetFile(napi_env env, napi_callback_info info)
         return napi_ok;
     };
     auto exec = [context](AsyncCall::Context *ctx) {
-        HILOG_DEBUG("exec ---- GetFile");
+        HILOG_DEBUG("exec  GetFile");
         context->wallpaperFd = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(context->wallpaperType);
-        HILOG_DEBUG("exec ---- GetFile fd: %{public}d", context->wallpaperFd);
+        HILOG_DEBUG("exec  GetFile fd: %{public}d", context->wallpaperFd);
         if (context->wallpaperFd >= 0) {
             context->status = napi_ok;
         }

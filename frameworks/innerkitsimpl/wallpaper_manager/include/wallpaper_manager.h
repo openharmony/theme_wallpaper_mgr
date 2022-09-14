@@ -73,11 +73,11 @@ public:
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of callback function
      */
-    int  GetWallpaperId(int wallpaperType) final;
+    int GetWallpaperId(int wallpaperType) final;
 
-    int GetFile(int wallpaperType) final;
+    int32_t GetFile(int wallpaperType) final;
 
-     /**
+    /**
      * Obtains the minimum height of the wallpaper.
      * @return number type of callback function
      */
@@ -147,7 +147,7 @@ public:
 
     void ResetWpProxy();
 
-    void CloseWallpaperFd(int wallpaperType);
+    void CloseWallpaperFd(int32_t wallpaperType);
 private:
     class DeathRecipient final : public IRemoteObject::DeathRecipient {
     public:
@@ -168,11 +168,11 @@ private:
 
     sptr<IWallpaperService> wpProxy_ {};
     sptr<IRemoteObject::DeathRecipient> deathRecipient_ {};
-    std::map<int, int> wallpaperFdMap_;
+    std::mutex wpFdLock_;
+    std::map<int32_t, int32_t> wallpaperFdMap_;
     std::mutex wpProxyLock_;
     std::map<WallpaperColorChangeListener *, sptr<IWallpaperColorChangeListener>> registeredListeners_;
     std::mutex listenerMapMutex_;
-    std::mutex wpFdLock_;
     bool (*callback) (int);
 };
 }

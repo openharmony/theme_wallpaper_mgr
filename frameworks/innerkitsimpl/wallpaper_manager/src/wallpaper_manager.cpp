@@ -48,7 +48,7 @@ constexpr int OPTION_QUALITY = 100;
 WallpaperManager::WallpaperManager() {}
 WallpaperManager::~WallpaperManager()
 {
-    std::map<int, int>::iterator iter = wallpaperFdMap_.begin();
+    std::map<int32_t, int32_t>::iterator iter = wallpaperFdMap_.begin();
     while (iter != wallpaperFdMap_.end()) {
         close(iter->second);
         iter++;
@@ -153,7 +153,7 @@ std::vector<RgbaColor> WallpaperManager::GetColors(int wallpaperType)
     return wpServerProxy->GetColors(wallpaperType);
 }
 
-int WallpaperManager::GetFile(int wallpaperType)
+int32_t WallpaperManager::GetFile(int32_t wallpaperType)
 {
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
@@ -161,14 +161,14 @@ int WallpaperManager::GetFile(int wallpaperType)
         return -1;
     }
     std::lock_guard<std::mutex> lock(wpFdLock_);
-    std::map<int, int>::iterator iter =  wallpaperFdMap_.find(wallpaperType);
+    std::map<int32_t, int32_t>::iterator iter = wallpaperFdMap_.find(wallpaperType);
     if (iter != wallpaperFdMap_.end() && fcntl(iter->second, F_GETFL) != -1) {
         close(iter->second);
         wallpaperFdMap_.erase(iter);
     }
-    int fd = wpServerProxy->GetFile(wallpaperType);
-    if (fd != -1 ) {
-        wallpaperFdMap_.insert(std::pair<int, int>(wallpaperType, fd));
+    int32_t fd = wpServerProxy->GetFile(wallpaperType);
+    if (fd != -1) {
+        wallpaperFdMap_.insert(std::pair<int32_t, int32_t>(wallpaperType, fd));
     }
     return fd;
 }
@@ -313,13 +313,13 @@ std::shared_ptr<OHOS::Media::PixelMap> WallpaperManager::GetPixelMap(int wallpap
         HILOG_ERROR("Get proxy failed");
         return nullptr;
     }
-    IWallpaperService::mapFD mapFd = wpServerProxy->GetPixelMap(wallpaperType);
+    IWallpaperService::FdInfo fdInfo = wpServerProxy->GetPixelMap(wallpaperType);
     uint32_t errorCode = 0;
     OHOS::Media::SourceOptions opts;
     opts.formatHint = "image/jpeg";
     HILOG_INFO(" CreateImageSource by FD");
     std::unique_ptr<OHOS::Media::ImageSource> imageSource =
-        OHOS::Media::ImageSource::CreateImageSource(mapFd.fd, opts, errorCode);
+        OHOS::Media::ImageSource::CreateImageSource(fdInfo.fd, opts, errorCode);
     if (errorCode != 0) {
         HILOG_ERROR("ImageSource::CreateImageSource failed,errcode= %{public}d", errorCode);
         return nullptr;
@@ -332,7 +332,7 @@ std::shared_ptr<OHOS::Media::PixelMap> WallpaperManager::GetPixelMap(int wallpap
         HILOG_ERROR("ImageSource::CreatePixelMap failed,errcode= %{public}d", errorCode);
         return nullptr;
     }
-    close(mapFd.fd);
+    close(fdInfo.fd);
     return tmp;
 }
 
@@ -516,10 +516,10 @@ void WallpaperManager::ReporterFault(FaultType faultType, FaultCode faultCode)
     Reporter::GetInstance().Fault().ReportRuntimeFault(msg);
 }
 
-void WallpaperManager::CloseWallpaperFd(int wallpaperType)
+void WallpaperManager::CloseWallpaperFd(int32_t wallpaperType)
 {
     std::lock_guard<std::mutex> lock(wpFdLock_);
-    std::map<int, int>::iterator iter =  wallpaperFdMap_.find(wallpaperType);
+    std::map<int32_t, int32_t>::iterator iter =  wallpaperFdMap_.find(wallpaperType);
     if (iter != wallpaperFdMap_.end() && fcntl(iter->second, F_GETFL) != -1) {
         close(iter->second);
         wallpaperFdMap_.erase(iter);

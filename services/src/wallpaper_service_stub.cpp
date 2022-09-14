@@ -28,7 +28,8 @@ namespace OHOS {
 namespace WallpaperMgrService {
 using namespace OHOS::HiviewDFX;
 using namespace OHOS::Media;
-
+constexpr const int32_t RET_SUCCESS = 0;
+constexpr const int32_t RET_ERROR = -1;
 WallpaperServiceStub::WallpaperServiceStub()
 {
     memberFuncMap_[SET_WALLPAPER_URI_FD] = &WallpaperServiceStub::OnSetWallpaperUriByFD;
@@ -113,12 +114,12 @@ int32_t WallpaperServiceStub::OnGetPixelMap(MessageParcel &data, MessageParcel &
     HILOG_INFO("WallpaperServiceStub::GetPixelMap start.");
 
     int wallpaperType  = data.ReadInt32();
-    IWallpaperService::mapFD mapFd = GetPixelMap(wallpaperType);
-    if (!reply.WriteInt32(mapFd.size)) {
+    IWallpaperService::FdInfo fdInfo = GetPixelMap(wallpaperType);
+    if (!reply.WriteInt32(fdInfo.size)) {
         HILOG_ERROR("WriteInt32 fail");
         ret = -1;
     }
-    if (!reply.WriteFileDescriptor(mapFd.fd)) {
+    if (!reply.WriteFileDescriptor(fdInfo.fd)) {
         HILOG_ERROR("WriteFileDescriptor fail");
         ret = -1;
     }
@@ -151,15 +152,12 @@ int32_t WallpaperServiceStub::OnGetColors(MessageParcel &data, MessageParcel &re
 
 int32_t WallpaperServiceStub::OnGetFile(MessageParcel &data, MessageParcel &reply)
 {
-    int32_t ret = -1;
     HILOG_INFO("WallpaperServiceStub::OnGetFile start.");
 
-    int wallpaperType = data.ReadInt32();
-    int wallpaperFd = GetFile(wallpaperType);
+    int32_t wallpaperType = data.ReadInt32();
+    int32_t wallpaperFd = GetFile(wallpaperType);
     reply.WriteFileDescriptor(wallpaperFd);
-
-    ret = (wallpaperFd >= 0) ? 0:-1;
-    return ret;
+    return (wallpaperFd >= RET_SUCCESS) ? RET_SUCCESS : RET_ERROR;
 }
 
 int32_t WallpaperServiceStub::OnGetWallpaperId(MessageParcel &data, MessageParcel &reply)

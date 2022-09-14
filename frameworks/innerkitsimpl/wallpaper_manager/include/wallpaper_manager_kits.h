@@ -81,7 +81,7 @@ public:
      */
     virtual int  GetWallpaperId(int wallpaperType) = 0;
 
-    virtual int GetFile(int wallpaperType) = 0;
+    virtual int32_t GetFile(int wallpaperType) = 0;
 
     /**
      * Obtains the minimum height of the wallpaper.
@@ -152,7 +152,7 @@ public:
 
     virtual void ResetWpProxy() = 0;
 
-    virtual void CloseWallpaperFd(int wallpaperType) = 0;
+    virtual void CloseWallpaperFd(int32_t wallpaperType) = 0;
 protected:
     WallpaperManagerkits() = default;
 };

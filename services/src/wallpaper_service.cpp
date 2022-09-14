@@ -409,9 +409,9 @@ std::vector<RgbaColor> WallpaperService::GetColors(int wallpaperType)
     return Colors;
 }
 
-int WallpaperService::GetFile(int wallpaperType)
+int32_t WallpaperService::GetFile(int32_t wallpaperType)
 {
-    mapFD wallpaperFd = GetPixelMap(wallpaperType);
+    FdInfo wallpaperFd = GetPixelMap(wallpaperType);
     return wallpaperFd.fd;
 }
 
@@ -658,14 +658,14 @@ void WallpaperService::ReporterUsageTimeStatisic()
     Reporter::GetInstance().UsageTimeStatistic().ReportUsageTimeStatistic(userId, timeStat);
 }
 
-IWallpaperService::mapFD  WallpaperService::GetPixelMap(int wallpaperType)
+IWallpaperService::FdInfo  WallpaperService::GetPixelMap(int wallpaperType)
 {
-    mapFD mapFd;
+    FdInfo fdInfo;
     HILOG_INFO("WallpaperService::getPixelMap --> start ");
     bool permissionGet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER);
     if (!permissionGet) {
         HILOG_INFO("GetPixelMap no get permission!");
-        return mapFd;
+        return fdInfo;
     }
 
     std::string filePath = "";
@@ -678,14 +678,14 @@ IWallpaperService::mapFD  WallpaperService::GetPixelMap(int wallpaperType)
 
     if (!OHOS::FileExists(filePath)) {
         HILOG_ERROR("file is not exist!");
-        return mapFd;
+        return fdInfo;
     }
     mtx.lock();
     FILE *pixmap = fopen(filePath.c_str(), "rb");
     if (pixmap == nullptr) {
         HILOG_ERROR("fopen failed");
         mtx.unlock();
-        return mapFd;
+        return fdInfo;
     }
     int fend = fseek(pixmap, 0, SEEK_END);
     int length = ftell(pixmap);
@@ -694,21 +694,21 @@ IWallpaperService::mapFD  WallpaperService::GetPixelMap(int wallpaperType)
         HILOG_ERROR("ftell failed or fseek failed");
         fclose(pixmap);
         mtx.unlock();
-        return mapFd;
+        return fdInfo;
     }
 
-    mapFd.size = length;
+    fdInfo.size = length;
     int closeRes = fclose(pixmap);
     int fd = open(filePath.c_str(), O_RDONLY, 0440);
     mtx.unlock();
     if (closeRes != 0 || fd < 0) {
         HILOG_ERROR("open failed");
         ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
-        return mapFd;
+        return fdInfo;
     }
-    mapFd.fd = fd;
-    HILOG_INFO("mapFd.fd = %{public}d", mapFd.fd);
-    return mapFd;
+    fdInfo.fd = fd;
+    HILOG_INFO("fdInfo.fd = %{public}d", fdInfo.fd);
+    return fdInfo;
 }
 
 int  WallpaperService::GetWallpaperId(int wallpaperType)

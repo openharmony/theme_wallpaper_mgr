@@ -22,7 +22,8 @@
 namespace OHOS {
 namespace WallpaperMgrService {
 using namespace OHOS::HiviewDFX;
-
+constexpr const int32_t ERROR_NONE = 0;
+constexpr const int32_t INVALID_FD = -1;
 std::vector<RgbaColor> WallpaperServiceProxy::GetColors(int wallpaperType)
 {
     std::vector<RgbaColor> Colors;
@@ -55,27 +56,27 @@ std::vector<RgbaColor> WallpaperServiceProxy::GetColors(int wallpaperType)
     return Colors;
 }
 
-int WallpaperServiceProxy::GetFile(int wallpaperType)
+int32_t WallpaperServiceProxy::GetFile(int32_t wallpaperType)
 {
-    int wallpaperFd = -1;
     MessageParcel data, reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return wallpaperFd;
+        return INVALID_FD;
     }
     if (!data.WriteInt32(wallpaperType)) {
         HILOG_ERROR(" Failed to WriteInt32 ");
-        return wallpaperFd;
+        return INVALID_FD;
     }
 
     int32_t result = Remote()->SendRequest(GET_FILE, data, reply, option);
-    if (result != ERR_NONE) {
+    if (result != ERROR_NONE) {
         HILOG_ERROR(" get file result = %{public}d ", result);
+        return INVALID_FD;
     }
 
-    wallpaperFd = reply.ReadFileDescriptor();
+    int32_t wallpaperFd = reply.ReadFileDescriptor();
     return wallpaperFd;
 }
 
@@ -147,30 +148,30 @@ bool WallpaperServiceProxy::SetWallpaperByFD(int fd, int wallpaperType, int leng
     return reply.ReadBool();
 }
 
-IWallpaperService::mapFD WallpaperServiceProxy::GetPixelMap(int wallpaperType)
+IWallpaperService::FdInfo WallpaperServiceProxy::GetPixelMap(int wallpaperType)
 {
-    mapFD mapFd;
+    FdInfo fdInfo;
     HILOG_INFO(" WallpaperServiceProxy::getPixelMap --> start ");
     MessageParcel data, reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return mapFd;
+        return fdInfo;
     }
 
     if (!data.WriteInt32(wallpaperType)) {
         HILOG_ERROR(" Failed to WriteInt32 ");
-        return mapFd;
+        return fdInfo;
     }
     int32_t result = Remote()->SendRequest(GET_PIXELMAP, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperServiceProxy::GetPixelMap fail, result = %{public}d ", result);
-        return mapFd;
+        return fdInfo;
     }
-    mapFd.size = reply.ReadInt32();
-    mapFd.fd = reply.ReadFileDescriptor();
-    return mapFd;
+    fdInfo.size = reply.ReadInt32();
+    fdInfo.fd = reply.ReadFileDescriptor();
+    return fdInfo;
 }
 
 int   WallpaperServiceProxy::GetWallpaperId(int wallpaperType)
