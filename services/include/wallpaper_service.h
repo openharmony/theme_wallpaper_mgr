@@ -64,8 +64,9 @@ public:
     static sptr<WallpaperService> GetInstance();
     bool SetWallpaperByFD(int fd, int wallpaperType, int length) override;
     bool SetWallpaperByMap(int fd, int wallpaperType, int length) override;
-    mapFD GetPixelMap(int wallpaperType) override;
+    FdInfo GetPixelMap(int wallpaperType) override;
     std::vector<RgbaColor> GetColors(int wallpaperType) override;
+    int32_t GetFile(int32_t wallpaperType) override;
     int  GetWallpaperId(int wallpaperType) override;
     int  GetWallpaperMinHeight() override;
     int  GetWallpaperMinWidth() override;
