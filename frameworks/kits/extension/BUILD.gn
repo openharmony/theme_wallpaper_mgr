@@ -148,18 +148,10 @@ ohos_shared_library("wallpaper_extension_module") {
   deps = [
     ":wallpaperextension",
     "${ability_runtime_path}/frameworks/native/ability/native:abilitykit_native",
-    "//foundation/window/window_manager/utils:libwmutil",
-    "//foundation/window/window_manager/wm:libwm",
   ]
 
   external_deps = [
-    "ability_base:base",
-    "ability_base:want",
-    "ability_base:zuri",
     "ability_runtime:runtime",
-    "c_utils:utils",
-    "hisysevent_native:libhisysevent",
-    "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
   ]
 

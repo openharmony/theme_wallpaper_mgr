@@ -56,7 +56,6 @@ ohos_shared_library("wallpaper_service") {
   ]
   deps = [
     "${utils_path}:wallpaper_utils",
-    "//foundation/graphic/graphic_2d/rosen/modules/2d_graphics:2d_graphics",
     "//foundation/graphic/graphic_2d/rosen/modules/render_service_client:librender_service_client",
   ]
   external_deps = [
@@ -66,7 +65,6 @@ ohos_shared_library("wallpaper_service") {
     "access_token:libaccesstoken_sdk",
     "bundle_framework:appexecfwk_core",
     "common_event_service:cesfwk_innerkits",
-    "graphic_standard:surface",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
