@@ -43,11 +43,9 @@ ohos_shared_library("wallpapermanager") {
     "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",
   ]
   external_deps = [
-    "hisysevent_native:libhisysevent",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "multimedia_image_standard:image",
     "multimedia_image_standard:image_native",
     "napi:ace_napi",
     "samgr:samgr_proxy",

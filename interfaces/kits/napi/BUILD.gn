@@ -33,10 +33,7 @@ ohos_shared_library("wallpaper") {
     "native_module.cpp",
     "wallpaper_js_util.cpp",
   ]
-  deps = [
-    "${utils_path}:wallpaper_utils",
-    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
-  ]
+  deps = [ "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager" ]
 
   external_deps = [
     "c_utils:utils",
