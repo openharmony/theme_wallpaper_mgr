@@ -28,17 +28,17 @@ public:
     explicit WallpaperServiceProxy(const sptr<IRemoteObject> &object) : IRemoteProxy<IWallpaperService>(object) {}
     ~WallpaperServiceProxy() {}
     DISALLOW_COPY_AND_MOVE(WallpaperServiceProxy);
-    bool SetWallpaperByFD(int fd, int wallpaperType, int length) override;
-    bool SetWallpaperByMap(int fd, int wallpaperType, int length) override;
-    IWallpaperService::FdInfo GetPixelMap(int wallpaperType) override;
+    int32_t SetWallpaperByFD(int fd, int wallpaperType, int length) override;
+    int32_t SetWallpaperByMap(int fd, int wallpaperType, int length) override;
+    int32_t GetPixelMap(int wallpaperType, IWallpaperService::FdInfo &fdInfo) override;
     std::vector<RgbaColor> GetColors(int wallpaperType) override;
-    int32_t GetFile(int wallpaperType) override;
+    int32_t GetFile(int wallpaperType, int32_t &wallpaperFd) override;
     int  GetWallpaperId(int wallpaperType) override;
     int  GetWallpaperMinHeight() override;
     int  GetWallpaperMinWidth() override;
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
-    bool ResetWallpaper(int wallpaperType) override;
+    int32_t ResetWallpaper(int wallpaperType) override;
     bool ScreenshotLiveWallpaper(int sacleNumber, OHOS::Media::PixelMap pixelMap) override;
     bool On(sptr<IWallpaperColorChangeListener> listener) override;
     bool Off(sptr<IWallpaperColorChangeListener> listener) override;

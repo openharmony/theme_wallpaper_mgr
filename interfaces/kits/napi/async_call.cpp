@@ -14,18 +14,18 @@
  */
 #define LOG_TAG "AsyncCall"
 #include "async_call.h"
+
 #include "hilog_wrapper.h"
+#include "js_error.h"
 
 namespace OHOS::WallpaperNAPI {
-AsyncCall::AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos)
-    : env_(env)
+AsyncCall::AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos) : env_(env)
 {
     context_ = new AsyncContext();
     size_t argc = 6;
     napi_value self = nullptr;
-    napi_value argv[6] = {nullptr};
+    napi_value argv[6] = { nullptr };
     NAPI_CALL_RETURN_VOID(env, napi_get_cb_info(env, info, &argc, argv, &self, nullptr));
-    NAPI_ASSERT_BASE(env, pos <= argc, " Invalid Args!", NAPI_RETVAL_NOTHING);
     pos = ((pos == ASYNC_DEFAULT_POS) ? (argc - 1) : pos);
     if (pos >= 0 && pos < argc) {
         napi_valuetype valueType = napi_undefined;
@@ -33,9 +33,16 @@ AsyncCall::AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Cont
         if (valueType == napi_function) {
             napi_create_reference(env, argv[pos], 1, &context_->callback);
             argc = pos;
+        }else{
+            context->errCode_ = ErrorThrowType::PARAMETER_ERROR;
+            context->errMsg_ = parameterErrorMessage;
         }
     }
-    NAPI_CALL_RETURN_VOID(env, (*context)(env, argc, argv, self));
+    auto status = (*context)(env, argc, argv, self);
+    if (status != napi_ok && context->errCode_ != 0) {
+        JsError::ThrowError(env, context->errCode_, context->errMsg_);
+        return;
+    }
     context_->ctx = std::move(context);
     napi_create_reference(env, self, 1, &context_->self);
 }
@@ -49,7 +56,7 @@ AsyncCall::~AsyncCall()
     DeleteContext(env_, context_);
 }
 
-napi_value AsyncCall::Call(napi_env env, Context::ExecAction exec)
+napi_value AsyncCall::Call(napi_env env)
 {
     if (context_ == nullptr) {
         HILOG_DEBUG("context_ is null");
@@ -60,7 +67,6 @@ napi_value AsyncCall::Call(napi_env env, Context::ExecAction exec)
         return nullptr;
     }
     HILOG_DEBUG("async call exec");
-    context_->ctx->exec_ = std::move(exec);
     napi_value promise = nullptr;
     if (context_->callback == nullptr) {
         napi_create_promise(env, &context_->defer, &promise);
@@ -78,22 +84,20 @@ napi_value AsyncCall::Call(napi_env env, Context::ExecAction exec)
     return promise;
 }
 
-napi_value AsyncCall::SyncCall(napi_env env, AsyncCall::Context::ExecAction exec)
+napi_value AsyncCall::SyncCall(napi_env env)
 {
     if ((context_ == nullptr) || (context_->ctx == nullptr)) {
         HILOG_DEBUG("context_ or context_->ctx is null");
         return nullptr;
     }
-    context_->ctx->exec_ = std::move(exec);
-    napi_value promise = nullptr;
-    if (context_->callback == nullptr) {
-        napi_create_promise(env, &context_->defer, &promise);
-    } else {
-        napi_get_undefined(env, &promise);
-    }
     AsyncCall::OnExecute(env, context_);
-    AsyncCall::OnComplete(env, napi_ok, context_);
-    return promise;
+    napi_value output = nullptr;
+    napi_status runStatus = (*context_->ctx)(env, &output);
+    if (runStatus != napi_ok && context_->ctx->errCode_ != 0) {
+        JsError::ThrowError(env, context_->ctx->errCode_, context_->ctx->errMsg_);
+        return nullptr;
+    }
+    return output;
 }
 
 void AsyncCall::OnExecute(napi_env env, void *data)
@@ -162,4 +166,4 @@ void AsyncCall::DeleteContext(napi_env env, AsyncContext *context)
     }
     delete context;
 }
-}
+} // namespace OHOS::WallpaperNAPI

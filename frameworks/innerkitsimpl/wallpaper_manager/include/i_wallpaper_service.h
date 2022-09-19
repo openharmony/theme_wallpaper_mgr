@@ -66,9 +66,9 @@ public:
     * WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    virtual bool SetWallpaperByFD(int fd, int wallpaperType, int length) = 0;
-    virtual bool SetWallpaperByMap(int fd, int wallpaperType, int length) = 0;
-    virtual FdInfo GetPixelMap(int wallpaperType) = 0;
+    virtual int32_t SetWallpaperByFD(int fd, int wallpaperType, int length) = 0;
+    virtual int32_t SetWallpaperByMap(int fd, int wallpaperType, int length) = 0;
+    virtual int32_t GetPixelMap(int wallpaperType, FdInfo &fdInfo) = 0;
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
@@ -76,7 +76,7 @@ public:
      */
     virtual std::vector<RgbaColor> GetColors(int wallpaperType) = 0;
 
-    virtual int32_t GetFile(int wallpaperType) = 0;
+    virtual int32_t GetFile(int wallpaperType, int32_t &wallpaperFd) = 0;
 
     /**
      * Obtains the ID of the wallpaper of the specified type.
@@ -114,7 +114,7 @@ public:
      * @param wallpaperType  Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @permission ohos.permission.SET_WALLPAPER
      */
-    virtual bool ResetWallpaper(int wallpaperType) = 0;
+    virtual int32_t ResetWallpaper(int wallpaperType) = 0;
 
     /**
      * Screen shot live wallpaper

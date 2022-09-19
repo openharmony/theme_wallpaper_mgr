@@ -48,7 +48,7 @@ public:
     * WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    virtual bool SetWallpaper(std::string url, int wallpaperType) = 0;
+    virtual int32_t SetWallpaper(std::string url, int wallpaperType) = 0;
 
      /**
     * Wallpaper set.
@@ -56,7 +56,7 @@ public:
     * WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    virtual bool SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int wallpaperType) = 0;
+    virtual int32_t SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int wallpaperType) = 0;
 
     /**
         *Obtains the default pixel map of a wallpaper of the specified type.
@@ -65,7 +65,7 @@ public:
         * @permission ohos.permission.GET_WALLPAPER
         * @systemapi Hide this for inner system use.
     */
-    virtual std::shared_ptr<OHOS::Media::PixelMap> GetPixelMap(int wallpaperType) = 0;
+    virtual int32_t GetPixelMap(int wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap) = 0;
 
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
@@ -81,7 +81,7 @@ public:
      */
     virtual int  GetWallpaperId(int wallpaperType) = 0;
 
-    virtual int32_t GetFile(int wallpaperType) = 0;
+    virtual int32_t GetFile(int wallpaperType, int32_t &wallpaperFd) = 0;
 
     /**
      * Obtains the minimum height of the wallpaper.
@@ -112,7 +112,7 @@ public:
      * @param wallpaperType  Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @permission ohos.permission.SET_WALLPAPER
      */
-    virtual bool ResetWallpaper(std::int32_t wallpaperType) = 0;
+    virtual int32_t ResetWallpaper(std::int32_t wallpaperType) = 0;
 
     /**
      * Screen shot live wallpaper

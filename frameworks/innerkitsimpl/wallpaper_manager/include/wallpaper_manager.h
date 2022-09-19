@@ -26,6 +26,7 @@
 #include "i_wallpaper_service.h"
 #include "singleton.h"
 #include "reporter.h"
+#include "wallpaper_common.h"
 
 using JScallback = bool (*) (int);
 namespace OHOS {
@@ -42,7 +43,7 @@ public:
     * values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    bool SetWallpaper(std::string url, int wallpaperType) final;
+    int32_t SetWallpaper(std::string url, int wallpaperType) final;
 
       /**
     * Wallpaper set.
@@ -50,7 +51,7 @@ public:
     * values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    bool SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int wallpaperType) final;
+    int32_t SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int wallpaperType) final;
 
     /**
         *Obtains the default pixel map of a wallpaper of the specified type.
@@ -59,7 +60,7 @@ public:
         * @permission ohos.permission.GET_WALLPAPER
         * @systemapi Hide this for inner system use.
     */
-    std::shared_ptr<OHOS::Media::PixelMap> GetPixelMap(int wallpaperType) final;
+    int32_t GetPixelMap(int wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &PixelMap) final;
 
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
@@ -75,7 +76,7 @@ public:
      */
     int GetWallpaperId(int wallpaperType) final;
 
-    int32_t GetFile(int wallpaperType) final;
+    int32_t GetFile(int wallpaperType, int32_t &wallpaperFd) final;
 
     /**
      * Obtains the minimum height of the wallpaper.
@@ -106,7 +107,7 @@ public:
      * @param wallpaperType  Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @permission ohos.permission.SET_WALLPAPER
      */
-    bool ResetWallpaper(std::int32_t wallpaperType) final;
+    int32_t ResetWallpaper(std::int32_t wallpaperType) final;
 
     /**
      * Screen shot live wallpaper

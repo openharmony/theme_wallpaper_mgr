@@ -16,18 +16,19 @@
 #ifndef NAPI_WALLPAPER_ABILITY_H
 #define NAPI_WALLPAPER_ABILITY_H
 
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
+
+#include "async_call.h"
+#include "napi/native_api.h"
 #include "napi/native_common.h"
 #include "napi/native_node_api.h"
-#include "napi/native_api.h"
 #include "pixel_map.h"
 #include "pixel_map_napi.h"
-#include "wallpaper_manager_common_info.h"
 #include "wallpaper_color_change_listener.h"
-#include "async_call.h"
 #include "wallpaper_js_util.h"
+#include "wallpaper_manager_common_info.h"
 
 #define BUFFER_LENGTH_MAX (128)
 #define DEFAULT_STACK_ID (1)
@@ -39,14 +40,15 @@
 #define BUSINESS_ERROR_CODE_OK 0
 namespace OHOS {
 namespace WallpaperNAPI {
+
 struct GetContextInfo : public AsyncCall::Context {
     int wallpaperType;
     std::vector<RgbaColor> colors;
     int wallpaperId;
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     napi_status status = napi_generic_failure;
-    GetContextInfo() : Context(nullptr, nullptr) { };
-    GetContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)) { };
+    GetContextInfo() : Context(nullptr, nullptr){};
+    GetContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)){};
 
     napi_status operator()(napi_env env, size_t argc, napi_value *argv, napi_value self) override
     {
@@ -66,8 +68,8 @@ struct GetMinContextInfo : public AsyncCall::Context {
     int minHeight;
     int minWidth;
     napi_status status = napi_generic_failure;
-    GetMinContextInfo() : Context(nullptr, nullptr) { };
-    GetMinContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)) { };
+    GetMinContextInfo() : Context(nullptr, nullptr){};
+    GetMinContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)){};
 
     napi_status operator()(napi_env env, size_t argc, napi_value *argv, napi_value self) override
     {
@@ -87,8 +89,8 @@ struct PermissionContextInfo : public AsyncCall::Context {
     bool isChangePermitted;
     bool isOperationAllowed;
     napi_status status = napi_generic_failure;
-    PermissionContextInfo() : Context(nullptr, nullptr) { };
-    PermissionContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)) { };
+    PermissionContextInfo() : Context(nullptr, nullptr){};
+    PermissionContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)){};
 
     napi_status operator()(napi_env env, size_t argc, napi_value *argv, napi_value self) override
     {
@@ -110,8 +112,8 @@ struct SetContextInfo : public AsyncCall::Context {
     std::unique_ptr<OHOS::Media::PixelMap> pixelMap;
     napi_status status = napi_generic_failure;
     bool isPixelEmp = false;
-    SetContextInfo() : Context(nullptr, nullptr) { };
-    SetContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)) { };
+    SetContextInfo() : Context(nullptr, nullptr){};
+    SetContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)){};
 
     napi_status operator()(napi_env env, size_t argc, napi_value *argv, napi_value self) override
     {
@@ -131,8 +133,8 @@ struct GetFileContextInfo : public AsyncCall::Context {
     int32_t wallpaperType = 0;
     int32_t wallpaperFd = 0;
     napi_status status = napi_generic_failure;
-    GetFileContextInfo() : Context(nullptr, nullptr) { };
-    GetFileContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)) { };
+    GetFileContextInfo() : Context(nullptr, nullptr){};
+    GetFileContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)){};
 
     napi_status operator()(napi_env env, size_t argc, napi_value *argv, napi_value self) override
     {
@@ -155,15 +157,20 @@ public:
     NapiWallpaperAbility(napi_env env, napi_value callback);
     virtual ~NapiWallpaperAbility();
     void onColorsChange(std::vector<RgbaColor> color, int wallpaperType) override;
+    static bool IsValidArgCount(size_t argc, size_t expectationSize);
+    static bool IsValidArgType(napi_env env, napi_value argValue, napi_valuetype expectationType);
+    static bool IsValidArgRange(napi_env env, napi_value argValue);
+
 private:
     struct EventDataWorker {
         const NapiWallpaperAbility *listener = nullptr;
         const std::vector<RgbaColor> color;
         const int wallpaperType;
-        EventDataWorker(const NapiWallpaperAbility * const & listenerIn,
-                        const std::vector<RgbaColor> &colorIn,
-                        const int wallpaperTypeIn)
-            : listener(listenerIn), color(colorIn), wallpaperType(wallpaperTypeIn) {}
+        EventDataWorker(const NapiWallpaperAbility *const &listenerIn, const std::vector<RgbaColor> &colorIn,
+            const int wallpaperTypeIn)
+            : listener(listenerIn), color(colorIn), wallpaperType(wallpaperTypeIn)
+        {
+        }
     };
     napi_ref callback_ = nullptr;
     napi_env env_;
@@ -171,18 +178,38 @@ private:
 };
 
 napi_value NAPI_GetColors(napi_env env, napi_callback_info info);
+napi_value NAPI_GetColorsSync(napi_env env, napi_callback_info info);
+void NAPI_GetColorsInner(std::shared_ptr<GetContextInfo> &context);
 napi_value NAPI_GetId(napi_env env, napi_callback_info info);
+napi_value NAPI_GetIdSync(napi_env env, napi_callback_info info);
+void NAPI_GetIdInner(std::shared_ptr<GetContextInfo> &context);
+napi_value NAPI_GetFile(napi_env env, napi_callback_info info);
+napi_value NAPI_GetFileSync(napi_env env, napi_callback_info info);
+void NAPI_GetFileInner(std::shared_ptr<GetFileContextInfo> &context);
 napi_value NAPI_GetMinHeight(napi_env env, napi_callback_info info);
+napi_value NAPI_GetMinHeightSync(napi_env env, napi_callback_info info);
+void NAPI_GetMinHeightInner(std::shared_ptr<GetMinContextInfo> &context);
 napi_value NAPI_GetMinWidth(napi_env env, napi_callback_info info);
+napi_value NAPI_GetMinWidthSync(napi_env env, napi_callback_info info);
+void NAPI_GetMinWidthInner(std::shared_ptr<GetMinContextInfo> &context);
 napi_value NAPI_IsChangePermitted(napi_env env, napi_callback_info info);
+napi_value NAPI_IsChangeAllowed(napi_env env, napi_callback_info info);
+void NAPI_IsChangeAllowedInner(std::shared_ptr<PermissionContextInfo> &context);
 napi_value NAPI_IsOperationAllowed(napi_env env, napi_callback_info info);
+napi_value NAPI_IsUserChangeAllowed(napi_env env, napi_callback_info info);
+void NAPI_IsUserChangeAllowedInner(std::shared_ptr<PermissionContextInfo> &context);
 napi_value NAPI_Reset(napi_env env, napi_callback_info info);
+napi_value NAPI_Restore(napi_env env, napi_callback_info info);
+void NAPI_RestoreInner(std::shared_ptr<SetContextInfo> &context);
 napi_value NAPI_SetWallpaper(napi_env env, napi_callback_info info);
+napi_value NAPI_SetImage(napi_env env, napi_callback_info info);
+void NAPI_SetImageInner(std::shared_ptr<SetContextInfo> &context);
 napi_value NAPI_GetPixelMap(napi_env env, napi_callback_info info);
+napi_value NAPI_GetImage(napi_env env, napi_callback_info info);
+void NAPI_GetImageInner(std::shared_ptr<GetContextInfo> &context);
 napi_value NAPI_ScreenshotLiveWallpaper(napi_env env, napi_callback_info info);
 napi_value NAPI_On(napi_env env, napi_callback_info info);
 napi_value NAPI_Off(napi_env env, napi_callback_info info);
-napi_value NAPI_GetFile(napi_env env, napi_callback_info info);
-}
-}
-#endif  //  NAPI_WALLPAPER_ABILITY_H
+} // namespace WallpaperNAPI
+} // namespace OHOS
+#endif //  NAPI_WALLPAPER_ABILITY_H

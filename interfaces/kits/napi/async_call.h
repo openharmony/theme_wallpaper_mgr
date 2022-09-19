@@ -37,9 +37,9 @@ public:
             output_ = output;
         }
 
-        void SetAction(OutputAction output)
+        void SetExecution(ExecAction exec)
         {
-            SetAction(nullptr, std::move(output));
+            exec_ =exec;
         }
 
         void SetErrInfo(int32_t errCode, std::string errMsg)
@@ -85,8 +85,8 @@ public:
     static constexpr size_t ASYNC_DEFAULT_POS = -1;
     AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos = ASYNC_DEFAULT_POS);
     ~AsyncCall();
-    napi_value Call(napi_env env, Context::ExecAction exec = nullptr);
-    napi_value SyncCall(napi_env env, Context::ExecAction exec = nullptr);
+    napi_value Call(napi_env env);
+    napi_value SyncCall(napi_env env);
 private:
     enum arg : int {
         ARG_ERROR,

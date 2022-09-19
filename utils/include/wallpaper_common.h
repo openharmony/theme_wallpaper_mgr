@@ -16,6 +16,7 @@
 #define WALLPAPER_SERVICES_WALLPAPER_COMMON_H
 
 #include <string>
+
 #include "errors.h"
 
 namespace OHOS {
@@ -41,20 +42,22 @@ enum WallpaperModule {
 // time error offset, used only in this file.
 constexpr ErrCode WALLPAPER_ERR_OFFSET = ErrCodeOffset(SUBSYS_SMALLSERVICES, WALLPAPER_MODULE_SERVICE_ID);
 
-enum WallpaperError {
-    E_WALLPAPER_OK = WALLPAPER_ERR_OFFSET,
-    E_WALLPAPER_SA_DIED,
-    E_WALLPAPER_READ_PARCEL_ERROR,
-    E_WALLPAPER_WRITE_PARCEL_ERROR,
-    E_WALLPAPER_PUBLISH_FAIL,
-    E_WALLPAPER_TRANSACT_ERROR,
-    E_WALLPAPER_DEAL_FAILED,
-    E_WALLPAPER_PARAMETERS_INVALID,
-    E_WALLPAPER_SET_RTC_FAILED,
-    E_WALLPAPER_NOT_FOUND,
-    E_WALLPAPER_NO_PERMISSION,
+enum ErrorCode : int32_t {
+    E_OK = WALLPAPER_ERR_OFFSET,
+    E_SA_DIED,
+    E_READ_PARCEL_ERROR,
+    E_WRITE_PARCEL_ERROR,
+    E_PUBLISH_FAIL,
+    E_TRANSACT_ERROR,
+    E_DEAL_FAILED,
+    E_PARAMETERS_INVALID,
+    E_SET_RTC_FAILED,
+    E_NOT_FOUND,
+    E_NO_PERMISSION,
+    E_FILE_ERROR,
+    E_IMAGE_ERRCODE
 };
-} // namespace
-} // names
+} // namespace WallpaperMgrService
+} // namespace OHOS
 
 #endif // WALLPAPER_SERVICES_WALLPAPER_COMMON_H

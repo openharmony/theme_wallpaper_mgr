@@ -62,17 +62,17 @@ public:
     ~WallpaperService();
 
     static sptr<WallpaperService> GetInstance();
-    bool SetWallpaperByFD(int fd, int wallpaperType, int length) override;
-    bool SetWallpaperByMap(int fd, int wallpaperType, int length) override;
-    FdInfo GetPixelMap(int wallpaperType) override;
+    int32_t SetWallpaperByFD(int fd, int wallpaperType, int length) override;
+    int32_t SetWallpaperByMap(int fd, int wallpaperType, int length) override;
+    int32_t GetPixelMap(int wallpaperType, FdInfo &fdInfo) override;
     std::vector<RgbaColor> GetColors(int wallpaperType) override;
-    int32_t GetFile(int32_t wallpaperType) override;
+    int32_t GetFile(int32_t wallpaperType, int32_t &wallpaperFd) override;
     int  GetWallpaperId(int wallpaperType) override;
     int  GetWallpaperMinHeight() override;
     int  GetWallpaperMinWidth() override;
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
-    bool ResetWallpaper(int wallpaperType) override;
+    int32_t ResetWallpaper(int wallpaperType) override;
     bool ScreenshotLiveWallpaper(int scaleNumber, OHOS::Media::PixelMap pixelMap) override;
     bool On(sptr<IWallpaperColorChangeListener> listener) override;
     bool Off(sptr<IWallpaperColorChangeListener> listener) override;
@@ -120,13 +120,13 @@ private:
     bool BindWallpaperComponentLocked(ComponentName& componentName, bool force, bool fromUser, WallpaperData wallpaper);
     bool GetWallpaperSafeLocked(int userId, int wpType, WallpaperData paperdata);
     void ClearWallpaperLocked(int userId, int wpType);
-    bool SetDefaultDateForWallpaper(int userId, int wpType);
+    int32_t SetDefaultDateForWallpaper(int userId, int wpType);
     int MakeWallpaperIdLocked();
     bool ChangingToSame(ComponentName componentName, WallpaperData wallpaper);
     bool WPCheckCallingPermission(const std::string &promissionName);
     bool WPGetBundleNameByUid(std::int32_t uid, std::string &bname);
     bool MakeCropWallpaper(int wallpaperType);
-    bool SetWallpaperBackupData(std::string uriOrPixelMap, int wallpaperType);
+    int32_t SetWallpaperBackupData(std::string uriOrPixelMap, int wallpaperType);
     int32_t ConnectExtensionAbility(const OHOS::AAFwk::Want& want);
 
 private:
