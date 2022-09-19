@@ -54,7 +54,7 @@ public:
     {
         return WallpaperService::GetInstance()->ResetWallpaper(wallpaperType);
     }
-    virtual mapFD GetPixelMap(int wallpaperType)
+    virtual FdInfo GetPixelMap(int wallpaperType)
     {
         return WallpaperService::GetInstance()->GetPixelMap(wallpaperType);
     }

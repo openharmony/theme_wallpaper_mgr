@@ -39,6 +39,7 @@ public:
         GET_PIXELMAPFILE,
         GET_COLORS,
         GET_WALLPAPER_ID,
+        GET_FILE,
         GET_WALLPAPER_MIN_HEIGHT,
         GET_WALLPAPER_MIN_WIDTH,
         RESET_WALLPAPER,
@@ -54,7 +55,7 @@ public:
         int fileLen;
     };
 
-    struct mapFD {
+    struct FdInfo {
         int fd;
         int size;
     };
@@ -67,51 +68,53 @@ public:
     */
     virtual bool SetWallpaperByFD(int fd, int wallpaperType, int length) = 0;
     virtual bool SetWallpaperByMap(int fd, int wallpaperType, int length) = 0;
-    virtual mapFD GetPixelMap(int wallpaperType) = 0;
+    virtual FdInfo GetPixelMap(int wallpaperType) = 0;
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return RgbaColor type of array callback function
      */
-    virtual std::vector<RgbaColor> GetColors(int wallpaperType)=0;
+    virtual std::vector<RgbaColor> GetColors(int wallpaperType) = 0;
+
+    virtual int32_t GetFile(int wallpaperType) = 0;
 
     /**
      * Obtains the ID of the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of callback function
      */
-    virtual int  GetWallpaperId(int wallpaperType)=0;
+    virtual int GetWallpaperId(int wallpaperType) = 0;
 
-     /**
+    /**
      * Obtains the minimum height of the wallpaper.
      * @return number type of callback function
      */
-    virtual int  GetWallpaperMinHeight()=0;
+    virtual int GetWallpaperMinHeight() = 0;
 
-     /**
+    /**
      * Obtains the minimum width of the wallpaper.
      * @return number type of callback function
      */
-    virtual int  GetWallpaperMinWidth()=0;
+    virtual int GetWallpaperMinWidth() = 0;
 
-     /**
+    /**
      * Checks whether to allow the application to change the wallpaper for the current user.
      * @return boolean type of callback function
      */
-    virtual bool IsChangePermitted()=0;
+    virtual bool IsChangePermitted() = 0;
 
     /**
      * Checks whether a user is allowed to set wallpapers.
      * @return boolean type of callback function
      */
-    virtual bool IsOperationAllowed()=0;
+    virtual bool IsOperationAllowed() = 0;
 
-     /**
+    /**
      * Removes a wallpaper of the specified type and restores the default one.
      * @param wallpaperType  Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @permission ohos.permission.SET_WALLPAPER
      */
-    virtual bool ResetWallpaper(int wallpaperType)=0;
+    virtual bool ResetWallpaper(int wallpaperType) = 0;
 
     /**
      * Screen shot live wallpaper
