@@ -33,17 +33,17 @@ ohos_unittest("wallpaper_test") {
     "//base/theme/wallpaper_mgr/services/src/adapter",
     "//foundation/graphic/graphic_2d/interfaces/innerkits/wm",
 
-    #"//foundation/multimedia/image_standard/interfaces/innerkits/include",
+    #"//foundation/multimedia/image_framework/interfaces/innerkits/include",
   ]
   deps = [
     "${ability_runtime_path}/frameworks/native/ability/native:abilitykit_native",
     "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",
     "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
     "//base/theme/wallpaper_mgr/services:wallpaper_service",
-    "//foundation/multimedia/image_standard:image_framework",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
+    "//foundation/multimedia/image_framework:image_framework",
+    "//foundation/multimedia/image_framework/interfaces/innerkits:image",
+    "//foundation/multimedia/image_framework/interfaces/innerkits:image_native",
+    "//foundation/multimedia/image_framework/interfaces/innerkits:image_native",
     "//foundation/window/window_manager/utils:libwmutil",
     "//foundation/window/window_manager/wm:libwm",
     "//third_party/googletest:gmock",
