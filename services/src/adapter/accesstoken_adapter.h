@@ -42,7 +42,7 @@ private:
 class AccessTokenImpl : public AccessTokenAdapter {
 public:
     AccessTokenImpl() = default;
-    virtual ~AccessTokenImpl() = default;
+    ~AccessTokenImpl() override;
 
     int VerifyAccessToken(Security::AccessToken::AccessTokenID tokenID, const std::string &permissionName) override;
 };
