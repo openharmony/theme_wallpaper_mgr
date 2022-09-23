@@ -39,4 +39,4 @@ private:
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
-#endif //WALLPAPER_EXTENSION_ABILITY_CONNECTION_H
+#endif // WALLPAPER_EXTENSION_ABILITY_CONNECTION_H

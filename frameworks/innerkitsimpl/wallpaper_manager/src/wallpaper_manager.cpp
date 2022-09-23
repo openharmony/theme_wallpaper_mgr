@@ -181,14 +181,12 @@ bool WallpaperManager::SetWallpaper(std::string url, int wallpaperType)
         return false;
     }
     if (!OHOS::FileExists(url)) {
-        HILOG_ERROR("file is not exist!");
         HILOG_ERROR("file is not exist! %{public}s", url.c_str());
         return false;
     }
     FILE *pixMap = std::fopen(url.c_str(), "rb");
     if (pixMap == nullptr) {
-        HILOG_ERROR("fopen faild, %{public}s", strerror(errno));
-        HILOG_ERROR("fopen faild, %{public}s", url.c_str());
+        HILOG_ERROR("fopen faild, %{public}s, %{public}s", url.c_str(), strerror(errno));
         return false;
     }
     int fend = fseek(pixMap, 0, SEEK_END);

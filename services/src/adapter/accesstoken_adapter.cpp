@@ -36,6 +36,10 @@ int AccessTokenProxy::VerifyAccessToken(Security::AccessToken::AccessTokenID tok
     return accessToken_->VerifyAccessToken(tokenID, permissionName);
 }
 
+AccessTokenImpl::~AccessTokenImpl()
+{
+}
+
 int AccessTokenImpl::VerifyAccessToken(Security::AccessToken::AccessTokenID tokenID, const std::string &permissionName)
 {
     HILOG_INFO("Enter VerifyAccessToken.");
