@@ -27,11 +27,11 @@ public:
     ~FileDeal();
     bool DirIsExist(std::string path);
     bool Mkdir(std::string path);
-    bool CopyFile(char* SourceFile, char* NewFile);
-    int DeleteFile(char* SourceFile);
-    bool FileIsExist (const std::string& name) ;
+    static bool CopyFile(const std::string &sourceFile, const std::string &newFile);
+    int DeleteFile(char *SourceFile);
+    bool FileIsExist(const std::string &name);
 };
-}
-}
+} // namespace WallpaperMgrService
+} // namespace OHOS
 
 #endif

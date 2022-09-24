@@ -49,35 +49,31 @@ bool FileDeal::Mkdir(std::string path)
     return true;
 }
 
-bool FileDeal::CopyFile(char* SourceFile, char* NewFile)
+bool FileDeal::CopyFile(const std::string &sourceFile, const std::string &newFile)
 {
-    HILOG_INFO("wallpaperservice Copy file Star:from [%{public}s] to [%{public}s]", SourceFile, NewFile);
-    bool bFlag = false;
+    HILOG_INFO("Copy file Star:from [%{public}s] to [%{public}s]", sourceFile.c_str(), newFile.c_str());
     std::ifstream in;
     std::ofstream out;
 
-        in.open(SourceFile, std::ios::binary);
-        if (in.fail()) {
-            HILOG_INFO("FileDeal : open file  %{public}s failed", SourceFile);
-            in.close();
-            out.close();
-            return bFlag;
-        }
-        out.open(NewFile, std::ios::binary);
-        if (out.fail()) {
-            HILOG_INFO("FileDeal : open file  %{public}s failed", NewFile);
-            out.close();
-            in.close();
-            return bFlag;
-        } else {
-            out << in.rdbuf();
-            out.close();
-            in.close();
-            bFlag = true;
-            HILOG_INFO("FileDeal : copy file  %{public}s, new file=%{public}s,success", SourceFile, NewFile);
-            return bFlag;
-        }
-    return bFlag;
+    in.open(sourceFile.c_str(), std::ios::binary);
+    if (in.fail()) {
+        HILOG_INFO("open file  %{public}s failed", sourceFile.c_str());
+        in.close();
+        out.close();
+        return false;
+    }
+    out.open(newFile.c_str(), std::ios::binary);
+    if (out.fail()) {
+        HILOG_INFO("open file  %{public}s failed", newFile.c_str());
+        out.close();
+        in.close();
+        return false;
+    }
+    out << in.rdbuf();
+    out.close();
+    in.close();
+    HILOG_INFO("copy file is %{public}s, new file is %{public}s,success", sourceFile.c_str(), newFile.c_str());
+    return true;
 }
 
 bool FileDeal::FileIsExist(const std::string& name)

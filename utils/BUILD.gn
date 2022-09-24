@@ -26,7 +26,6 @@ ohos_shared_library("wallpaper_utils") {
     "dfx/hisysevent_adapter",
     "include",
   ]
-  deps = [ "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility" ]
   external_deps = [
     "hisysevent_native:libhisysevent",
     "hiviewdfx_hilog_native:libhilog",
