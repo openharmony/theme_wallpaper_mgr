@@ -40,7 +40,7 @@ namespace WallpaperMgrService {
         return mClass;
     }
 
-    bool ComponentName::equals(ComponentName& obj)
+    bool ComponentName::equals(const ComponentName &obj)
     {
         return mPackage == obj.GetPackageName() && mClass == obj.GetClassName();
     }
