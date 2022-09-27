@@ -40,17 +40,9 @@ namespace WallpaperMgrService {
         return mClass;
     }
 
-    bool ComponentName::equals(ComponentName& obj)
+    bool ComponentName::equals(ComponentName &obj)
     {
-        try {
-                // Note: no null checks, because mPackage and mClass can
-                // never be null.
-                return mPackage==obj.GetPackageName()
-                        && mClass==obj.GetClassName();
-        } catch (std::exception e) {
-            // DO NOTHING
-        }
-        return false;
+        return mPackage == obj.GetPackageName() && mClass == obj.GetClassName();
     }
-}
+    }
 }
