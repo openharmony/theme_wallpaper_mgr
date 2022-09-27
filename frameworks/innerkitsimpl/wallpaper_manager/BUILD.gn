@@ -23,7 +23,7 @@ config("wallpaper_manager_config") {
     "//base/theme/wallpaper_mgr/utils/include",
     "//third_party/libuv/include",
   ]
-  cflags_cc = [ "-fexceptions" ]
+  cflags_cc = []
 }
 
 ohos_shared_library("wallpapermanager") {
