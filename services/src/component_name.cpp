@@ -31,11 +31,11 @@ namespace WallpaperMgrService {
         mClass = cls;
     }
 
-    std::string ComponentName::GetPackageName()
+    std::string ComponentName::GetPackageName() const
     {
         return mPackage;
     }
-    std::string ComponentName::GetClassName()
+    std::string ComponentName::GetClassName() const
     {
         return mClass;
     }
