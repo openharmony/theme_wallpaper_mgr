@@ -23,7 +23,7 @@ config("wallpaper_service_config") {
     "//base/theme/wallpaper_mgr/utils/dfx/hidumper_adapter",
   ]
 
-  cflags_cc = [ "-fexceptions" ]
+  cflags_cc = []
 }
 
 ohos_shared_library("wallpaper_service") {
