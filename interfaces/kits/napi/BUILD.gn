@@ -38,8 +38,8 @@ ohos_shared_library("wallpaper") {
   external_deps = [
     "c_utils:utils",
     "hiviewdfx_hilog_native:libhilog",
-    "multimedia_image_standard:image",
-    "multimedia_image_standard:image_native",
+    "multimedia_image_framework:image",
+    "multimedia_image_framework:image_native",
     "napi:ace_napi",
   ]
 
