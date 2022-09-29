@@ -32,8 +32,7 @@
 #include "image_utils.h"
 #include "file_ex.h"
 #include "directory_ex.h"
-#include "file_util.h"
-#include "time_util.h"
+#include "file_deal.h"
 #include "image_packer.h"
 #include "bundle_mgr_interface.h"
 #include "iservice_registry.h"
@@ -62,8 +61,6 @@ namespace WallpaperMgrService {
 REGISTER_SYSTEM_ABILITY_BY_ID(WallpaperService, WALLPAPER_MANAGER_SERVICE_ID, true);
 
 using namespace OHOS::Media;
-using namespace OHOS::HiviewDFX::FileUtil;
-using namespace OHOS::HiviewDFX::TimeUtil;
 using namespace OHOS::MiscServices;
 
 const std::string WallpaperService::WALLPAPER = "wallpaper_orig";
@@ -355,42 +352,37 @@ void WallpaperService::MigrateFromOld()
     }
     if (OHOS::FileExists(wallpaperSystemCropFileFullPath_)) {
         if (!OHOS::FileExists(wallpaperSystemFileFullPath_)) {
-            ret = OHOS::HiviewDFX::FileUtil::CopyFile(wallpaperSystemCropFileFullPath_,
-                wallpaperSystemFileFullPath_);
+            ret = FileDeal::CopyFile(wallpaperSystemCropFileFullPath_, wallpaperSystemFileFullPath_);
             if (ret < 0) {
                 return;
             }
         }
     } else if (OHOS::FileExists(WALLPAPER_DEFAULT_FILEFULLPATH)) {
-        ret = OHOS::HiviewDFX::FileUtil::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemCropFileFullPath_);
+        ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemCropFileFullPath_);
         if (ret < 0) {
-                return;
-            }
-        ret = OHOS::HiviewDFX::FileUtil::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH,
-            wallpaperSystemFileFullPath_);
+            return;
+        }
+        ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemFileFullPath_);
         if (ret < 0) {
-                return;
-            }
+            return;
+        }
     }
     if (OHOS::FileExists(wallpaperLockScreenCropFileFullPath_)) {
         if (!OHOS::FileExists(wallpaperLockScreenFileFullPath_)) {
-            ret = OHOS::HiviewDFX::FileUtil::CopyFile(wallpaperLockScreenCropFileFullPath_,
-                wallpaperLockScreenFileFullPath_);
-                if (ret < 0) {
+            ret = FileDeal::CopyFile(wallpaperLockScreenCropFileFullPath_, wallpaperLockScreenFileFullPath_);
+            if (ret < 0) {
                 return;
             }
         }
     } else if (OHOS::FileExists(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH)) {
-        ret = OHOS::HiviewDFX::FileUtil::CopyFile(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH,
-            wallpaperLockScreenCropFileFullPath_);
+        ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH, wallpaperLockScreenCropFileFullPath_);
         if (ret < 0) {
-                return;
-            }
-        ret = OHOS::HiviewDFX::FileUtil::CopyFile(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH,
-            wallpaperLockScreenFileFullPath_);
-            if (ret < 0) {
-                return;
-            }
+            return;
+        }
+        ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH, wallpaperLockScreenFileFullPath_);
+        if (ret < 0) {
+            return;
+        }
     }
 }
 
@@ -478,8 +470,9 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
         std::string tmpPath = wallpaperCropPath;
         int64_t packedSize = WritePixelMapToFile(tmpPath, std::move(wallpaperPixelMap));
         if (packedSize != 0) {
-            ret = CopyFile(tmpPath, (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemCropFileFullPath_:
-                wallpaperLockScreenCropFileFullPath_));
+            ret = FileDeal::CopyFile(
+                tmpPath, (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemCropFileFullPath_
+                                                            : wallpaperLockScreenCropFileFullPath_));
             if (remove(tmpPath.c_str()) < 0) {
                 return false;
             }
@@ -614,8 +607,8 @@ bool WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int wal
     }
 
     tmpWP.wallpaperId_ = MakeWallpaperIdLocked();
-    bool retFileCp = CopyFile(uriOrPixelMap, (wallpaperType ==
-        WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_:wallpaperLockScreenFileFullPath_));
+    bool retFileCp = FileDeal::CopyFile(uriOrPixelMap,
+        (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_ : wallpaperLockScreenFileFullPath_));
     bool retCropFileCp = MakeCropWallpaper(wallpaperType);
     mtx.unlock();
 
@@ -796,11 +789,11 @@ bool WallpaperService::CopySystemWallpaper()
         }
     }
     if (OHOS::FileExists(WALLPAPER_DEFAULT_FILEFULLPATH)) {
-        ret = CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemCropFileFullPath_);
+        ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemCropFileFullPath_);
         if (ret == true) {
             return false;
         }
-        ret = CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemFileFullPath_);
+        ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemFileFullPath_);
         if (ret == true) {
             return false;
         }
@@ -821,10 +814,10 @@ bool WallpaperService::CopyScreenLockWallpaper()
         }
     }
     if (OHOS::FileExists(WALLPAPER_DEFAULT_FILEFULLPATH)) {
-        if (CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperLockScreenCropFileFullPath_)) {
+        if (FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperLockScreenCropFileFullPath_)) {
             return false;
         }
-        ret = CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperLockScreenFileFullPath_);
+        ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperLockScreenFileFullPath_);
         if (ret == true) {
             return false;
         }
