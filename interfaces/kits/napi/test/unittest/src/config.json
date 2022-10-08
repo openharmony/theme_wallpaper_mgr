@@ -28,9 +28,6 @@
         "name": "ohos.permission.SET_WALLPAPER"
       },
       {
-        "name": "ohos.permission.READ_USER_STORAGE"
-      },
-      {
         "name": "ohos.permission.GET_WALLPAPER"
       }
     ],
