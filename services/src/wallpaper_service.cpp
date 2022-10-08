@@ -633,7 +633,7 @@ int32_t WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int 
     if (remove(uriOrPixelMap.c_str()) < 0) {
         return E_DEAL_FAILED;
     }
-    return (!retFileCp && !retCropFileCp) ? E_OK : E_DEAL_FAILED;
+    return (retFileCp && retCropFileCp) ? E_OK : E_DEAL_FAILED;
 }
 
 void WallpaperService::ReporterUsageTimeStatisic()
