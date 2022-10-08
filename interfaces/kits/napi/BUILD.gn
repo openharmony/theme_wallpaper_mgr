@@ -29,10 +29,10 @@ ohos_shared_library("wallpaper") {
 
   sources = [
     "async_call.cpp",
+    "js_error.cpp",
     "napi_wallpaper_ability.cpp",
     "native_module.cpp",
     "wallpaper_js_util.cpp",
-    "js_error.cpp",
   ]
   deps = [ "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager" ]
 
