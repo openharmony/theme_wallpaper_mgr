@@ -16,7 +16,7 @@
 <configuration ver="2.0">
     <target name="wallpaper_test">
         <preparer>
-            <option name="push" value="wallpaper_white.png -> /system/etc" src="res"/>
+            <option name="push" value="wallpaper_white.JPG -> /system/etc" src="res"/>
         </preparer>
     </target>
 </configuration>

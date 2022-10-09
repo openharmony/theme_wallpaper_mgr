@@ -16,8 +16,8 @@
 <configuration ver="2.0">
     <target name="WallpaperJSTest">
         <preparer>
-            <option name="push" value="wallpaper_system.png -> /system/etc" src="res"/>
-            <option name="push" value="wallpaper_lock.png -> /system/etc" src="res"/>
+            <option name="push" value="wallpaper_system.JPG -> /system/etc" src="res"/>
+            <option name="push" value="wallpaper_lock.JPG -> /system/etc" src="res"/>
         </preparer>
     </target>
 </configuration>

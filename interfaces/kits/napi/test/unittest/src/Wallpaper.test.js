@@ -22,8 +22,8 @@ const WALLPAPER_SYSTEM = 0;
 const WALLPAPER_LOCKSCREEN = 1;
 const PARAMETER_ERROR = "401";
 
-let imageSourceSystem = '/system/etc/wallpaper_system.png';
-let imageSourceLockscreen = 'system/etc/wallpaper_lock.png';
+let imageSourceSystem = '/system/etc/wallpaper_system.JPG';
+let imageSourceLockscreen = 'system/etc/wallpaper_lock.JPG';
 
 
 describe('WallpaperJSTest', function () {
