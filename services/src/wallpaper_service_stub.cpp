@@ -116,6 +116,7 @@ int32_t WallpaperServiceStub::OnGetPixelMap(MessageParcel &data, MessageParcel &
     int wallpaperType  = data.ReadInt32();
     IWallpaperService::FdInfo fdInfo;
     int wallpaperErrorCode = GetPixelMap(wallpaperType, fdInfo);
+    HILOG_INFO(" OnGetPixelMap wallpaperErrorCode = %{public}d", wallpaperErrorCode);
     if (!reply.WriteInt32(fdInfo.size)) {
         HILOG_ERROR("WriteInt32 fail");
         ret = -1;
@@ -125,6 +126,7 @@ int32_t WallpaperServiceStub::OnGetPixelMap(MessageParcel &data, MessageParcel &
         ret = -1;
     }
     reply.WriteInt32(wallpaperErrorCode);
+    HILOG_INFO(" OnGetPixelMap ret = %{public}d", ret);
     return ret;
 }
 

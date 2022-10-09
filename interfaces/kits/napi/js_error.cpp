@@ -45,7 +45,7 @@ JsErrorInfo JsError::ConvertErrorCode(int32_t wallpaperErrorCode)
             errorObject.message = permissionDeniedMessage;
             break;
         default:
-            HILOG_ERROR("Non-existent error type!");
+            HILOG_DEBUG("Non-existent error type!");
             break;
     }
     return errorObject;

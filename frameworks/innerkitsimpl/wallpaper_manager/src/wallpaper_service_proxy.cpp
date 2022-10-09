@@ -172,7 +172,7 @@ int32_t WallpaperServiceProxy::GetPixelMap(int wallpaperType, IWallpaperService:
     }
     fdInfo.size = reply.ReadInt32();
     fdInfo.fd = reply.ReadFileDescriptor();
-    int32_t wallpaperErrorCode = reply.ReadInt32();;
+    int32_t wallpaperErrorCode = reply.ReadInt32();
     return wallpaperErrorCode;
 }
 
