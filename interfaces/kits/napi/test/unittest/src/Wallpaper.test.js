@@ -22,10 +22,8 @@ const WALLPAPER_SYSTEM = 0;
 const WALLPAPER_LOCKSCREEN = 1;
 const PARAMETER_ERROR = "401";
 
-/*let imageSourceSystem = '/data/service/el1/public/wallpaper/0/system/wallpaper_white.png';
-let imageSourceLockscreen = '/data/service/el1/public/wallpaper/0/lockscreen/wallpaper_black_lock.png';*/
-let imageSourceSystem = '/system/etc/wallpaper_white.png';
-let imageSourceLockscreen = '/system/etc/wallpaper_white.png';
+let imageSourceSystem = '/system/etc/wallpaper_system.png';
+let imageSourceLockscreen = 'system/etc/wallpaper_lock.png';
 
 
 describe('WallpaperJSTest', function () {
@@ -55,10 +53,6 @@ describe('WallpaperJSTest', function () {
                 red: data[0][0], green: data[0][1], blue: data[0][2], alpha: data[0][3]
             }
             console.info('testGetColorsSync101 data : ' + JSON.stringify(data));
-            console.info('testGetColorsSync101 data : ' + data[0][0]);
-            console.info('testGetColorsSync101 data : ' + data[0][1]);
-            console.info('testGetColorsSync101 data : ' + data[0][2]);
-            console.info('testGetColorsSync101 data : ' + data[0][3]);
             if ((data != undefined) && (data != null) && (data != '')) {
                 expect(true).assertTrue();
             }
@@ -83,16 +77,11 @@ describe('WallpaperJSTest', function () {
                 red: data[0][0], green: data[0][1], blue: data[0][2], alpha: data[0][3]
             }
             console.info('testGetColorsSync102 data : ' + JSON.stringify(data));
-            console.info('testGetColorsSync102 data : ' + data[0][0]);
-            console.info('testGetColorsSync102 data : ' + data[0][1]);
-            console.info('testGetColorsSync102 data : ' + data[0][2]);
-            console.info('testGetColorsSync102 data : ' + data[0][3]);
             if ((data != undefined) && (data != null) && (data != '')) {
                 expect(true).assertTrue();
             }
         } catch (error) {
             console.info('testGetColorsSync102 error.code : ' + error.code + ',' + 'error.message : ' + error.message);
-            console.info('error.code typeof : ' + typeof (error.code));
             expect(true === false).assertTrue();
         }
     })
@@ -146,7 +135,6 @@ describe('WallpaperJSTest', function () {
             }
         } catch (error) {
             console.info('testGetIdSync101 error.code : ' + error.code + ',' + 'error.message : ' + error.message);
-            console.info('error.code typeof : ' + typeof (error.code));
             expect(true === false).assertTrue();
         }
     })
@@ -184,7 +172,6 @@ describe('WallpaperJSTest', function () {
             expect(true === false).assertTrue();
         } catch (error) {
             console.info('testGetIdSync103 error.code : ' + error.code + ',' + 'error.message : ' + error.message);
-            console.info('error.code typeof : ' + typeof (error.code));
             expect(error.code == PARAMETER_ERROR).assertEqual(true)
         }
     })
@@ -202,7 +189,6 @@ describe('WallpaperJSTest', function () {
             expect(true === false).assertTrue();
         } catch (error) {
             console.info('testGetIdSync104 error.code : ' + error.code + ',' + 'error.message : ' + error.message);
-            console.info('error.code typeof : ' + typeof (error.code));
             expect(error.code == PARAMETER_ERROR).assertEqual(true)
         }
     })

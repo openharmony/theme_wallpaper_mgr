@@ -170,9 +170,11 @@ int32_t WallpaperServiceProxy::GetPixelMap(int wallpaperType, IWallpaperService:
         HILOG_ERROR(" WallpaperServiceProxy::GetPixelMap fail, result = %{public}d ", result);
         return E_DEAL_FAILED;
     }
-    fdInfo.size = reply.ReadInt32();
-    fdInfo.fd = reply.ReadFileDescriptor();
     int32_t wallpaperErrorCode = reply.ReadInt32();
+    if(wallpaperErrorCode == E_OK){
+        fdInfo.size = reply.ReadInt32();
+        fdInfo.fd = reply.ReadFileDescriptor();
+    }
     return wallpaperErrorCode;
 }
 
