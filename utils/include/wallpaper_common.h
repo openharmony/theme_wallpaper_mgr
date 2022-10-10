@@ -55,7 +55,8 @@ enum ErrorCode : int32_t {
     E_NOT_FOUND,
     E_NO_PERMISSION,
     E_FILE_ERROR,
-    E_IMAGE_ERRCODE
+    E_IMAGE_ERRCODE,
+    E_NO_MEMORY
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

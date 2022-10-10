@@ -472,7 +472,7 @@ void SetImageExec(std::shared_ptr<SetContextInfo> &context)
             wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(
                 context->url, context->wallpaperType);
         }
-        if (wallpaperErrorCode == WallpaperMgrService::E_OK) {
+        if (wallpaperErrorCode == static_cast<int32_t>(WallpaperMgrService::E_OK)) {
             context->status = napi_ok;
         } else {
             JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(wallpaperErrorCode);
@@ -529,7 +529,7 @@ void GetImageInner(std::shared_ptr<GetContextInfo> &context)
         int32_t wallpaperErrorCode =
             WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(context->wallpaperType, pixelMap);
         HILOG_DEBUG("exec  wallpaperErrorCode[%{public}d]", wallpaperErrorCode);
-        if (wallpaperErrorCode == WallpaperMgrService::E_OK && pixelMap != nullptr) {
+        if (wallpaperErrorCode == static_cast<int32_t>(WallpaperMgrService::E_OK) && pixelMap != nullptr) {
             context->status = napi_ok;
             context->pixelMap = std::move(pixelMap);
         } else {
@@ -576,8 +576,8 @@ thread_local std::shared_ptr<WallpaperMgrService::WallpaperColorChangeListener> 
 napi_value NAPI_On(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_On in");
-    size_t argc = 2;
-    napi_value argv[2] = { nullptr };
+    size_t argc = TWO;
+    napi_value argv[TWO] = { nullptr };
     napi_value thisVar = nullptr;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));

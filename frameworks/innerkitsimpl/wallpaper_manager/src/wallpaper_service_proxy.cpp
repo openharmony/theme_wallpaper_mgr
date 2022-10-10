@@ -96,26 +96,26 @@ int32_t WallpaperServiceProxy::SetWallpaperByMap(int fd, int wallpaperType, int 
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return E_WRITE_PARCEL_ERROR;
+        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
     if (!data.WriteFileDescriptor(fd)) {
         HILOG_ERROR(" Failed to WriteFileDescriptor ");
-        return E_WRITE_PARCEL_ERROR;
+        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
 
     if (!data.WriteInt32(wallpaperType)) {
         HILOG_ERROR(" Failed to WriteInt32 ");
-        return E_WRITE_PARCEL_ERROR;
+        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
     if (!data.WriteInt32(length)) {
         HILOG_ERROR(" Failed to WriteInt32 ");
-        return E_WRITE_PARCEL_ERROR;
+        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
 
     int32_t result = Remote()->SendRequest(SET_WALLPAPER_MAP, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperCalbackProxy::SetWallpaperfail, result = %{public}d ", result);
-        return E_DEAL_FAILED;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
 
     return reply.ReadInt32();
@@ -128,25 +128,25 @@ int32_t WallpaperServiceProxy::SetWallpaperByFD(int fd, int wallpaperType, int l
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return E_WRITE_PARCEL_ERROR;
+        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
     if (!data.WriteFileDescriptor(fd)) {
         HILOG_ERROR(" Failed to WriteFileDescriptor ");
-        return E_WRITE_PARCEL_ERROR;
+        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
     if (!data.WriteInt32(wallpaperType)) {
         HILOG_ERROR(" Failed to WriteInt32 ");
-        return E_WRITE_PARCEL_ERROR;
+        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
     if (!data.WriteInt32(length)) {
         HILOG_ERROR(" Failed to WriteInt32 ");
-        return E_WRITE_PARCEL_ERROR;
+        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
 
     int32_t result = Remote()->SendRequest(SET_WALLPAPER_URI_FD, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperCalbackProxy::SetWallpaperfail, result = %{public}d ", result);
-        return E_DEAL_FAILED;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     return reply.ReadInt32();
 }
@@ -159,20 +159,20 @@ int32_t WallpaperServiceProxy::GetPixelMap(int wallpaperType, IWallpaperService:
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return E_WRITE_PARCEL_ERROR;
+        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
 
     if (!data.WriteInt32(wallpaperType)) {
         HILOG_ERROR(" Failed to WriteInt32 ");
-        return E_DEAL_FAILED;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     int32_t result = Remote()->SendRequest(GET_PIXELMAP, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperServiceProxy::GetPixelMap fail, result = %{public}d ", result);
-        return E_DEAL_FAILED;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     int32_t wallpaperErrorCode = reply.ReadInt32();
-    if (wallpaperErrorCode == E_OK) {
+    if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
         fdInfo.size = reply.ReadInt32();
         fdInfo.fd = reply.ReadFileDescriptor();
     }
@@ -294,14 +294,14 @@ int32_t WallpaperServiceProxy::ResetWallpaper(int wallpaperType)
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return E_WRITE_PARCEL_ERROR;
+        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
 
     data.WriteInt32(wallpaperType);
     int32_t result = Remote()->SendRequest(RESET_WALLPAPER, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperServiceProxy::ResetWallpaper fail, result = %{public}d ", result);
-        return E_DEAL_FAILED;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     return reply.ReadInt32();
 }

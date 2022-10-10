@@ -35,7 +35,7 @@ enum ErrorThrowType : int32_t {
 };
 struct JsErrorInfo {
     int32_t code = 0;
-    std::string message = "";
+    std::string message;
 };
 
 class JsError {

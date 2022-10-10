@@ -17,6 +17,7 @@
 
 #include "hilog_wrapper.h"
 #include "js_error.h"
+#include "wallpaper_js_util.h"
 
 namespace OHOS::WallpaperNAPI {
 AsyncCall::AsyncCall(
@@ -24,9 +25,9 @@ AsyncCall::AsyncCall(
     : env_(env)
 {
     context_ = new AsyncContext();
-    size_t argc = 6;
+    size_t argc = WallpaperJSUtil::MAX_ARGC;
     napi_value self = nullptr;
-    napi_value argv[6] = { nullptr };
+    napi_value argv[WallpaperJSUtil::MAX_ARGC] = { nullptr };
     NAPI_CALL_RETURN_VOID(env, napi_get_cb_info(env, info, &argc, argv, &self, nullptr));
     pos = ((pos == ASYNC_DEFAULT_POS) ? (argc - 1) : pos);
     if (pos >= 0 && pos < argc) {

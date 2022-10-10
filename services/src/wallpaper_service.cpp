@@ -439,12 +439,12 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     std::unique_ptr<OHOS::Media::ImageSource> imageSource = OHOS::Media::ImageSource::CreateImageSource(
         (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_ : wallpaperLockScreenFileFullPath_), opts,
         errorCode);
-    if (errorCode != 0) {
+    if (imageSource == nullptr || errorCode != 0) {
         return ret;
     }
     OHOS::Media::DecodeOptions decodeOpts;
     std::unique_ptr<PixelMap> wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
-    if (errorCode != 0) {
+    if (wallpaperPixelMap == nullptr || errorCode != 0) {
         return ret;
     }
     int32_t pictrueHeight = wallpaperPixelMap->GetHeight();
@@ -490,13 +490,16 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
     bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     if (!permissionSet) {
         HILOG_INFO("SetWallpaperByMap no set permission!");
-        return E_NO_PERMISSION;
+        return static_cast<int32_t>(E_NO_PERMISSION);
     }
     if (length == 0 || length > FOO_MAX_LEN) {
-        return E_PARAMETERS_INVALID;
+        return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
     std::string url = wallpaperTmpFullPath_;
-    char *paperBuf = new char[length];
+    char *paperBuf = new (std::nothrow) char[length];
+    if (paperBuf == nullptr) {
+        return static_cast<int32_t>(E_NO_MEMORY);
+    }
     mtx.lock();
     int32_t bufsize = read(fd, paperBuf, length);
     if (bufsize <= 0) {
@@ -504,7 +507,7 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
         delete[] paperBuf;
         close(fd);
         mtx.unlock();
-        return E_DEAL_FAILED;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     int fdw = open(url.c_str(), O_WRONLY | O_CREAT, 0660);
     if (fdw == -1) {
@@ -512,7 +515,7 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
         delete[] paperBuf;
         close(fd);
         mtx.unlock();
-        return E_DEAL_FAILED;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     int writeSize = write(fdw, paperBuf, length);
     mtx.unlock();
@@ -522,7 +525,7 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
         delete[] paperBuf;
         close(fd);
         close(fdw);
-        return E_DEAL_FAILED;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     delete[] paperBuf;
     close(fd);
@@ -539,14 +542,17 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
     bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     if (!permissionSet) {
         HILOG_INFO("SetWallpaperByFD no set permission!");
-        return E_NO_PERMISSION;
+        return static_cast<int32_t>(E_NO_PERMISSION);
     }
     std::string url = wallpaperTmpFullPath_;
     if (length == 0 || length > FOO_MAX_LEN) {
         close(fd);
-        return E_PARAMETERS_INVALID;
+        return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
-    char *paperBuf = new char[length];
+    char *paperBuf = new (std::nothrow) char[length];
+    if (paperBuf == nullptr) {
+        return E_NO_MEMORY;
+    }
     mtx.lock();
     int readSize = read(fd, paperBuf, length);
     if (readSize <= 0) {
@@ -554,7 +560,7 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
         delete[] paperBuf;
         close(fd);
         mtx.unlock();
-        return E_DEAL_FAILED;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
 
     int fdw = open(url.c_str(), O_WRONLY | O_CREAT, 0660);
@@ -563,7 +569,7 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
         delete[] paperBuf;
         close(fd);
         mtx.unlock();
-        return E_DEAL_FAILED;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     int writeSize = write(fdw, paperBuf, length);
     mtx.unlock();
@@ -573,7 +579,7 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
         close(fd);
         close(fdw);
         delete[] paperBuf;
-        return E_DEAL_FAILED;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     close(fd);
     close(fdw);
@@ -587,11 +593,11 @@ int32_t WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int 
 {
     HILOG_INFO("set wallpaper and backup data Start.");
     if (wallpaperType != WALLPAPER_LOCKSCREEN && wallpaperType != WALLPAPER_SYSTEM) {
-        return E_PARAMETERS_INVALID;
+        return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
 
     if (!OHOS::FileExists(uriOrPixelMap)) {
-        return E_DEAL_FAILED;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     WallpaperData tmpWP(userId_,
         (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_ : wallpaperLockScreenFileFullPath_),
@@ -602,7 +608,7 @@ int32_t WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int 
     if (!ret) {
         HILOG_ERROR("GetWallpaperSafeLocked failed !");
         mtx.unlock();
-        return E_DEAL_FAILED;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
 
     tmpWP.wallpaperId_ = MakeWallpaperIdLocked();
@@ -627,13 +633,11 @@ int32_t WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int 
         if (callbackProxy != nullptr) {
             callbackProxy->OnCall(wallpaperType);
         }
-    } else {
-        return E_DEAL_FAILED;
     }
     if (remove(uriOrPixelMap.c_str()) < 0) {
-        return E_DEAL_FAILED;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
-    return (retFileCp && retCropFileCp) ? E_OK : E_DEAL_FAILED;
+    return (retFileCp && retCropFileCp) ? static_cast<int32_t>(E_OK) : static_cast<int32_t>(E_DEAL_FAILED);
 }
 
 void WallpaperService::ReporterUsageTimeStatisic()
@@ -656,7 +660,7 @@ int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdIn
     bool permissionGet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER);
     if (!permissionGet) {
         HILOG_INFO("GetPixelMap no get permission!");
-        return E_NO_PERMISSION;
+        return static_cast<int32_t>(E_NO_PERMISSION);
     }
 
     std::string filePath = "";
@@ -666,19 +670,19 @@ int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdIn
     } else if (wallpaperType == WALLPAPER_SYSTEM) {
         filePath = wallpaperMap_.find(userId_)->second.cropFile_;
     } else {
-        return E_PARAMETERS_INVALID;
+        return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
 
     if (!OHOS::FileExists(filePath)) {
         HILOG_ERROR("file is not exist!");
-        return E_NOT_FOUND;
+        return static_cast<int32_t>(E_NOT_FOUND);
     }
     mtx.lock();
     FILE *pixmap = fopen(filePath.c_str(), "rb");
     if (pixmap == nullptr) {
         HILOG_ERROR("fopen failed");
         mtx.unlock();
-        return E_FILE_ERROR;
+        return static_cast<int32_t>(E_FILE_ERROR);
     }
     int fend = fseek(pixmap, 0, SEEK_END);
     int length = ftell(pixmap);
@@ -687,7 +691,7 @@ int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdIn
         HILOG_ERROR("ftell failed or fseek failed");
         fclose(pixmap);
         mtx.unlock();
-        return E_FILE_ERROR;
+        return static_cast<int32_t>(E_FILE_ERROR);
     }
 
     fdInfo.size = length;
@@ -697,11 +701,11 @@ int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdIn
     if (closeRes != 0 || fd < 0) {
         HILOG_ERROR("open failed");
         ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
-        return E_DEAL_FAILED;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     fdInfo.fd = fd;
     HILOG_INFO("fdInfo.fd = %{public}d", fdInfo.fd);
-    return E_OK;
+    return static_cast<int32_t>(E_OK);
 }
 
 int WallpaperService::GetWallpaperId(int wallpaperType)
@@ -754,12 +758,12 @@ int32_t WallpaperService::ResetWallpaper(int wallpaperType)
     bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     if (!permissionSet) {
         HILOG_INFO("reset wallpaper no set permission!");
-        return E_NO_PERMISSION;
+        return static_cast<int32_t>(E_NO_PERMISSION);
     }
 
     if (wallpaperType != WALLPAPER_LOCKSCREEN && wallpaperType != WALLPAPER_SYSTEM) {
         HILOG_INFO("wallpaperType = %{public}d type not support ", wallpaperType);
-        return E_PARAMETERS_INVALID;
+        return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
     int32_t wallpaperErrorCode;
     ClearWallpaperLocked(userId_, wallpaperType);
@@ -774,7 +778,7 @@ int32_t WallpaperService::ResetWallpaper(int wallpaperType)
     }
 
     if (itr != lockWallpaperMap_.end()) {
-        wallpaperErrorCode = E_OK;
+        wallpaperErrorCode = static_cast<int32_t>(E_OK);
     }
     HILOG_INFO("reset wallpaper End!");
     return wallpaperErrorCode;
@@ -851,7 +855,7 @@ int32_t WallpaperService::SetDefaultDateForWallpaper(int userId, int wpType)
     } else {
         wallpaperMap_.insert(std::pair<int, WallpaperData>(userId, sdwpdata));
     }
-    return E_OK;
+    return static_cast<int32_t>(E_OK);
 }
 bool WallpaperService::ScreenshotLiveWallpaper(int scaleNumber, OHOS::Media::PixelMap pixelMap)
 {
