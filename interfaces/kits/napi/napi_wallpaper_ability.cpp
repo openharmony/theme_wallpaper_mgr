@@ -437,7 +437,7 @@ void SetImageInput(std::shared_ptr<SetContextInfo> &context)
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[0], &valueType);
         if (valueType == napi_string) {
-            context->URL = WallpaperJSUtil::Convert2String(env, argv[0]);
+            context->url = WallpaperJSUtil::Convert2String(env, argv[0]);
         } else {
             std::shared_ptr<PixelMap> tmpPixelMap = PixelMapNapi::GetPixelMap(env, argv[0]);
             if (tmpPixelMap == nullptr) {
