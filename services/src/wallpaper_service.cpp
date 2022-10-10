@@ -541,7 +541,6 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
     HILOG_INFO("SetWallpaperByFD");
     bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     if (!permissionSet) {
-        HILOG_INFO("SetWallpaperByFD no set permission!");
         return static_cast<int32_t>(E_NO_PERMISSION);
     }
     std::string url = wallpaperTmpFullPath_;
@@ -562,7 +561,6 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
         mtx.unlock();
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
-
     int fdw = open(url.c_str(), O_WRONLY | O_CREAT, 0660);
     if (fdw == -1) {
         HILOG_ERROR("WallpaperService:: fdw fail");

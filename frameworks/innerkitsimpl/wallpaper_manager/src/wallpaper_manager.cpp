@@ -48,9 +48,7 @@ namespace OHOS {
 using namespace MiscServices;
 namespace WallpaperMgrService {
 constexpr int OPTION_QUALITY = 100;
-WallpaperManager::WallpaperManager()
-{
-}
+WallpaperManager::WallpaperManager(){}
 WallpaperManager::~WallpaperManager()
 {
     std::map<int32_t, int32_t>::iterator iter = wallpaperFdMap_.begin();
@@ -246,7 +244,7 @@ int32_t WallpaperManager::SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &p
         return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
     char *buffer = new (std::nothrow) char[mapSize];
-    if(buffer == nullptr){
+    if (buffer == nullptr) {
         return static_cast<int32_t>(E_NO_MEMORY);
     }
     stringBuf->sgetn(buffer, mapSize);
