@@ -160,6 +160,19 @@ public:
     static bool IsValidArgCount(size_t argc, size_t expectationSize);
     static bool IsValidArgType(napi_env env, napi_value argValue, napi_valuetype expectationType);
     static bool IsValidArgRange(napi_env env, napi_value argValue);
+    static bool CheckValidArgWallpaperType(
+        napi_env env, size_t argc, napi_value argValue, std::shared_ptr<AsyncCall::Context> ctx);
+    static void GetColorsInner(std::shared_ptr<GetContextInfo> context);
+    static void GetIdInner(std::shared_ptr<GetContextInfo> context);
+    static void GetFileInner(std::shared_ptr<GetFileContextInfo> context);
+    static void GetMinHeightInner(std::shared_ptr<GetMinContextInfo> context);
+    static void GetMinWidthInner(std::shared_ptr<GetMinContextInfo> context);
+    static void IsChangeAllowedInner(std::shared_ptr<PermissionContextInfo> context);
+    static void IsUserChangeAllowedInner(std::shared_ptr<PermissionContextInfo> context);
+    static void RestoreInner(std::shared_ptr<SetContextInfo> context);
+    static void SetImageInput(std::shared_ptr<SetContextInfo> context);
+    static void SetImageExec(std::shared_ptr<SetContextInfo> context);
+    static void GetImageInner(std::shared_ptr<GetContextInfo> context);
 
 private:
     struct EventDataWorker {
@@ -179,35 +192,24 @@ private:
 
 napi_value NAPI_GetColors(napi_env env, napi_callback_info info);
 napi_value NAPI_GetColorsSync(napi_env env, napi_callback_info info);
-void GetColorsInner(std::shared_ptr<GetContextInfo> &context);
 napi_value NAPI_GetId(napi_env env, napi_callback_info info);
 napi_value NAPI_GetIdSync(napi_env env, napi_callback_info info);
-void GetIdInner(std::shared_ptr<GetContextInfo> &context);
 napi_value NAPI_GetFile(napi_env env, napi_callback_info info);
 napi_value NAPI_GetFileSync(napi_env env, napi_callback_info info);
-void GetFileInner(std::shared_ptr<GetFileContextInfo> &context);
 napi_value NAPI_GetMinHeight(napi_env env, napi_callback_info info);
 napi_value NAPI_GetMinHeightSync(napi_env env, napi_callback_info info);
-void GetMinHeightInner(std::shared_ptr<GetMinContextInfo> &context);
 napi_value NAPI_GetMinWidth(napi_env env, napi_callback_info info);
 napi_value NAPI_GetMinWidthSync(napi_env env, napi_callback_info info);
-void GetMinWidthInner(std::shared_ptr<GetMinContextInfo> &context);
 napi_value NAPI_IsChangePermitted(napi_env env, napi_callback_info info);
 napi_value NAPI_IsChangeAllowed(napi_env env, napi_callback_info info);
-void IsChangeAllowedInner(std::shared_ptr<PermissionContextInfo> &context);
 napi_value NAPI_IsOperationAllowed(napi_env env, napi_callback_info info);
 napi_value NAPI_IsUserChangeAllowed(napi_env env, napi_callback_info info);
-void IsUserChangeAllowedInner(std::shared_ptr<PermissionContextInfo> &context);
 napi_value NAPI_Reset(napi_env env, napi_callback_info info);
 napi_value NAPI_Restore(napi_env env, napi_callback_info info);
-void RestoreInner(std::shared_ptr<SetContextInfo> &context);
 napi_value NAPI_SetWallpaper(napi_env env, napi_callback_info info);
 napi_value NAPI_SetImage(napi_env env, napi_callback_info info);
-void SetImageInput(std::shared_ptr<SetContextInfo> &context);
-void SetImageExec(std::shared_ptr<SetContextInfo> &context);
 napi_value NAPI_GetPixelMap(napi_env env, napi_callback_info info);
 napi_value NAPI_GetImage(napi_env env, napi_callback_info info);
-void GetImageInner(std::shared_ptr<GetContextInfo> &context);
 napi_value NAPI_ScreenshotLiveWallpaper(napi_env env, napi_callback_info info);
 napi_value NAPI_On(napi_env env, napi_callback_info info);
 napi_value NAPI_Off(napi_env env, napi_callback_info info);
