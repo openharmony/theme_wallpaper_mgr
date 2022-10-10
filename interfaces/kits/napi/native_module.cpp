@@ -13,13 +13,15 @@
  * limitations under the License.
  */
 
-#include <pthread.h>
-#include <string>
-#include <unistd.h>
 #include <napi/native_api.h>
-#include "napi_wallpaper_ability.h"
-#include "napi/native_node_api.h"
+#include <pthread.h>
+#include <unistd.h>
+
+#include <string>
+
 #include "hilog_wrapper.h"
+#include "napi/native_node_api.h"
+#include "napi_wallpaper_ability.h"
 
 namespace OHOS {
 namespace WallpaperNAPI {
@@ -45,7 +47,7 @@ static napi_value Init(napi_env env, napi_value exports)
     NAPI_CALL(env, napi_create_object(env, &WallpaperType));
     NAPI_CALL(env, napi_set_named_property(env, WallpaperType, "WALLPAPER_SYSTEM", wpType_system));
     NAPI_CALL(env, napi_set_named_property(env, WallpaperType, "WALLPAPER_LOCKSCREEN", wpType_lockscreen));
-    napi_property_descriptor desc[]  = {
+    napi_property_descriptor desc[] = {
         DECLARE_NAPI_FUNCTION("getColors", NAPI_GetColors),
         DECLARE_NAPI_FUNCTION("getColorsSync", NAPI_GetColorsSync),
         DECLARE_NAPI_FUNCTION("getId", NAPI_GetId),
@@ -66,7 +68,6 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("setImage", NAPI_SetImage),
         DECLARE_NAPI_FUNCTION("getPixelMap", NAPI_GetPixelMap),
         DECLARE_NAPI_FUNCTION("getImage", NAPI_GetImage),
-        //DECLARE_NAPI_FUNCTION("screenshotLiveWallpaper", NAPI_ScreenshotLiveWallpaper),
         DECLARE_NAPI_FUNCTION("on", NAPI_On),
         DECLARE_NAPI_FUNCTION("off", NAPI_Off),
         DECLARE_NAPI_STATIC_PROPERTY("WallpaperType", WallpaperType),
@@ -92,12 +93,12 @@ static napi_module _module = {
     .nm_register_func = Init,
     .nm_modname = "wallpaper",
     .nm_priv = ((void *)0),
-    .reserved = {0},
+    .reserved = { 0 },
 };
 
 extern "C" __attribute__((constructor)) void RegisterModule(void)
 {
     napi_module_register(&_module);
 }
-}
-}
+} // namespace WallpaperNAPI
+} // namespace OHOS

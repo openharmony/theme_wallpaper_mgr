@@ -12,12 +12,11 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
 #include "js_error.h"
 
 namespace OHOS::WallpaperNAPI {
 
-void JsError::ThrowError(napi_env env,  int32_t errorCode, const std::string &errorMessage)
+void JsError::ThrowError(napi_env env, int32_t errorCode, const std::string &errorMessage)
 {
     HILOG_DEBUG("ThrowError in");
     napi_value message;
@@ -38,11 +37,11 @@ JsErrorInfo JsError::ConvertErrorCode(int32_t wallpaperErrorCode)
     switch (wallpaperErrorCode) {
         case static_cast<int32_t>(WallpaperMgrService::E_PARAMETERS_INVALID):
             errorObject.code = static_cast<int32_t>(ErrorThrowType::PARAMETER_ERROR);
-            errorObject.message = parameterErrorMessage;
+            errorObject.message = PARAMETERERRORMESSAGE;
             break;
         case static_cast<int32_t>(WallpaperMgrService::E_NO_PERMISSION):
             errorObject.code = static_cast<int32_t>(ErrorThrowType::PERMISSION_ERROR);
-            errorObject.message = permissionDeniedMessage;
+            errorObject.message = PERMISSIONDENIEDMESSAGE;
             break;
         default:
             HILOG_DEBUG("Non-existent error type!");
@@ -50,5 +49,4 @@ JsErrorInfo JsError::ConvertErrorCode(int32_t wallpaperErrorCode)
     }
     return errorObject;
 }
-
-}
+} // namespace OHOS::WallpaperNAPI

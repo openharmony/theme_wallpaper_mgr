@@ -12,7 +12,6 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
 #ifndef WALLPAPER_JS_ERROR_H
 #define WALLPAPER_JS_ERROR_H
 #include <string>
@@ -25,8 +24,8 @@
 #include "wallpaper_manager_common_info.h"
 
 namespace OHOS::WallpaperNAPI {
-constexpr const char *parameterErrorMessage = "BusinessError 401: Parameter error.";
-constexpr const char *permissionDeniedMessage = "BusinessError 201: Permission Denied.";
+constexpr const char *PARAMETERERRORMESSAGE = "BusinessError 401: Parameter error.";
+constexpr const char *PERMISSIONDENIEDMESSAGE = "BusinessError 201: Permission Denied.";
 enum ErrorThrowType : int32_t {
     PERMISSION_ERROR = 201,
     PARAMETER_ERROR = 401,
@@ -45,4 +44,5 @@ public:
     static JsErrorInfo ConvertErrorCode(int32_t wallpaperErrorCode);
 };
 } // namespace OHOS::WallpaperNAPI
+
 #endif //WALLPAPER_JS_ERROR_H

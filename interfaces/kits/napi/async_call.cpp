@@ -37,7 +37,7 @@ AsyncCall::AsyncCall(
             argc = pos;
         } else {
             context->errCode_ = ErrorThrowType::PARAMETER_ERROR;
-            context->errMsg_ = parameterErrorMessage;
+            context->errMsg_ = PARAMETERERRORMESSAGE;
         }
     }
     auto status = (*context)(env, argc, argv, self);

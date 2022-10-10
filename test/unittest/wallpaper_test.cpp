@@ -40,7 +40,7 @@ using namespace OHOS::MiscServices;
 
 namespace OHOS {
 namespace WallpaperMgrService {
-constexpr const char *url = "/system/etc/wallpaper_system.png";
+constexpr const char *URL = "/system/etc/wallpaper_system.png";
 class AccessTokenMock : public AccessTokenAdapter {
 public:
     AccessTokenMock() = default;
@@ -531,7 +531,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUrl001, TestSize.Level0)
     OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWpProxy(
         iface_cast<WallpaperServiceProxy>(this->remoteObjMock_));
     int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(url, SYSTYEM);
+        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URL, SYSTYEM);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "set SYSTYEM success.";
     OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWpProxy();
 }
@@ -549,7 +549,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUrl002, TestSize.Level0)
     OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWpProxy(
         iface_cast<WallpaperServiceProxy>(this->remoteObjMock_));
     int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(url, LOCKSCREEN);
+        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URL, LOCKSCREEN);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "set LOCKSCREEN success.";
     OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWpProxy();
 }
