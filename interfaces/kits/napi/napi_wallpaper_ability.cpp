@@ -32,6 +32,7 @@
 using namespace OHOS::Media;
 namespace OHOS {
 namespace WallpaperNAPI {
+const int32_t ONE = 1;
 const int32_t TWO = 2;
 const int32_t THREE = 3;
 
@@ -47,8 +48,8 @@ napi_value NAPI_GetColors(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetColors in");
     auto context = std::make_shared<GetContextInfo>();
-    NAPI_GetColorsInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1);
+    GetColorsInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1, false);
     return asyncCall.Call(env);
 }
 
@@ -56,16 +57,16 @@ napi_value NAPI_GetColorsSync(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetColorsSync in");
     auto context = std::make_shared<GetContextInfo>();
-    NAPI_GetColorsInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1);
+    GetColorsInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1, true);
     return asyncCall.SyncCall(env);
 }
 
-void NAPI_GetColorsInner(std::shared_ptr<GetContextInfo> &context)
+void GetColorsInner(std::shared_ptr<GetContextInfo> &context)
 {
-    HILOG_DEBUG("NAPI_GetColorsInner in");
+    HILOG_DEBUG("GetColorsInner in");
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
-        if (!NapiWallpaperAbility::IsValidArgCount(argc, 1)
+        if (!NapiWallpaperAbility::IsValidArgCount(argc, ONE)
             || !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_number)
             || !NapiWallpaperAbility::IsValidArgRange(env, argv[0])) {
             HILOG_DEBUG("input  argc : %{public}zu", argc);
@@ -97,8 +98,8 @@ void NAPI_GetColorsInner(std::shared_ptr<GetContextInfo> &context)
 napi_value NAPI_GetId(napi_env env, napi_callback_info info)
 {
     auto context = std::make_shared<GetContextInfo>();
-    NAPI_GetIdInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1);
+    GetIdInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1, false);
     return asyncCall.Call(env);
 }
 
@@ -106,16 +107,16 @@ napi_value NAPI_GetIdSync(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetIdSync in");
     auto context = std::make_shared<GetContextInfo>();
-    NAPI_GetIdInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1);
+    GetIdInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1, true);
     return asyncCall.SyncCall(env);
 }
 
-void NAPI_GetIdInner(std::shared_ptr<GetContextInfo> &context)
+void GetIdInner(std::shared_ptr<GetContextInfo> &context)
 {
-    HILOG_DEBUG("NAPI_GetIdInner in");
+    HILOG_DEBUG("GetIdInner in");
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
-        if (!NapiWallpaperAbility::IsValidArgCount(argc, 1)
+        if (!NapiWallpaperAbility::IsValidArgCount(argc, ONE)
             || !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_number)
             || !NapiWallpaperAbility::IsValidArgRange(env, argv[0])) {
             HILOG_DEBUG("input  argc : %{public}zu", argc);
@@ -146,8 +147,8 @@ napi_value NAPI_GetFile(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetFile in");
     auto context = std::make_shared<GetFileContextInfo>();
-    NAPI_GetFileInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1);
+    GetFileInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1, false);
     return asyncCall.Call(env);
 }
 
@@ -155,16 +156,16 @@ napi_value NAPI_GetFileSync(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetFileSync in");
     auto context = std::make_shared<GetFileContextInfo>();
-    NAPI_GetFileInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1);
+    GetFileInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1, true);
     return asyncCall.SyncCall(env);
 }
 
-void NAPI_GetFileInner(std::shared_ptr<GetFileContextInfo> &context)
+void GetFileInner(std::shared_ptr<GetFileContextInfo> &context)
 {
-    HILOG_DEBUG("NAPI_GetFileInner in");
+    HILOG_DEBUG("GetFileInner in");
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
-        if (!NapiWallpaperAbility::IsValidArgCount(argc, 1)
+        if (!NapiWallpaperAbility::IsValidArgCount(argc, ONE)
             || !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_number)
             || !NapiWallpaperAbility::IsValidArgRange(env, argv[0])) {
             HILOG_DEBUG("input  argc : %{public}zu", argc);
@@ -208,8 +209,8 @@ napi_value NAPI_GetMinHeight(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetMinHeight in");
     auto context = std::make_shared<GetMinContextInfo>();
-    NAPI_GetMinHeightInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 0);
+    GetMinHeightInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 0, false);
     return asyncCall.Call(env);
 }
 
@@ -217,14 +218,14 @@ napi_value NAPI_GetMinHeightSync(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetMinHeightSync in");
     auto context = std::make_shared<GetMinContextInfo>();
-    NAPI_GetMinHeightInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 0);
+    GetMinHeightInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 0, true);
     return asyncCall.SyncCall(env);
 }
 
-void NAPI_GetMinHeightInner(std::shared_ptr<GetMinContextInfo> &context)
+void GetMinHeightInner(std::shared_ptr<GetMinContextInfo> &context)
 {
-    HILOG_DEBUG("NAPI_GetMinHeightInner in");
+    HILOG_DEBUG("GetMinHeightInner in");
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
         napi_status status = napi_create_int32(env, context->minHeight, result);
         HILOG_DEBUG("output  napi_create_int32[%{public}d]", status);
@@ -246,8 +247,8 @@ napi_value NAPI_GetMinWidth(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetMinWidth in");
     auto context = std::make_shared<GetMinContextInfo>();
-    NAPI_GetMinWidthInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 0);
+    GetMinWidthInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 0, false);
     return asyncCall.Call(env);
 }
 
@@ -255,14 +256,14 @@ napi_value NAPI_GetMinWidthSync(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetMinWidthSync in");
     auto context = std::make_shared<GetMinContextInfo>();
-    NAPI_GetMinWidthInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 0);
+    GetMinWidthInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 0, true);
     return asyncCall.SyncCall(env);
 }
 
-void NAPI_GetMinWidthInner(std::shared_ptr<GetMinContextInfo> &context)
+void GetMinWidthInner(std::shared_ptr<GetMinContextInfo> &context)
 {
-    HILOG_DEBUG("NAPI_GetMinWidthInner in");
+    HILOG_DEBUG("GetMinWidthInner in");
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
         napi_status status = napi_create_int32(env, context->minHeight, result);
         HILOG_DEBUG("output  napi_create_int32[%{public}d]", status);
@@ -284,8 +285,8 @@ napi_value NAPI_IsChangePermitted(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_IsChangePermitted in");
     auto context = std::make_shared<PermissionContextInfo>();
-    NAPI_IsChangeAllowedInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 0);
+    IsChangeAllowedInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 0, false);
     return asyncCall.Call(env);
 }
 
@@ -293,14 +294,14 @@ napi_value NAPI_IsChangeAllowed(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_IsChangeAllowed in");
     auto context = std::make_shared<PermissionContextInfo>();
-    NAPI_IsChangeAllowedInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 0);
+    IsChangeAllowedInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 0, true);
     return asyncCall.SyncCall(env);
 }
 
-void NAPI_IsChangeAllowedInner(std::shared_ptr<PermissionContextInfo> &context)
+void IsChangeAllowedInner(std::shared_ptr<PermissionContextInfo> &context)
 {
-    HILOG_DEBUG("NAPI_IsChangeAllowedInner in");
+    HILOG_DEBUG("IsChangeAllowedInner in");
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
         napi_status status = napi_get_boolean(env, context->isChangePermitted, result);
         HILOG_DEBUG("output  napi_get_boolean[%{public}d]", status);
@@ -320,8 +321,8 @@ napi_value NAPI_IsOperationAllowed(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_IsOperationAllowed in");
     auto context = std::make_shared<PermissionContextInfo>();
-    NAPI_IsUserChangeAllowedInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 0);
+    IsUserChangeAllowedInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 0, false);
     return asyncCall.Call(env);
 }
 
@@ -329,14 +330,14 @@ napi_value NAPI_IsUserChangeAllowed(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_IsUserChangeAllowed in");
     auto context = std::make_shared<PermissionContextInfo>();
-    NAPI_IsUserChangeAllowedInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 0);
+    IsUserChangeAllowedInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 0, true);
     return asyncCall.SyncCall(env);
 }
 
-void NAPI_IsUserChangeAllowedInner(std::shared_ptr<PermissionContextInfo> &context)
+void IsUserChangeAllowedInner(std::shared_ptr<PermissionContextInfo> &context)
 {
-    HILOG_DEBUG("NAPI_IsUserChangeAllowedInner in");
+    HILOG_DEBUG("IsUserChangeAllowedInner in");
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
         napi_status status = napi_get_boolean(env, context->isOperationAllowed, result);
         HILOG_DEBUG("output  napi_get_boolean[%{public}d]", status);
@@ -356,8 +357,8 @@ napi_value NAPI_Reset(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_Reset in");
     auto context = std::make_shared<SetContextInfo>();
-    NAPI_RestoreInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1);
+    RestoreInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1, false);
     return asyncCall.Call(env);
 }
 
@@ -365,16 +366,16 @@ napi_value NAPI_Restore(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_Rrestore in");
     auto context = std::make_shared<SetContextInfo>();
-    NAPI_RestoreInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1);
+    RestoreInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1, true);
     return asyncCall.Call(env);
 }
 
-void NAPI_RestoreInner(std::shared_ptr<SetContextInfo> &context)
+void RestoreInner(std::shared_ptr<SetContextInfo> &context)
 {
-    HILOG_DEBUG("NAPI_RestoreInner in");
+    HILOG_DEBUG("RestoreInner in");
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
-        if (!NapiWallpaperAbility::IsValidArgCount(argc, 1)
+        if (!NapiWallpaperAbility::IsValidArgCount(argc, ONE)
             || !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_number)) {
             HILOG_DEBUG("input  argc : %{public}zu", argc);
             context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, parameterErrorMessage);
@@ -406,24 +407,26 @@ void NAPI_RestoreInner(std::shared_ptr<SetContextInfo> &context)
 napi_value NAPI_SetWallpaper(napi_env env, napi_callback_info info)
 {
     auto context = std::make_shared<SetContextInfo>();
-    NAPI_SetImageInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), TWO);
+    SetImageInput(context);
+    SetImageExec(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), TWO, false);
     return asyncCall.Call(env);
 }
 
 napi_value NAPI_SetImage(napi_env env, napi_callback_info info)
 {
     auto context = std::make_shared<SetContextInfo>();
-    NAPI_SetImageInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), TWO);
+    SetImageInput(context);
+    SetImageExec(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), TWO, true);
     return asyncCall.Call(env);
 }
 
-void NAPI_SetImageInner(std::shared_ptr<SetContextInfo> &context)
+void SetImageInput(std::shared_ptr<SetContextInfo> &context)
 {
-    HILOG_DEBUG("NAPI_SetImageInner in");
+    HILOG_DEBUG("SetImageInput in");
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
-        if (!NapiWallpaperAbility::IsValidArgCount(argc, 2)
+        if (!NapiWallpaperAbility::IsValidArgCount(argc, TWO)
             || (!NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string)
                 && !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_object))
             || !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_number)) {
@@ -450,6 +453,12 @@ void NAPI_SetImageInner(std::shared_ptr<SetContextInfo> &context)
         HILOG_DEBUG("input  wallpaperType : %{public}d", context->wallpaperType);
         return napi_ok;
     };
+    context->SetAction(std::move(input), nullptr);
+}
+
+void SetImageExec(std::shared_ptr<SetContextInfo> &context)
+{
+    HILOG_DEBUG("SetImageExec in");
     auto exec = [context](AsyncCall::Context *ctx) {
         int32_t wallpaperErrorCode = 0;
         if (context->url.length() == 0) {
@@ -473,7 +482,6 @@ void NAPI_SetImageInner(std::shared_ptr<SetContextInfo> &context)
         }
         HILOG_DEBUG("exec  context->status[%{public}d]", context->status);
     };
-    context->SetAction(std::move(input), nullptr);
     context->SetExecution(std::move(exec));
 }
 
@@ -481,8 +489,8 @@ napi_value NAPI_GetPixelMap(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetPixelMap in");
     auto context = std::make_shared<GetContextInfo>();
-    NAPI_GetImageInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1);
+    GetImageInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1, false);
     return asyncCall.Call(env);
 }
 
@@ -490,16 +498,16 @@ napi_value NAPI_GetImage(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetImage in");
     auto context = std::make_shared<GetContextInfo>();
-    NAPI_GetImageInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1);
+    GetImageInner(context);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1, true);
     return asyncCall.Call(env);
 }
 
-void NAPI_GetImageInner(std::shared_ptr<GetContextInfo> &context)
+void GetImageInner(std::shared_ptr<GetContextInfo> &context)
 {
-    HILOG_DEBUG("NAPI_GetImageInner in");
+    HILOG_DEBUG("GetImageInner in");
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
-        if (!NapiWallpaperAbility::IsValidArgCount(argc, 1)
+        if (!NapiWallpaperAbility::IsValidArgCount(argc, ONE)
             || !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_number)) {
             HILOG_DEBUG("input  argc : %{public}zu", argc);
             context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, parameterErrorMessage);
@@ -573,7 +581,7 @@ napi_value NAPI_On(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
-    if (!NapiWallpaperAbility::IsValidArgCount(argc, 2)
+    if (!NapiWallpaperAbility::IsValidArgCount(argc, TWO)
         || !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string)
         || !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_function)) {
         HILOG_DEBUG("input  argc : %{public}zu", argc);
@@ -612,7 +620,7 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    if (!NapiWallpaperAbility::IsValidArgCount(argc, 1)
+    if (!NapiWallpaperAbility::IsValidArgCount(argc, ONE)
         || !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string)) {
         HILOG_DEBUG("input  argc : %{public}zu", argc);
         JsError::ThrowError(env, ErrorThrowType::PARAMETER_ERROR, parameterErrorMessage);

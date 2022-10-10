@@ -14,6 +14,7 @@
  */
 #define LOG_TAG "WallpaperJSUtil"
 #include "wallpaper_js_util.h"
+
 #include "hilog_wrapper.h"
 
 namespace OHOS::WallpaperNAPI {
@@ -34,7 +35,7 @@ std::string WallpaperJSUtil::Convert2String(napi_env env, napi_value jsString)
     if (maxLen <= 0) {
         return std::string();
     }
-    char *buf = new(std::nothrow) char[maxLen + 1];
+    char *buf = new (std::nothrow) char[maxLen + 1];
     if (buf == nullptr) {
         return std::string();
     }
@@ -54,7 +55,7 @@ napi_value WallpaperJSUtil::Convert2JSRgbaArray(napi_env env, const std::vector<
     HILOG_DEBUG("Convert2JSRgbaArray in");
     napi_value result = nullptr;
     napi_status status = napi_create_array_with_length(env, color.size(), &result);
-    if(status != napi_ok){
+    if (status != napi_ok) {
         HILOG_DEBUG("Convert2JSRgbaArray failed");
         return nullptr;
     }
@@ -79,4 +80,4 @@ napi_value WallpaperJSUtil::Convert2JSRgbaArray(napi_env env, const std::vector<
     }
     return result;
 }
-}
+} // namespace OHOS::WallpaperNAPI

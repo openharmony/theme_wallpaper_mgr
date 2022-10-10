@@ -13,11 +13,12 @@
  * limitations under the License.
  */
 
-#include "file_deal.h"
-#include "iremote_broker.h"
-#include "i_wallpaper_service.h"
-#include "hilog_wrapper.h"
 #include "wallpaper_service_proxy.h"
+
+#include "file_deal.h"
+#include "hilog_wrapper.h"
+#include "i_wallpaper_service.h"
+#include "iremote_broker.h"
 #include "wallpaper_common.h"
 
 namespace OHOS {
@@ -78,7 +79,7 @@ int32_t WallpaperServiceProxy::GetFile(int32_t wallpaperType, int32_t &wallpaper
     }
 
     wallpaperFd = reply.ReadFileDescriptor();
-    int32_t wallpaperErrorCode = reply.ReadInt32();;
+    int32_t wallpaperErrorCode = reply.ReadInt32();
     return wallpaperErrorCode;
 }
 
@@ -171,14 +172,14 @@ int32_t WallpaperServiceProxy::GetPixelMap(int wallpaperType, IWallpaperService:
         return E_DEAL_FAILED;
     }
     int32_t wallpaperErrorCode = reply.ReadInt32();
-    if(wallpaperErrorCode == E_OK){
+    if (wallpaperErrorCode == E_OK) {
         fdInfo.size = reply.ReadInt32();
         fdInfo.fd = reply.ReadFileDescriptor();
     }
     return wallpaperErrorCode;
 }
 
-int   WallpaperServiceProxy::GetWallpaperId(int wallpaperType)
+int WallpaperServiceProxy::GetWallpaperId(int wallpaperType)
 {
     int iWallpaperId = 1;
     MessageParcel data, reply;
@@ -200,7 +201,7 @@ int   WallpaperServiceProxy::GetWallpaperId(int wallpaperType)
     HILOG_INFO(" End => iWallpaperId[%{public}d]", iWallpaperId);
     return iWallpaperId;
 }
-int   WallpaperServiceProxy::GetWallpaperMinHeight()
+int WallpaperServiceProxy::GetWallpaperMinHeight()
 {
     int iWallpaperMinHeight = 0;
     MessageParcel data, reply;
@@ -222,7 +223,7 @@ int   WallpaperServiceProxy::GetWallpaperMinHeight()
     return iWallpaperMinHeight;
 }
 
-int   WallpaperServiceProxy::GetWallpaperMinWidth()
+int WallpaperServiceProxy::GetWallpaperMinWidth()
 {
     int iWallpaperMinWidth = 0;
     MessageParcel data, reply;
@@ -244,7 +245,7 @@ int   WallpaperServiceProxy::GetWallpaperMinWidth()
     return iWallpaperMinWidth;
 }
 
-bool  WallpaperServiceProxy::IsChangePermitted()
+bool WallpaperServiceProxy::IsChangePermitted()
 {
     bool bFlag = false;
     MessageParcel data, reply;
@@ -265,7 +266,7 @@ bool  WallpaperServiceProxy::IsChangePermitted()
     return bFlag;
 }
 
-bool  WallpaperServiceProxy::IsOperationAllowed()
+bool WallpaperServiceProxy::IsOperationAllowed()
 {
     bool bFlag = false;
     MessageParcel data, reply;
@@ -286,7 +287,7 @@ bool  WallpaperServiceProxy::IsOperationAllowed()
     return bFlag;
 }
 
-int32_t  WallpaperServiceProxy::ResetWallpaper(int wallpaperType)
+int32_t WallpaperServiceProxy::ResetWallpaper(int wallpaperType)
 {
     MessageParcel data, reply;
     MessageOption option;
@@ -326,7 +327,7 @@ bool WallpaperServiceProxy::ScreenshotLiveWallpaper(int sacleNumber, OHOS::Media
     return bFlag;
 }
 
-bool  WallpaperServiceProxy::On(sptr<IWallpaperColorChangeListener> listener)
+bool WallpaperServiceProxy::On(sptr<IWallpaperColorChangeListener> listener)
 {
     HILOG_DEBUG("WallpaperServiceProxy::On in");
     MessageParcel data, reply;
@@ -355,7 +356,7 @@ bool  WallpaperServiceProxy::On(sptr<IWallpaperColorChangeListener> listener)
     return ret;
 }
 
-bool  WallpaperServiceProxy::Off(sptr<IWallpaperColorChangeListener> listener)
+bool WallpaperServiceProxy::Off(sptr<IWallpaperColorChangeListener> listener)
 {
     HILOG_DEBUG("WallpaperServiceProxy::Off in");
     MessageParcel data, reply;
@@ -413,5 +414,5 @@ bool WallpaperServiceProxy::RegisterWallpaperCallback(const sptr<IWallpaperCallb
     HILOG_DEBUG("WallpaperServiceProxy::REGISTER_CALLBACK out");
     return ret;
 }
-}
-}
+} // namespace WallpaperMgrService
+} // namespace OHOS

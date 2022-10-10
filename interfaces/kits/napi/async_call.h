@@ -17,8 +17,9 @@
 
 #include <functional>
 #include <memory>
-#include "napi/native_common.h"
+
 #include "napi/native_api.h"
+#include "napi/native_common.h"
 #include "napi/native_node_api.h"
 
 namespace OHOS::WallpaperNAPI {
@@ -29,8 +30,8 @@ public:
         using InputAction = std::function<napi_status(napi_env, size_t, napi_value *, napi_value)>;
         using OutputAction = std::function<napi_status(napi_env, napi_value *)>;
         using ExecAction = std::function<void(Context *)>;
-        Context(InputAction input, OutputAction output): input_(std::move(input)), output_(std::move(output))  {};
-        virtual ~Context() {};
+        Context(InputAction input, OutputAction output) : input_(std::move(input)), output_(std::move(output)){};
+        virtual ~Context(){};
         void SetAction(InputAction input, OutputAction output = nullptr)
         {
             input_ = input;
@@ -39,7 +40,7 @@ public:
 
         void SetExecution(ExecAction exec)
         {
-            exec_ =exec;
+            exec_ = exec;
         }
 
         void SetErrInfo(int32_t errCode, std::string errMsg)
@@ -72,6 +73,7 @@ public:
             }
             exec_(this);
         };
+
     protected:
         friend class AsyncCall;
         InputAction input_ = nullptr;
@@ -83,16 +85,14 @@ public:
 
     // The default AsyncCallback in the parameters is at the end position.
     static constexpr size_t ASYNC_DEFAULT_POS = -1;
-    AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos = ASYNC_DEFAULT_POS);
+    AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos = ASYNC_DEFAULT_POS,
+        bool isNewInterfaces = true);
     ~AsyncCall();
     napi_value Call(napi_env env);
     napi_value SyncCall(napi_env env);
+
 private:
-    enum arg : int {
-        ARG_ERROR,
-        ARG_DATA,
-        ARG_BUTT
-    };
+    enum arg : int { ARG_ERROR, ARG_DATA, ARG_BUTT };
     static void OnExecute(napi_env env, void *data);
     static void OnComplete(napi_env env, napi_status status, void *data);
     struct AsyncContext {
@@ -107,6 +107,6 @@ private:
     AsyncContext *context_ = nullptr;
     napi_env env_ = nullptr;
 };
-}
+} // namespace OHOS::WallpaperNAPI
 
 #endif // WALLPAPER_ASYNC_CALL_H

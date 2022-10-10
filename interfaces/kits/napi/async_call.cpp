@@ -19,7 +19,9 @@
 #include "js_error.h"
 
 namespace OHOS::WallpaperNAPI {
-AsyncCall::AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos) : env_(env)
+AsyncCall::AsyncCall(
+    napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos, bool isNewInterfaces)
+    : env_(env)
 {
     context_ = new AsyncContext();
     size_t argc = 6;
@@ -33,13 +35,13 @@ AsyncCall::AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Cont
         if (valueType == napi_function) {
             napi_create_reference(env, argv[pos], 1, &context_->callback);
             argc = pos;
-        }else{
+        } else {
             context->errCode_ = ErrorThrowType::PARAMETER_ERROR;
             context->errMsg_ = parameterErrorMessage;
         }
     }
     auto status = (*context)(env, argc, argv, self);
-    if (status != napi_ok && context->errCode_ != 0) {
+    if (status != napi_ok && context->errCode_ != 0 && isNewInterfaces) {
         JsError::ThrowError(env, context->errCode_, context->errMsg_);
         return;
     }

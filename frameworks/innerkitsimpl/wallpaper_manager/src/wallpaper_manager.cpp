@@ -12,40 +12,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <mutex>
-#include <fstream>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include "wallpaper_manager.h"
+
 #include <fcntl.h>
-#include <cstdlib>
-#include <iostream>
-#include <sstream>
-#include <cstdio>
-#include <cstring>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <mutex>
+#include <sstream>
+
 #include "dfx_types.h"
+#include "file_deal.h"
+#include "file_ex.h"
+#include "file_util.h"
 #include "hilog_wrapper.h"
 #include "hitrace_meter.h"
-#include "wallpaper_service_proxy.h"
-#include "if_system_ability_manager.h"
-#include "iservice_registry.h"
-#include "system_ability_definition.h"
 #include "i_wallpaper_service.h"
+#include "if_system_ability_manager.h"
+#include "image_packer.h"
 #include "image_source.h"
 #include "image_type.h"
-#include "image_packer.h"
-#include "file_ex.h"
-#include "file_deal.h"
-#include "file_util.h"
+#include "iservice_registry.h"
+#include "system_ability_definition.h"
 #include "wallpaper_service_cb_stub.h"
-#include "wallpaper_manager.h"
+#include "wallpaper_service_proxy.h"
 
 namespace OHOS {
 using namespace MiscServices;
 namespace WallpaperMgrService {
 constexpr int OPTION_QUALITY = 100;
-WallpaperManager::WallpaperManager() {}
+WallpaperManager::WallpaperManager()
+{
+}
 WallpaperManager::~WallpaperManager()
 {
     std::map<int32_t, int32_t>::iterator iter = wallpaperFdMap_.begin();
@@ -55,7 +60,7 @@ WallpaperManager::~WallpaperManager()
     }
 }
 
-void WallpaperManager::ResetService(const wptr<IRemoteObject>& remote)
+void WallpaperManager::ResetService(const wptr<IRemoteObject> &remote)
 {
     HILOG_INFO("Remote is dead, reset service instance");
     std::lock_guard<std::mutex> lock(wpProxyLock_);
@@ -114,13 +119,12 @@ void WallpaperManager::ResetWpProxy()
     wpProxy_ = nullptr;
 }
 
-void WallpaperManager::DeathRecipient::OnRemoteDied(const wptr<IRemoteObject>& remote)
+void WallpaperManager::DeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &remote)
 {
     DelayedRefSingleton<WallpaperManager>::GetInstance().ResetService(remote);
 }
 
-template<typename F, typename... Args>
-ErrCode WallpaperManager::CallService(F func, Args&&... args)
+template<typename F, typename... Args> ErrCode WallpaperManager::CallService(F func, Args &&...args)
 {
     auto service = GetService();
     if (service == nullptr) {
@@ -234,14 +238,14 @@ int32_t WallpaperManager::SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &p
         return E_DEAL_FAILED;
     }
 
-    std::stringbuf* stringBuf = new std::stringbuf();
+    std::stringbuf *stringBuf = new std::stringbuf();
     std::ostream ostream(stringBuf);
     int mapSize = WritePixelMapToStream(ostream, std::move(pixelMap));
     if (mapSize <= 0) {
         HILOG_ERROR("WritePixelMapToStream faild");
         return E_WRITE_PARCEL_ERROR;
     }
-    char* buffer = new char[mapSize];
+    char *buffer = new char[mapSize];
     stringBuf->sgetn(buffer, mapSize);
 
     int fd[2];
@@ -255,14 +259,14 @@ int32_t WallpaperManager::SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &p
         return E_WRITE_PARCEL_ERROR;
     }
     close(fd[1]);
-    int32_t wallpaperErrorCode =  wpServerProxy->SetWallpaperByMap(fd[0], wallpaperType, mapSize);
+    int32_t wallpaperErrorCode = wpServerProxy->SetWallpaperByMap(fd[0], wallpaperType, mapSize);
     if (wallpaperErrorCode == E_OK) {
         CloseWallpaperFd(wallpaperType);
     }
     return wallpaperErrorCode;
 }
-int64_t WallpaperManager::WritePixelMapToStream(std::ostream &outputStream,
-    std::unique_ptr< OHOS::Media::PixelMap> pixelMap)
+int64_t WallpaperManager::WritePixelMapToStream(
+    std::ostream &outputStream, std::unique_ptr<OHOS::Media::PixelMap> pixelMap)
 {
     OHOS::Media::ImagePacker imagePacker;
     OHOS::Media::PackOption option;
@@ -283,8 +287,8 @@ int64_t WallpaperManager::WritePixelMapToStream(std::ostream &outputStream,
     return packedSize;
 }
 
-int64_t WallpaperManager::WritePixelMapToFile(const std::string &filePath,
-    std::unique_ptr< OHOS::Media::PixelMap> pixelMap)
+int64_t WallpaperManager::WritePixelMapToFile(
+    const std::string &filePath, std::unique_ptr<OHOS::Media::PixelMap> pixelMap)
 {
     OHOS::Media::ImagePacker imagePacker;
     OHOS::Media::PackOption option;
@@ -313,7 +317,7 @@ int32_t WallpaperManager::GetPixelMap(int wallpaperType, std::shared_ptr<OHOS::M
     }
     IWallpaperService::FdInfo fdInfo;
     int32_t wallpaperErrorCode = wpServerProxy->GetPixelMap(wallpaperType, fdInfo);
-    if(wallpaperErrorCode != E_OK){
+    if (wallpaperErrorCode != E_OK) {
         return wallpaperErrorCode;
     }
     uint32_t errorCode = 0;
@@ -338,7 +342,7 @@ int32_t WallpaperManager::GetPixelMap(int wallpaperType, std::shared_ptr<OHOS::M
     return wallpaperErrorCode;
 }
 
-int  WallpaperManager::GetWallpaperId(int wallpaperType)
+int WallpaperManager::GetWallpaperId(int wallpaperType)
 {
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
@@ -348,7 +352,7 @@ int  WallpaperManager::GetWallpaperId(int wallpaperType)
     return wpServerProxy->GetWallpaperId(wallpaperType);
 }
 
-int  WallpaperManager::GetWallpaperMinHeight()
+int WallpaperManager::GetWallpaperMinHeight()
 {
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
@@ -358,7 +362,7 @@ int  WallpaperManager::GetWallpaperMinHeight()
     return wpServerProxy->GetWallpaperMinHeight();
 }
 
-int  WallpaperManager::GetWallpaperMinWidth()
+int WallpaperManager::GetWallpaperMinWidth()
 {
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
@@ -394,7 +398,7 @@ int32_t WallpaperManager::ResetWallpaper(std::int32_t wallpaperType)
         HILOG_ERROR("Get proxy failed");
         return E_SA_DIED;
     }
-    int wallpaperErrorCode =  wpServerProxy->ResetWallpaper(wallpaperType);
+    int wallpaperErrorCode = wpServerProxy->ResetWallpaper(wallpaperType);
     if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
         CloseWallpaperFd(wallpaperType);
     }
@@ -429,8 +433,8 @@ bool WallpaperManager::On(std::shared_ptr<WallpaperColorChangeListener> listener
         return false;
     }
 
-    sptr<WallpaperColorChangeListenerClient> ipcListener =
-            new (std::nothrow) WallpaperColorChangeListenerClient(listener);
+    sptr<WallpaperColorChangeListenerClient> ipcListener = new (std::nothrow)
+        WallpaperColorChangeListenerClient(listener);
     if (ipcListener == nullptr) {
         HILOG_ERROR("new WallpaperColorChangeListenerClient failed");
         return false;
@@ -480,7 +484,7 @@ JScallback WallpaperManager::GetCallback()
     return callback;
 }
 
-void WallpaperManager::SetCallback(bool (*cb) (int))
+void WallpaperManager::SetCallback(bool (*cb)(int))
 {
     callback = cb;
 }
@@ -521,7 +525,7 @@ void WallpaperManager::ReporterFault(FaultType faultType, FaultCode faultCode)
 void WallpaperManager::CloseWallpaperFd(int32_t wallpaperType)
 {
     std::lock_guard<std::mutex> lock(wpFdLock_);
-    std::map<int32_t, int32_t>::iterator iter =  wallpaperFdMap_.find(wallpaperType);
+    std::map<int32_t, int32_t>::iterator iter = wallpaperFdMap_.find(wallpaperType);
     if (iter != wallpaperFdMap_.end() && fcntl(iter->second, F_GETFL) != -1) {
         close(iter->second);
         wallpaperFdMap_.erase(iter);
