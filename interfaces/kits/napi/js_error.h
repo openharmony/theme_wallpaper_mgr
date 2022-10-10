@@ -45,4 +45,4 @@ public:
 };
 } // namespace OHOS::WallpaperNAPI
 
-#endif //WALLPAPER_JS_ERROR_H
+#endif // WALLPAPER_JS_ERROR_H
