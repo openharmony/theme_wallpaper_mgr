@@ -40,7 +40,7 @@ using namespace OHOS::MiscServices;
 
 namespace OHOS {
 namespace WallpaperMgrService {
-constexpr const char *URL = "/system/etc/wallpaper_system.png";
+constexpr const char *URL = "/system/etc/wallpaper_system.JPG";
 class AccessTokenMock : public AccessTokenAdapter {
 public:
     AccessTokenMock() = default;
