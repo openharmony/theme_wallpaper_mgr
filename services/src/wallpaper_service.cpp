@@ -12,49 +12,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <thread>
-#include <cerrno>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include "wallpaper_service.h"
+
+#include <display_type.h>
 #include <fcntl.h>
+#include <rs_surface_node.h>
+#include <sys/sendfile.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <window_manager.h>
+
+#include <cerrno>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <sys/sendfile.h>
-#include <window_manager.h>
-#include <display_type.h>
 #include <iostream>
-#include <cstdio>
-#include <rs_surface_node.h>
-#include "hilog_wrapper.h"
-#include "system_ability_definition.h"
-#include "wallpaper_common_event.h"
-#include "image_utils.h"
-#include "file_ex.h"
-#include "directory_ex.h"
-#include "file_deal.h"
-#include "image_packer.h"
-#include "bundle_mgr_interface.h"
-#include "iservice_registry.h"
-#include "image/bitmap.h"
-#include "pixel_map.h"
-#include "image_type.h"
-#include "image_utils.h"
-#include "image_source.h"
-#include "canvas.h"
-#include "pen.h"
-#include "surface.h"
-#include "window.h"
-#include "wallpaper_service_cb_proxy.h"
+#include <thread>
+
 #include "ability_manager_client.h"
-#include "hitrace_meter.h"
-#include "reporter.h"
+#include "accesstoken_adapter.h"
+#include "bundle_mgr_interface.h"
+#include "bundle_mgr_proxy.h"
+#include "canvas.h"
 #include "command.h"
 #include "dfx_types.h"
+#include "directory_ex.h"
 #include "dump_helper.h"
-#include "bundle_mgr_proxy.h"
-#include "accesstoken_adapter.h"
-#include "wallpaper_service.h"
+#include "file_deal.h"
+#include "file_ex.h"
+#include "hilog_wrapper.h"
+#include "hitrace_meter.h"
+#include "image/bitmap.h"
+#include "image_packer.h"
+#include "image_source.h"
+#include "image_type.h"
+#include "image_utils.h"
+#include "iservice_registry.h"
+#include "pen.h"
+#include "pixel_map.h"
+#include "reporter.h"
+#include "surface.h"
+#include "system_ability_definition.h"
+#include "wallpaper_common.h"
+#include "wallpaper_common_event.h"
+#include "wallpaper_service_cb_proxy.h"
+#include "window.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -188,8 +191,7 @@ void WallpaperService::InitServiceHandler()
         HILOG_ERROR("InitServiceHandler already init.");
         return;
     }
-    std::shared_ptr<AppExecFwk::EventRunner> runner =
-        AppExecFwk::EventRunner::Create("WallpaperService");
+    std::shared_ptr<AppExecFwk::EventRunner> runner = AppExecFwk::EventRunner::Create("WallpaperService");
     serviceHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner);
 
     HILOG_INFO("InitServiceHandler succeeded.");
@@ -206,7 +208,6 @@ void WallpaperService::OnStop()
     HILOG_INFO("OnStop end.");
 }
 
-
 void WallpaperService::InitData()
 {
     HILOG_INFO("WallpaperService::initData --> start ");
@@ -216,10 +217,8 @@ void WallpaperService::InitData()
     lockWallpaperMap_.clear();
     userId_ = GetUserId();
     std::string userIdPath = GetWallpaperDir(userId_);
-    this->wallpaperLockScreenFilePath_ = userIdPath +
-        "/" + WALLPAPER_LOCKSCREEN_DIRNAME;
-    this->wallpaperSystemFilePath_ = userIdPath +
-        "/" + WALLPAPER_SYSTEM_DIRNAME;
+    this->wallpaperLockScreenFilePath_ = userIdPath + "/" + WALLPAPER_LOCKSCREEN_DIRNAME;
+    this->wallpaperSystemFilePath_ = userIdPath + "/" + WALLPAPER_SYSTEM_DIRNAME;
     wallpaperLockScreenFileFullPath_ = wallpaperLockScreenFilePath_ + "/" + WALLPAPER_LOCK_ORIG;
     wallpaperLockScreenCropFileFullPath_ = wallpaperLockScreenFilePath_ + "/" + WALLPAPER_LOCK_CROP;
     wallpaperSystemCropFileFullPath_ = wallpaperSystemFilePath_ + "/" + WALLPAPER_CROP;
@@ -300,20 +299,20 @@ void WallpaperService::LoadSettingsLocked(int userId, bool keepDimensionHints)
         MigrateFromOld();
         WallpaperData wallpaper(userId, wallpaperSystemFileFullPath_, wallpaperSystemCropFileFullPath_);
         wallpaper.allowBackup = true;
-        wallpaper.wallpaperId_ =  MakeWallpaperIdLocked();
+        wallpaper.wallpaperId_ = MakeWallpaperIdLocked();
         wallpaperMap_.insert(std::pair<int, WallpaperData>(userId, wallpaper));
     }
 
     if (itrLock == lockWallpaperMap_.end()) {
         WallpaperData wallpaperLock(userId, wallpaperLockScreenFileFullPath_, wallpaperLockScreenCropFileFullPath_);
         wallpaperLock.allowBackup = true;
-        wallpaperLock.wallpaperId_ =  MakeWallpaperIdLocked();
+        wallpaperLock.wallpaperId_ = MakeWallpaperIdLocked();
         lockWallpaperMap_.insert(std::pair<int, WallpaperData>(userId, wallpaperLock));
     }
     HILOG_INFO("load Setting locked end.");
 }
 
-bool  WallpaperService::ChangingToSame(ComponentName componentName, WallpaperData wallpaper)
+bool WallpaperService::ChangingToSame(ComponentName componentName, WallpaperData wallpaper)
 {
     if (wallpaper.wallpaperComponent.equals(componentName)) {
         return true;
@@ -321,8 +320,8 @@ bool  WallpaperService::ChangingToSame(ComponentName componentName, WallpaperDat
 
     return false;
 }
-bool WallpaperService::BindWallpaperComponentLocked(ComponentName& componentName,
-    bool force, bool fromUser, WallpaperData wallpaper)
+bool WallpaperService::BindWallpaperComponentLocked(
+    ComponentName &componentName, bool force, bool fromUser, WallpaperData wallpaper)
 {
     if (!force && ChangingToSame(componentName, wallpaper)) {
         return true;
@@ -330,7 +329,7 @@ bool WallpaperService::BindWallpaperComponentLocked(ComponentName& componentName
     return true;
 }
 
-bool WallpaperService::SetLockWallpaperCallback(IWallpaperManagerCallback* cb)
+bool WallpaperService::SetLockWallpaperCallback(IWallpaperManagerCallback *cb)
 {
     keyguardListener_ = cb;
 
@@ -342,12 +341,12 @@ void WallpaperService::MigrateFromOld()
     int ret = 0;
     if (!OHOS::FileExists(wallpaperLockScreenFilePath_)) {
         if (!OHOS::ForceCreateDirectory(wallpaperLockScreenFilePath_)) {
-            return ;
+            return;
         }
     }
     if (!OHOS::FileExists(wallpaperSystemFilePath_)) {
         if (!OHOS::ForceCreateDirectory(wallpaperSystemFilePath_)) {
-            return ;
+            return;
         }
     }
     if (OHOS::FileExists(wallpaperSystemCropFileFullPath_)) {
@@ -401,10 +400,12 @@ std::vector<RgbaColor> WallpaperService::GetColors(int wallpaperType)
     return Colors;
 }
 
-int32_t WallpaperService::GetFile(int32_t wallpaperType)
+int32_t WallpaperService::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
 {
-    FdInfo wallpaperFd = GetPixelMap(wallpaperType);
-    return wallpaperFd.fd;
+    FdInfo fdInfo;
+    int wallpaperErrorCode = GetPixelMap(wallpaperType, fdInfo);
+    wallpaperFd = fdInfo.fd;
+    return wallpaperErrorCode;
 }
 
 int64_t WallpaperService::WritePixelMapToFile(const std::string &filePath, std::unique_ptr<PixelMap> pixelMap)
@@ -435,15 +436,15 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     OHOS::Media::SourceOptions opts;
     opts.formatHint = "image/jpeg";
 
-    std::unique_ptr<OHOS::Media::ImageSource> imageSource =
-        OHOS::Media::ImageSource::CreateImageSource((wallpaperType == WALLPAPER_SYSTEM ?
-            wallpaperSystemFileFullPath_: wallpaperLockScreenFileFullPath_), opts, errorCode);
-    if (errorCode != 0) {
+    std::unique_ptr<OHOS::Media::ImageSource> imageSource = OHOS::Media::ImageSource::CreateImageSource(
+        (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_ : wallpaperLockScreenFileFullPath_), opts,
+        errorCode);
+    if (imageSource == nullptr || errorCode != 0) {
         return ret;
     }
     OHOS::Media::DecodeOptions decodeOpts;
     std::unique_ptr<PixelMap> wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
-    if (errorCode != 0) {
+    if (wallpaperPixelMap == nullptr || errorCode != 0) {
         return ret;
     }
     int32_t pictrueHeight = wallpaperPixelMap->GetHeight();
@@ -452,11 +453,11 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     int pyScrHeight = GetWallpaperMinHeight();
     bool bHeightFlag = false, bWidthFlag = false;
     if (pictrueHeight > pyScrHeight) {
-        decodeOpts.CropRect.top = (pictrueHeight - pyScrHeight)/HALF;
+        decodeOpts.CropRect.top = (pictrueHeight - pyScrHeight) / HALF;
         bHeightFlag = true;
     }
     if (pictrueWidth > pyScrWidth) {
-        decodeOpts.CropRect.left = (pictrueWidth - pyScrWidth)/HALF;
+        decodeOpts.CropRect.left = (pictrueWidth - pyScrWidth) / HALF;
         bWidthFlag = true;
     }
     decodeOpts.CropRect.height = bHeightFlag ? pyScrHeight : pictrueHeight;
@@ -482,20 +483,23 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     return ret;
 }
 
-bool WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
+int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
 {
     StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByMap", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_MAP));
     HILOG_INFO("SetWallpaperByMap");
     bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     if (!permissionSet) {
         HILOG_INFO("SetWallpaperByMap no set permission!");
-        return false;
+        return static_cast<int32_t>(E_NO_PERMISSION);
     }
     if (length == 0 || length > FOO_MAX_LEN) {
-        return false;
+        return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
     std::string url = wallpaperTmpFullPath_;
-    char* paperBuf = new char[length];
+    char *paperBuf = new (std::nothrow) char[length];
+    if (paperBuf == nullptr) {
+        return static_cast<int32_t>(E_NO_MEMORY);
+    }
     mtx.lock();
     int32_t bufsize = read(fd, paperBuf, length);
     if (bufsize <= 0) {
@@ -503,7 +507,7 @@ bool WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
         delete[] paperBuf;
         close(fd);
         mtx.unlock();
-        return false;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     int fdw = open(url.c_str(), O_WRONLY | O_CREAT, 0660);
     if (fdw == -1) {
@@ -511,7 +515,7 @@ bool WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
         delete[] paperBuf;
         close(fd);
         mtx.unlock();
-        return false;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     int writeSize = write(fdw, paperBuf, length);
     mtx.unlock();
@@ -521,31 +525,33 @@ bool WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
         delete[] paperBuf;
         close(fd);
         close(fdw);
-        return false;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     delete[] paperBuf;
     close(fd);
     close(fdw);
-    bool bRet = SetWallpaperBackupData(url, wallpaperType);
+    int32_t wallpaperErrorCode = SetWallpaperBackupData(url, wallpaperType);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByMap", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_MAP));
-    return bRet;
+    return wallpaperErrorCode;
 }
 
-bool WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length)
+int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length)
 {
     StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByFD", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_FD));
     HILOG_INFO("SetWallpaperByFD");
     bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     if (!permissionSet) {
-        HILOG_INFO("SetWallpaperByFD no set permission!");
-        return false;
+        return static_cast<int32_t>(E_NO_PERMISSION);
     }
     std::string url = wallpaperTmpFullPath_;
     if (length == 0 || length > FOO_MAX_LEN) {
         close(fd);
-        return false;
+        return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
-    char* paperBuf = new char[length];
+    char *paperBuf = new (std::nothrow) char[length];
+    if (paperBuf == nullptr) {
+        return E_NO_MEMORY;
+    }
     mtx.lock();
     int readSize = read(fd, paperBuf, length);
     if (readSize <= 0) {
@@ -553,16 +559,15 @@ bool WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length)
         delete[] paperBuf;
         close(fd);
         mtx.unlock();
-        return false;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
-
     int fdw = open(url.c_str(), O_WRONLY | O_CREAT, 0660);
     if (fdw == -1) {
         HILOG_ERROR("WallpaperService:: fdw fail");
         delete[] paperBuf;
         close(fd);
         mtx.unlock();
-        return false;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     int writeSize = write(fdw, paperBuf, length);
     mtx.unlock();
@@ -572,38 +577,36 @@ bool WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length)
         close(fd);
         close(fdw);
         delete[] paperBuf;
-        return false;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     close(fd);
     close(fdw);
     delete[] paperBuf;
-    bool bRet = SetWallpaperBackupData(url, wallpaperType);
+    int32_t wallpaperErrorCode = SetWallpaperBackupData(url, wallpaperType);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByFD", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_FD));
-    return bRet;
+    return wallpaperErrorCode;
 }
 
-bool WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int wallpaperType)
+int32_t WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int wallpaperType)
 {
     HILOG_INFO("set wallpaper and backup data Start.");
     if (wallpaperType != WALLPAPER_LOCKSCREEN && wallpaperType != WALLPAPER_SYSTEM) {
-        return false;
+        return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
 
     if (!OHOS::FileExists(uriOrPixelMap)) {
-        return false;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     WallpaperData tmpWP(userId_,
-    (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_:
-        wallpaperLockScreenFileFullPath_),
-    (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemCropFileFullPath_:
-        wallpaperLockScreenCropFileFullPath_));
+        (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_ : wallpaperLockScreenFileFullPath_),
+        (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemCropFileFullPath_ : wallpaperLockScreenCropFileFullPath_));
 
     mtx.lock();
     bool ret = GetWallpaperSafeLocked(userId_, wallpaperType, tmpWP);
     if (!ret) {
         HILOG_ERROR("GetWallpaperSafeLocked failed !");
         mtx.unlock();
-        return false;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
 
     tmpWP.wallpaperId_ = MakeWallpaperIdLocked();
@@ -628,19 +631,17 @@ bool WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int wal
         if (callbackProxy != nullptr) {
             callbackProxy->OnCall(wallpaperType);
         }
-    } else {
-        return false;
     }
     if (remove(uriOrPixelMap.c_str()) < 0) {
-        return false;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
-    return !retFileCp && !retCropFileCp;
+    return (retFileCp && retCropFileCp) ? static_cast<int32_t>(E_OK) : static_cast<int32_t>(E_DEAL_FAILED);
 }
 
 void WallpaperService::ReporterUsageTimeStatisic()
 {
     int userId = static_cast<int>(IPCSkeleton::GetCallingUid());
-    std::string  bundleName;
+    std::string bundleName;
     bool bRet = WPGetBundleNameByUid(userId, bundleName);
     if (!bRet) {
         bundleName = WALLPAPER_BUNDLE_NAME;
@@ -651,14 +652,13 @@ void WallpaperService::ReporterUsageTimeStatisic()
     Reporter::GetInstance().UsageTimeStatistic().ReportUsageTimeStatistic(userId, timeStat);
 }
 
-IWallpaperService::FdInfo  WallpaperService::GetPixelMap(int wallpaperType)
+int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
-    FdInfo fdInfo;
     HILOG_INFO("WallpaperService::getPixelMap --> start ");
     bool permissionGet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER);
     if (!permissionGet) {
         HILOG_INFO("GetPixelMap no get permission!");
-        return fdInfo;
+        return static_cast<int32_t>(E_NO_PERMISSION);
     }
 
     std::string filePath = "";
@@ -667,18 +667,20 @@ IWallpaperService::FdInfo  WallpaperService::GetPixelMap(int wallpaperType)
         filePath = lockWallpaperMap_.find(userId_)->second.cropFile_;
     } else if (wallpaperType == WALLPAPER_SYSTEM) {
         filePath = wallpaperMap_.find(userId_)->second.cropFile_;
+    } else {
+        return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
 
     if (!OHOS::FileExists(filePath)) {
         HILOG_ERROR("file is not exist!");
-        return fdInfo;
+        return static_cast<int32_t>(E_NOT_FOUND);
     }
     mtx.lock();
     FILE *pixmap = fopen(filePath.c_str(), "rb");
     if (pixmap == nullptr) {
         HILOG_ERROR("fopen failed");
         mtx.unlock();
-        return fdInfo;
+        return static_cast<int32_t>(E_FILE_ERROR);
     }
     int fend = fseek(pixmap, 0, SEEK_END);
     int length = ftell(pixmap);
@@ -687,7 +689,7 @@ IWallpaperService::FdInfo  WallpaperService::GetPixelMap(int wallpaperType)
         HILOG_ERROR("ftell failed or fseek failed");
         fclose(pixmap);
         mtx.unlock();
-        return fdInfo;
+        return static_cast<int32_t>(E_FILE_ERROR);
     }
 
     fdInfo.size = length;
@@ -697,14 +699,14 @@ IWallpaperService::FdInfo  WallpaperService::GetPixelMap(int wallpaperType)
     if (closeRes != 0 || fd < 0) {
         HILOG_ERROR("open failed");
         ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
-        return fdInfo;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
     fdInfo.fd = fd;
     HILOG_INFO("fdInfo.fd = %{public}d", fdInfo.fd);
-    return fdInfo;
+    return static_cast<int32_t>(E_OK);
 }
 
-int  WallpaperService::GetWallpaperId(int wallpaperType)
+int WallpaperService::GetWallpaperId(int wallpaperType)
 {
     HILOG_INFO("WallpaperService::GetWallpaperId --> start ");
     int iWallpaperId = 1;
@@ -716,7 +718,7 @@ int  WallpaperService::GetWallpaperId(int wallpaperType)
     HILOG_INFO("WallpaperService::GetWallpaperId --> end ID[%{public}d]", iWallpaperId);
     return iWallpaperId;
 }
-int  WallpaperService::GetWallpaperMinHeight()
+int WallpaperService::GetWallpaperMinHeight()
 {
     HILOG_INFO("WallpaperService::GetWallpaperMinHeight --> start ");
     auto display = Rosen::DisplayManager::GetInstance().GetDefaultDisplay();
@@ -725,7 +727,7 @@ int  WallpaperService::GetWallpaperMinHeight()
     return iWallpaperMinHeight;
 }
 
-int  WallpaperService::GetWallpaperMinWidth()
+int WallpaperService::GetWallpaperMinWidth()
 {
     HILOG_INFO("WallpaperService::GetWallpaperMinWidth --> start ");
     auto display = Rosen::DisplayManager::GetInstance().GetDefaultDisplay();
@@ -748,23 +750,23 @@ bool WallpaperService::IsOperationAllowed()
     return bFlag;
 }
 
-bool WallpaperService::ResetWallpaper(int wallpaperType)
+int32_t WallpaperService::ResetWallpaper(int wallpaperType)
 {
     HILOG_INFO("reset wallpaper Start!");
     bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     if (!permissionSet) {
         HILOG_INFO("reset wallpaper no set permission!");
-        return false;
-    }
-    bool bFlag = false;
-    if (wallpaperType != WALLPAPER_LOCKSCREEN && wallpaperType != WALLPAPER_SYSTEM) {
-        HILOG_INFO("wallpaperType = %{public}d type not support ", wallpaperType);
-        return bFlag;
+        return static_cast<int32_t>(E_NO_PERMISSION);
     }
 
+    if (wallpaperType != WALLPAPER_LOCKSCREEN && wallpaperType != WALLPAPER_SYSTEM) {
+        HILOG_INFO("wallpaperType = %{public}d type not support ", wallpaperType);
+        return static_cast<int32_t>(E_PARAMETERS_INVALID);
+    }
+    int32_t wallpaperErrorCode;
     ClearWallpaperLocked(userId_, wallpaperType);
-    bFlag = SetDefaultDateForWallpaper(userId_, wallpaperType);
-    HILOG_INFO(" Set default data result[%{public}d]", bFlag);
+    wallpaperErrorCode = SetDefaultDateForWallpaper(userId_, wallpaperType);
+    HILOG_INFO(" Set default data result[%{public}d]", wallpaperErrorCode);
 
     std::map<int, WallpaperData>::iterator itr;
     if (wallpaperType == WALLPAPER_LOCKSCREEN) {
@@ -774,10 +776,10 @@ bool WallpaperService::ResetWallpaper(int wallpaperType)
     }
 
     if (itr != lockWallpaperMap_.end()) {
-        bFlag = true;
+        wallpaperErrorCode = static_cast<int32_t>(E_OK);
     }
     HILOG_INFO("reset wallpaper End!");
-    return bFlag;
+    return wallpaperErrorCode;
 }
 
 bool WallpaperService::CopySystemWallpaper()
@@ -830,7 +832,7 @@ bool WallpaperService::CopyScreenLockWallpaper()
     return ret;
 }
 
-bool WallpaperService::SetDefaultDateForWallpaper(int userId, int wpType)
+int32_t WallpaperService::SetDefaultDateForWallpaper(int userId, int wpType)
 {
     std::string tmpPath = "";
     std::string tmpCropPath = "";
@@ -851,7 +853,7 @@ bool WallpaperService::SetDefaultDateForWallpaper(int userId, int wpType)
     } else {
         wallpaperMap_.insert(std::pair<int, WallpaperData>(userId, sdwpdata));
     }
-    return true;
+    return static_cast<int32_t>(E_OK);
 }
 bool WallpaperService::ScreenshotLiveWallpaper(int scaleNumber, OHOS::Media::PixelMap pixelMap)
 {

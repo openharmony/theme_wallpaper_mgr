@@ -27,6 +27,7 @@ namespace OHOS::WallpaperNAPI {
 class WallpaperJSUtil {
 public:
     static constexpr int32_t MAX_LEN = 4096;
+    static constexpr int32_t MAX_ARGC = 6;
 
     static std::string Convert2String(napi_env env, napi_value jsString);
     static napi_value Convert2JSRgbaArray(napi_env env, const std::vector<RgbaColor> &color);

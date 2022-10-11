@@ -67,7 +67,8 @@
         },
         "test": [
           "//base/theme/wallpaper_mgr/test:wallpaper_test",
-          "//base/theme/wallpaper_mgr/test/fuzztest:fuzztest"
+          "//base/theme/wallpaper_mgr/test/fuzztest:fuzztest",
+          "//base/theme/wallpaper_mgr/interfaces/kits/napi/test:unittest"
         ]
       },
       "hisysevent_config": [
