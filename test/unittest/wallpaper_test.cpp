@@ -41,6 +41,7 @@ using namespace OHOS::MiscServices;
 namespace OHOS {
 namespace WallpaperMgrService {
 constexpr const char *URL = "/system/etc/wallpaper_test.JPG";
+constexpr const char *FW_SET_TMP_FILENAME = "/data/service/el1/public/wallpaper/0/system/fwsettmp";
 class AccessTokenMock : public AccessTokenAdapter {
 public:
     AccessTokenMock() = default;
@@ -69,6 +70,10 @@ public:
     virtual int32_t SetWallpaperByFD(int fd, int wallpaperType, int length)
     {
         return WallpaperService::GetInstance()->SetWallpaperByFD(fd, wallpaperType, length);
+    }
+    virtual int32_t GetFile(int wallpaperType, int32_t &fdInfo)
+    {
+        return WallpaperService::GetInstance()->GetFile(wallpaperType, fdInfo);
     }
 };
 
@@ -109,6 +114,7 @@ void WallpaperTest::TearDownTestCase(void)
     accessTokenMock_.reset();
     AccessTokenProxy::Set(nullptr);
     remoteObjMock_ = nullptr;
+    remove(FW_SET_TMP_FILENAME);
 }
 
 void WallpaperTest::SetUp(void)
@@ -406,7 +412,7 @@ HWTEST_F(WallpaperTest, GetFile001, TestSize.Level0)
     OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWpProxy(
         iface_cast<WallpaperServiceProxy>(this->remoteObjMock_));
     HILOG_INFO("GetFile001 begin");
-    int32_t wallpaperFd;
+    int32_t wallpaperFd = 0;
     int wallpaperErrorCode =
         OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(SYSTYEM, wallpaperFd);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "get File success.";
@@ -425,10 +431,28 @@ HWTEST_F(WallpaperTest, GetFile002, TestSize.Level0)
     OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWpProxy(
         iface_cast<WallpaperServiceProxy>(this->remoteObjMock_));
     HILOG_INFO("GetFile002 begin");
-    int32_t wallpaperFd;
+    int32_t wallpaperFd = 0;
     int wallpaperErrorCode =
         OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(LOCKSCREEN, wallpaperFd);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "get File success.";
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWpProxy();
+}
+
+/**
+* @tc.name: GetFile003
+* @tc.desc: GetFile with wallpaperType[2] throw parameters error.
+* @tc.type: FUNC
+* @tc.require: SR000HHEJQ
+* @tc.author: lvbai
+*/
+HWTEST_F(WallpaperTest, GetFile003, TestSize.Level0)
+{
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWpProxy(
+        iface_cast<WallpaperServiceProxy>(this->remoteObjMock_));
+    HILOG_INFO("GetFile003 begin");
+    int32_t wallpaperFd = 0;
+    int wallpaperErrorCode = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(2, wallpaperFd);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "throw parameters error successfully";
     OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWpProxy();
 }
 /*********************   GetFile   *********************/
