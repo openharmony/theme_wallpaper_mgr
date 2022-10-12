@@ -65,7 +65,7 @@ Note:If the text contains special characters, please escape them according to th
                             desc="JPG for js tdd test"/>
                 <filteritem type="filepath" name="interfaces/kits/napi/test/unittest/resource/wallpaper_system.JPG"
                             desc="JPG for js tdd test"/>
-                <filteritem type="filepath" name="test/unittest/resource/wallpaper_white.JPG" desc="JPG for unittest"/>
+                <filteritem type="filepath" name="test/unittest/resource/wallpaper_test.JPG" desc="JPG for unittest"/>
             </filefilter>
         </filefilterlist>
     </oatconfig>
