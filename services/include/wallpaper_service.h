@@ -19,6 +19,7 @@
 #include <mutex>
 #include <list>
 #include <map>
+#include "concurrent_map.h"
 #include "system_ability.h"
 #include "wallpaper_service_stub.h"
 #include "wallpaper_common.h"
@@ -152,8 +153,8 @@ private:
     typedef std::list<WallpaperColorChangeListener*> LISTENERLIST;
     LISTENERLIST colorListeners_;
     COLORSLISTENERMAP colorsChangedListeners_;
-    std::map<int, WallpaperData> wallpaperMap_ ;
-    std::map<int, WallpaperData> lockWallpaperMap_ ;
+    ConcurrentMap<int, WallpaperData> wallpaperMap_;
+    ConcurrentMap<int, WallpaperData> lockWallpaperMap_;
     int wallpaperId_;
     int userId_;
     IWallpaperManagerCallback *keyguardListener_;
