@@ -649,7 +649,7 @@ void WallpaperService::ReporterUsageTimeStatisic()
 
 int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
-    HILOG_INFO("WallpaperService::getPixelMap --> start ");
+    HILOG_INFO("WallpaperService::getPixelMap  start ");
     bool permissionGet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER);
     if (!permissionGet) {
         HILOG_INFO("GetPixelMap no get permission!");
@@ -657,18 +657,7 @@ int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdIn
     }
 
     std::string filePath = "";
-
-    if (wallpaperType == WALLPAPER_LOCKSCREEN) {
-        auto wallpaperData = lockWallpaperMap_.Find(userId_);
-        if (wallpaperData.first) {
-            filePath = wallpaperData.second.wallpaperFile_;
-        }   
-    } else if (wallpaperType == WALLPAPER_SYSTEM) {
-        auto wallpaperData = wallpaperMap_.Find(userId_);
-        if (wallpaperData.first) {
-            filePath = wallpaperData.second.wallpaperFile_;
-        }   
-    } else {
+    if (GetFilePath(wallpaperType, filePath) != static_cast<int32_t>(E_OK)) {
         return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
 
@@ -715,12 +704,12 @@ int WallpaperService::GetWallpaperId(int wallpaperType)
         auto wallpaperData = lockWallpaperMap_.Find(userId_);
         if (wallpaperData.first) {
             iWallpaperId = wallpaperData.second.wallpaperId_;
-        } 
+        }
     } else if (wallpaperType == WALLPAPER_SYSTEM) {
         auto wallpaperData = wallpaperMap_.Find(userId_);
         if (wallpaperData.first) {
             iWallpaperId = wallpaperData.second.wallpaperId_;
-        } 
+        }
     }
     HILOG_INFO("WallpaperService::GetWallpaperId --> end ID[%{public}d]", iWallpaperId);
     return iWallpaperId;
@@ -1088,6 +1077,24 @@ int32_t WallpaperService::ConnectExtensionAbility(const AAFwk::Want &want)
     ret = AAFwk::AbilityManagerClient::GetInstance()->ConnectExtensionAbility(want, connection, ids[0]);
     HILOG_INFO("ConnectExtensionAbility errCode=%{public}d", ret);
     return ret;
+}
+
+int32_t WallpaperService::GetFilePath(int wallpaperType, std::string &filePath)
+{
+    if (wallpaperType == WALLPAPER_LOCKSCREEN) {
+        auto wallpaperData = lockWallpaperMap_.Find(userId_);
+        if (wallpaperData.first) {
+            filePath = wallpaperData.second.wallpaperFile_;
+        }
+    } else if (wallpaperType == WALLPAPER_SYSTEM) {
+        auto wallpaperData = wallpaperMap_.Find(userId_);
+        if (wallpaperData.first) {
+            filePath = wallpaperData.second.wallpaperFile_;
+        }
+    } else {
+        return static_cast<int32_t>(E_PARAMETERS_INVALID);
+    }
+    return static_cast<int32_t>(E_OK);
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

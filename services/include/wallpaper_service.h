@@ -129,6 +129,7 @@ private:
     bool MakeCropWallpaper(int wallpaperType);
     int32_t SetWallpaperBackupData(std::string uriOrPixelMap, int wallpaperType);
     int32_t ConnectExtensionAbility(const OHOS::AAFwk::Want& want);
+    int32_t GetFilePath(int wallpaperType, std::string &filePath);
 
 private:
 
