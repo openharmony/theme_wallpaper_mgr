@@ -33,6 +33,7 @@ ohos_unittest("wallpaper_test") {
     "//base/theme/wallpaper_mgr/services/dfx/hidumper_adapter",
     "//base/theme/wallpaper_mgr/services/dfx/hisysevent_adapter",
     "//base/theme/wallpaper_mgr/services/src/adapter",
+    "//foundation/distributeddatamgr/kv_store/frameworks/common",
     "//foundation/graphic/graphic_2d/interfaces/innerkits/wm",
 
     #"//foundation/multimedia/image_framework/interfaces/innerkits/include",
