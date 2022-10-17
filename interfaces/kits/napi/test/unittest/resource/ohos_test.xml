@@ -19,5 +19,10 @@
             <option name="push" value="wallpaper_system.JPG -> /system/etc" src="res"/>
             <option name="push" value="wallpaper_lock.JPG -> /system/etc" src="res"/>
         </preparer>
+        <cleaner>
+            <option name="shell" value="rm -rf /system/etc/wallpaper_system.JPG" src="res"/>
+            <option name="shell" value="rm -rf /system/etc/wallpaper_lock.JPG" src="res"/>
+            <option name="shell" value="rm -rf /data/service/el1/public/wallpaper/0/system/fwsettmp" src="res"/>
+        </cleaner>
     </target>
 </configuration>

@@ -41,7 +41,6 @@ using namespace OHOS::MiscServices;
 namespace OHOS {
 namespace WallpaperMgrService {
 constexpr const char *URL = "/system/etc/wallpaper_test.JPG";
-constexpr const char *FW_SET_TMP_FILENAME = "/data/service/el1/public/wallpaper/0/system/fwsettmp";
 class AccessTokenMock : public AccessTokenAdapter {
 public:
     AccessTokenMock() = default;
@@ -114,7 +113,6 @@ void WallpaperTest::TearDownTestCase(void)
     accessTokenMock_.reset();
     AccessTokenProxy::Set(nullptr);
     remoteObjMock_ = nullptr;
-    remove(FW_SET_TMP_FILENAME);
 }
 
 void WallpaperTest::SetUp(void)
@@ -182,7 +180,7 @@ unsigned long WallpaperColorChangeListenerTestImpl::GetCallCount() const
 * @tc.name: Reset001
 * @tc.desc: Reset wallpaper with wallpaperType[0].
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, Reset001, TestSize.Level1)
@@ -200,7 +198,7 @@ HWTEST_F(WallpaperTest, Reset001, TestSize.Level1)
 * @tc.name: Reset002
 * @tc.desc: Reset wallpaper with wallpaperType[1].
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, Reset002, TestSize.Level1)
@@ -217,7 +215,7 @@ HWTEST_F(WallpaperTest, Reset002, TestSize.Level1)
 * @tc.name: Reset003
 * @tc.desc: Reset wallpaper with wallpaperType[2] throw parameters error.
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, Reset003, TestSize.Level1)
@@ -234,7 +232,7 @@ HWTEST_F(WallpaperTest, Reset003, TestSize.Level1)
 * @tc.name: Reset004
 * @tc.desc: Reset wallpaper with wallpaperType[0] after resetting wallpaper[0].
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, Reset004, TestSize.Level1)
@@ -254,7 +252,7 @@ HWTEST_F(WallpaperTest, Reset004, TestSize.Level1)
 * @tc.name: Reset005
 * @tc.desc: Reset wallpaper with wallpaperType[1] after resetting wallpaper[1] and check whether Id is same one.
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, Reset005, TestSize.Level1)
@@ -404,7 +402,7 @@ HWTEST_F(WallpaperTest, GetId002, TestSize.Level0)
 * @tc.name: GetFile001
 * @tc.desc: GetFile with wallpaperType[0].
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, GetFile001, TestSize.Level0)
@@ -423,7 +421,7 @@ HWTEST_F(WallpaperTest, GetFile001, TestSize.Level0)
 * @tc.name: GetFile002
 * @tc.desc: GetFile with wallpaperType[1].
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, GetFile002, TestSize.Level0)
@@ -442,7 +440,7 @@ HWTEST_F(WallpaperTest, GetFile002, TestSize.Level0)
 * @tc.name: GetFile003
 * @tc.desc: GetFile with wallpaperType[2] throw parameters error.
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, GetFile003, TestSize.Level0)
@@ -504,7 +502,7 @@ HWTEST_F(WallpaperTest, getMinWidth001, TestSize.Level0)
 * @tc.name: GetPiexlMap001
 * @tc.desc: GetPixelMap with wallpaperType[0] .
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, GetPiexlMap001, TestSize.Level0)
@@ -524,7 +522,7 @@ HWTEST_F(WallpaperTest, GetPiexlMap001, TestSize.Level0)
 * @tc.name: GetPiexlMap002
 * @tc.desc: GetPixelMap with wallpaperType[1].
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, GetPiexlMap002, TestSize.Level0)
@@ -544,7 +542,7 @@ HWTEST_F(WallpaperTest, GetPiexlMap002, TestSize.Level0)
 * @tc.name: GetPiexlMap003
 * @tc.desc: GetPixelMap with wallpaperType[2] throw parameters error.
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, GetPiexlMap003, TestSize.Level0)
@@ -565,7 +563,7 @@ HWTEST_F(WallpaperTest, GetPiexlMap003, TestSize.Level0)
 * @tc.name: SetWallpaperByMap001
 * @tc.desc: SetWallpaperByMap with wallpaperType[0] .
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByMap001, TestSize.Level0)
@@ -586,7 +584,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap001, TestSize.Level0)
 * @tc.name: SetWallpaperByMap002
 * @tc.desc: SetWallpaperByMap with wallpaperType[1] .
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByMap002, TestSize.Level0)
@@ -607,7 +605,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap002, TestSize.Level0)
 * @tc.name: SetWallpaperByMap003
 * @tc.desc: SetWallpaperByMap with wallpaperType[2] throw parameters error.
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByMap003, TestSize.Level0)
@@ -630,7 +628,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap003, TestSize.Level0)
 * @tc.name: SetWallpaperByUrl001
 * @tc.desc: SetWallpaperByUrl with wallpaperType[0] .
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByUrl001, TestSize.Level0)
@@ -648,7 +646,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUrl001, TestSize.Level0)
 * @tc.name: SetWallpaperByUrl002
 * @tc.desc: SetWallpaperByUrl with wallpaperType[1] .
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByUrl002, TestSize.Level0)
@@ -666,7 +664,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUrl002, TestSize.Level0)
 * @tc.name: SetWallpaperByUrl003
 * @tc.desc: SetWallpaperByUrl with wallpaperType[2] throw parameters error.
 * @tc.type: FUNC
-* @tc.require: SR000HHEJQ
+* @tc.require: #I5UHRG
 * @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByUrl003, TestSize.Level0)
