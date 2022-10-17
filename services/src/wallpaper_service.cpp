@@ -592,26 +592,26 @@ int32_t WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int 
     if (!OHOS::FileExists(uriOrPixelMap)) {
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
-    WallpaperData tmpWP(userId_,
+    WallpaperData wallpaperData(userId_,
         (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_ : wallpaperLockScreenFileFullPath_),
         (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemCropFileFullPath_ : wallpaperLockScreenCropFileFullPath_));
 
     mtx.lock();
-    bool ret = GetWallpaperSafeLocked(userId_, wallpaperType, tmpWP);
+    bool ret = GetWallpaperSafeLocked(userId_, wallpaperType, wallpaperData);
     if (!ret) {
         HILOG_ERROR("GetWallpaperSafeLocked failed !");
         mtx.unlock();
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
 
-    tmpWP.wallpaperId_ = MakeWallpaperIdLocked();
+    wallpaperData.wallpaperId_ = MakeWallpaperIdLocked();
     bool retFileCp = FileDeal::CopyFile(uriOrPixelMap,
         (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_ : wallpaperLockScreenFileFullPath_));
     bool retCropFileCp = MakeCropWallpaper(wallpaperType);
     mtx.unlock();
 
     if (wallpaperType == WALLPAPER_SYSTEM) {
-        wallpaperMap_.InsertOrAssign(userId_, tmpWP);
+        wallpaperMap_.InsertOrAssign(userId_, wallpaperData);
         WallpaperCommonEvent::SendWallpaperSystemSettingMessage();
         ReporterUsageTimeStatisic();
         HILOG_INFO("  SetWallpaperBackupData callbackProxy->OnCall start");
@@ -619,7 +619,7 @@ int32_t WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int 
             callbackProxy->OnCall(wallpaperType);
         }
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
-        lockWallpaperMap_.InsertOrAssign(userId_, tmpWP);
+        lockWallpaperMap_.InsertOrAssign(userId_, wallpaperData);
         WallpaperCommonEvent::SendWallpaperLockSettingMessage();
         ReporterUsageTimeStatisic();
         HILOG_INFO("  SetWallpaperBackupData callbackProxy->OnCall start");
@@ -649,7 +649,7 @@ void WallpaperService::ReporterUsageTimeStatisic()
 
 int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
-    HILOG_INFO("WallpaperService::getPixelMap  start ");
+    HILOG_INFO("WallpaperService::getPixelMap start ");
     bool permissionGet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER);
     if (!permissionGet) {
         HILOG_INFO("GetPixelMap no get permission!");
@@ -840,13 +840,13 @@ int32_t WallpaperService::SetDefaultDateForWallpaper(int userId, int wpType)
         tmpPath = wallpaperSystemFileFullPath_;
         tmpCropPath = wallpaperSystemCropFileFullPath_;
     }
-    WallpaperData sdwpdata(userId, tmpPath, tmpCropPath);
-    sdwpdata.wallpaperId_ = 0;
-    sdwpdata.allowBackup = true;
+    WallpaperData wallpaperData(userId, tmpPath, tmpCropPath);
+    wallpaperData.wallpaperId_ = 0;
+    wallpaperData.allowBackup = true;
     if (wpType == WALLPAPER_LOCKSCREEN) {
-        lockWallpaperMap_.InsertOrAssign(userId, sdwpdata);
+        lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
     } else {
-        wallpaperMap_.InsertOrAssign(userId, sdwpdata);
+        wallpaperMap_.InsertOrAssign(userId, wallpaperData);
     }
     return static_cast<int32_t>(E_OK);
 }
