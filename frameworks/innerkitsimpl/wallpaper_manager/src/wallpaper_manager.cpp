@@ -31,7 +31,6 @@
 #include "dfx_types.h"
 #include "file_deal.h"
 #include "file_ex.h"
-#include "file_util.h"
 #include "hilog_wrapper.h"
 #include "hitrace_meter.h"
 #include "i_wallpaper_service.h"

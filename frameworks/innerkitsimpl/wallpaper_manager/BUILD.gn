@@ -38,11 +38,9 @@ ohos_shared_library("wallpapermanager") {
   ]
   public_configs = [ ":wallpaper_manager_config" ]
   include_dirs = []
-  deps = [
-    "${utils_path}:wallpaper_utils",
-    "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",
-  ]
+  deps = [ "${utils_path}:wallpaper_utils" ]
   external_deps = [
+    "c_utils:utils",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
