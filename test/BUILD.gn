@@ -18,11 +18,7 @@ ohos_unittest("wallpaper_test") {
   resource_config_file =
       "//base/theme/wallpaper_mgr/test/unittest/resource/ohos_test.xml"
   module_out_path = "wallpaper_mgr/wallpaper_test"
-  sources = [
-    "unittest/wallpaper_test.cpp",
-    #"unittest/wallpaperpermissontest.cpp",
-    #"unittest/image_source_picture_test.cpp",
-  ]
+  sources = [ "unittest/wallpaper_test.cpp" ]
 
   include_dirs = [
     "//third_party/json/include",
@@ -34,12 +30,9 @@ ohos_unittest("wallpaper_test") {
     "//base/theme/wallpaper_mgr/services/dfx/hisysevent_adapter",
     "//base/theme/wallpaper_mgr/services/src/adapter",
     "//foundation/graphic/graphic_2d/interfaces/innerkits/wm",
-
-    #"//foundation/multimedia/image_framework/interfaces/innerkits/include",
   ]
   deps = [
     "${ability_runtime_path}/frameworks/native/ability/native:abilitykit_native",
-    "//base/hiviewdfx/hiview/adapter/utility:hiview_adapter_utility",
     "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
     "//base/theme/wallpaper_mgr/services:wallpaper_service",
     "//foundation/multimedia/image_framework:image_framework",
@@ -66,8 +59,6 @@ ohos_unittest("wallpaper_test") {
     "samgr:samgr_proxy",
   ]
 }
-
-## UnitTest wallpaper_test }}}
 
 group("unittest") {
   testonly = true
