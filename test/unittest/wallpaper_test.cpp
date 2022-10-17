@@ -500,7 +500,7 @@ HWTEST_F(WallpaperTest, getMinWidth001, TestSize.Level0)
 /*********************   GetPiexlMap   *********************/
 /**
 * @tc.name: GetPiexlMap001
-* @tc.desc: GetPixelMap with wallpaperType[0] .
+* @tc.desc: GetPixelMap with wallpaperType[0].
 * @tc.type: FUNC
 * @tc.require: #I5UHRG
 * @tc.author: lvbai
@@ -561,7 +561,7 @@ HWTEST_F(WallpaperTest, GetPiexlMap003, TestSize.Level0)
 /*********************   SetWallpaperByMap   *********************/
 /**
 * @tc.name: SetWallpaperByMap001
-* @tc.desc: SetWallpaperByMap with wallpaperType[0] .
+* @tc.desc: SetWallpaperByMap with wallpaperType[0].
 * @tc.type: FUNC
 * @tc.require: #I5UHRG
 * @tc.author: lvbai
@@ -582,7 +582,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap001, TestSize.Level0)
 
 /**
 * @tc.name: SetWallpaperByMap002
-* @tc.desc: SetWallpaperByMap with wallpaperType[1] .
+* @tc.desc: SetWallpaperByMap with wallpaperType[1].
 * @tc.type: FUNC
 * @tc.require: #I5UHRG
 * @tc.author: lvbai
@@ -644,7 +644,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUrl001, TestSize.Level0)
 
 /**
 * @tc.name: SetWallpaperByUrl002
-* @tc.desc: SetWallpaperByUrl with wallpaperType[1] .
+* @tc.desc: SetWallpaperByUrl with wallpaperType[1].
 * @tc.type: FUNC
 * @tc.require: #I5UHRG
 * @tc.author: lvbai
