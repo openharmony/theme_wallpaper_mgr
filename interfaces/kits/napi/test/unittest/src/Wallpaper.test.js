@@ -46,7 +46,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getColorsSyncTest001
-     * @tc.desc:      Test getColorsSync() WALLPAPER_SYSTEM Colors by syncing
+     * @tc.desc:      Test getColorsSync() WALLPAPER_SYSTEM Colors by syncing.
      * @tc.type:      FUNC
      * @tc.require:   issueI5UHRG
      */
@@ -69,7 +69,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getColorsSyncTest002
-     * @tc.desc:      Test getColorsSync() WALLPAPER_LOCKSCREEN Colors by syncing
+     * @tc.desc:      Test getColorsSync() WALLPAPER_LOCKSCREEN Colors by syncing.
      * @tc.type:      FUNC
      * @tc.require:   issueI5UHRG
      */
@@ -91,7 +91,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getColorsSyncTest003
-     * @tc.desc:      Test getColorsSync() throw parameter error
+     * @tc.desc:      Test getColorsSync() throw parameter error.
      * @tc.type:      FUNC
      * @tc.require:   issueI5UHRG
      */
@@ -108,7 +108,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getColorsSyncTest004
-     * @tc.desc:      Test getColorsSync() throw parameter error
+     * @tc.desc:      Test getColorsSync() throw parameter error.
      * @tc.type:      FUNC
      * @tc.require:   issueI5UHRG
      */
@@ -1048,7 +1048,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      onCallbackThrowErrorTest046
-     * @tc.desc:      Test on_colorChange throw error
+     * @tc.desc:      Test on_colorChange throw error.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
@@ -1089,7 +1089,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      offCallbackThrowErrorTest048
-     * @tc.desc:      Test off_colorChange throw error
+     * @tc.desc:      Test off_colorChange throw error.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
