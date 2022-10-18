@@ -16,7 +16,11 @@
 <configuration ver="2.0">
     <target name="wallpaper_test">
         <preparer>
-            <option name="push" value="wallpaper_white.JPG -> /system/etc" src="res"/>
+            <option name="push" value="wallpaper_test.JPG -> /system/etc" src="res"/>
         </preparer>
+        <cleaner>
+            <option name="shell" value="rm -rf /system/etc/wallpaper_test.JPG" src="res"/>
+            <option name="shell" value="rm -rf /data/service/el1/public/wallpaper/0/system/fwsettmp" src="res"/>
+        </cleaner>
     </target>
 </configuration>

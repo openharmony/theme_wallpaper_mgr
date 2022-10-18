@@ -46,9 +46,9 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getColorsSyncTest001
-     * @tc.desc:      Test getColorsSync() WALLPAPER_SYSTEM Colors by syncing
+     * @tc.desc:      Test getColorsSync() WALLPAPER_SYSTEM Colors by syncing.
      * @tc.type:      FUNC
-     * @tc.require:   SR000HHEJQ
+     * @tc.require:   issueI5UHRG
      */
     it('getColorsSyncTest001', 0, function () {
         try {
@@ -69,9 +69,9 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getColorsSyncTest002
-     * @tc.desc:      Test getColorsSync() WALLPAPER_LOCKSCREEN Colors by syncing
+     * @tc.desc:      Test getColorsSync() WALLPAPER_LOCKSCREEN Colors by syncing.
      * @tc.type:      FUNC
-     * @tc.require:   SR000HHEJQ
+     * @tc.require:   issueI5UHRG
      */
     it('getColorsSyncTest002', 0, function () {
         try {
@@ -91,9 +91,9 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getColorsSyncTest003
-     * @tc.desc:      Test getColorsSync() throw parameter error
+     * @tc.desc:      Test getColorsSync() throw parameter error.
      * @tc.type:      FUNC
-     * @tc.require:   SR000HHEJQ
+     * @tc.require:   issueI5UHRG
      */
     it('getColorsSyncTest003', 0, function () {
         try {
@@ -108,9 +108,9 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getColorsSyncTest004
-     * @tc.desc:      Test getColorsSync() throw parameter error
+     * @tc.desc:      Test getColorsSync() throw parameter error.
      * @tc.type:      FUNC
-     * @tc.require:   SR000HHEJQ
+     * @tc.require:   issueI5UHRG
      */
     it('getColorsSyncTest004', 0, function () {
         try {
@@ -127,7 +127,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      getIdSyncTest005
      * @tc.desc:      Test getIdSync() to the ID of the wallpaper of the specified type.
      * @tc.type:      FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.require:   issueI5UHRG
      */
     it('getIdSyncTest005', 0, function () {
         try {
@@ -146,7 +146,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      getIdSyncTest006
      * @tc.desc:      Test getIdSync() to the ID of the wallpaper of the specified type.
      * @tc.type:      FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.require:   issueI5UHRG
      */
     it('getIdSyncTest006', 0, function () {
         try {
@@ -166,7 +166,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      getIdSyncTest007
      * @tc.desc:      Test getIdSync() throw parameter error.
      * @tc.type:      FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.require:   issueI5UHRG
      */
     it('getIdSyncTest007', 0, function () {
         try {
@@ -183,7 +183,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      getIdSyncTest008
      * @tc.desc:      Test getIdSync() throw parameter error.
      * @tc.type:      FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.require:   issueI5UHRG
      */
     it('getIdSyncTest008', 0, function () {
         try {
@@ -200,7 +200,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      getFileSyncTest009
      * @tc.desc:      Test getFileSync() to File of the wallpaper of the specified type.
      * @tc.type:      FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.require:   issueI5UHRG
      */
     it('getFileSyncTest009', 0, function () {
         try {
@@ -218,7 +218,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      getFileSyncTest010
      * @tc.desc:      Test getFileSync() to the ID of the wallpaper of the specified type.
      * @tc.type:      FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.require:   issueI5UHRG
      */
     it('getFileSyncTest010', 0, function () {
         try {
@@ -236,7 +236,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      getFileSyncTest011
      * @tc.desc:      Test getFileSync() throw parameter error.
      * @tc.type:      FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.require:   issueI5UHRG
      */
     it('getFileSyncTest011', 0, function () {
         try {
@@ -253,7 +253,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      getFileSyncTest012
      * @tc.desc:      Test getFileSync() throw parameter error.
      * @tc.type:      FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.require:   issueI5UHRG
      */
     it('getFileSyncTest012', 0, function () {
         try {
@@ -270,7 +270,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      getMinHeightSyncTest013
      * @tc.desc:      Test getMinHeightSync() to the minHeight of the WALLPAPER_SYSTEM of the specified type.
      * @tc.type:      FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.require:   issueI5UHRG
      */
     it('getMinHeightSyncTest013', 0, function () {
         let data = wallpaper.getMinHeightSync();
@@ -286,7 +286,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      getMinWidthSyncTest014
      * @tc.desc:      Test getMinWidthSync() to the minHeight of the WALLPAPER_SYSTEM of the specified type.
      * @tc.type:      FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.require:   issueI5UHRG
      */
     it('getMinWidthSyncTest014', 0, function () {
         let data = wallpaper.getMinWidthSync();
@@ -301,9 +301,9 @@ describe('WallpaperJSTest', function () {
     /**
      * @tc.name:      isChangeAllowedTest015
      * @tc.desc:      Test isChangeAllowed() to checks whether to allow the application to change the
-     *                     wallpaper for the current user.
+     *                    wallpaper for the current user.
      * @tc.type:      FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.require:   issueI5UHRG
      */
     it('isChangeAllowedTest015', 0, function () {
         let data = wallpaper.isChangeAllowed();
@@ -319,7 +319,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      isUserChangeAllowedTest016
      * @tc.desc:      Test isUserChangeAllowed() to checks whether a user is allowed to set wallpapers.
      * @tc.type:      FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.require:   issueI5UHRG
      */
     it('isUserChangeAllowedTest016', 0, function () {
         let data = wallpaper.isUserChangeAllowed();
@@ -332,10 +332,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    restoreCallbackSystemTest017
-     * @tc.desc:    Test restore() to removes a wallpaper of the specified type and restores the default one.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      restoreCallbackSystemTest017
+     * @tc.desc:      Test restore() to removes a wallpaper of the specified type and restores the default one.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('restoreCallbackSystemTest017', 0, async function (done) {
         try {
@@ -359,10 +359,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    restorePromiseSystemTest018
-     * @tc.desc:    Test restore() to removes a wallpaper of the specified type and restores the default one.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      restorePromiseSystemTest018
+     * @tc.desc:      Test restore() to removes a wallpaper of the specified type and restores the default one.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('restorePromiseSystemTest018', 0, async function (done) {
         try {
@@ -382,10 +382,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    restoreCallbackLockTest019
-     * @tc.desc:    Test restore() to removes a wallpaper of the specified type and restores the default one.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      restoreCallbackLockTest019
+     * @tc.desc:      Test restore() to removes a wallpaper of the specified type and restores the default one.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('restoreCallbackLockTest019', 0, async function (done) {
         try {
@@ -406,10 +406,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    restorePromiseLockTest020
-     * @tc.desc:    Test restore() to removes a wallpaper of the specified type and restores the default one.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      restorePromiseLockTest020
+     * @tc.desc:      Test restore() to removes a wallpaper of the specified type and restores the default one.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('restorePromiseLockTest020', 0, async function (done) {
         try {
@@ -429,10 +429,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    restoreCallbackThrowErrorTest021
-     * @tc.desc:    Test restore() throw parameter error.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      restoreCallbackThrowErrorTest021
+     * @tc.desc:      Test restore() throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('restoreCallbackThrowErrorTest021', 0, async function (done) {
         try {
@@ -453,10 +453,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    restoreCallbackThrowErrorTest022
-     * @tc.desc:    Test restore() throw parameter error.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      restoreCallbackThrowErrorTest022
+     * @tc.desc:      Test restore() throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('restoreCallbackThrowErrorTest022', 0, async function (done) {
         try {
@@ -477,10 +477,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    restorePromiseThrowErrorTest023
-     * @tc.desc:    Test restore() throw parameter error.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      restorePromiseThrowErrorTest023
+     * @tc.desc:      Test restore() throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('restorePromiseThrowErrorTest023', 0, async function (done) {
         try {
@@ -498,10 +498,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    restorePromiseThrowErrorTest024
-     * @tc.desc:    Test restore() throw parameter error.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      restorePromiseThrowErrorTest024
+     * @tc.desc:      Test restore() throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('restorePromiseThrowErrorTest024', 0, async function (done) {
         try {
@@ -519,10 +519,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    getImagePromiseLockTest025
-     * @tc.desc:    Test getImage() to get a PixelMap of the specified type.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      getImagePromiseLockTest025
+     * @tc.desc:      Test getImage() to get a PixelMap of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('getImagePromiseLockTest025', 0, async function (done) {
         try {
@@ -544,10 +544,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    getImageCallbackSystemTest026
-     * @tc.desc:    Test getImage() to get a PixelMap of the specified type.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      getImageCallbackSystemTest026
+     * @tc.desc:      Test getImage() to get a PixelMap of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('getImageCallbackSystemTest026', 0, async function (done) {
         try {
@@ -570,10 +570,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    getImagePromiseSystemTest027
-     * @tc.desc:    Test getImage() to get a PixelMap of the specified type.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      getImagePromiseSystemTest027
+     * @tc.desc:      Test getImage() to get a PixelMap of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('getImagePromiseSystemTest027', 0, async function (done) {
         try {
@@ -595,10 +595,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    getImageCallbackLockTest028
-     * @tc.desc:    Test getImage() to get a PixelMap of the specified type.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      getImageCallbackLockTest028
+     * @tc.desc:      Test getImage() to get a PixelMap of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('getImageCallbackLockTest028', 0, async function (done) {
         try {
@@ -621,10 +621,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    getImageCallbackThrowErrorTest029
-     * @tc.desc:    Test getImage() throw parameter error.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      getImageCallbackThrowErrorTest029
+     * @tc.desc:      Test getImage() throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('getImageCallbackThrowErrorTest029', 0, async function (done) {
         try {
@@ -647,10 +647,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    getImageCallbackThrowErrorTest030
-     * @tc.desc:    Test getImage() throw parameter error.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      getImageCallbackThrowErrorTest030
+     * @tc.desc:      Test getImage() throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('getImageCallbackThrowErrorTest030', 0, async function (done) {
         try {
@@ -673,10 +673,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    getImagePromiseThrowErrorTest031
-     * @tc.desc:    Test getImage() throw parameter error.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      getImagePromiseThrowErrorTest031
+     * @tc.desc:      Test getImage() throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('getImagePromiseThrowErrorTest031', 0, async function (done) {
         try {
@@ -696,10 +696,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    getImagePromiseThrowErrorTest032
-     * @tc.desc:    Test getImage() throw parameter error.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      getImagePromiseThrowErrorTest032
+     * @tc.desc:      Test getImage() throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('getImagePromiseThrowErrorTest032', 0, async function (done) {
         try {
@@ -719,11 +719,11 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:  setImageURLPromiseLockTest033
-     * @tc.desc:    Test setImage() to sets a wallpaper of the specified type based on the uri path from a
-     JPEG or PNG file or the pixel map of a PNG file.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      setImageURLPromiseLockTest033
+     * @tc.desc:      Test setImage() to sets a wallpaper of the specified type based on the uri path from a
+     *                    JPEG or PNG file or the pixel map of a PNG file.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('setImageURLPromiseLockTest033', 0, async function (done) {
         try {
@@ -743,11 +743,11 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:  setImageURLCallbackSystemTest034
-     * @tc.desc:    Test setImage() to sets a wallpaper of the specified type based on the uri path from a
-     JPEG or PNG file or the pixel map of a PNG file.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      setImageURLCallbackSystemTest034
+     * @tc.desc:      Test setImage() to sets a wallpaper of the specified type based on the uri path from a
+     *                    JPEG or PNG file or the pixel map of a PNG file.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('setImageURLCallbackSystemTest034', 0, async function (done) {
         try {
@@ -768,11 +768,11 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:  setImageURLPromiseSystemTest035
-     * @tc.desc:    Test setImage() to sets a wallpaper of the specified type based on the uri path from a
-     JPEG or PNG file or the pixel map of a PNG file.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      setImageURLPromiseSystemTest035
+     * @tc.desc:      Test setImage() to sets a wallpaper of the specified type based on the uri path from a
+     *                    JPEG or PNG file or the pixel map of a PNG file.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('setImageURLPromiseSystemTest035', 0, async function (done) {
         try {
@@ -792,11 +792,11 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:  setImageURLCallbackLockTest036
-     * @tc.desc:    Test setImage() to sets a wallpaper of the specified type based on the uri path from a
-     JPEG or PNG file or the pixel map of a PNG file.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      setImageURLCallbackLockTest036
+     * @tc.desc:      Test setImage() to sets a wallpaper of the specified type based on the uri path from a
+     *                    JPEG or PNG file or the pixel map of a PNG file.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('setImageURLCallbackLockTest036', 0, async function (done) {
         try {
@@ -817,10 +817,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    setImageMapPromiseLockTest037
-     * @tc.desc:    Test setImage() to sets a wallpaper of the specified type based on Map.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      setImageMapPromiseLockTest037
+     * @tc.desc:      Test setImage() to sets a wallpaper of the specified type based on Map.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('setImageMapPromiseLockTest037', 0, async function (done) {
         try {
@@ -846,10 +846,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    setImageMapCallbackSystemTest038
-     * @tc.desc:    Test setImage() to sets a wallpaper of the specified type based on Map.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      setImageMapCallbackSystemTest038
+     * @tc.desc:      Test setImage() to sets a wallpaper of the specified type based on Map.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('setImageMapCallbackSystemTest038', 0, async function (done) {
         try {
@@ -876,10 +876,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    setImageMapPromiseSystemTest039
-     * @tc.desc:    Test setImage() to sets a wallpaper of the specified type based on Map.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      setImageMapPromiseSystemTest039
+     * @tc.desc:      Test setImage() to sets a wallpaper of the specified type based on Map.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('setImageMapPromiseSystemTest039', 0, function (done) {
         try {
@@ -905,10 +905,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    setImageMapCallbackLockTest040
-     * @tc.desc:    Test setImage() to sets a wallpaper of the specified type based on Map.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      setImageMapCallbackLockTest040
+     * @tc.desc:      Test setImage() to sets a wallpaper of the specified type based on Map.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('setImageMapCallbackLockTest040', 0, async function (done) {
         try {
@@ -935,10 +935,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    setImageCallbackThrowErrorTest041
-     * @tc.desc:    Test setImage() throw parameter error.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      setImageCallbackThrowErrorTest041
+     * @tc.desc:      Test setImage() throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('setImageCallbackThrowErrorTest041', 0, async function (done) {
         try {
@@ -958,10 +958,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    setImageCallbackThrowErrorTest042
-     * @tc.desc:    Test setImage() throw parameter error.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      setImageCallbackThrowErrorTest042
+     * @tc.desc:      Test setImage() throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('setImageCallbackThrowErrorTest042', 0, async function (done) {
         try {
@@ -982,10 +982,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    setImagePromiseThrowErrorTest043
-     * @tc.desc:    Test setImage() throw parameter error.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      setImagePromiseThrowErrorTest043
+     * @tc.desc:      Test setImage() throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('setImagePromiseThrowErrorTest043', 0, async function (done) {
         try {
@@ -1003,10 +1003,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    setImagePromiseThrowErrorTest044
-     * @tc.desc:    Test setImage() throw parameter error.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      setImagePromiseThrowErrorTest044
+     * @tc.desc:      Test setImage() throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('setImagePromiseThrowErrorTest044', 0, async function (done) {
         try {
@@ -1024,11 +1024,11 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:  onCallbackTest045
-     * @tc.desc:    Test on_colorChange to registers a listener for wallpaper color changes to
-     receive notifications about the changes.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      onCallbackTest045
+     * @tc.desc:      Test on_colorChange to registers a listener for wallpaper color changes to
+     *                    receive notifications about the changes.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('onCallbackTest045', 0, function () {
         try {
@@ -1047,10 +1047,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    onCallbackThrowErrorTest046
-     * @tc.desc:    Test on_colorChange throw error
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      onCallbackThrowErrorTest046
+     * @tc.desc:      Test on_colorChange throw error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('onCallbackThrowErrorTest046', 0, function () {
         try {
@@ -1065,11 +1065,11 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:  offCallbackTest047
-     * @tc.desc:    Test off_colorChange to registers a listener for wallpaper color changes to
-     receive notifications about the changes.
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      offCallbackTest047
+     * @tc.desc:      Test off_colorChange to registers a listener for wallpaper color changes to
+     *                    receive notifications about the changes.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('offCallbackTest047', 0, function () {
         try {
@@ -1088,10 +1088,10 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:    offCallbackThrowErrorTest048
-     * @tc.desc:    Test off_colorChange throw error
-     * @tc.type:    FUNC test
-     * @tc.require:   SR000HHEJQ
+     * @tc.name:      offCallbackThrowErrorTest048
+     * @tc.desc:      Test off_colorChange throw error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
      */
     it('offCallbackThrowErrorTest048', 0, function () {
         try {
