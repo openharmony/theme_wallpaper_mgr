@@ -944,7 +944,7 @@ void WallpaperService::ClearWallpaperLocked(int userId, int wpType)
             HILOG_INFO("Lock wallpaper already cleared");
             return;
         }
-        if (wallpaperData.second.wallpaperFile_.size() != 0) {
+        if (!wallpaperData.second.wallpaperFile_.empty()) {
             lockWallpaperMap_.Erase(userId);
         }
     } else {
@@ -958,7 +958,7 @@ void WallpaperService::ClearWallpaperLocked(int userId, int wpType)
                 return;
             }
         }
-        if (wallpaperData.second.wallpaperFile_.size() != 0) {
+        if (!wallpaperData.second.wallpaperFile_.empty()) {
             wallpaperMap_.Erase(userId);
         }
     }
