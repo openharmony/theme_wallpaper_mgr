@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef OHOS_DISTRIBUTED_DATA_FRAMEWORKS_COMMON_CONCURRENT_MAP_H
-#define OHOS_DISTRIBUTED_DATA_FRAMEWORKS_COMMON_CONCURRENT_MAP_H
+#ifndef OHOS_WALLPAPER_UTILS_CONCURRENT_MAP_H
+#define OHOS_WALLPAPER_UTILS_CONCURRENT_MAP_H
 #include <functional>
 #include <map>
 #include <mutex>
@@ -258,4 +258,4 @@ private:
     std::map<_Key, _Tp> entries_;
 };
 } // namespace OHOS
-#endif // OHOS_DISTRIBUTED_DATA_FRAMEWORKS_COMMON_CONCURRENT_MAP_H
+#endif // OHOS_WALLPAPER_UTILS_CONCURRENT_MAP_H
