@@ -30,7 +30,6 @@ ohos_fuzztest("WallpaperServiceFuzzTest") {
     "//base/security/access_token/interfaces/innerkits/accesstoken/include",
     "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/theme/wallpaper_mgr/utils/include",
-    "//foundation/distributeddatamgr/kv_store/frameworks/common",
     "//foundation/window/window_manager/interfaces/innerkits/dm",
     "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk",
   ]

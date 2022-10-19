@@ -46,7 +46,6 @@ ohos_shared_library("wallpaper_service") {
     "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/theme/wallpaper_mgr/utils/include",
     "//base/security/access_token/interfaces/innerkits",
-    "//foundation/distributeddatamgr/kv_store/frameworks/common",
     "//foundation/window/window_manager/interfaces/innerkits/dm",
     "//foundation/graphic/graphic_2d/rosen/modules/2d_graphics/include",
     "//foundation/graphic/graphic_2d/rosen/modules/2d_graphics/src",

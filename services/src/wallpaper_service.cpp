@@ -1085,16 +1085,16 @@ int32_t WallpaperService::GetFilePath(int wallpaperType, std::string &filePath)
         auto wallpaperData = lockWallpaperMap_.Find(userId_);
         if (wallpaperData.first) {
             filePath = wallpaperData.second.wallpaperFile_;
+            return static_cast<int32_t>(E_OK);
         }
     } else if (wallpaperType == WALLPAPER_SYSTEM) {
         auto wallpaperData = wallpaperMap_.Find(userId_);
         if (wallpaperData.first) {
             filePath = wallpaperData.second.wallpaperFile_;
+            return static_cast<int32_t>(E_OK);
         }
-    } else {
-        return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
-    return static_cast<int32_t>(E_OK);
+    return static_cast<int32_t>(E_PARAMETERS_INVALID);
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS
