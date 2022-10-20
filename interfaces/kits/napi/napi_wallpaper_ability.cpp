@@ -545,7 +545,7 @@ napi_value NAPI_ScreenshotLiveWallpaper(napi_env env, napi_callback_info info)
     // wallpapertyepe WALLPAPER_SYSTEM:2 or WALLPAPER_LOCKSCREEN:1
     NAPI_CALL(env, napi_get_value_int32(env, argv[0], &value0));
 
-    if (argc >= THREE) {
+    if (argc >= static_cast<size_t>(THREE)) {
         napi_valuetype valuetype = napi_valuetype::napi_null;
         NAPI_CALL(env, napi_typeof(env, argv[TWO], &valuetype));
         if (valuetype != napi_function) {

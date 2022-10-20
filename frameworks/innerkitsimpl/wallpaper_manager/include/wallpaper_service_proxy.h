@@ -50,7 +50,7 @@ private:
     static inline BrokerDelegator<WallpaperServiceProxy> delegator_;
     sptr<OHOS::Media::PixelMap> Pmdata_;
     std::string FWReadUrl = "";
-    int32_t mapSize;
+    int32_t mapSize = 0;
 };
 }
 } // namespace OHOS
