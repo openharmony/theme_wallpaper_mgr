@@ -24,6 +24,9 @@ namespace WallpaperMgrService {
         wallpaperFile_ = wallpaperFileName; // source image
         cropFile_ = cropFileName;
     }
+    WallpaperData::WallpaperData()
+    {
+    }
     // Called during initialization of a given user's wallpaper bookkeeping
     bool WallpaperData::cropExists()
     {
