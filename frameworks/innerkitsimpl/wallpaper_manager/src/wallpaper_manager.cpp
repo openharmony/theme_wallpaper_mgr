@@ -53,7 +53,7 @@ WallpaperManager::~WallpaperManager()
     std::map<int32_t, int32_t>::iterator iter = wallpaperFdMap_.begin();
     while (iter != wallpaperFdMap_.end()) {
         close(iter->second);
-        iter++;
+        ++iter;
     }
 }
 
@@ -229,7 +229,6 @@ int32_t WallpaperManager::SetWallpaper(std::string url, int wallpaperType)
 int32_t WallpaperManager::SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int wallpaperType)
 {
     auto wpServerProxy = GetService();
-    std::string urlRet = "";
     if (wpServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return static_cast<int32_t>(E_DEAL_FAILED);

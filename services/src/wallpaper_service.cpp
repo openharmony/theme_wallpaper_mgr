@@ -333,7 +333,6 @@ bool WallpaperService::SetLockWallpaperCallback(IWallpaperManagerCallback *cb)
 
 void WallpaperService::MigrateFromOld()
 {
-    int ret = 0;
     if (!OHOS::FileExists(wallpaperLockScreenFilePath_)) {
         if (!OHOS::ForceCreateDirectory(wallpaperLockScreenFilePath_)) {
             return;
@@ -346,13 +345,13 @@ void WallpaperService::MigrateFromOld()
     }
     if (OHOS::FileExists(wallpaperSystemCropFileFullPath_)) {
         if (!OHOS::FileExists(wallpaperSystemFileFullPath_)) {
-            ret = FileDeal::CopyFile(wallpaperSystemCropFileFullPath_, wallpaperSystemFileFullPath_);
+            int ret = FileDeal::CopyFile(wallpaperSystemCropFileFullPath_, wallpaperSystemFileFullPath_);
             if (ret < 0) {
                 return;
             }
         }
     } else if (OHOS::FileExists(WALLPAPER_DEFAULT_FILEFULLPATH)) {
-        ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemCropFileFullPath_);
+        int ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemCropFileFullPath_);
         if (ret < 0) {
             return;
         }
@@ -363,13 +362,13 @@ void WallpaperService::MigrateFromOld()
     }
     if (OHOS::FileExists(wallpaperLockScreenCropFileFullPath_)) {
         if (!OHOS::FileExists(wallpaperLockScreenFileFullPath_)) {
-            ret = FileDeal::CopyFile(wallpaperLockScreenCropFileFullPath_, wallpaperLockScreenFileFullPath_);
+            int ret = FileDeal::CopyFile(wallpaperLockScreenCropFileFullPath_, wallpaperLockScreenFileFullPath_);
             if (ret < 0) {
                 return;
             }
         }
     } else if (OHOS::FileExists(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH)) {
-        ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH, wallpaperLockScreenCropFileFullPath_);
+        int ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH, wallpaperLockScreenCropFileFullPath_);
         if (ret < 0) {
             return;
         }
@@ -1020,7 +1019,7 @@ void WallpaperService::ReporterFault(FaultType faultType, FaultCode faultCode)
     FaultMsg msg;
     msg.faultType = faultType;
     msg.errorCode = faultCode;
-    ReportStatus nRet = ReportStatus::ERROR;
+    ReportStatus nRet;
     if (faultType == FaultType::SERVICE_FAULT) {
         msg.moduleName = "WallpaperService";
         nRet = Reporter::GetInstance().Fault().ReportServiceFault(msg);

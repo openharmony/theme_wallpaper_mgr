@@ -23,7 +23,7 @@ class Command {
 public:
     using Action = std::function<bool(const std::vector<std::string> &input, std::string &output)>;
     Command(const std::vector<std::string> &argsFormat, const std::string &help, const Action &action);
-    std::string ShowHelp();
+    std::string ShowHelp() const;
     bool DoAction(const std::vector<std::string> &input, std::string &output);
     std::string GetOption();
     std::string GetFormat();
