@@ -22,8 +22,8 @@ namespace OHOS {
 namespace MiscServices {
 class FaultReporter {
 public:
-    ReportStatus ReportServiceFault(const FaultMsg &msg);
-    ReportStatus ReportRuntimeFault(const FaultMsg &msg);
+    static ReportStatus ReportServiceFault(const FaultMsg &msg);
+    static ReportStatus ReportRuntimeFault(const FaultMsg &msg);
 };
 } // namespace MiscServices
 } // namespace OHOS

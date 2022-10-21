@@ -36,7 +36,6 @@
 #include "bundle_mgr_proxy.h"
 #include "canvas.h"
 #include "command.h"
-#include "dfx_types.h"
 #include "directory_ex.h"
 #include "dump_helper.h"
 #include "file_deal.h"
@@ -51,7 +50,6 @@
 #include "iservice_registry.h"
 #include "pen.h"
 #include "pixel_map.h"
-#include "reporter.h"
 #include "surface.h"
 #include "system_ability_definition.h"
 #include "wallpaper_common.h"
@@ -160,7 +158,7 @@ void WallpaperService::OnStart()
             return true;
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
-    Reporter::GetInstance().UsageTimeStatistic().StartTimerThread();
+    StatisticReporter::StartTimerThread();
     return;
 }
 
@@ -643,7 +641,7 @@ void WallpaperService::ReporterUsageTimeStatisic()
     UsageTimeStat timeStat;
     timeStat.packagesName = bundleName;
     timeStat.startTime = time(nullptr);
-    Reporter::GetInstance().UsageTimeStatistic().ReportUsageTimeStatistic(userId, timeStat);
+    StatisticReporter::ReportUsageTimeStatistic(userId, timeStat);
 }
 
 int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdInfo &fdInfo)
@@ -1022,9 +1020,9 @@ void WallpaperService::ReporterFault(FaultType faultType, FaultCode faultCode)
     ReportStatus nRet;
     if (faultType == FaultType::SERVICE_FAULT) {
         msg.moduleName = "WallpaperService";
-        nRet = Reporter::GetInstance().Fault().ReportServiceFault(msg);
+        nRet = FaultReporter::ReportServiceFault(msg);
     } else {
-        nRet = Reporter::GetInstance().Fault().ReportRuntimeFault(msg);
+        nRet = FaultReporter::ReportRuntimeFault(msg);
     }
 
     if (nRet == ReportStatus::SUCCESS) {
