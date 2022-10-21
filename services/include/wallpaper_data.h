@@ -40,6 +40,7 @@ public:
     
 public:
     WallpaperData(int userId,  std::string wallpaperFileName, std::string cropFileName);
+    WallpaperData();
     // Called during initialization of a given user's wallpaper bookkeeping
     bool cropExists();
     /* {
