@@ -453,6 +453,21 @@ HWTEST_F(WallpaperTest, GetFile003, TestSize.Level0)
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "throw parameters error successfully";
     OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWpProxy();
 }
+
+/**
+* @tc.name:    GetFile004
+* @tc.desc:    GetFile with wallpaperType[0] throw no permission error.
+* @tc.type:    FUNC
+* @tc.require: issueI5XBWT
+* @tc.author:  weisx
+*/
+HWTEST_F(WallpaperTest, GetFile004, TestSize.Level0)
+{
+    HILOG_INFO("GetFile004 begin");
+    int32_t wallpaperFd = -1;
+    int wallpaperErrorCode = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(SYSTYEM, wallpaperFd);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NO_PERMISSION)) << "throw permission error successfully";
+}
 /*********************   GetFile   *********************/
 
 /*********************   GetWallpaperMinHeight   *********************/
@@ -556,6 +571,22 @@ HWTEST_F(WallpaperTest, GetPiexlMap003, TestSize.Level0)
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "throw parameters error successfully";
     OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWpProxy();
 }
+
+/**
+* @tc.name:    GetPiexlMap004
+* @tc.desc:    GetPixelMap with wallpaperType[0]. throw no permission error.
+* @tc.type:    FUNC
+* @tc.require: issueI5XBWT
+* @tc.author:  weisx
+*/
+HWTEST_F(WallpaperTest, GetPiexlMap004, TestSize.Level0)
+{
+    HILOG_INFO("GetPiexlMap004  begin");
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+    int32_t wallpaperErrorCode =
+        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(SYSTYEM, pixelMap);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NO_PERMISSION)) << "throw permission error successfully";
+}
 /*********************   GetPiexlMap   *********************/
 
 /*********************   SetWallpaperByMap   *********************/
@@ -621,6 +652,24 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap003, TestSize.Level0)
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "throw parameters error successfully";
     OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWpProxy();
 }
+
+/**
+* @tc.name:    SetWallpaperByMap004
+* @tc.desc:    SetWallpaperByMap with wallpaperType[1]  throw error.
+* @tc.type:    FUNC
+* @tc.require: issueI5XBWT
+* @tc.author:  weisx
+*/
+HWTEST_F(WallpaperTest, SetWallpaperByMap004, TestSize.Level0)
+{
+    HILOG_INFO("SetWallpaperByMap004  begin");
+    uint32_t color[100] = { 3, 7, 9, 9, 7, 6 };
+    InitializationOptions opts = { { 5, 7 }, OHOS::Media::PixelFormat::ARGB_8888 };
+    std::unique_ptr<PixelMap> pixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    int32_t wallpaperErrorCode =
+        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, LOCKSCREEN);
+    EXPECT_NE(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "set LOCKSCREEN PiexlMap failed";
+}
 /*********************   SetWallpaperByMap   *********************/
 
 /*********************   SetWallpaperByUrl   *********************/
@@ -676,6 +725,21 @@ HWTEST_F(WallpaperTest, SetWallpaperByUrl003, TestSize.Level0)
         OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URL, 2);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "throw parameters error successfully";
     OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWpProxy();
+}
+
+/**
+* @tc.name:    SetWallpaperByUrl004
+* @tc.desc:    SetWallpaperByUrl with wallpaperType[1] throw error.
+* @tc.type:    FUNC
+* @tc.require: issueI5XBWT
+* @tc.author:  weisx
+*/
+HWTEST_F(WallpaperTest, SetWallpaperByUrl004, TestSize.Level0)
+{
+    HILOG_INFO("SetWallpaperByUrl004  begin");
+    int32_t wallpaperErrorCode =
+        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URL, LOCKSCREEN);
+    EXPECT_NE(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "set LOCKSCREEN URL failed";
 }
 /*********************   SetWallpaperByUrl   *********************/
 } // namespace WallpaperMgrService
