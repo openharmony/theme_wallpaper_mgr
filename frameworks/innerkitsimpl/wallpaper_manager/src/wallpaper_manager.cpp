@@ -522,7 +522,7 @@ void WallpaperManager::ReporterFault(FaultType faultType, FaultCode faultCode)
     MiscServices::FaultMsg msg;
     msg.faultType = faultType;
     msg.errorCode = faultCode;
-    Reporter::GetInstance().Fault().ReportRuntimeFault(msg);
+    FaultReporter::ReportRuntimeFault(msg);
 }
 
 void WallpaperManager::CloseWallpaperFd(int32_t wallpaperType)

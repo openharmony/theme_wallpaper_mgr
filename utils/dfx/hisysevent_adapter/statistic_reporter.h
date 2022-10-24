@@ -23,8 +23,8 @@ namespace MiscServices {
 // 统计报告
 class StatisticReporter {
 public:
-    void ReportUsageTimeStatistic(int userId, const UsageTimeStat &stat);
-    void StartTimerThread();
+    static void ReportUsageTimeStatistic(int userId, const UsageTimeStat &stat);
+    static void StartTimerThread();
     static ReportStatus InvokeUsageTime(time_t curTime);
 
 private:
