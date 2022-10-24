@@ -465,7 +465,8 @@ HWTEST_F(WallpaperTest, GetFile004, TestSize.Level0)
 {
     HILOG_INFO("GetFile004 begin");
     int32_t wallpaperFd = -1;
-    int wallpaperErrorCode = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(SYSTYEM, wallpaperFd);
+    int wallpaperErrorCode =
+        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(SYSTYEM, wallpaperFd);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NO_PERMISSION)) << "throw permission error successfully";
 }
 /*********************   GetFile   *********************/
