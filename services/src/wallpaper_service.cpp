@@ -654,7 +654,7 @@ int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdIn
         HILOG_INFO("GetPixelMap no get permission!");
         return static_cast<int32_t>(E_NO_PERMISSION);
     }
-
+    HILOG_INFO("WallpaperService::getPixelMap MID ");
     std::string filePath = "";
     if (GetFilePath(wallpaperType, filePath) != static_cast<int32_t>(E_OK)) {
         return static_cast<int32_t>(E_PARAMETERS_INVALID);
