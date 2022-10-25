@@ -31,14 +31,12 @@ void WallpaperManagerFuzzTest(const uint8_t *data, size_t size)
     WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(wallpaperType);
     WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(wallpaperType);
     WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType);
-
+    std::string url(reinterpret_cast<const char *>(data), size);
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(url, wallpaperType);
     int32_t wallpaperFd = 0;
     WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(wallpaperType, wallpaperFd);
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(wallpaperType, pixelMap);
-
-    std::string url(reinterpret_cast<const char *>(data), size);
-    WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(url, wallpaperType);
 }
 } // namespace OHOS
 
