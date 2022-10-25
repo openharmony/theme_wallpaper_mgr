@@ -1,0 +1,73 @@
+# Copyright (c) 2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//base/theme/wallpaper_mgr/wallpaper.gni")
+
+#####################hydra-fuzz###################
+import("//build/config/features.gni")
+import("//build/ohos.gni")
+import("//build/test.gni")
+
+##############################fuzztest##########################################
+ohos_fuzztest("WallpaperManagerFuzzTest") {
+  module_out_path = "theme/wallpaper"
+
+  fuzz_config_file =
+      "//base/theme/wallpaper_mgr/test/fuzztest/wallpapermanager_fuzzer"
+
+  include_dirs = [
+    "//base/theme/wallpaper_mgr/services/include",
+    "//base/security/access_token/interfaces/innerkits/accesstoken/include",
+    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
+    "//base/theme/wallpaper_mgr/utils/include",
+    "//foundation/window/window_manager/interfaces/innerkits/dm",
+    "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk",
+  ]
+
+  cflags = [
+    "-g",
+    "-O0",
+    "-Wno-unused-variable",
+    "-fno-omit-frame-pointer",
+  ]
+
+  sources = [ "wallpaper_manager_fuzzer.cpp" ]
+
+  deps = [
+    "${ability_runtime_path}/frameworks/native/ability/native:abilitykit_native",
+    "${ability_runtime_services_path}/abilitymgr:abilityms",
+    "${utils_path}:wallpaper_utils",
+    "//base/theme/wallpaper_mgr/services:wallpaper_service",
+    "//foundation/window/window_manager/utils:libwmutil",
+    "//foundation/window/window_manager/wm:libwm",
+    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
+  ]
+
+  external_deps = [
+    "graphic_standard:surface",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+    "os_account:os_account_innerkits",
+  ]
+}
+
+###############################################################################
+group("fuzztest") {
+  testonly = true
+  deps = []
+  deps += [
+    # deps file
+    ":WallpaperManagerFuzzTest",
+  ]
+}
+###############################################################################

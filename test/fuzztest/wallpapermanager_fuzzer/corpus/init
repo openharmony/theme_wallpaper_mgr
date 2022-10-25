@@ -11,13 +11,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//base/theme/wallpaper_mgr/wallpaper.gni")
-
-group("fuzztest") {
-  testonly = true
-
-  deps = [
-    "wallpaperservice_fuzzer:fuzztest",
-    "wallpapermanager_fuzzer:fuzztest",
-  ]
-}
+FUZZ
