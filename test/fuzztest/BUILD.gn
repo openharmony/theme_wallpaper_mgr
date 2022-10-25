@@ -17,7 +17,7 @@ group("fuzztest") {
   testonly = true
 
   deps = [
-    "wallpaperservice_fuzzer:fuzztest",
     "wallpapermanager_fuzzer:fuzztest",
+    "wallpaperservice_fuzzer:fuzztest",
   ]
 }
