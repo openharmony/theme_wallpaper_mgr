@@ -19,9 +19,8 @@
 #include "wallpaper_manager_common_info.h"
 #include "wallpaper_manager_kits.h"
 
-
 namespace OHOS {
-void WallpaperManagerFuzzTest(const uint8_t* data, size_t size)
+void WallpaperManagerFuzzTest(const uint8_t *data, size_t size)
 {
     if ((data == nullptr) || (size <= 0)) {
         std::cout << "Invalid data" << std::endl;
@@ -33,19 +32,18 @@ void WallpaperManagerFuzzTest(const uint8_t* data, size_t size)
     WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(wallpaperType);
     WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType);
 
-
     int32_t wallpaperFd = 0;
-    WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(wallpaperType,wallpaperFd);
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(wallpaperType, wallpaperFd);
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(wallpaperType, pixelMap);
 
-    std::string url(reinterpret_cast<const char*>(data), size);
+    std::string url(reinterpret_cast<const char *>(data), size);
     WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(url, wallpaperType);
 }
-}
+} // namespace OHOS
 
 /* Fuzzer entry point */
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
     /* Run your code on data */
     OHOS::WallpaperManagerFuzzTest(data, size);
