@@ -28,7 +28,6 @@ public:
     int userId_;
     std::string wallpaperFile_; // source image
     std::string cropFile_;      // eventual destination
-    IWallpaperManagerCallback* setComplete;
     std::string name_;
     int wallpaperId_;
     std::vector<RgbaColor> mMainColors_;

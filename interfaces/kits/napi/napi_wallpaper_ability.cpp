@@ -660,6 +660,10 @@ NapiWallpaperAbility::~NapiWallpaperAbility()
     uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
         WorkData *workData = reinterpret_cast<WorkData *>(work->data);
         napi_delete_reference(workData->env_, workData->callback_);
+        if (work != nullptr) {
+            delete work;
+            work = nullptr;
+        }
     };
     MiscServices::UvQueue::Call(env_, workData, afterCallback);
 }
@@ -690,10 +694,14 @@ void NapiWallpaperAbility::onColorsChange(std::vector<RgbaColor> color, int wall
                 HILOG_ERROR(
                     "notify data change failed callStatus:%{public}d callback:%{public}p", callStatus, callback);
             }
-            delete eventDataInner;
-            eventDataInner = nullptr;
-            delete work;
-            work = nullptr;
+            if (eventDataInner != nullptr) {
+                delete eventDataInner;
+                eventDataInner = nullptr;
+            }
+            if (work != nullptr) {
+                delete work;
+                work = nullptr;
+            }
         });
 }
 
