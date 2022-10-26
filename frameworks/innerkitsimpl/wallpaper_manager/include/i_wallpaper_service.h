@@ -56,8 +56,8 @@ public:
     };
 
     struct FdInfo {
-        int fd;
-        int size;
+        int fd = -1;
+        int size = 0;
     };
 
     /**

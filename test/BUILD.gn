@@ -33,6 +33,7 @@ ohos_unittest("wallpaper_test") {
   ]
   deps = [
     "${ability_runtime_path}/frameworks/native/ability/native:abilitykit_native",
+    "//base/security/access_token/interfaces/innerkits/token_setproc:libtoken_setproc",
     "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
     "//base/theme/wallpaper_mgr/services:wallpaper_service",
     "//foundation/multimedia/image_framework:image_framework",
@@ -47,6 +48,7 @@ ohos_unittest("wallpaper_test") {
     "ability_base:want",
     "ability_runtime:ability_manager",
     "access_token:libaccesstoken_sdk",
+    "access_token:libnativetoken",
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
     "graphic_standard:surface",
