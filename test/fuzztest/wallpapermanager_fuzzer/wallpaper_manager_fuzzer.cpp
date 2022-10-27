@@ -16,25 +16,101 @@
 #include <cstdint>
 #include <iostream>
 
+#include "accesstoken_kit.h"
+#include "nativetoken_kit.h"
+#include "token_setproc.h"
 #include "wallpaper_manager_common_info.h"
 #include "wallpaper_manager_kits.h"
 
+using namespace OHOS::Security::AccessToken;
+
 namespace OHOS {
-void WallpaperManagerFuzzTest(const uint8_t *data, size_t size)
+void GrantNativePermission()
+{
+    const char **perms = new const char *[2];
+    perms[0] = "ohos.permission.GET_WALLPAPER";
+    perms[1] = "ohos.permission.SET_WALLPAPER";
+    TokenInfoParams infoInstance = {
+        .dcapsNum = 0,
+        .permsNum = 2,
+        .aclsNum = 0,
+        .dcaps = nullptr,
+        .perms = perms,
+        .acls = nullptr,
+        .processName = "wallpaper_service",
+        .aplStr = "system_core",
+    };
+    uint64_t tokenId = GetAccessTokenId(&infoInstance);
+    SetSelfTokenID(tokenId);
+    AccessTokenKit::ReloadNativeTokenInfo();
+    delete[] perms;
+}
+
+void GetColorsFuzzTest(const uint8_t *data, size_t size)
 {
     if ((data == nullptr) || (size <= 0)) {
         std::cout << "Invalid data" << std::endl;
         return;
     }
-
+    GrantNativePermission();
     WallpaperType wallpaperType = *reinterpret_cast<const WallpaperType *>(data);
     WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(wallpaperType);
+}
+
+void GetWallpaperIdFuzzTest(const uint8_t *data, size_t size)
+{
+    if ((data == nullptr) || (size <= 0)) {
+        std::cout << "Invalid data" << std::endl;
+        return;
+    }
+    GrantNativePermission();
+    WallpaperType wallpaperType = *reinterpret_cast<const WallpaperType *>(data);
     WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(wallpaperType);
+}
+
+void ResetWallpaperFuzzTest(const uint8_t *data, size_t size)
+{
+    if ((data == nullptr) || (size <= 0)) {
+        std::cout << "Invalid data" << std::endl;
+        return;
+    }
+    GrantNativePermission();
+    WallpaperType wallpaperType = *reinterpret_cast<const WallpaperType *>(data);
     WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType);
+}
+
+void SetWallpaperFuzzTest(const uint8_t *data, size_t size)
+{
+    if ((data == nullptr) || (size <= 0)) {
+        std::cout << "Invalid data" << std::endl;
+        return;
+    }
+    GrantNativePermission();
+    WallpaperType wallpaperType = *reinterpret_cast<const WallpaperType *>(data);
     std::string url(reinterpret_cast<const char *>(data), size);
     WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(url, wallpaperType);
+}
+
+void GetFileFuzzTest(const uint8_t *data, size_t size)
+{
+    if ((data == nullptr) || (size <= 0)) {
+        std::cout << "Invalid data" << std::endl;
+        return;
+    }
+    GrantNativePermission();
+    WallpaperType wallpaperType = *reinterpret_cast<const WallpaperType *>(data);
     int32_t wallpaperFd = 0;
     WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(wallpaperType, wallpaperFd);
+}
+
+void GetPixelMapFuzzTest(const uint8_t *data, size_t size)
+{
+    if ((data == nullptr) || (size <= 0)) {
+        std::cout << "Invalid data" << std::endl;
+        return;
+    }
+    GrantNativePermission();
+    WallpaperType wallpaperType = *reinterpret_cast<const WallpaperType *>(data);
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(wallpaperType, pixelMap);
 }
@@ -44,6 +120,11 @@ void WallpaperManagerFuzzTest(const uint8_t *data, size_t size)
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
     /* Run your code on data */
-    OHOS::WallpaperManagerFuzzTest(data, size);
+    OHOS::GetColorsFuzzTest(data, size);
+    OHOS::GetWallpaperIdFuzzTest(data, size);
+    OHOS::ResetWallpaperFuzzTest(data, size);
+    OHOS::SetWallpaperFuzzTest(data, size);
+    OHOS::GetFileFuzzTest(data, size);
+    OHOS::GetPixelMapFuzzTest(data, size);
     return 0;
 }
