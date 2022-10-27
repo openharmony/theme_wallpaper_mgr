@@ -212,7 +212,7 @@ private:
         return result;
     }
 
-    NativeValue* OnTerminateAbility(NativeEngine& engine, NativeCallbackInfo& info)
+    NativeValue* OnTerminateAbility(NativeEngine& engine, const NativeCallbackInfo& info)
     {
         HILOG_INFO("OnTerminateAbility is called");
         // only support one or zero params

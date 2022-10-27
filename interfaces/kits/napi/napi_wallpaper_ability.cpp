@@ -545,7 +545,7 @@ napi_value NAPI_ScreenshotLiveWallpaper(napi_env env, napi_callback_info info)
     // wallpapertyepe WALLPAPER_SYSTEM:2 or WALLPAPER_LOCKSCREEN:1
     NAPI_CALL(env, napi_get_value_int32(env, argv[0], &value0));
 
-    if (argc >= THREE) {
+    if (argc >= static_cast<size_t>(THREE)) {
         napi_valuetype valuetype = napi_valuetype::napi_null;
         NAPI_CALL(env, napi_typeof(env, argv[TWO], &valuetype));
         if (valuetype != napi_function) {
@@ -660,6 +660,10 @@ NapiWallpaperAbility::~NapiWallpaperAbility()
     uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
         WorkData *workData = reinterpret_cast<WorkData *>(work->data);
         napi_delete_reference(workData->env_, workData->callback_);
+        if (work != nullptr) {
+            delete work;
+            work = nullptr;
+        }
     };
     MiscServices::UvQueue::Call(env_, workData, afterCallback);
 }
@@ -690,10 +694,14 @@ void NapiWallpaperAbility::onColorsChange(std::vector<RgbaColor> color, int wall
                 HILOG_ERROR(
                     "notify data change failed callStatus:%{public}d callback:%{public}p", callStatus, callback);
             }
-            delete eventDataInner;
-            eventDataInner = nullptr;
-            delete work;
-            work = nullptr;
+            if (eventDataInner != nullptr) {
+                delete eventDataInner;
+                eventDataInner = nullptr;
+            }
+            if (work != nullptr) {
+                delete work;
+                work = nullptr;
+            }
         });
 }
 

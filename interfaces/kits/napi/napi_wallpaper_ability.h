@@ -42,9 +42,9 @@ namespace OHOS {
 namespace WallpaperNAPI {
 
 struct GetContextInfo : public AsyncCall::Context {
-    int wallpaperType;
+    int wallpaperType = 0;
     std::vector<RgbaColor> colors;
-    int wallpaperId;
+    int wallpaperId = 0;
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     napi_status status = napi_generic_failure;
     GetContextInfo() : Context(nullptr, nullptr){};
@@ -65,8 +65,8 @@ struct GetContextInfo : public AsyncCall::Context {
 };
 
 struct GetMinContextInfo : public AsyncCall::Context {
-    int minHeight;
-    int minWidth;
+    int minHeight = 0;
+    int minWidth = 0;
     napi_status status = napi_generic_failure;
     GetMinContextInfo() : Context(nullptr, nullptr){};
     GetMinContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)){};
@@ -86,8 +86,8 @@ struct GetMinContextInfo : public AsyncCall::Context {
 };
 
 struct PermissionContextInfo : public AsyncCall::Context {
-    bool isChangePermitted;
-    bool isOperationAllowed;
+    bool isChangePermitted = false;
+    bool isOperationAllowed = false;
     napi_status status = napi_generic_failure;
     PermissionContextInfo() : Context(nullptr, nullptr){};
     PermissionContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)){};
@@ -107,7 +107,7 @@ struct PermissionContextInfo : public AsyncCall::Context {
 };
 
 struct SetContextInfo : public AsyncCall::Context {
-    int wallpaperType;
+    int wallpaperType = 0;
     std::string url = "";
     std::unique_ptr<OHOS::Media::PixelMap> pixelMap;
     napi_status status = napi_generic_failure;
