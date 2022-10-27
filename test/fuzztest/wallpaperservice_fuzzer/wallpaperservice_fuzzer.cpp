@@ -18,15 +18,41 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "wallpaper_service.h"
+#include "accesstoken_kit.h"
 #include "message_parcel.h"
+#include "nativetoken_kit.h"
+#include "token_setproc.h"
+#include "wallpaper_service.h"
 
 using namespace OHOS::WallpaperMgrService;
 
 namespace OHOS {
 constexpr size_t THRESHOLD = 10;
 constexpr int32_t OFFSET = 4;
-const std::u16string WALLPAPERSERVICES_INTERFACE_TOKEN = u"ohos.miscseervice.wallpaper";
+const std::u16string WALLPAPERSERVICES_INTERFACE_TOKEN = u"ohos.Wallpaper.IWallpaperService";
+
+using namespace OHOS::Security::AccessToken;
+
+void GrantNativePermission()
+{
+    const char **perms = new const char *[2];
+    perms[0] = "ohos.permission.GET_WALLPAPER";
+    perms[1] = "ohos.permission.SET_WALLPAPER";
+    TokenInfoParams infoInstance = {
+        .dcapsNum = 0,
+        .permsNum = 2,
+        .aclsNum = 0,
+        .dcaps = nullptr,
+        .perms = perms,
+        .acls = nullptr,
+        .processName = "wallpaper_service",
+        .aplStr = "system_core",
+    };
+    uint64_t tokenId = GetAccessTokenId(&infoInstance);
+    SetSelfTokenID(tokenId);
+    AccessTokenKit::ReloadNativeTokenInfo();
+    delete[] perms;
+}
 
 uint32_t ConvertToUint32(const uint8_t* ptr)
 {
@@ -49,7 +75,8 @@ bool FuzzWallpaperService(const uint8_t* rawData, size_t size)
     data.RewindRead(0);
     MessageParcel reply;
     MessageOption option;
-    
+
+    GrantNativePermission();
     sptr<WallpaperService> mWallpp = new WallpaperService();
     mWallpp->OnRemoteRequest(code, data, reply, option);
 
