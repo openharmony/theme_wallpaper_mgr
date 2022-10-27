@@ -36,7 +36,6 @@
 #include "bundle_mgr_proxy.h"
 #include "canvas.h"
 #include "command.h"
-#include "dfx_types.h"
 #include "directory_ex.h"
 #include "dump_helper.h"
 #include "file_deal.h"
@@ -51,7 +50,6 @@
 #include "iservice_registry.h"
 #include "pen.h"
 #include "pixel_map.h"
-#include "reporter.h"
 #include "surface.h"
 #include "system_ability_definition.h"
 #include "wallpaper_common.h"
@@ -160,7 +158,7 @@ void WallpaperService::OnStart()
             return true;
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
-    Reporter::GetInstance().UsageTimeStatistic().StartTimerThread();
+    StatisticReporter::StartTimerThread();
     return;
 }
 
@@ -333,7 +331,6 @@ bool WallpaperService::SetLockWallpaperCallback(IWallpaperManagerCallback *cb)
 
 void WallpaperService::MigrateFromOld()
 {
-    int ret = 0;
     if (!OHOS::FileExists(wallpaperLockScreenFilePath_)) {
         if (!OHOS::ForceCreateDirectory(wallpaperLockScreenFilePath_)) {
             return;
@@ -346,13 +343,13 @@ void WallpaperService::MigrateFromOld()
     }
     if (OHOS::FileExists(wallpaperSystemCropFileFullPath_)) {
         if (!OHOS::FileExists(wallpaperSystemFileFullPath_)) {
-            ret = FileDeal::CopyFile(wallpaperSystemCropFileFullPath_, wallpaperSystemFileFullPath_);
+            int ret = FileDeal::CopyFile(wallpaperSystemCropFileFullPath_, wallpaperSystemFileFullPath_);
             if (ret < 0) {
                 return;
             }
         }
     } else if (OHOS::FileExists(WALLPAPER_DEFAULT_FILEFULLPATH)) {
-        ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemCropFileFullPath_);
+        int ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemCropFileFullPath_);
         if (ret < 0) {
             return;
         }
@@ -363,13 +360,13 @@ void WallpaperService::MigrateFromOld()
     }
     if (OHOS::FileExists(wallpaperLockScreenCropFileFullPath_)) {
         if (!OHOS::FileExists(wallpaperLockScreenFileFullPath_)) {
-            ret = FileDeal::CopyFile(wallpaperLockScreenCropFileFullPath_, wallpaperLockScreenFileFullPath_);
+            int ret = FileDeal::CopyFile(wallpaperLockScreenCropFileFullPath_, wallpaperLockScreenFileFullPath_);
             if (ret < 0) {
                 return;
             }
         }
     } else if (OHOS::FileExists(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH)) {
-        ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH, wallpaperLockScreenCropFileFullPath_);
+        int ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH, wallpaperLockScreenCropFileFullPath_);
         if (ret < 0) {
             return;
         }
@@ -644,7 +641,7 @@ void WallpaperService::ReporterUsageTimeStatisic()
     UsageTimeStat timeStat;
     timeStat.packagesName = bundleName;
     timeStat.startTime = time(nullptr);
-    Reporter::GetInstance().UsageTimeStatistic().ReportUsageTimeStatistic(userId, timeStat);
+    StatisticReporter::ReportUsageTimeStatistic(userId, timeStat);
 }
 
 int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdInfo &fdInfo)
@@ -1020,12 +1017,12 @@ void WallpaperService::ReporterFault(FaultType faultType, FaultCode faultCode)
     FaultMsg msg;
     msg.faultType = faultType;
     msg.errorCode = faultCode;
-    ReportStatus nRet = ReportStatus::ERROR;
+    ReportStatus nRet;
     if (faultType == FaultType::SERVICE_FAULT) {
         msg.moduleName = "WallpaperService";
-        nRet = Reporter::GetInstance().Fault().ReportServiceFault(msg);
+        nRet = FaultReporter::ReportServiceFault(msg);
     } else {
-        nRet = Reporter::GetInstance().Fault().ReportRuntimeFault(msg);
+        nRet = FaultReporter::ReportRuntimeFault(msg);
     }
 
     if (nRet == ReportStatus::SUCCESS) {

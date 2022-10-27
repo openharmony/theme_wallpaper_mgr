@@ -78,10 +78,8 @@ bool FileDeal::CopyFile(const std::string &sourceFile, const std::string &newFil
 
 bool FileDeal::FileIsExist(const std::string& name)
 {
-    bool bFlag = false;
     if (access(name.c_str(), F_OK) == 0) {
-        bFlag = true;
-        return bFlag;
+        return true;
     }
     return false;
 }

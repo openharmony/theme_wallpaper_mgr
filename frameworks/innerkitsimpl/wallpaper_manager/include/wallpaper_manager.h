@@ -25,7 +25,7 @@
 #include "wallpaper_manager_kits.h"
 #include "i_wallpaper_service.h"
 #include "singleton.h"
-#include "reporter.h"
+#include "fault_reporter.h"
 #include "wallpaper_common.h"
 
 using JScallback = bool (*) (int);

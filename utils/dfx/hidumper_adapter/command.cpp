@@ -20,7 +20,7 @@ Command::Command(const std::vector<std::string> &argsFormat, const std::string &
 {
 }
 
-std::string Command::ShowHelp()
+std::string Command::ShowHelp() const
 {
     return help_;
 }
@@ -38,7 +38,7 @@ std::string Command::GetOption()
 std::string Command::GetFormat()
 {
     std::string formatStr;
-    for (auto &seg : format_) {
+    for (const auto &seg : format_) {
         formatStr += seg;
         formatStr += " ";
     }
