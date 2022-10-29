@@ -26,6 +26,7 @@
 namespace OHOS::WallpaperNAPI {
 constexpr const char *PARAMETERERRORMESSAGE = "BusinessError 401: Parameter error.";
 constexpr const char *PERMISSIONDENIEDMESSAGE = "BusinessError 201: Permission Denied.";
+constexpr const char *EQUIPMENTERRORMESSAGE = "BusinessError 801: Equipment error.";
 enum ErrorThrowType : int32_t {
     PERMISSION_ERROR = 201,
     PARAMETER_ERROR = 401,
