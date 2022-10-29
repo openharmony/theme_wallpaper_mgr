@@ -34,7 +34,6 @@ namespace OHOS {
 namespace WallpaperNAPI {
 const int32_t ONE = 1;
 const int32_t TWO = 2;
-const int32_t THREE = 3;
 
 struct WorkData {
     napi_env env_;
