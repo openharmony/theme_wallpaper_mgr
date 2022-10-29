@@ -133,11 +133,10 @@ template<typename F, typename... Args> ErrCode WallpaperManager::CallService(F f
 
 std::vector<RgbaColor> WallpaperManager::GetColors(int wallpaperType)
 {
-    std::vector<RgbaColor> tmp;
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
-        return tmp;
+        return {};
     }
     return wpServerProxy->GetColors(wallpaperType);
 }
