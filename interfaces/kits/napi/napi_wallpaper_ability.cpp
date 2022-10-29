@@ -34,7 +34,6 @@ namespace OHOS {
 namespace WallpaperNAPI {
 const int32_t ONE = 1;
 const int32_t TWO = 2;
-const int32_t THREE = 3;
 
 struct WorkData {
     napi_env env_;
@@ -533,30 +532,8 @@ void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context
 
 napi_value NAPI_ScreenshotLiveWallpaper(napi_env env, napi_callback_info info)
 {
-    napi_value argv[3] = { nullptr };
-    size_t argc = 3;
-    napi_valuetype valuetype0 = napi_valuetype::napi_null;
-    NAPI_CALL(env, napi_typeof(env, argv[0], &valuetype0));
-    if (valuetype0 != napi_number) {
-        JsError::ThrowError(env, ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);
-        return nullptr;
-    }
-    int32_t value0 = 0;
-    // wallpapertyepe WALLPAPER_SYSTEM:2 or WALLPAPER_LOCKSCREEN:1
-    NAPI_CALL(env, napi_get_value_int32(env, argv[0], &value0));
-
-    if (argc >= static_cast<size_t>(THREE)) {
-        napi_valuetype valuetype = napi_valuetype::napi_null;
-        NAPI_CALL(env, napi_typeof(env, argv[TWO], &valuetype));
-        if (valuetype != napi_function) {
-            JsError::ThrowError(env, ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);
-            return nullptr;
-        }
-    }
-
-    napi_value ret = 0;
-    NAPI_CALL(env, napi_create_int32(env, 0, &ret));
-    return ret;
+    JsError::ThrowError(env, ErrorThrowType::EQUIPMENT_ERROR, EQUIPMENTERRORMESSAGE);
+    return nullptr;
 }
 
 thread_local std::shared_ptr<WallpaperMgrService::WallpaperColorChangeListener> colorChangeListener_;
@@ -660,10 +637,8 @@ NapiWallpaperAbility::~NapiWallpaperAbility()
     uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
         WorkData *workData = reinterpret_cast<WorkData *>(work->data);
         napi_delete_reference(workData->env_, workData->callback_);
-        if (work != nullptr) {
-            delete work;
-            work = nullptr;
-        }
+        delete work;
+        work = nullptr;
     };
     MiscServices::UvQueue::Call(env_, workData, afterCallback);
 }
@@ -694,14 +669,10 @@ void NapiWallpaperAbility::onColorsChange(std::vector<RgbaColor> color, int wall
                 HILOG_ERROR(
                     "notify data change failed callStatus:%{public}d callback:%{public}p", callStatus, callback);
             }
-            if (eventDataInner != nullptr) {
-                delete eventDataInner;
-                eventDataInner = nullptr;
-            }
-            if (work != nullptr) {
-                delete work;
-                work = nullptr;
-            }
+            delete eventDataInner;
+            eventDataInner = nullptr;
+            delete work;
+            work = nullptr;
         });
 }
 
