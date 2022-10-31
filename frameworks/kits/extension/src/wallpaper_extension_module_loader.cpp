@@ -14,6 +14,7 @@
  */
 
 #include "wallpaper_extension_module_loader.h"
+
 #include "wallpaper_extension.h"
 
 namespace OHOS::AbilityRuntime {

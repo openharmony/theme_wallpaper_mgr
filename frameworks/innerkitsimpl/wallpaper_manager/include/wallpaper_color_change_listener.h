@@ -18,6 +18,7 @@
 
 #include <memory>
 #include <vector>
+
 #include "wallpaper_manager_common_info.h"
 
 namespace OHOS {

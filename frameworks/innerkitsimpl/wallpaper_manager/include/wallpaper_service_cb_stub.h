@@ -15,10 +15,11 @@
 #ifndef SERVICES_INCLUDE_WALLPAPER_SERVICE_CB_STUB_H
 #define SERVICES_INCLUDE_WALLPAPER_SERVICE_CB_STUB_H
 
-#include<map>
-#include "iremote_stub.h"
+#include <map>
+
 #include "i_wallpaper_callback.h"
 #include "ipc_skeleton.h"
+#include "iremote_stub.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {

@@ -16,9 +16,10 @@
 #define SERVICES_INCLUDE_WALLPAPER_SERVICE_CB_PROXY_H
 
 #include <cstdint>
-#include "iremote_proxy.h"
-#include "iremote_object.h"
+
 #include "i_wallpaper_callback.h"
+#include "iremote_object.h"
+#include "iremote_proxy.h"
 #include "refbase.h"
 
 namespace OHOS {

@@ -16,35 +16,36 @@
 #ifndef SERVICES_INCLUDE_WALLPAPER_SERVICES_H
 #define SERVICES_INCLUDE_WALLPAPER_SERVICES_H
 
-#include <mutex>
 #include <list>
 #include <map>
-#include "concurrent_map.h"
-#include "system_ability.h"
-#include "wallpaper_service_stub.h"
-#include "wallpaper_common.h"
-#include "event_handler.h"
-#include "pixel_map.h"
-#include "wallpaper_manager_common_info.h"
-#include "wallpaper_color_change_listener.h"
-#include "wallpaper_data.h"
-#include "i_wallpaper_manager_callback.h"
-#include "component_name.h"
-#include "file_deal.h"
-#include "fault_reporter.h"
-#include "statistic_reporter.h"
-#include "wm_common.h"
-#include "window_option.h"
-#include "surface_buffer.h"
-#include "display_manager.h"
-#include "ipc_skeleton.h"
-#include "accesstoken_kit.h"
-#include "image_source.h"
-#include "want.h"
-#include "wallpaper_extension_ability_connection.h"
-#include "ability_manager_errors.h"
-#include "os_account_manager.h"
+#include <mutex>
+
 #include "ability_connect_callback_interface.h"
+#include "ability_manager_errors.h"
+#include "accesstoken_kit.h"
+#include "component_name.h"
+#include "concurrent_map.h"
+#include "display_manager.h"
+#include "event_handler.h"
+#include "fault_reporter.h"
+#include "file_deal.h"
+#include "i_wallpaper_manager_callback.h"
+#include "image_source.h"
+#include "ipc_skeleton.h"
+#include "os_account_manager.h"
+#include "pixel_map.h"
+#include "statistic_reporter.h"
+#include "surface_buffer.h"
+#include "system_ability.h"
+#include "wallpaper_color_change_listener.h"
+#include "wallpaper_common.h"
+#include "wallpaper_data.h"
+#include "wallpaper_extension_ability_connection.h"
+#include "wallpaper_manager_common_info.h"
+#include "wallpaper_service_stub.h"
+#include "want.h"
+#include "window_option.h"
+#include "wm_common.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {

@@ -14,6 +14,7 @@
  */
 
 #include "wallpaper_data.h"
+
 #include "file_ex.h"
 
 namespace OHOS {

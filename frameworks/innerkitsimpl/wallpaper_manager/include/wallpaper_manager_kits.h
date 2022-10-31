@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-
 #ifndef INNERKITS_WALLPAPER_MANAGER_KITS_H
 #define INNERKITS_WALLPAPER_MANAGER_KITS_H
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
+
 #include "pixel_map.h"
 #include "wallpaper_color_change_listener.h"
 #include "wallpaper_manager_common_info.h"

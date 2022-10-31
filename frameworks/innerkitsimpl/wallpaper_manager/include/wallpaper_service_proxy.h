@@ -16,10 +16,10 @@
 #ifndef SERVICES_INCLUDE_WALLPAPER_SERVICE_PROXY_H
 #define SERVICES_INCLUDE_WALLPAPER_SERVICE_PROXY_H
 
-
 #include <mutex>
-#include "iremote_proxy.h"
+
 #include "i_wallpaper_service.h"
+#include "iremote_proxy.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {

@@ -17,6 +17,7 @@
 #define MISCSERVICES_STATISTIC_REPORTER_H
 #include <map>
 #include <mutex>
+
 #include "dfx_types.h"
 namespace OHOS {
 namespace MiscServices {

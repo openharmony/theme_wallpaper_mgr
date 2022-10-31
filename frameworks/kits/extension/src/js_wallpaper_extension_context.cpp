@@ -18,15 +18,15 @@
 #include <cstdint>
 
 #include "hilog_wrapper.h"
-#include "js_extension_context.h"
 #include "js_data_struct_converter.h"
+#include "js_extension_context.h"
 #include "js_runtime.h"
 #include "js_runtime_utils.h"
 #include "napi/native_api.h"
-#include "napi_common_want.h"
-#include "napi_common_util.h"
-#include "napi_remote_object.h"
 #include "napi_common_start_options.h"
+#include "napi_common_util.h"
+#include "napi_common_want.h"
+#include "napi_remote_object.h"
 #include "start_options.h"
 
 namespace OHOS {

@@ -17,14 +17,14 @@
 
 #include <ctime>
 
+#include "accesstoken_kit.h"
 #include "directory_ex.h"
 #include "hilog_wrapper.h"
+#include "nativetoken_kit.h"
 #include "pixel_map.h"
+#include "token_setproc.h"
 #include "wallpaper_manager.h"
 #include "wallpaper_manager_kits.h"
-#include "token_setproc.h"
-#include "accesstoken_kit.h"
-#include "nativetoken_kit.h"
 
 constexpr int SYSTYEM = 0;
 constexpr int LOCKSCREEN = 1;

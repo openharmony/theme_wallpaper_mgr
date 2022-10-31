@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 #include "wallpaper_service_cb_proxy.h"
+
 #include "hilog_wrapper.h"
 
 namespace OHOS {

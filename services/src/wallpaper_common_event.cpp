@@ -14,6 +14,7 @@
  */
 
 #include "wallpaper_common_event.h"
+
 #include "hilog_wrapper.h"
 #include "wallpaper_service.h"
 namespace OHOS {

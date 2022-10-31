@@ -12,12 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <dirent.h>
-#include <cstdio>
-#include <unistd.h>
-#include <sys/stat.h>
-#include "hilog_wrapper.h"
 #include "file_deal.h"
+
+#include <dirent.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+#include <cstdio>
+
+#include "hilog_wrapper.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {

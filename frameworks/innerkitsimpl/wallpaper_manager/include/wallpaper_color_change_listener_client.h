@@ -18,6 +18,7 @@
 
 #include <memory>
 #include <vector>
+
 #include "iwallpaper_color_change_listener.h"
 #include "wallpaper_color_change_listener.h"
 #include "wallpaper_manager_common_info.h"

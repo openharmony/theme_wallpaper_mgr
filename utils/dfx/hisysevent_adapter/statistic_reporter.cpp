@@ -13,10 +13,13 @@
  * limitations under the License.
  */
 #include "statistic_reporter.h"
+
 #include <unistd.h>
+
 #include <ctime>
 #include <thread>
 #include <vector>
+
 #include "hilog_wrapper.h"
 #include "hisysevent.h"
 

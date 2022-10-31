@@ -12,8 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "hisysevent.h"
 #include "fault_reporter.h"
+
+#include "hisysevent.h"
 
 namespace OHOS {
 using namespace HiviewDFX;

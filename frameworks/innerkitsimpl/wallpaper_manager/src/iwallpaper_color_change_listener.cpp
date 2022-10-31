@@ -15,9 +15,10 @@
 
 #define LOG_TAG "WallpaperColorChangeListenerProxy"
 
+#include "iwallpaper_color_change_listener.h"
+
 #include "hilog_wrapper.h"
 #include "message_parcel.h"
-#include "iwallpaper_color_change_listener.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {

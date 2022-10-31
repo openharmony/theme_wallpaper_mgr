@@ -17,6 +17,7 @@
 
 #include <memory>
 #include <mutex>
+
 #include "access_token.h"
 #include "accesstoken_kit.h"
 #include "singleton.h"

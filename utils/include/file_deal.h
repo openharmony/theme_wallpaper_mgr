@@ -16,9 +16,9 @@
 #ifndef WALLPAPER_SERVICES_FILE_DEAL_H
 #define WALLPAPER_SERVICES_FILE_DEAL_H
 
-#include <string>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <string>
 namespace OHOS {
 namespace WallpaperMgrService {
 class FileDeal {

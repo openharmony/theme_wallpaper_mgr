@@ -16,6 +16,7 @@
 #ifndef SERVICES_INCLUDE_WALLPAPER_SERVICE_CALLBACK_INTERFACE_H
 #define SERVICES_INCLUDE_WALLPAPER_SERVICE_CALLBACK_INTERFACE_H
 #include <vector>
+
 #include "wallpaper_manager_common_info.h"
 
 namespace OHOS {

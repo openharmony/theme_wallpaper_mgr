@@ -17,9 +17,10 @@
 #define SERVICES_INCLUDE_WALLPAPER_DATA_H
 #include <string>
 #include <vector>
-#include "wallpaper_manager_common_info.h"
-#include "i_wallpaper_manager_callback.h"
+
 #include "component_name.h"
+#include "i_wallpaper_manager_callback.h"
+#include "wallpaper_manager_common_info.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {

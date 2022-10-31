@@ -16,9 +16,10 @@
 #define WALLPAPER_SERVICES_WALLPAPER_COMMON_EVENT_H
 
 #include <string>
+
+#include "common_event_manager.h"
 #include "common_event_subscriber.h"
 #include "common_event_support.h"
-#include "common_event_manager.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {

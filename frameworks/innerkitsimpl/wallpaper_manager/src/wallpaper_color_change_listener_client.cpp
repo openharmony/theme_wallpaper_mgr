@@ -15,8 +15,9 @@
 
 #define LOG_TAG "WallpaperColorChangeListenerClient"
 
-#include "hilog_wrapper.h"
 #include "wallpaper_color_change_listener_client.h"
+
+#include "hilog_wrapper.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {

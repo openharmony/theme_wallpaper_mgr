@@ -16,17 +16,18 @@
 #ifndef INNERKITS_WALLPAPER_MANAGER_H
 #define INNERKITS_WALLPAPER_MANAGER_H
 
-#include <vector>
-#include <string>
-#include <mutex>
 #include <list>
 #include <map>
-#include "ipc_skeleton.h"
-#include "wallpaper_manager_kits.h"
-#include "i_wallpaper_service.h"
-#include "singleton.h"
+#include <mutex>
+#include <string>
+#include <vector>
+
 #include "fault_reporter.h"
+#include "i_wallpaper_service.h"
+#include "ipc_skeleton.h"
+#include "singleton.h"
 #include "wallpaper_common.h"
+#include "wallpaper_manager_kits.h"
 
 using JScallback = bool (*) (int);
 namespace OHOS {

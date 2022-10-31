@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 #include "wallpaper_service_cb_stub.h"
+
 #include "hilog_wrapper.h"
 #include "wallpaper_manager.h"
 

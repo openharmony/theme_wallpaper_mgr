@@ -16,10 +16,9 @@
 #ifndef WALLPAPER_EXTENSION_CONTEXT_H
 #define WALLPAPER_EXTENSION_CONTEXT_H
 
-#include "extension_context.h"
-
 #include "ability_connect_callback.h"
 #include "connection_manager.h"
+#include "extension_context.h"
 #include "start_options.h"
 #include "want.h"
 

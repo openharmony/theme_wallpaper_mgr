@@ -19,8 +19,8 @@
 #include <memory>
 
 #include "ability_connect_callback.h"
-#include "wallpaper_extension_context.h"
 #include "event_handler.h"
+#include "wallpaper_extension_context.h"
 
 class NativeEngine;
 class NativeValue;
