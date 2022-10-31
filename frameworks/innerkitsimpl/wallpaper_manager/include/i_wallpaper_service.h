@@ -146,6 +146,6 @@ public:
 
     virtual bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) = 0;
 };
-}
+} // namespace WallpaperMgrService
 } // namespace OHOS
 #endif // SERVICES_INCLUDE_WALLPAPER_SERVICE_INTERFACE_H

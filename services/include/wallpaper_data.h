@@ -37,9 +37,9 @@ public:
      * The component name of the currently set live wallpaper.
      */
     ComponentName wallpaperComponent;
-    
+
 public:
-    WallpaperData(int userId,  std::string wallpaperFileName, std::string cropFileName);
+    WallpaperData(int userId, std::string wallpaperFileName, std::string cropFileName);
     WallpaperData();
     // Called during initialization of a given user's wallpaper bookkeeping
     bool cropExists();
@@ -53,6 +53,6 @@ public:
     } */
 private:
 };
-}
+} // namespace WallpaperMgrService
 } // namespace OHOS
 #endif // SERVICES_INCLUDE_WALLPAPER_DATA_H

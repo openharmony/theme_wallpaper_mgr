@@ -28,12 +28,12 @@ class NativeReference;
 
 namespace OHOS {
 namespace AbilityRuntime {
-NativeValue* CreateJsWallpaperExtensionContext(NativeEngine& engine,
-    std::shared_ptr<WallpaperExtensionContext> context);
+NativeValue *CreateJsWallpaperExtensionContext(
+    NativeEngine &engine, std::shared_ptr<WallpaperExtensionContext> context);
 
 class JSWallpaperExtensionConnection : public AbilityConnectCallback {
 public:
-    explicit JSWallpaperExtensionConnection(NativeEngine& engine);
+    explicit JSWallpaperExtensionConnection(NativeEngine &engine);
     ~JSWallpaperExtensionConnection();
     void OnAbilityConnectDone(
         const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int resultCode) override;
@@ -41,10 +41,11 @@ public:
     void HandleOnAbilityConnectDone(
         const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int resultCode);
     void HandleOnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int resultCode);
-    void SetJsConnectionObject(NativeValue* jsConnectionObject);
+    void SetJsConnectionObject(NativeValue *jsConnectionObject);
     void CallJsFailed(int32_t errorCode);
+
 private:
-    NativeEngine& engine_;
+    NativeEngine &engine_;
     std::unique_ptr<NativeReference> jsConnectionObject_ = nullptr;
 };
 
@@ -66,6 +67,6 @@ struct key_compare {
 static std::map<ConnecttionKey, sptr<JSWallpaperExtensionConnection>, key_compare> connects_;
 static int64_t serialNumber_ = 0;
 static std::shared_ptr<AppExecFwk::EventHandler> handler_ = nullptr;
-}  // namespace AbilityRuntime
-}  // namespace OHOS
-#endif  // ABILITY_RUNTIME_JS_WALLPAPER_EXTENSION_CONTEXT_H
+} // namespace AbilityRuntime
+} // namespace OHOS
+#endif // ABILITY_RUNTIME_JS_WALLPAPER_EXTENSION_CONTEXT_H

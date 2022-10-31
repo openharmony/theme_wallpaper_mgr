@@ -25,17 +25,21 @@ namespace OHOS {
 namespace WallpaperMgrService {
 class WallpaperServiceProxy : public IRemoteProxy<IWallpaperService> {
 public:
-    explicit WallpaperServiceProxy(const sptr<IRemoteObject> &object) : IRemoteProxy<IWallpaperService>(object) {}
-    ~WallpaperServiceProxy() {}
+    explicit WallpaperServiceProxy(const sptr<IRemoteObject> &object) : IRemoteProxy<IWallpaperService>(object)
+    {
+    }
+    ~WallpaperServiceProxy()
+    {
+    }
     DISALLOW_COPY_AND_MOVE(WallpaperServiceProxy);
     int32_t SetWallpaperByFD(int fd, int wallpaperType, int length) override;
     int32_t SetWallpaperByMap(int fd, int wallpaperType, int length) override;
     int32_t GetPixelMap(int wallpaperType, IWallpaperService::FdInfo &fdInfo) override;
     std::vector<RgbaColor> GetColors(int wallpaperType) override;
     int32_t GetFile(int wallpaperType, int32_t &wallpaperFd) override;
-    int  GetWallpaperId(int wallpaperType) override;
-    int  GetWallpaperMinHeight() override;
-    int  GetWallpaperMinWidth() override;
+    int GetWallpaperId(int wallpaperType) override;
+    int GetWallpaperMinHeight() override;
+    int GetWallpaperMinWidth() override;
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
     int32_t ResetWallpaper(int wallpaperType) override;
@@ -52,6 +56,6 @@ private:
     std::string FWReadUrl = "";
     int32_t mapSize = 0;
 };
-}
+} // namespace WallpaperMgrService
 } // namespace OHOS
 #endif // SERVICES_INCLUDE_WALLPAPER_SERVICE_PROXY_H

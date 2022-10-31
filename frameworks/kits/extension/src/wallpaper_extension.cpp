@@ -25,7 +25,7 @@
 namespace OHOS {
 namespace AbilityRuntime {
 using namespace OHOS::AppExecFwk;
-WallpaperExtension* WallpaperExtension::Create(const std::unique_ptr<Runtime>& runtime)
+WallpaperExtension *WallpaperExtension::Create(const std::unique_ptr<Runtime> &runtime)
 {
     HILOG_INFO("jws WallpaperExtension::Create runtime");
     if (!runtime) {
@@ -42,8 +42,7 @@ WallpaperExtension* WallpaperExtension::Create(const std::unique_ptr<Runtime>& r
 }
 
 void WallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &record,
-    const std::shared_ptr<OHOSApplication> &application,
-    std::shared_ptr<AbilityHandler> &handler,
+    const std::shared_ptr<OHOSApplication> &application, std::shared_ptr<AbilityHandler> &handler,
     const sptr<IRemoteObject> &token)
 {
     HILOG_INFO("jws WallpaperExtension begin init context");
@@ -52,10 +51,8 @@ void WallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &record,
 }
 
 std::shared_ptr<WallpaperExtensionContext> WallpaperExtension::CreateAndInitContext(
-    const std::shared_ptr<AbilityLocalRecord> &record,
-    const std::shared_ptr<OHOSApplication> &application,
-    std::shared_ptr<AbilityHandler> &handler,
-    const sptr<IRemoteObject> &token)
+    const std::shared_ptr<AbilityLocalRecord> &record, const std::shared_ptr<OHOSApplication> &application,
+    std::shared_ptr<AbilityHandler> &handler, const sptr<IRemoteObject> &token)
 {
     HILOG_INFO("jws WallpaperExtension begin init context");
     std::shared_ptr<WallpaperExtensionContext> context =
@@ -66,5 +63,5 @@ std::shared_ptr<WallpaperExtensionContext> WallpaperExtension::CreateAndInitCont
     }
     return context;
 }
-}
-}
+} // namespace AbilityRuntime
+} // namespace OHOS

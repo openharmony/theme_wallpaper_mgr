@@ -36,7 +36,7 @@ private:
     static bool running_;
     static const inline int ONE_DAY_IN_HOURS = 24;
     static const inline int ONE_MINUTE_IN_SECONDS = 60;
-    static const inline int ONE_HOUR_IN_SECONDS = 1 * 60 * 60;          // 1 hours
+    static const inline int ONE_HOUR_IN_SECONDS = 1 * 60 * 60; // 1 hours
 
     static const inline int EXEC_HOUR_TIME = 23;
     static const inline int EXEC_MIN_TIME = 60;

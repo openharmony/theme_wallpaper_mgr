@@ -16,33 +16,34 @@
 #include "component_name.h"
 namespace OHOS {
 namespace WallpaperMgrService {
-    ComponentName::ComponentName()
-    {}
-
-    ComponentName::ComponentName(std::string pkg, std::string cls)
-    {
-        mPackage = pkg;
-        mClass = cls;
-    }
-
-    void  ComponentName::SetComponentInfo(std::string pkg, std::string cls)
-    {
-        mPackage = pkg;
-        mClass = cls;
-    }
-
-    std::string ComponentName::GetPackageName() const
-    {
-        return mPackage;
-    }
-    std::string ComponentName::GetClassName() const
-    {
-        return mClass;
-    }
-
-    bool ComponentName::equals(const ComponentName &obj)
-    {
-        return mPackage == obj.GetPackageName() && mClass == obj.GetClassName();
-    }
-    }
+ComponentName::ComponentName()
+{
 }
+
+ComponentName::ComponentName(std::string pkg, std::string cls)
+{
+    mPackage = pkg;
+    mClass = cls;
+}
+
+void ComponentName::SetComponentInfo(std::string pkg, std::string cls)
+{
+    mPackage = pkg;
+    mClass = cls;
+}
+
+std::string ComponentName::GetPackageName() const
+{
+    return mPackage;
+}
+std::string ComponentName::GetClassName() const
+{
+    return mClass;
+}
+
+bool ComponentName::equals(const ComponentName &obj)
+{
+    return mPackage == obj.GetPackageName() && mClass == obj.GetClassName();
+}
+} // namespace WallpaperMgrService
+} // namespace OHOS

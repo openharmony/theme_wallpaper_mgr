@@ -29,6 +29,7 @@ public:
     int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
     WallpaperServiceStub();
     ~WallpaperServiceStub();
+
 private:
     int32_t OnSetWallpaperUriByFD(MessageParcel &data, MessageParcel &reply);
     int32_t OnSetWallpaperByMap(MessageParcel &data, MessageParcel &reply);
@@ -49,6 +50,6 @@ private:
     using WallpaperServiceFunc = int32_t (WallpaperServiceStub::*)(MessageParcel &data, MessageParcel &reply);
     std::map<uint32_t, WallpaperServiceFunc> memberFuncMap_;
 };
-}
+} // namespace WallpaperMgrService
 } // namespace OHOS
 #endif // SERVICES_INCLUDE_WALLPAPER_SERVICE_STUB_H

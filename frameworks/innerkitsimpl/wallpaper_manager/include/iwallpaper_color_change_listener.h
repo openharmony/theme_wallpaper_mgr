@@ -35,8 +35,8 @@ public:
 
 class WallpaperColorChangeListenerStub : public IRemoteStub<IWallpaperColorChangeListener> {
 public:
-    virtual int OnRemoteRequest(uint32_t code, MessageParcel &data,
-                                MessageParcel &reply, MessageOption &option) override;
+    virtual int OnRemoteRequest(
+        uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
 };
 
 class WallpaperColorChangeListenerProxy : public IRemoteProxy<IWallpaperColorChangeListener> {
@@ -45,7 +45,7 @@ public:
     ~WallpaperColorChangeListenerProxy() = default;
     void onColorsChange(std::vector<RgbaColor> color, int wallpaperType) override;
 };
-}  // namespace WallpaperMgrService
-}  // namespace OHOS
+} // namespace WallpaperMgrService
+} // namespace OHOS
 
-#endif  // I_WALLPAPER_COLOR_CHANGE_LISTENER_H
+#endif // I_WALLPAPER_COLOR_CHANGE_LISTENER_H

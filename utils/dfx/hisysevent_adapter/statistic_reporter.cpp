@@ -70,7 +70,7 @@ void StatisticReporter::StartTimerThread()
                 sleep(ONE_HOUR_IN_SECONDS);
                 continue;
             }
-            
+
             tm localTime = { 0 };
             tm *result = localtime_r(&current, &localTime);
             if (result == nullptr) {
@@ -132,8 +132,8 @@ ReportStatus StatisticReporter::InvokeUsageTime(time_t curTime)
         return ReportStatus::ERROR;
     }
 
-    int nRet = HiSysEvent::Write(HiSysEvent::Domain::THEME, USAGETIME_STATISTIC,
-        HiSysEvent::EventType::STATISTIC, WALLPAPER_INFO, statisicMsg);
+    int nRet = HiSysEvent::Write(
+        HiSysEvent::Domain::THEME, USAGETIME_STATISTIC, HiSysEvent::EventType::STATISTIC, WALLPAPER_INFO, statisicMsg);
     HILOG_INFO(" InvokeUsageTime nRet = %{public}d.", nRet);
     return nRet == 0 ? ReportStatus::SUCCESS : ReportStatus::ERROR;
 }

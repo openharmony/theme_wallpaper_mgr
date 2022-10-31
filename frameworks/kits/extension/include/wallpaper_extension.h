@@ -25,8 +25,9 @@ class Runtime;
 /**
  * @brief Basic wallpaper components.
  */
-class WallpaperExtension : public ExtensionBase<WallpaperExtensionContext>,
-                       public std::enable_shared_from_this<WallpaperExtension> {
+class WallpaperExtension
+    : public ExtensionBase<WallpaperExtensionContext>
+    , public std::enable_shared_from_this<WallpaperExtension> {
 public:
     WallpaperExtension() = default;
     virtual ~WallpaperExtension() = default;
@@ -41,10 +42,8 @@ public:
      * @return The created context.
      */
     virtual std::shared_ptr<WallpaperExtensionContext> CreateAndInitContext(
-        const std::shared_ptr<AbilityLocalRecord> &record,
-        const std::shared_ptr<OHOSApplication> &application,
-        std::shared_ptr<AbilityHandler> &handler,
-        const sptr<IRemoteObject> &token) override;
+        const std::shared_ptr<AbilityLocalRecord> &record, const std::shared_ptr<OHOSApplication> &application,
+        std::shared_ptr<AbilityHandler> &handler, const sptr<IRemoteObject> &token) override;
 
     /**
      * @brief Init the extension.
@@ -55,8 +54,7 @@ public:
      * @param token the remote token.
      */
     virtual void Init(const std::shared_ptr<AbilityLocalRecord> &record,
-        const std::shared_ptr<OHOSApplication> &application,
-        std::shared_ptr<AbilityHandler> &handler,
+        const std::shared_ptr<OHOSApplication> &application, std::shared_ptr<AbilityHandler> &handler,
         const sptr<IRemoteObject> &token) override;
 
     /**
@@ -65,8 +63,8 @@ public:
      * @param runtime The runtime.
      * @return The WallpaperExtension instance.
      */
-    static WallpaperExtension* Create(const std::unique_ptr<Runtime>& runtime);
+    static WallpaperExtension *Create(const std::unique_ptr<Runtime> &runtime);
 };
-}  // namespace AbilityRuntime
-}  // namespace OHOS
-#endif  // FOUNDATION_ABILITYRUNTIME_OHOS_WALLPAPER_EXTENSION_H
+} // namespace AbilityRuntime
+} // namespace OHOS
+#endif // FOUNDATION_ABILITYRUNTIME_OHOS_WALLPAPER_EXTENSION_H

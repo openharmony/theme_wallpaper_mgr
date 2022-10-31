@@ -40,7 +40,6 @@ bool WallpaperCommonEvent::PublishEvent(const OHOS::AAFwk::Want &want, int event
     return publishResult;
 }
 
-
 void WallpaperCommonEvent::UnregisterSubscriber(std::shared_ptr<OHOS::EventFwk::CommonEventSubscriber> subscriber)
 {
     if (subscriber != nullptr) {
@@ -79,5 +78,5 @@ void WallpaperCommonEvent::SendWallpaperSystemSettingMessage()
     std::string eventData("WallpaperSystemSettingMessage");
     PublishEvent(want, eventCode, eventData);
 }
-}
-}
+} // namespace WallpaperMgrService
+} // namespace OHOS

@@ -29,19 +29,19 @@ let imageSourceLockscreen = 'system/etc/wallpaper_lock.JPG';
 describe('WallpaperJSTest', function () {
     beforeAll(async function () {
         // input testsuit setup step，setup invoked before all testcases
-        console.info('beforeAll caled')
+        console.info('beforeAll called')
     })
     beforeEach(function () {
         // input testcase setup step，setup invoked before each testcases
-        console.info('beforeEach caled')
+        console.info('beforeEach called')
     })
     afterEach(function () {
         // input testcase teardown step，teardown invoked after each testcases
-        console.info('afterEach caled')
+        console.info('afterEach called')
     })
     afterAll(function () {
         // input testsuit teardown step，teardown invoked after all testcases
-        console.info('afterAll caled')
+        console.info('afterAll called')
     })
 
     /**

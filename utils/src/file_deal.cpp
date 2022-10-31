@@ -32,7 +32,7 @@ FileDeal::~FileDeal()
 }
 bool FileDeal::DirIsExist(std::string path)
 {
-    DIR* dp;
+    DIR *dp;
     if ((dp = opendir(path.c_str())) == NULL) {
         HILOG_INFO("FileDeal : opendir  %{public}s is not exist", path.c_str());
         return false;
@@ -45,8 +45,8 @@ bool FileDeal::Mkdir(std::string path)
 {
     if (!DirIsExist(path)) {
         int isCreate = ::mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
-        HILOG_INFO("FileDeal : mkdir result= %{public}d,errinfo=%{public}s ,path =  %{public}s ",
-            isCreate, strerror(errno), path.c_str());
+        HILOG_INFO("FileDeal : mkdir result= %{public}d,errinfo=%{public}s ,path =  %{public}s ", isCreate,
+            strerror(errno), path.c_str());
         return isCreate == 0 ? true : false;
     }
     return true;
@@ -79,13 +79,12 @@ bool FileDeal::CopyFile(const std::string &sourceFile, const std::string &newFil
     return true;
 }
 
-bool FileDeal::FileIsExist(const std::string& name)
+bool FileDeal::FileIsExist(const std::string &name)
 {
     if (access(name.c_str(), F_OK) == 0) {
         return true;
     }
     return false;
 }
-}
-}
-
+} // namespace WallpaperMgrService
+} // namespace OHOS

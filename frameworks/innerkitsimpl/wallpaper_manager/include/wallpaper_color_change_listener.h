@@ -28,11 +28,13 @@ public:
     WallpaperColorChangeListener() = default;
 
     virtual ~WallpaperColorChangeListener()
-    {}
+    {
+    }
 
     virtual void onColorsChange(std::vector<RgbaColor> color, int wallpaperType)
-    {}
+    {
+    }
 };
-}  // namespace WallpaperMgrService
-}  // namespace OHOS
-#endif  // WALLPAPER_COLOR_CHANGE_LISTENER_H
+} // namespace WallpaperMgrService
+} // namespace OHOS
+#endif // WALLPAPER_COLOR_CHANGE_LISTENER_H

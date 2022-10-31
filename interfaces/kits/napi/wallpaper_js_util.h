@@ -33,5 +33,5 @@ public:
     static std::string Convert2String(napi_env env, napi_value jsString);
     static napi_value Convert2JSRgbaArray(napi_env env, const std::vector<RgbaColor> &color);
 };
-}
+} // namespace OHOS::WallpaperNAPI
 #endif // WALLPAPER_JS_UTIL_H

@@ -45,5 +45,5 @@ const std::shared_ptr<WallpaperColorChangeListener> WallpaperColorChangeListener
 {
     return wallpaperColorChangerListener_;
 }
-}  // namespace WallpaperMgrService
-}  // namespace OHOS
+} // namespace WallpaperMgrService
+} // namespace OHOS

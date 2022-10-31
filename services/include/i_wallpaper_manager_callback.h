@@ -21,15 +21,15 @@
 
 namespace OHOS {
 namespace WallpaperMgrService {
-    using namespace std;
-    class IWallpaperManagerCallback {
-    public:
-        virtual void OnWallpaperChanged();
-        /**
+using namespace std;
+class IWallpaperManagerCallback {
+public:
+    virtual void OnWallpaperChanged();
+    /**
        * Called when wallpaper colors change
       */
-        virtual void OnWallpaperColorsChanged(vector<RgbaColor>  colors, int which, int userId);
-    };
-}
+    virtual void OnWallpaperColorsChanged(vector<RgbaColor> colors, int which, int userId);
+};
+} // namespace WallpaperMgrService
 } // namespace OHOS
 #endif // SERVICES_INCLUDE_WALLPAPER_SERVICE_CALLBACK_INTERFACE_H

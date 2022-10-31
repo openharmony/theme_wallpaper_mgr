@@ -28,14 +28,14 @@ class WallpaperServiceCbStub : public IRemoteStub<IWallpaperCallback> {
 public:
     WallpaperServiceCbStub();
     ~WallpaperServiceCbStub() = default;
-    int32_t OnRemoteRequest(
-        uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
+    int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
     int32_t OnCall(const int32_t num) override;
+
 private:
     int32_t HandleOnCall(MessageParcel &data, MessageParcel &reply);
     using WallpaperCallbackFunc = int32_t (WallpaperServiceCbStub::*)(MessageParcel &data, MessageParcel &reply);
     std::map<uint32_t, WallpaperCallbackFunc> memberFuncMap_;
 };
-}
-}
+} // namespace WallpaperMgrService
+} // namespace OHOS
 #endif

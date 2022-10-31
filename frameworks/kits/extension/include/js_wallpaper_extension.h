@@ -29,19 +29,20 @@ class JsRuntime;
 /**
  * @brief Basic wallpaper components.
  */
-class JsWallpaperExtension : public WallpaperExtension,
-                           public std::enable_shared_from_this<JsWallpaperExtension> {
+class JsWallpaperExtension
+    : public WallpaperExtension
+    , public std::enable_shared_from_this<JsWallpaperExtension> {
 public:
-    JsWallpaperExtension(JsRuntime& jsRuntime);
+    JsWallpaperExtension(JsRuntime &jsRuntime);
     virtual ~JsWallpaperExtension() override;
-    static JsWallpaperExtension* jsWallpaperExtension;
+    static JsWallpaperExtension *jsWallpaperExtension;
     /**
      * @brief Create JsWallpaperExtension.
      *
      * @param runtime The runtime.
      * @return The JsWallpaperExtension instance.
      */
-    static JsWallpaperExtension* Create(const std::unique_ptr<Runtime>& runtime);
+    static JsWallpaperExtension *Create(const std::unique_ptr<Runtime> &runtime);
 
     /**
      * @brief Init the extension.
@@ -53,8 +54,7 @@ public:
      */
     virtual void Init(const std::shared_ptr<AppExecFwk::AbilityLocalRecord> &record,
         const std::shared_ptr<AppExecFwk::OHOSApplication> &application,
-        std::shared_ptr<AppExecFwk::AbilityHandler> &handler,
-        const sptr<IRemoteObject> &token) override;
+        std::shared_ptr<AppExecFwk::AbilityHandler> &handler, const sptr<IRemoteObject> &token) override;
 
     /**
      * @brief Called when this extension is started. You must override this function if you want to perform some
@@ -107,13 +107,13 @@ public:
     virtual void OnStop() override;
 
 private:
-    NativeValue* CallObjectMethod(const char* name, NativeValue * const *argv = nullptr, size_t argc = 0);
+    NativeValue *CallObjectMethod(const char *name, NativeValue *const *argv = nullptr, size_t argc = 0);
 
     void GetSrcPath(std::string &srcPath);
 
-    JsRuntime& jsRuntime_;
+    JsRuntime &jsRuntime_;
     std::unique_ptr<NativeReference> jsObj_;
 };
-}  // namespace AbilityRuntime
-}  // namespace OHOS
-#endif  // FOUNDATION_ABILITYRUNTIME_OHOS_JS_WALLPAPER_EXTENSION_H
+} // namespace AbilityRuntime
+} // namespace OHOS
+#endif // FOUNDATION_ABILITYRUNTIME_OHOS_JS_WALLPAPER_EXTENSION_H

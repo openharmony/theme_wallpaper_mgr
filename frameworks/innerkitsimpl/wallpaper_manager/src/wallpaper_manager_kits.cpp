@@ -18,9 +18,9 @@
 #include "wallpaper_manager.h"
 namespace OHOS {
 namespace WallpaperMgrService {
-WallpaperManagerkits& WallpaperManagerkits::GetInstance()
+WallpaperManagerkits &WallpaperManagerkits::GetInstance()
 {
     return DelayedRefSingleton<WallpaperManager>::GetInstance();
 }
-}
-}
+} // namespace WallpaperMgrService
+} // namespace OHOS

@@ -39,7 +39,7 @@ public:
      *
      * @return Instance of ohos Wallpaper manager.
      */
-    static WallpaperManagerkits& GetInstance();
+    static WallpaperManagerkits &GetInstance();
 
     /**
     * Wallpaper set.
@@ -49,7 +49,7 @@ public:
     */
     virtual int32_t SetWallpaper(std::string url, int wallpaperType) = 0;
 
-     /**
+    /**
     * Wallpaper set.
     * @param  pixelMap:picture pixelMap struct; wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or
     * WALLPAPER_LOCKSCREEN
@@ -78,7 +78,7 @@ public:
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of callback function
      */
-    virtual int  GetWallpaperId(int wallpaperType) = 0;
+    virtual int GetWallpaperId(int wallpaperType) = 0;
 
     virtual int32_t GetFile(int wallpaperType, int32_t &wallpaperFd) = 0;
 
@@ -86,7 +86,7 @@ public:
      * Obtains the minimum height of the wallpaper.
      * @return number type of callback function
      */
-    virtual int  GetWallpaperMinHeight() = 0;
+    virtual int GetWallpaperMinHeight() = 0;
 
     /**
      * Obtains the minimum width of the wallpaper.
@@ -140,19 +140,19 @@ public:
      */
     virtual bool Off(std::shared_ptr<WallpaperColorChangeListener> listener) = 0;
 
-    virtual bool RegisterWallpaperCallback(bool (*callback) (int)) = 0;
-    using JScallback = bool (*) (int);
+    virtual bool RegisterWallpaperCallback(bool (*callback)(int)) = 0;
+    using JScallback = bool (*)(int);
 
     virtual JScallback GetCallback() = 0;
 
-    virtual void SetCallback(bool (*cb) (int)) = 0;
+    virtual void SetCallback(bool (*cb)(int)) = 0;
 
     virtual void CloseWallpaperFd(int32_t wallpaperType) = 0;
+
 protected:
     WallpaperManagerkits() = default;
 };
-}
-}
-
+} // namespace WallpaperMgrService
+} // namespace OHOS
 
 #endif

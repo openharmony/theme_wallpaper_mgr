@@ -35,7 +35,8 @@ class WallpaperCommonEvent : public OHOS::EventFwk::CommonEventSubscriber {
 public:
     WallpaperCommonEvent(const OHOS::EventFwk::CommonEventSubscribeInfo &subscriberInfo)
         : CommonEventSubscriber(subscriberInfo)
-    {}
+    {
+    }
     ~WallpaperCommonEvent() = default;
     static std::shared_ptr<WallpaperCommonEvent> subscriber;
     void OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data) override;
@@ -44,10 +45,11 @@ public:
     static bool RegisterSubscriber();
     static void SendWallpaperLockSettingMessage();
     static void SendWallpaperSystemSettingMessage();
+
 private:
     std::function<void(const EventFwk::CommonEventData &)> callback_;
 };
-}
-}
+} // namespace WallpaperMgrService
+} // namespace OHOS
 
 #endif

@@ -26,8 +26,10 @@ namespace OHOS {
 namespace WallpaperMgrService {
 class WallpaperServiceCbProxy : public IRemoteProxy<IWallpaperCallback> {
 public:
-    explicit WallpaperServiceCbProxy(const sptr<IRemoteObject> &object) : IRemoteProxy<IWallpaperCallback>(object) {}
-    virtual ~WallpaperServiceCbProxy() {};
+    explicit WallpaperServiceCbProxy(const sptr<IRemoteObject> &object) : IRemoteProxy<IWallpaperCallback>(object)
+    {
+    }
+    virtual ~WallpaperServiceCbProxy(){};
 
     static inline BrokerDelegator<WallpaperServiceCbProxy> delegator_;
 
