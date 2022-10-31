@@ -14,6 +14,7 @@
  */
 
 #include "accesstoken_adapter.h"
+
 #include "hilog_wrapper.h"
 
 namespace OHOS {

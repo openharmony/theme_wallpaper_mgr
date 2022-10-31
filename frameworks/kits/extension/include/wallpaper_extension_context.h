@@ -16,10 +16,9 @@
 #ifndef WALLPAPER_EXTENSION_CONTEXT_H
 #define WALLPAPER_EXTENSION_CONTEXT_H
 
-#include "extension_context.h"
-
 #include "ability_connect_callback.h"
 #include "connection_manager.h"
+#include "extension_context.h"
 #include "start_options.h"
 #include "want.h"
 
@@ -57,8 +56,7 @@ public:
      *
      * @return True means success and false means failure
      */
-    bool ConnectAbility(
-        const AAFwk::Want &want, const sptr<AbilityConnectCallback> &connectCallback) const;
+    bool ConnectAbility(const AAFwk::Want &want, const sptr<AbilityConnectCallback> &connectCallback) const;
 
     /**
      * @brief Starts a new ability.
@@ -98,8 +96,7 @@ public:
      *
      * @return errCode ERR_OK on success, others on failure.
      */
-    ErrCode DisconnectAbility(
-        const AAFwk::Want &want, const sptr<AbilityConnectCallback> &connectCallback) const;
+    ErrCode DisconnectAbility(const AAFwk::Want &want, const sptr<AbilityConnectCallback> &connectCallback) const;
 
     /**
      * @brief Destroys the current ability.
@@ -127,6 +124,6 @@ private:
      */
     OHOS::AppExecFwk::AbilityType GetAbilityInfoType() const;
 };
-}  // namespace AbilityRuntime
-}  // namespace OHOS
-#endif  // WALLPAPER_EXTENSION_CONTEXT_H
+} // namespace AbilityRuntime
+} // namespace OHOS
+#endif // WALLPAPER_EXTENSION_CONTEXT_H

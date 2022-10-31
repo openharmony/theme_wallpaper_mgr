@@ -12,8 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "hisysevent.h"
 #include "fault_reporter.h"
+
+#include "hisysevent.h"
 
 namespace OHOS {
 using namespace HiviewDFX;
@@ -26,16 +27,15 @@ constexpr const char *ERROR_TYPE = "ERROR_TYPE";
 
 ReportStatus FaultReporter::ReportServiceFault(const FaultMsg &msg)
 {
-    int nRet = HiSysEvent::Write(HiSysEvent::Domain::THEME, SERVICE_FAULT, HiSysEvent::EventType::FAULT,
-        FAULT_TYPE, static_cast<int>(msg.faultType), MODULE_NAME, msg.moduleName, ERROR_TYPE,
-        static_cast<int>(msg.errorCode));
+    int nRet = HiSysEvent::Write(HiSysEvent::Domain::THEME, SERVICE_FAULT, HiSysEvent::EventType::FAULT, FAULT_TYPE,
+        static_cast<int>(msg.faultType), MODULE_NAME, msg.moduleName, ERROR_TYPE, static_cast<int>(msg.errorCode));
     return nRet == 0 ? ReportStatus::SUCCESS : ReportStatus::ERROR;
 }
 
 ReportStatus FaultReporter::ReportRuntimeFault(const FaultMsg &msg)
 {
-    int nRet = HiSysEvent::Write(HiSysEvent::Domain::THEME, RUNTIME_FAULT, HiSysEvent::EventType::FAULT,
-        FAULT_TYPE, static_cast<int>(msg.faultType), ERROR_TYPE, static_cast<int>(msg.errorCode));
+    int nRet = HiSysEvent::Write(HiSysEvent::Domain::THEME, RUNTIME_FAULT, HiSysEvent::EventType::FAULT, FAULT_TYPE,
+        static_cast<int>(msg.faultType), ERROR_TYPE, static_cast<int>(msg.errorCode));
     return nRet == 0 ? ReportStatus::SUCCESS : ReportStatus::ERROR;
 }
 } // namespace MiscServices

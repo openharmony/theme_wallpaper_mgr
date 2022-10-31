@@ -16,11 +16,10 @@
 #ifndef WALLPAPER_EXTENSION_ABILITY_CONNECTION_H
 #define WALLPAPER_EXTENSION_ABILITY_CONNECTION_H
 #include "ability_connect_callback_interface.h"
-
-#include "nocopyable.h"
+#include "ability_connect_callback_stub.h"
 #include "iremote_object.h"
 #include "iremote_stub.h"
-#include "ability_connect_callback_stub.h"
+#include "nocopyable.h"
 #include "wallpaper_service.h"
 
 namespace OHOS {

@@ -19,7 +19,9 @@
 #include "extension_module_loader.h"
 
 namespace OHOS::AbilityRuntime {
-class WallpaperExtensionModuleLoader : public ExtensionModuleLoader, public Singleton<WallpaperExtensionModuleLoader> {
+class WallpaperExtensionModuleLoader
+    : public ExtensionModuleLoader
+    , public Singleton<WallpaperExtensionModuleLoader> {
     DECLARE_SINGLETON(WallpaperExtensionModuleLoader);
 
 public:
@@ -29,9 +31,9 @@ public:
      * @param runtime The runtime.
      * @return The Extension instance.
      */
-    virtual Extension *Create(const std::unique_ptr<Runtime>& runtime) const override;
+    virtual Extension *Create(const std::unique_ptr<Runtime> &runtime) const override;
 
     virtual std::map<std::string, std::string> GetParams() override;
 };
-}
+} // namespace OHOS::AbilityRuntime
 #endif // FOUNDATION_ABILITYRUTIME_WALLPAPER_EXTENSION_MODULE_LOADER_H

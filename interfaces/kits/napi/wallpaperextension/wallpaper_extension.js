@@ -19,7 +19,7 @@ var windowType = 2000
 var windowsCreated = false;
 
 class WallpaperExtension {
-    createWallpaperWin(){
+    createWallpaperWin() {
         console.log(WindowName + " createWallpaperWin");
         console.log(this.context);
         console.log(WindowName + JSON.stringify(this.context));
@@ -35,7 +35,7 @@ class WallpaperExtension {
             this.wallpaperWindow.moveTo(0, 0).then(() => {
                 console.log(WindowName + "resetSize");
                 this.wallpaperWindow.resetSize(480, 960).then(() => {
-                    console.log(WindowName + " resetSize"+JSON.stringify(this.wallpaperURL));
+                    console.log(WindowName + " resetSize" + JSON.stringify(this.wallpaperURL));
                     this.loadUiContent(this.wallpaperURL);
                     console.log(WindowName + " window created");
                     windowsCreated = true;
@@ -45,7 +45,8 @@ class WallpaperExtension {
             console.log(WindowName + " window createFailed, error.code = " + error.code);
         })
     }
-    onCreated(want){
+
+    onCreated(want) {
         console.log(WindowName + "onWallpaperExtensionCreated");
     }
 
@@ -60,8 +61,8 @@ class WallpaperExtension {
         }
     }
 
-    loadUiContent(url){
-        console.log(WindowName + "initUiContent"+url);
+    loadUiContent(url) {
+        console.log(WindowName + "initUiContent" + url);
         console.log(WindowName + JSON.stringify(this.wallpaperWindow));
         console.log(WindowName + JSON.stringify(this.wallpaperWindow.loadContent));
         console.log(WindowName + JSON.stringify(this.wallpaperWindow.loadContent(url)));
@@ -73,11 +74,11 @@ class WallpaperExtension {
         })
     }
 
-    onWallpaperChanged(wallpaperType){
-        console.log(WindowName + "onWallpaperChanged"+JSON.stringify(wallpaperType));
+    onWallpaperChanged(wallpaperType) {
+        console.log(WindowName + "onWallpaperChanged" + JSON.stringify(wallpaperType));
     }
 
-    onDestroy(){
+    onDestroy() {
         console.log(WindowName + "onWallpaperExtensionDestroy");
     }
 }

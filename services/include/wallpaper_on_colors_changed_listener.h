@@ -17,6 +17,7 @@
 #define INNERKITS_WALLPAPER_ON_COLORS_CHANGED_LISTENER_H
 #include <iostream>
 #include <vector>
+
 #include "wallpaper_manager_common_info.h"
 
 class WallpaperOnColorsChangedListener {

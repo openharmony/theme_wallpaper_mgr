@@ -46,9 +46,9 @@
 namespace OHOS {
 namespace WallpaperMgrService {
 static constexpr unsigned int WP_DOMAIN = 0xD001C00;
-static constexpr OHOS::HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, WP_DOMAIN, "Wallpaper_OS"};
-}
-}
+static constexpr OHOS::HiviewDFX::HiLogLabel LOG_LABEL = { LOG_CORE, WP_DOMAIN, "Wallpaper_OS" };
+} // namespace WallpaperMgrService
+} // namespace OHOS
 
 #define WALLFILENAME__ (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
 
@@ -75,6 +75,6 @@ static constexpr OHOS::HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, WP_DOMAIN, "
 #define HILOG_INFO(...)
 #define HILOG_DEBUG(...)
 
-#endif  // CONFIG_HILOG
+#endif // CONFIG_HILOG
 
-#endif  // HILOG_WRAPPER_H
+#endif // HILOG_WRAPPER_H

@@ -17,14 +17,14 @@
 
 #include <ctime>
 
+#include "accesstoken_kit.h"
 #include "directory_ex.h"
 #include "hilog_wrapper.h"
+#include "nativetoken_kit.h"
 #include "pixel_map.h"
+#include "token_setproc.h"
 #include "wallpaper_manager.h"
 #include "wallpaper_manager_kits.h"
-#include "token_setproc.h"
-#include "accesstoken_kit.h"
-#include "nativetoken_kit.h"
 
 constexpr int SYSTYEM = 0;
 constexpr int LOCKSCREEN = 1;
@@ -165,7 +165,8 @@ HWTEST_F(WallpaperTest, Reset001, TestSize.Level1)
     HILOG_INFO("Reset001.");
     int wallpaperType = 0;
     EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType),
-        static_cast<int32_t>(E_OK)) << "should reset successfully.";
+        static_cast<int32_t>(E_OK))
+        << "should reset successfully.";
 }
 
 /**
@@ -179,7 +180,8 @@ HWTEST_F(WallpaperTest, Reset002, TestSize.Level1)
 {
     int wallpaperType = 1;
     EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType),
-        static_cast<int32_t>(E_OK)) << "should reset successfully.";
+        static_cast<int32_t>(E_OK))
+        << "should reset successfully.";
 }
 
 /**
@@ -193,7 +195,8 @@ HWTEST_F(WallpaperTest, Reset003, TestSize.Level1)
 {
     int wallpaperType = 2;
     EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType),
-        static_cast<int32_t>(E_PARAMETERS_INVALID)) << "shouldn't reset successfully.";
+        static_cast<int32_t>(E_PARAMETERS_INVALID))
+        << "shouldn't reset successfully.";
 }
 
 /**
@@ -207,10 +210,12 @@ HWTEST_F(WallpaperTest, Reset004, TestSize.Level1)
 {
     int wallpaperType = 0;
     EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType),
-        static_cast<int32_t>(E_OK)) << "should reset successfully.";
+        static_cast<int32_t>(E_OK))
+        << "should reset successfully.";
     /* duplicate reset */
     EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType),
-        static_cast<int32_t>(E_OK)) << "should reset successfully.";
+        static_cast<int32_t>(E_OK))
+        << "should reset successfully.";
 }
 
 /**
@@ -224,11 +229,13 @@ HWTEST_F(WallpaperTest, Reset005, TestSize.Level1)
 {
     int wallpaperType = 1;
     EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType),
-        static_cast<int32_t>(E_OK)) << "should reset successfully.";
+        static_cast<int32_t>(E_OK))
+        << "should reset successfully.";
     int firstId = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(wallpaperType);
     /* duplicate reset */
     EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType),
-        static_cast<int32_t>(E_OK)) << "should reset successfully.";
+        static_cast<int32_t>(E_OK))
+        << "should reset successfully.";
     int secondId = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(wallpaperType);
     EXPECT_EQ(firstId, secondId) << "Id should be same one.";
 }
@@ -599,8 +606,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUrl002, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetWallpaperByUrl003, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByUrl001  begin");
-    int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URL, 2);
+    int32_t wallpaperErrorCode = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URL, 2);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "throw parameters error successfully";
 }
 /*********************   SetWallpaperByUrl   *********************/

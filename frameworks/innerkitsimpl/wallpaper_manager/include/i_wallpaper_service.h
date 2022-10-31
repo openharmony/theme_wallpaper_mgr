@@ -16,16 +16,17 @@
 #ifndef SERVICES_INCLUDE_WALLPAPER_SERVICE_INTERFACE_H
 #define SERVICES_INCLUDE_WALLPAPER_SERVICE_INTERFACE_H
 
-#include <vector>
 #include <string>
+#include <vector>
+
+#include "i_wallpaper_callback.h"
 #include "iremote_broker.h"
+#include "iwallpaper_color_change_listener.h"
 #include "pixel_map.h"
 #include "pixel_map_parcel.h"
-#include "wallpaper_manager_common_info.h"
 #include "wallpaper_color_change_listener.h"
-#include "iwallpaper_color_change_listener.h"
 #include "wallpaper_color_change_listener_client.h"
-#include "i_wallpaper_callback.h"
+#include "wallpaper_manager_common_info.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -145,6 +146,6 @@ public:
 
     virtual bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) = 0;
 };
-}
+} // namespace WallpaperMgrService
 } // namespace OHOS
 #endif // SERVICES_INCLUDE_WALLPAPER_SERVICE_INTERFACE_H

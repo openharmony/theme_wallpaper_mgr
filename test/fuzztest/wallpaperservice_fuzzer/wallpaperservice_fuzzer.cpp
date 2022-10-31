@@ -54,7 +54,7 @@ void GrantNativePermission()
     delete[] perms;
 }
 
-uint32_t ConvertToUint32(const uint8_t* ptr)
+uint32_t ConvertToUint32(const uint8_t *ptr)
 {
     if (ptr == nullptr) {
         return 0;
@@ -63,7 +63,7 @@ uint32_t ConvertToUint32(const uint8_t* ptr)
     return bigVar;
 }
 
-bool FuzzWallpaperService(const uint8_t* rawData, size_t size)
+bool FuzzWallpaperService(const uint8_t *rawData, size_t size)
 {
     uint32_t code = ConvertToUint32(rawData);
     rawData = rawData + OFFSET;
@@ -82,10 +82,10 @@ bool FuzzWallpaperService(const uint8_t* rawData, size_t size)
 
     return true;
 }
-}
+} // namespace OHOS
 
 /* Fuzzer entry point */
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
     if (size < OHOS::THRESHOLD) {
         return 0;

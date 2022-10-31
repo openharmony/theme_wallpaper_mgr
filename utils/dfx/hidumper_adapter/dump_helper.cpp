@@ -13,8 +13,10 @@
  * limitations under the License.
  */
 #include "dump_helper.h"
+
 #include <cstdio>
 #include <utility>
+
 #include "hilog_wrapper.h"
 using namespace OHOS::WallpaperMgrService;
 namespace OHOS {

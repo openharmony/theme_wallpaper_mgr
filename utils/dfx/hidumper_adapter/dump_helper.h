@@ -19,6 +19,7 @@
 #include <functional>
 #include <map>
 #include <string>
+
 #include "command.h"
 
 namespace OHOS {

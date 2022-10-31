@@ -15,18 +15,20 @@
 
 #define LOG_TAG "WallpaperColorChangeListenerProxy"
 
+#include "iwallpaper_color_change_listener.h"
+
 #include "hilog_wrapper.h"
 #include "message_parcel.h"
-#include "iwallpaper_color_change_listener.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
 constexpr int ONCOLORSCHANGE = 0;
 using namespace std::chrono;
 
-WallpaperColorChangeListenerProxy::WallpaperColorChangeListenerProxy(
-    const sptr<IRemoteObject> &impl) : IRemoteProxy<IWallpaperColorChangeListener>(impl)
-{}
+WallpaperColorChangeListenerProxy::WallpaperColorChangeListenerProxy(const sptr<IRemoteObject> &impl)
+    : IRemoteProxy<IWallpaperColorChangeListener>(impl)
+{
+}
 
 void WallpaperColorChangeListenerProxy::onColorsChange(std::vector<RgbaColor> color, int wallpaperType)
 {
@@ -45,8 +47,8 @@ void WallpaperColorChangeListenerProxy::onColorsChange(std::vector<RgbaColor> co
         return;
     }
     for (unsigned int i = 0; i < size; ++i) {
-        if (!(data.WriteInt32(color[i].red) && data.WriteInt32(color[i].green) &&
-              data.WriteInt32(color[i].blue) && data.WriteInt32(color[i].alpha))) {
+        if (!(data.WriteInt32(color[i].red) && data.WriteInt32(color[i].green) && data.WriteInt32(color[i].blue)
+                && data.WriteInt32(color[i].alpha))) {
             HILOG_ERROR("write color failed");
             return;
         }
@@ -64,8 +66,8 @@ void WallpaperColorChangeListenerProxy::onColorsChange(std::vector<RgbaColor> co
     HILOG_DEBUG("WallpaperColorChangeListenerProxy::onColorsChange End");
 }
 
-int32_t WallpaperColorChangeListenerStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
-                                                          MessageParcel &reply, MessageOption &option)
+int32_t WallpaperColorChangeListenerStub::OnRemoteRequest(
+    uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
     HILOG_DEBUG("WallpaperColorChangeListenerStub::OnRemoteRequest Start");
     HILOG_DEBUG("%d", code);
@@ -97,5 +99,5 @@ int32_t WallpaperColorChangeListenerStub::OnRemoteRequest(uint32_t code, Message
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
 }
-}  // namespace WallpaperMgrService
-}  // namespace OHOS
+} // namespace WallpaperMgrService
+} // namespace OHOS

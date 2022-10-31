@@ -15,10 +15,11 @@
 #ifndef SERVICES_INCLUDE_WALLPAPER_SERVICE_CB_STUB_H
 #define SERVICES_INCLUDE_WALLPAPER_SERVICE_CB_STUB_H
 
-#include<map>
-#include "iremote_stub.h"
+#include <map>
+
 #include "i_wallpaper_callback.h"
 #include "ipc_skeleton.h"
+#include "iremote_stub.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -27,14 +28,14 @@ class WallpaperServiceCbStub : public IRemoteStub<IWallpaperCallback> {
 public:
     WallpaperServiceCbStub();
     ~WallpaperServiceCbStub() = default;
-    int32_t OnRemoteRequest(
-        uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
+    int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
     int32_t OnCall(const int32_t num) override;
+
 private:
     int32_t HandleOnCall(MessageParcel &data, MessageParcel &reply);
     using WallpaperCallbackFunc = int32_t (WallpaperServiceCbStub::*)(MessageParcel &data, MessageParcel &reply);
     std::map<uint32_t, WallpaperCallbackFunc> memberFuncMap_;
 };
-}
-}
+} // namespace WallpaperMgrService
+} // namespace OHOS
 #endif

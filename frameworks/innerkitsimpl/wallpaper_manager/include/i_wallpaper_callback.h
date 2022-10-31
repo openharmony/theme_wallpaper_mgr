@@ -15,19 +15,16 @@
 #ifndef SERVICES_INCLUDE_WALLPAPER_CALLBACK_INTERFACE_H
 #define SERVICES_INCLUDE_WALLPAPER_CALLBACK_INTERFACE_H
 
-
 #include "iremote_broker.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
 class IWallpaperCallback : public IRemoteBroker {
 public:
-    enum Message {
-        ONCALL = 0
-    };
+    enum Message { ONCALL = 0 };
     virtual int32_t OnCall(const int32_t num) = 0;
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.Wallpaper.IWallpaperCallback");
 };
-}
-}
+} // namespace WallpaperMgrService
+} // namespace OHOS
 #endif

@@ -18,8 +18,9 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-#include "napi/native_common.h"
+
 #include "napi/native_api.h"
+#include "napi/native_common.h"
 #include "napi/native_node_api.h"
 #include "wallpaper_manager_common_info.h"
 
@@ -32,5 +33,5 @@ public:
     static std::string Convert2String(napi_env env, napi_value jsString);
     static napi_value Convert2JSRgbaArray(napi_env env, const std::vector<RgbaColor> &color);
 };
-}
+} // namespace OHOS::WallpaperNAPI
 #endif // WALLPAPER_JS_UTIL_H

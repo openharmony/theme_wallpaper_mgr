@@ -14,6 +14,7 @@
  */
 
 #include "wallpaper_common_event.h"
+
 #include "hilog_wrapper.h"
 #include "wallpaper_service.h"
 namespace OHOS {
@@ -38,7 +39,6 @@ bool WallpaperCommonEvent::PublishEvent(const OHOS::AAFwk::Want &want, int event
     HILOG_INFO("PublishEvent end publishResult = %{public}d", publishResult);
     return publishResult;
 }
-
 
 void WallpaperCommonEvent::UnregisterSubscriber(std::shared_ptr<OHOS::EventFwk::CommonEventSubscriber> subscriber)
 {
@@ -78,5 +78,5 @@ void WallpaperCommonEvent::SendWallpaperSystemSettingMessage()
     std::string eventData("WallpaperSystemSettingMessage");
     PublishEvent(want, eventCode, eventData);
 }
-}
-}
+} // namespace WallpaperMgrService
+} // namespace OHOS

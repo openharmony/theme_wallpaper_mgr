@@ -15,8 +15,9 @@
 
 #define LOG_TAG "WallpaperColorChangeListenerClient"
 
-#include "hilog_wrapper.h"
 #include "wallpaper_color_change_listener_client.h"
+
+#include "hilog_wrapper.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -44,5 +45,5 @@ const std::shared_ptr<WallpaperColorChangeListener> WallpaperColorChangeListener
 {
     return wallpaperColorChangerListener_;
 }
-}  // namespace WallpaperMgrService
-}  // namespace OHOS
+} // namespace WallpaperMgrService
+} // namespace OHOS

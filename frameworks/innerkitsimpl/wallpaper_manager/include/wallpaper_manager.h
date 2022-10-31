@@ -16,24 +16,28 @@
 #ifndef INNERKITS_WALLPAPER_MANAGER_H
 #define INNERKITS_WALLPAPER_MANAGER_H
 
-#include <vector>
-#include <string>
-#include <mutex>
 #include <list>
 #include <map>
-#include "ipc_skeleton.h"
-#include "wallpaper_manager_kits.h"
-#include "i_wallpaper_service.h"
-#include "singleton.h"
-#include "fault_reporter.h"
-#include "wallpaper_common.h"
+#include <mutex>
+#include <string>
+#include <vector>
 
-using JScallback = bool (*) (int);
+#include "fault_reporter.h"
+#include "i_wallpaper_service.h"
+#include "ipc_skeleton.h"
+#include "singleton.h"
+#include "wallpaper_common.h"
+#include "wallpaper_manager_kits.h"
+
+using JScallback = bool (*)(int);
 namespace OHOS {
 using namespace MiscServices;
 namespace WallpaperMgrService {
-class WallpaperManager final : public WallpaperManagerkits, public DelayedRefSingleton<WallpaperManager> {
+class WallpaperManager final
+    : public WallpaperManagerkits
+    , public DelayedRefSingleton<WallpaperManager> {
     DECLARE_DELAYED_REF_SINGLETON(WallpaperManager);
+
 public:
     DISALLOW_COPY_AND_MOVE(WallpaperManager);
 
@@ -45,7 +49,7 @@ public:
     */
     int32_t SetWallpaper(std::string url, int wallpaperType) final;
 
-      /**
+    /**
     * Wallpaper set.
     * @param  pixelMap:picture pixelMap struct; wallpaperType Wallpaper type,
     * values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
@@ -82,15 +86,15 @@ public:
      * Obtains the minimum height of the wallpaper.
      * @return number type of callback function
      */
-    int  GetWallpaperMinHeight() final;
+    int GetWallpaperMinHeight() final;
 
-     /**
+    /**
      * Obtains the minimum width of the wallpaper.
      * @return number type of callback function
      */
     int GetWallpaperMinWidth() final;
 
-     /**
+    /**
      * Checks whether to allow the application to change the wallpaper for the current user.
      * @return boolean type of callback function
      */
@@ -102,7 +106,7 @@ public:
      */
     bool IsOperationAllowed() final;
 
-     /**
+    /**
      * Removes a wallpaper of the specified type and restores the default one.
      * @param wallpaperType  Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @permission ohos.permission.SET_WALLPAPER
@@ -136,15 +140,16 @@ public:
      */
     bool Off(std::shared_ptr<WallpaperColorChangeListener> listener) final;
 
-    bool RegisterWallpaperCallback(bool (*callback) (int)) final;
+    bool RegisterWallpaperCallback(bool (*callback)(int)) final;
 
     JScallback GetCallback() final;
 
-    void SetCallback(bool (*cb) (int)) final;
+    void SetCallback(bool (*cb)(int)) final;
 
     void ReporterFault(FaultType faultType, FaultCode faultCode);
 
     void CloseWallpaperFd(int32_t wallpaperType);
+
 private:
     class DeathRecipient final : public IRemoteObject::DeathRecipient {
     public:
@@ -152,27 +157,25 @@ private:
         ~DeathRecipient() final = default;
         DISALLOW_COPY_AND_MOVE(DeathRecipient);
 
-        void OnRemoteDied(const wptr<IRemoteObject>& remote) final;
+        void OnRemoteDied(const wptr<IRemoteObject> &remote) final;
     };
 
-    template<typename F, typename... Args>
-    ErrCode CallService(F func, Args&&... args);
+    template<typename F, typename... Args> ErrCode CallService(F func, Args &&...args);
 
-    void ResetService(const wptr<IRemoteObject>& remote);
+    void ResetService(const wptr<IRemoteObject> &remote);
     sptr<IWallpaperService> GetService();
-    int64_t WritePixelMapToFile(const std::string &filePath, std::unique_ptr< OHOS::Media::PixelMap> pixelMap);
-    int64_t WritePixelMapToStream(std::ostream &outputStream, std::unique_ptr< OHOS::Media::PixelMap> pixelMap);
+    int64_t WritePixelMapToFile(const std::string &filePath, std::unique_ptr<OHOS::Media::PixelMap> pixelMap);
+    int64_t WritePixelMapToStream(std::ostream &outputStream, std::unique_ptr<OHOS::Media::PixelMap> pixelMap);
 
-    sptr<IWallpaperService> wpProxy_ {};
-    sptr<IRemoteObject::DeathRecipient> deathRecipient_ {};
+    sptr<IWallpaperService> wpProxy_{};
+    sptr<IRemoteObject::DeathRecipient> deathRecipient_{};
     std::mutex wpFdLock_;
     std::map<int32_t, int32_t> wallpaperFdMap_;
     std::mutex wpProxyLock_;
     std::map<WallpaperColorChangeListener *, sptr<IWallpaperColorChangeListener>> registeredListeners_;
     std::mutex listenerMapMutex_;
-    bool (*callback) (int);
+    bool (*callback)(int);
 };
-}
-}
+} // namespace WallpaperMgrService
+} // namespace OHOS
 #endif
-

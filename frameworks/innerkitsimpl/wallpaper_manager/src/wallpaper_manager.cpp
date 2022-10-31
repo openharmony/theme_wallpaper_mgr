@@ -47,7 +47,9 @@ namespace OHOS {
 using namespace MiscServices;
 namespace WallpaperMgrService {
 constexpr int OPTION_QUALITY = 100;
-WallpaperManager::WallpaperManager() {}
+WallpaperManager::WallpaperManager()
+{
+}
 WallpaperManager::~WallpaperManager()
 {
     std::map<int32_t, int32_t>::iterator iter = wallpaperFdMap_.begin();
