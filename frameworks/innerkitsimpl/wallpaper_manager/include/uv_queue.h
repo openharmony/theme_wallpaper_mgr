@@ -15,9 +15,8 @@
 #ifndef FRAMEWORKS_UV_QUEUE_H
 #define FRAMEWORKS_UV_QUEUE_H
 
-#include <uv.h>
-
 #include <iostream>
+#include <uv.h>
 
 #include "napi/native_api.h"
 namespace OHOS::MiscServices {

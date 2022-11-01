@@ -54,8 +54,8 @@ WallpaperServiceStub::~WallpaperServiceStub()
     memberFuncMap_.clear();
 }
 
-int32_t WallpaperServiceStub::OnRemoteRequest(
-    uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+int32_t WallpaperServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
+    MessageOption &option)
 {
     HILOG_INFO(" start##ret = %{public}u", code);
     std::u16string myDescripter = WallpaperServiceStub::GetDescriptor();

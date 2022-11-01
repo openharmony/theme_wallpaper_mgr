@@ -33,7 +33,7 @@ using JScallback = bool (*)(int);
 namespace OHOS {
 using namespace MiscServices;
 namespace WallpaperMgrService {
-class WallpaperManager final: public WallpaperManagerkits, public DelayedRefSingleton<WallpaperManager> {
+class WallpaperManager final : public WallpaperManagerkits, public DelayedRefSingleton<WallpaperManager> {
     DECLARE_DELAYED_REF_SINGLETON(WallpaperManager);
 
 public:
@@ -158,7 +158,8 @@ private:
         void OnRemoteDied(const wptr<IRemoteObject> &remote) final;
     };
 
-    template<typename F, typename... Args> ErrCode CallService(F func, Args &&...args);
+    template<typename F, typename... Args>
+    ErrCode CallService(F func, Args &&...args);
 
     void ResetService(const wptr<IRemoteObject> &remote);
     sptr<IWallpaperService> GetService();

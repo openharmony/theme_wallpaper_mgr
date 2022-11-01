@@ -14,21 +14,20 @@
  */
 #include "wallpaper_service.h"
 
-#include <display_type.h>
-#include <fcntl.h>
-#include <rs_surface_node.h>
-#include <sys/sendfile.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <window_manager.h>
-
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <display_type.h>
+#include <fcntl.h>
 #include <iostream>
+#include <rs_surface_node.h>
+#include <sys/sendfile.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <thread>
+#include <unistd.h>
+#include <window_manager.h>
 
 #include "ability_manager_client.h"
 #include "accesstoken_adapter.h"
@@ -313,8 +312,8 @@ bool WallpaperService::ChangingToSame(ComponentName componentName, WallpaperData
 
     return false;
 }
-bool WallpaperService::BindWallpaperComponentLocked(
-    ComponentName &componentName, bool force, bool fromUser, WallpaperData wallpaper)
+bool WallpaperService::BindWallpaperComponentLocked(ComponentName &componentName, bool force, bool fromUser,
+    WallpaperData wallpaper)
 {
     if (!force && ChangingToSame(componentName, wallpaper)) {
         return true;
@@ -428,9 +427,11 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     OHOS::Media::SourceOptions opts;
     opts.formatHint = "image/jpeg";
 
-    std::unique_ptr<OHOS::Media::ImageSource> imageSource = OHOS::Media::ImageSource::CreateImageSource(
-        (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_ : wallpaperLockScreenFileFullPath_), opts,
-        errorCode);
+    std::unique_ptr<OHOS::Media::ImageSource> imageSource =
+        OHOS::Media::ImageSource::CreateImageSource((wallpaperType == WALLPAPER_SYSTEM
+                                                            ? wallpaperSystemFileFullPath_
+                                                            : wallpaperLockScreenFileFullPath_),
+            opts, errorCode);
     if (imageSource == nullptr || errorCode != 0) {
         return ret;
     }
@@ -463,9 +464,9 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
         std::string tmpPath = wallpaperCropPath;
         int64_t packedSize = WritePixelMapToFile(tmpPath, std::move(wallpaperPixelMap));
         if (packedSize != 0) {
-            ret = FileDeal::CopyFile(
-                tmpPath, (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemCropFileFullPath_
-                                                            : wallpaperLockScreenCropFileFullPath_));
+            ret = FileDeal::CopyFile(tmpPath,
+                (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemCropFileFullPath_
+                                                   : wallpaperLockScreenCropFileFullPath_));
             if (remove(tmpPath.c_str()) < 0) {
                 return false;
             }
@@ -968,8 +969,8 @@ bool WallpaperService::WPCheckCallingPermission(const std::string &permissionNam
     int result;
     Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
     auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken);
-    if (tokenType == Security::AccessToken::TOKEN_NATIVE || tokenType == Security::AccessToken::TOKEN_SHELL
-        || tokenType == Security::AccessToken::TOKEN_HAP) {
+    if (tokenType == Security::AccessToken::TOKEN_NATIVE || tokenType == Security::AccessToken::TOKEN_SHELL ||
+        tokenType == Security::AccessToken::TOKEN_HAP) {
         result = AccessTokenProxy::VerifyAccessToken(callerToken, permissionName);
     } else {
         HILOG_INFO("Check permission tokenId ilegal");

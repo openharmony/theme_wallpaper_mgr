@@ -50,9 +50,10 @@ void WallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &record,
     HILOG_INFO("WallpaperExtension begin init context");
 }
 
-std::shared_ptr<WallpaperExtensionContext> WallpaperExtension::CreateAndInitContext(
-    const std::shared_ptr<AbilityLocalRecord> &record, const std::shared_ptr<OHOSApplication> &application,
-    std::shared_ptr<AbilityHandler> &handler, const sptr<IRemoteObject> &token)
+std::shared_ptr<WallpaperExtensionContext>
+WallpaperExtension::CreateAndInitContext(const std::shared_ptr<AbilityLocalRecord> &record,
+    const std::shared_ptr<OHOSApplication> &application, std::shared_ptr<AbilityHandler> &handler,
+    const sptr<IRemoteObject> &token)
 {
     HILOG_INFO("jws WallpaperExtension begin init context");
     std::shared_ptr<WallpaperExtensionContext> context =

@@ -25,8 +25,8 @@ void JsError::ThrowError(napi_env env, int32_t errorCode, const std::string &err
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, errorMessage.c_str(), NAPI_AUTO_LENGTH, &message));
     napi_value code;
     int32_t errorCodeValue = static_cast<int32_t>(errorCode);
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, std::to_string(errorCodeValue).c_str(), NAPI_AUTO_LENGTH, &code));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_string_utf8(env, std::to_string(errorCodeValue).c_str(), NAPI_AUTO_LENGTH, &code));
     napi_value error;
     NAPI_CALL_RETURN_VOID(env, napi_create_error(env, code, message, &error));
     NAPI_CALL_RETURN_VOID(env, napi_throw(env, error));

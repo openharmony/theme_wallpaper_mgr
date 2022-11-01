@@ -15,12 +15,11 @@
 
 #include "napi_wallpaper_ability.h"
 
+#include <map>
 #include <pthread.h>
+#include <string>
 #include <unistd.h>
 #include <uv.h>
-
-#include <map>
-#include <string>
 #include <vector>
 
 #include "hilog_wrapper.h"
@@ -173,8 +172,9 @@ void NapiWallpaperAbility::GetFileInner(std::shared_ptr<GetFileContextInfo> cont
     };
     auto exec = [context](AsyncCall::Context *ctx) {
         HILOG_DEBUG("exec  GetFile");
-        int32_t wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(
-            context->wallpaperType, context->wallpaperFd);
+        int32_t wallpaperErrorCode =
+            WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(context->wallpaperType,
+                context->wallpaperFd);
         if (wallpaperErrorCode == static_cast<int32_t>(WallpaperMgrService::E_OK)) {
             context->status = napi_ok;
         } else {
@@ -362,8 +362,8 @@ void NapiWallpaperAbility::RestoreInner(std::shared_ptr<SetContextInfo> context)
 {
     HILOG_DEBUG("RestoreInner in");
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
-        if (!NapiWallpaperAbility::IsValidArgCount(argc, 1)
-            || !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_number)) {
+        if (!NapiWallpaperAbility::IsValidArgCount(argc, 1) ||
+            !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_number)) {
             HILOG_DEBUG("input  argc : %{public}zu", argc);
             context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);
             return napi_invalid_arg;
@@ -413,10 +413,10 @@ void NapiWallpaperAbility::SetImageInput(std::shared_ptr<SetContextInfo> context
 {
     HILOG_DEBUG("SetImageInput in");
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
-        if (!NapiWallpaperAbility::IsValidArgCount(argc, TWO)
-            || (!NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string)
-                && !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_object))
-            || !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_number)) {
+        if (!NapiWallpaperAbility::IsValidArgCount(argc, TWO) ||
+            (!NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string) &&
+                !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_object)) ||
+            !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_number)) {
             HILOG_DEBUG("input  argc : %{public}zu", argc);
             context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);
             return napi_invalid_arg;
@@ -451,13 +451,14 @@ void NapiWallpaperAbility::SetImageExec(std::shared_ptr<SetContextInfo> context)
         if (context->url.length() == 0) {
             HILOG_DEBUG("exec  setWallpaper by pixelMap");
             if (!context->isPixelEmp) {
-                wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(
-                    context->pixelMap, context->wallpaperType);
+                wallpaperErrorCode =
+                    WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(context->pixelMap,
+                        context->wallpaperType);
             }
         } else {
             HILOG_DEBUG("exec  setWallpaper by URL");
-            wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(
-                context->url, context->wallpaperType);
+            wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(context->url,
+                context->wallpaperType);
         }
         if (wallpaperErrorCode == static_cast<int32_t>(WallpaperMgrService::E_OK)) {
             context->status = napi_ok;
@@ -494,8 +495,8 @@ void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context
 {
     HILOG_DEBUG("GetImageInner in");
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
-        if (!NapiWallpaperAbility::IsValidArgCount(argc, 1)
-            || !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_number)) {
+        if (!NapiWallpaperAbility::IsValidArgCount(argc, 1) ||
+            !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_number)) {
             HILOG_DEBUG("input  argc : %{public}zu", argc);
             context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);
             return napi_invalid_arg;
@@ -546,9 +547,9 @@ napi_value NAPI_On(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
-    if (!NapiWallpaperAbility::IsValidArgCount(argc, TWO)
-        || !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string)
-        || !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_function)) {
+    if (!NapiWallpaperAbility::IsValidArgCount(argc, TWO) ||
+        !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string) ||
+        !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_function)) {
         HILOG_DEBUG("input  argc : %{public}zu", argc);
         JsError::ThrowError(env, ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);
         return nullptr;
@@ -585,8 +586,8 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    if (!NapiWallpaperAbility::IsValidArgCount(argc, ONE)
-        || !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string)) {
+    if (!NapiWallpaperAbility::IsValidArgCount(argc, ONE) ||
+        !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string)) {
         HILOG_DEBUG("input  argc : %{public}zu", argc);
         JsError::ThrowError(env, ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);
         return nullptr;
@@ -666,8 +667,8 @@ void NapiWallpaperAbility::onColorsChange(std::vector<RgbaColor> color, int wall
             napi_status callStatus =
                 napi_call_function(eventDataInner->listener->env_, global, callback, 1, args, &result);
             if (callStatus != napi_ok) {
-                HILOG_ERROR(
-                    "notify data change failed callStatus:%{public}d callback:%{public}p", callStatus, callback);
+                HILOG_ERROR("notify data change failed callStatus:%{public}d callback:%{public}p", callStatus,
+                    callback);
             }
             delete eventDataInner;
             eventDataInner = nullptr;
@@ -695,12 +696,12 @@ bool NapiWallpaperAbility::IsValidArgRange(napi_env env, napi_value argValue)
     return (wallpaperType != WALLPAPER_LOCKSCREEN && wallpaperType != WALLPAPER_SYSTEM) ? false : true;
 }
 
-bool NapiWallpaperAbility::CheckValidArgWallpaperType(
-    napi_env env, size_t argc, napi_value argValue, std::shared_ptr<AsyncCall::Context> ctx)
+bool NapiWallpaperAbility::CheckValidArgWallpaperType(napi_env env, size_t argc, napi_value argValue,
+    std::shared_ptr<AsyncCall::Context> ctx)
 {
-    if (!NapiWallpaperAbility::IsValidArgCount(argc, ONE)
-        || !NapiWallpaperAbility::IsValidArgType(env, argValue, napi_number)
-        || !NapiWallpaperAbility::IsValidArgRange(env, argValue)) {
+    if (!NapiWallpaperAbility::IsValidArgCount(argc, ONE) ||
+        !NapiWallpaperAbility::IsValidArgType(env, argValue, napi_number) ||
+        !NapiWallpaperAbility::IsValidArgRange(env, argValue)) {
         HILOG_DEBUG("input  argc : %{public}zu", argc);
         ctx->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);
         return false;

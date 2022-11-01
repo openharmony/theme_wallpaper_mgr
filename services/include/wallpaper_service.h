@@ -51,7 +51,7 @@ namespace OHOS {
 namespace WallpaperMgrService {
 enum class ServiceRunningState { STATE_NOT_START, STATE_RUNNING };
 
-class WallpaperService: public SystemAbility, public WallpaperServiceStub {
+class WallpaperService : public SystemAbility, public WallpaperServiceStub {
     DECLARE_SYSTEM_ABILITY(WallpaperService);
 
 public:

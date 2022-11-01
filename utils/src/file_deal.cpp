@@ -14,11 +14,10 @@
  */
 #include "file_deal.h"
 
+#include <cstdio>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
-
-#include <cstdio>
 
 #include "hilog_wrapper.h"
 

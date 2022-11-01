@@ -47,8 +47,8 @@ ErrCode WallpaperExtensionContext::StartAbility(const AAFwk::Want &want, const A
     return err;
 }
 
-bool WallpaperExtensionContext::ConnectAbility(
-    const AAFwk::Want &want, const sptr<AbilityConnectCallback> &connectCallback) const
+bool WallpaperExtensionContext::ConnectAbility(const AAFwk::Want &want,
+    const sptr<AbilityConnectCallback> &connectCallback) const
 {
     HILOG_INFO("%{public}s begin.", __func__);
     ErrCode ret = ConnectionManager::GetInstance().ConnectAbility(token_, want, connectCallback);
@@ -69,12 +69,12 @@ ErrCode WallpaperExtensionContext::StartAbilityWithAccount(const AAFwk::Want &wa
     return err;
 }
 
-ErrCode WallpaperExtensionContext::StartAbilityWithAccount(
-    const AAFwk::Want &want, int accountId, const AAFwk::StartOptions &startOptions) const
+ErrCode WallpaperExtensionContext::StartAbilityWithAccount(const AAFwk::Want &want, int accountId,
+    const AAFwk::StartOptions &startOptions) const
 {
     HILOG_DEBUG("%{public}s begin.", __func__);
-    ErrCode err = AAFwk::AbilityManagerClient::GetInstance()->StartAbility(
-        want, startOptions, token_, ILLEGAL_REQUEST_CODE, accountId);
+    ErrCode err = AAFwk::AbilityManagerClient::GetInstance()->StartAbility(want, startOptions, token_,
+        ILLEGAL_REQUEST_CODE, accountId);
     HILOG_DEBUG("%{public}s. End calling StartAbilityWithAccount. ret=%{public}d", __func__, err);
     if (err != ERR_OK) {
         HILOG_ERROR("WallpaperContext::StartAbilityWithAccount is failed %{public}d", err);
@@ -82,8 +82,8 @@ ErrCode WallpaperExtensionContext::StartAbilityWithAccount(
     return err;
 }
 
-bool WallpaperExtensionContext::ConnectAbilityWithAccount(
-    const AAFwk::Want &want, int accountId, const sptr<AbilityConnectCallback> &connectCallback) const
+bool WallpaperExtensionContext::ConnectAbilityWithAccount(const AAFwk::Want &want, int accountId,
+    const sptr<AbilityConnectCallback> &connectCallback) const
 {
     HILOG_INFO("%{public}s begin.", __func__);
     ErrCode ret = ConnectionManager::GetInstance().ConnectAbilityWithAccount(token_, want, accountId, connectCallback);
@@ -91,8 +91,8 @@ bool WallpaperExtensionContext::ConnectAbilityWithAccount(
     return ret == ERR_OK;
 }
 
-ErrCode WallpaperExtensionContext::DisconnectAbility(
-    const AAFwk::Want &want, const sptr<AbilityConnectCallback> &connectCallback) const
+ErrCode WallpaperExtensionContext::DisconnectAbility(const AAFwk::Want &want,
+    const sptr<AbilityConnectCallback> &connectCallback) const
 {
     HILOG_INFO("%{public}s begin.", __func__);
     ErrCode ret = ConnectionManager::GetInstance().DisconnectAbility(token_, want.GetElement(), connectCallback);
