@@ -26,8 +26,7 @@ class Runtime;
  * @brief Basic wallpaper components.
  */
 class WallpaperExtension
-    : public ExtensionBase<WallpaperExtensionContext>
-    , public std::enable_shared_from_this<WallpaperExtension> {
+    : public ExtensionBase<WallpaperExtensionContext>, public std::enable_shared_from_this<WallpaperExtension> {
 public:
     WallpaperExtension() = default;
     virtual ~WallpaperExtension() = default;

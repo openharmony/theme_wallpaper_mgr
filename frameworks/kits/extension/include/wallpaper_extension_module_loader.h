@@ -20,8 +20,7 @@
 
 namespace OHOS::AbilityRuntime {
 class WallpaperExtensionModuleLoader
-    : public ExtensionModuleLoader
-    , public Singleton<WallpaperExtensionModuleLoader> {
+    : public ExtensionModuleLoader, public Singleton<WallpaperExtensionModuleLoader> {
     DECLARE_SINGLETON(WallpaperExtensionModuleLoader);
 
 public:

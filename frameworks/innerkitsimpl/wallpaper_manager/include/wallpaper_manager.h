@@ -33,9 +33,7 @@ using JScallback = bool (*)(int);
 namespace OHOS {
 using namespace MiscServices;
 namespace WallpaperMgrService {
-class WallpaperManager final
-    : public WallpaperManagerkits
-    , public DelayedRefSingleton<WallpaperManager> {
+class WallpaperManager final: public WallpaperManagerkits, public DelayedRefSingleton<WallpaperManager> {
     DECLARE_DELAYED_REF_SINGLETON(WallpaperManager);
 
 public:
