@@ -427,10 +427,9 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     OHOS::Media::SourceOptions opts;
     opts.formatHint = "image/jpeg";
 
-    std::unique_ptr<OHOS::Media::ImageSource> imageSource =
-        OHOS::Media::ImageSource::CreateImageSource(
-            (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_ : wallpaperLockScreenFileFullPath_),
-            opts, errorCode);
+    std::unique_ptr<OHOS::Media::ImageSource> imageSource = OHOS::Media::ImageSource::CreateImageSource(
+        (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_ : wallpaperLockScreenFileFullPath_),
+        opts, errorCode);
     if (imageSource == nullptr || errorCode != 0) {
         return ret;
     }
@@ -458,17 +457,15 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     decodeOpts.desiredSize.width = decodeOpts.CropRect.width;
     wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     if (errorCode != 0) {
-        ret = false;
-    } else {
-        std::string tmpPath = wallpaperCropPath;
-        int64_t packedSize = WritePixelMapToFile(tmpPath, std::move(wallpaperPixelMap));
-        if (packedSize != 0) {
-            ret = FileDeal::CopyFile(tmpPath,
-                (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemCropFileFullPath_
-                                                   : wallpaperLockScreenCropFileFullPath_));
-            if (remove(tmpPath.c_str()) < 0) {
-                return false;
-            }
+        return false;
+    }
+    std::string tmpPath = wallpaperCropPath;
+    int64_t packedSize = WritePixelMapToFile(tmpPath, std::move(wallpaperPixelMap));
+    if (packedSize != 0) {
+        ret = FileDeal::CopyFile(tmpPath, (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemCropFileFullPath_
+            : wallpaperLockScreenCropFileFullPath_));
+        if (remove(tmpPath.c_str()) < 0) {
+            return false;
         }
     }
     HILOG_INFO("End Crop wallpaper: ret= %{public}d", ret);
