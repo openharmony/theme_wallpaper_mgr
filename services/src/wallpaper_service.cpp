@@ -428,9 +428,8 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     opts.formatHint = "image/jpeg";
 
     std::unique_ptr<OHOS::Media::ImageSource> imageSource =
-        OHOS::Media::ImageSource::CreateImageSource((wallpaperType == WALLPAPER_SYSTEM
-                                                            ? wallpaperSystemFileFullPath_
-                                                            : wallpaperLockScreenFileFullPath_),
+        OHOS::Media::ImageSource::CreateImageSource(
+            (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_ : wallpaperLockScreenFileFullPath_),
             opts, errorCode);
     if (imageSource == nullptr || errorCode != 0) {
         return ret;
