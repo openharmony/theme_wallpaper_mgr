@@ -14,19 +14,18 @@
  */
 #include "wallpaper_manager.h"
 
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <fcntl.h>
 #include <fstream>
 #include <iostream>
 #include <mutex>
 #include <sstream>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "dfx_types.h"
 #include "file_deal.h"
@@ -111,7 +110,8 @@ void WallpaperManager::DeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &r
     DelayedRefSingleton<WallpaperManager>::GetInstance().ResetService(remote);
 }
 
-template<typename F, typename... Args> ErrCode WallpaperManager::CallService(F func, Args &&...args)
+template<typename F, typename... Args>
+ErrCode WallpaperManager::CallService(F func, Args &&...args)
 {
     auto service = GetService();
     if (service == nullptr) {
@@ -256,8 +256,8 @@ int32_t WallpaperManager::SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &p
     return wallpaperErrorCode;
 }
 
-int64_t WallpaperManager::WritePixelMapToStream(
-    std::ostream &outputStream, std::unique_ptr<OHOS::Media::PixelMap> pixelMap)
+int64_t WallpaperManager::WritePixelMapToStream(std::ostream &outputStream,
+    std::unique_ptr<OHOS::Media::PixelMap> pixelMap)
 {
     OHOS::Media::ImagePacker imagePacker;
     OHOS::Media::PackOption option;
@@ -278,8 +278,8 @@ int64_t WallpaperManager::WritePixelMapToStream(
     return packedSize;
 }
 
-int64_t WallpaperManager::WritePixelMapToFile(
-    const std::string &filePath, std::unique_ptr<OHOS::Media::PixelMap> pixelMap)
+int64_t WallpaperManager::WritePixelMapToFile(const std::string &filePath,
+    std::unique_ptr<OHOS::Media::PixelMap> pixelMap)
 {
     OHOS::Media::ImagePacker imagePacker;
     OHOS::Media::PackOption option;

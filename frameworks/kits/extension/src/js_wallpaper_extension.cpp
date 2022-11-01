@@ -111,12 +111,10 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
     HILOG_INFO("Set wallpaper extension context pointer: %{public}p", context.get());
 
     nativeObj->SetNativePointer(
-        new std::weak_ptr<AbilityRuntime::Context>(context),
-        [](NativeEngine *, void *data, void *) {
+        new std::weak_ptr<AbilityRuntime::Context>(context), [](NativeEngine *, void *data, void *) {
             HILOG_INFO("Finalizer for weak_ptr wallpaper extension context is called");
             delete static_cast<std::weak_ptr<AbilityRuntime::Context> *>(data);
-        },
-        nullptr);
+        }, nullptr);
 
     HILOG_INFO("JsWallpaperExtension::Init end.");
 }
@@ -124,11 +122,11 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
 void JsWallpaperExtension::OnStart(const AAFwk::Want &want)
 {
     StartAsyncTrace(HITRACE_TAG_MISC, "OnStart", static_cast<int32_t>(TraceTaskId::ONSTART_EXTENSION));
-    StartAsyncTrace(
-        HITRACE_TAG_MISC, "Extension::OnStart", static_cast<int32_t>(TraceTaskId::ONSTART_MIDDLE_EXTENSION));
+    StartAsyncTrace(HITRACE_TAG_MISC, "Extension::OnStart",
+        static_cast<int32_t>(TraceTaskId::ONSTART_MIDDLE_EXTENSION));
     Extension::OnStart(want);
-    FinishAsyncTrace(
-        HITRACE_TAG_MISC, "Extension::OnStart", static_cast<int32_t>(TraceTaskId::ONSTART_MIDDLE_EXTENSION));
+    FinishAsyncTrace(HITRACE_TAG_MISC, "Extension::OnStart",
+        static_cast<int32_t>(TraceTaskId::ONSTART_MIDDLE_EXTENSION));
     HILOG_INFO("jws JsWallpaperExtension OnStart begin..");
     HandleScope handleScope(jsRuntime_);
     NativeEngine *nativeEngine = &jsRuntime_.GetNativeEngine();
@@ -146,8 +144,8 @@ void JsWallpaperExtension::OnStart(const AAFwk::Want &want)
         WorkData *workData = new WorkData(nativeEng, wallpaperType);
         uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
             WorkData *workData = reinterpret_cast<WorkData *>(work->data);
-            napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(
-                reinterpret_cast<napi_env>(workData->nativeEng_), workData->wallpaperType_);
+            napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_),
+                workData->wallpaperType_);
             NativeValue *nativeType = reinterpret_cast<NativeValue *>(type);
             NativeValue *arg[] = { nativeType };
             jsWallpaperExtension->CallObjectMethod("onWallpaperChanged", arg, ARGC_ONE);
@@ -175,11 +173,11 @@ sptr<IRemoteObject> JsWallpaperExtension::OnConnect(const AAFwk::Want &want)
 {
     HILOG_INFO("jws JsWallpaperExtension OnConnect begin.");
     StartAsyncTrace(HITRACE_TAG_MISC, "OnConnect", static_cast<int32_t>(TraceTaskId::ONCONNECT_EXTENSION));
-    StartAsyncTrace(
-        HITRACE_TAG_MISC, "Extension::OnConnect", static_cast<int32_t>(TraceTaskId::ONCONNECT_MIDDLE_EXTENSION));
+    StartAsyncTrace(HITRACE_TAG_MISC, "Extension::OnConnect",
+        static_cast<int32_t>(TraceTaskId::ONCONNECT_MIDDLE_EXTENSION));
     Extension::OnConnect(want);
-    FinishAsyncTrace(
-        HITRACE_TAG_MISC, "Extension::OnConnect", static_cast<int32_t>(TraceTaskId::ONCONNECT_MIDDLE_EXTENSION));
+    FinishAsyncTrace(HITRACE_TAG_MISC, "Extension::OnConnect",
+        static_cast<int32_t>(TraceTaskId::ONCONNECT_MIDDLE_EXTENSION));
     HILOG_INFO("%{public}s begin.", __func__);
     HandleScope handleScope(jsRuntime_);
     NativeEngine *nativeEngine = &jsRuntime_.GetNativeEngine();
@@ -208,8 +206,8 @@ sptr<IRemoteObject> JsWallpaperExtension::OnConnect(const AAFwk::Want &want)
     if (remoteNative == nullptr) {
         HILOG_ERROR("remoteNative nullptr.");
     }
-    auto remoteObj = NAPI_ohos_rpc_getNativeRemoteObject(
-        reinterpret_cast<napi_env>(nativeEngine), reinterpret_cast<napi_value>(remoteNative));
+    auto remoteObj = NAPI_ohos_rpc_getNativeRemoteObject(reinterpret_cast<napi_env>(nativeEngine),
+        reinterpret_cast<napi_value>(remoteNative));
     if (remoteObj == nullptr) {
         HILOG_ERROR("remoteObj nullptr.");
     }
@@ -252,8 +250,8 @@ void JsWallpaperExtension::OnCommand(const AAFwk::Want &want, bool restart, int 
 {
     HILOG_INFO("jws JsWallpaperExtension OnCommand begin.");
     Extension::OnCommand(want, restart, startId);
-    HILOG_INFO(
-        "%{public}s begin restart=%{public}s,startId=%{public}d.", __func__, restart ? "true" : "false", startId);
+    HILOG_INFO("%{public}s begin restart=%{public}s,startId=%{public}d.", __func__, restart ? "true" : "false",
+        startId);
     HILOG_INFO("%{public}s end.", __func__);
 }
 

@@ -24,8 +24,8 @@ WallpaperServiceCbStub::WallpaperServiceCbStub()
     memberFuncMap_[ONCALL] = &WallpaperServiceCbStub::HandleOnCall;
 }
 
-int32_t WallpaperServiceCbStub::OnRemoteRequest(
-    uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+int32_t WallpaperServiceCbStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
+    MessageOption &option)
 {
     HILOG_INFO("  WallpaperServiceCbStub::OnRemoteRequest");
     HILOG_INFO(" start##ret = %{public}u", code);

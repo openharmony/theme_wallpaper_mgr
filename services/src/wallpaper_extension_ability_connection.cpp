@@ -20,14 +20,14 @@ namespace OHOS {
 namespace WallpaperMgrService {
 using namespace AAFwk;
 
-void WallpaperExtensionAbilityConnection::OnAbilityConnectDone(
-    const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int32_t resultCode)
+void WallpaperExtensionAbilityConnection::OnAbilityConnectDone(const AppExecFwk::ElementName &element,
+    const sptr<IRemoteObject> &remoteObject, int32_t resultCode)
 {
     HILOG_INFO("on ability connected");
 }
 
-void WallpaperExtensionAbilityConnection::OnAbilityDisconnectDone(
-    const AppExecFwk::ElementName &element, int32_t resultCode)
+void WallpaperExtensionAbilityConnection::OnAbilityDisconnectDone(const AppExecFwk::ElementName &element,
+    int32_t resultCode)
 {
     HILOG_INFO("on ability disconnected");
     WallpaperService::GetInstance()->StartWallpaperExtension();

@@ -14,10 +14,9 @@
  */
 #include "statistic_reporter.h"
 
-#include <unistd.h>
-
 #include <ctime>
 #include <thread>
+#include <unistd.h>
 #include <vector>
 
 #include "hilog_wrapper.h"
@@ -83,8 +82,8 @@ void StatisticReporter::StartTimerThread()
                 int nHours = EXEC_HOUR_TIME - currentHour;
                 int nMin = EXEC_MIN_TIME - currentMin;
                 int nTime = (nMin)*ONE_MINUTE_IN_SECONDS + (nHours)*ONE_HOUR_IN_SECONDS;
-                HILOG_INFO(
-                    " StartTimerThread if nHours=%{public}d,nMin=%{public}d,nTime=%{public}d", nHours, nMin, nTime);
+                HILOG_INFO(" StartTimerThread if nHours=%{public}d,nMin=%{public}d,nTime=%{public}d", nHours, nMin,
+                    nTime);
                 sleep(nTime);
                 current = time(nullptr);
                 if (current == -1) {
@@ -132,8 +131,8 @@ ReportStatus StatisticReporter::InvokeUsageTime(time_t curTime)
         return ReportStatus::ERROR;
     }
 
-    int nRet = HiSysEvent::Write(
-        HiSysEvent::Domain::THEME, USAGETIME_STATISTIC, HiSysEvent::EventType::STATISTIC, WALLPAPER_INFO, statisicMsg);
+    int nRet = HiSysEvent::Write(HiSysEvent::Domain::THEME, USAGETIME_STATISTIC, HiSysEvent::EventType::STATISTIC,
+        WALLPAPER_INFO, statisicMsg);
     HILOG_INFO(" InvokeUsageTime nRet = %{public}d.", nRet);
     return nRet == 0 ? ReportStatus::SUCCESS : ReportStatus::ERROR;
 }

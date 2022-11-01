@@ -160,8 +160,8 @@ public:
     static bool IsValidArgCount(size_t argc, size_t expectationSize);
     static bool IsValidArgType(napi_env env, napi_value argValue, napi_valuetype expectationType);
     static bool IsValidArgRange(napi_env env, napi_value argValue);
-    static bool CheckValidArgWallpaperType(
-        napi_env env, size_t argc, napi_value argValue, std::shared_ptr<AsyncCall::Context> ctx);
+    static bool CheckValidArgWallpaperType(napi_env env, size_t argc, napi_value argValue,
+        std::shared_ptr<AsyncCall::Context> ctx);
     static void GetColorsInner(std::shared_ptr<GetContextInfo> context);
     static void GetIdInner(std::shared_ptr<GetContextInfo> context);
     static void GetFileInner(std::shared_ptr<GetFileContextInfo> context);

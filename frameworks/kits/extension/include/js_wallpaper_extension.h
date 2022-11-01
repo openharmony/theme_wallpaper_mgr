@@ -29,9 +29,7 @@ class JsRuntime;
 /**
  * @brief Basic wallpaper components.
  */
-class JsWallpaperExtension
-    : public WallpaperExtension
-    , public std::enable_shared_from_this<JsWallpaperExtension> {
+class JsWallpaperExtension : public WallpaperExtension, public std::enable_shared_from_this<JsWallpaperExtension> {
 public:
     JsWallpaperExtension(JsRuntime &jsRuntime);
     virtual ~JsWallpaperExtension() override;

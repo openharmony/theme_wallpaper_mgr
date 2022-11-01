@@ -20,8 +20,8 @@
 #include "wallpaper_js_util.h"
 
 namespace OHOS::WallpaperNAPI {
-AsyncCall::AsyncCall(
-    napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos, bool isNewInterfaces)
+AsyncCall::AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos,
+    bool isNewInterfaces)
     : env_(env)
 {
     context_ = new AsyncContext();

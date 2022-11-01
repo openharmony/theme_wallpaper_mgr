@@ -106,8 +106,8 @@ private:
 
         decltype(info.argc) unwrapArgc = 0;
         AAFwk::Want want;
-        OHOS::AppExecFwk::UnwrapWant(
-            reinterpret_cast<napi_env>(&engine), reinterpret_cast<napi_value>(info.argv[INDEX_ZERO]), want);
+        OHOS::AppExecFwk::UnwrapWant(reinterpret_cast<napi_env>(&engine),
+            reinterpret_cast<napi_value>(info.argv[INDEX_ZERO]), want);
         HILOG_INFO("%{public}s bundlename:%{public}s abilityname:%{public}s", __func__, want.GetBundle().c_str(),
             want.GetElement().GetAbilityName().c_str());
         unwrapArgc++;
@@ -115,13 +115,13 @@ private:
         AAFwk::StartOptions startOptions;
         if (info.argc > ARGC_ONE && info.argv[INDEX_ONE]->TypeOf() == NATIVE_OBJECT) {
             HILOG_INFO("OnStartAbility start options is used.");
-            AppExecFwk::UnwrapStartOptions(
-                reinterpret_cast<napi_env>(&engine), reinterpret_cast<napi_value>(info.argv[INDEX_ONE]), startOptions);
+            AppExecFwk::UnwrapStartOptions(reinterpret_cast<napi_env>(&engine),
+                reinterpret_cast<napi_value>(info.argv[INDEX_ONE]), startOptions);
             unwrapArgc++;
         }
 
-        AsyncTask::CompleteCallback complete = [weak = context_, want, startOptions, unwrapArgc](
-                                                   NativeEngine &engine, AsyncTask &task, int32_t status) {
+        AsyncTask::CompleteCallback complete = [weak = context_, want, startOptions, unwrapArgc](NativeEngine &engine,
+                                                   AsyncTask &task, int32_t status) {
             HILOG_INFO("startAbility begin");
             auto context = weak.lock();
             if (!context) {
@@ -158,15 +158,15 @@ private:
 
         decltype(info.argc) unwrapArgc = 0;
         AAFwk::Want want;
-        OHOS::AppExecFwk::UnwrapWant(
-            reinterpret_cast<napi_env>(&engine), reinterpret_cast<napi_value>(info.argv[INDEX_ZERO]), want);
+        OHOS::AppExecFwk::UnwrapWant(reinterpret_cast<napi_env>(&engine),
+            reinterpret_cast<napi_value>(info.argv[INDEX_ZERO]), want);
         HILOG_INFO("%{public}s bundlename:%{public}s abilityname:%{public}s", __func__, want.GetBundle().c_str(),
             want.GetElement().GetAbilityName().c_str());
         unwrapArgc++;
 
         int32_t accountId = 0;
-        if (!OHOS::AppExecFwk::UnwrapInt32FromJS2(
-                reinterpret_cast<napi_env>(&engine), reinterpret_cast<napi_value>(info.argv[INDEX_ONE]), accountId)) {
+        if (!OHOS::AppExecFwk::UnwrapInt32FromJS2(reinterpret_cast<napi_env>(&engine),
+            reinterpret_cast<napi_value>(info.argv[INDEX_ONE]), accountId)) {
             HILOG_INFO("%{public}s called, the second parameter is invalid.", __func__);
             return engine.CreateUndefined();
         }
@@ -176,13 +176,13 @@ private:
         AAFwk::StartOptions startOptions;
         if (info.argc > ARGC_TWO && info.argv[INDEX_TWO]->TypeOf() == NATIVE_OBJECT) {
             HILOG_INFO("OnStartAbilityWithAccount start options is used.");
-            AppExecFwk::UnwrapStartOptions(
-                reinterpret_cast<napi_env>(&engine), reinterpret_cast<napi_value>(info.argv[INDEX_TWO]), startOptions);
+            AppExecFwk::UnwrapStartOptions(reinterpret_cast<napi_env>(&engine),
+                reinterpret_cast<napi_value>(info.argv[INDEX_TWO]), startOptions);
             unwrapArgc++;
         }
 
-        AsyncTask::CompleteCallback complete = [weak = context_, want, accountId, startOptions, unwrapArgc](
-                                                   NativeEngine &engine, AsyncTask &task, int32_t status) {
+        AsyncTask::CompleteCallback complete = [weak = context_, want, accountId, startOptions,
+                                                   unwrapArgc](NativeEngine &engine, AsyncTask &task, int32_t status) {
             HILOG_INFO("startAbility begin");
             auto context = weak.lock();
             if (!context) {
@@ -217,7 +217,8 @@ private:
             return engine.CreateUndefined();
         }
 
-        AsyncTask::CompleteCallback complete = [weak = context_](NativeEngine &engine, AsyncTask &task, int32_t status) {
+        AsyncTask::CompleteCallback complete = [weak = context_](
+            NativeEngine &engine, AsyncTask &task, int32_t status) {
             HILOG_INFO("TerminateAbility begin");
             auto context = weak.lock();
             if (!context) {
@@ -252,8 +253,8 @@ private:
 
         // unwrap want
         AAFwk::Want want;
-        OHOS::AppExecFwk::UnwrapWant(
-            reinterpret_cast<napi_env>(&engine), reinterpret_cast<napi_value>(info.argv[INDEX_ZERO]), want);
+        OHOS::AppExecFwk::UnwrapWant(reinterpret_cast<napi_env>(&engine),
+            reinterpret_cast<napi_value>(info.argv[INDEX_ZERO]), want);
         HILOG_INFO("%{public}s bundlename:%{public}s abilityname:%{public}s", __func__, want.GetBundle().c_str(),
             want.GetElement().GetAbilityName().c_str());
         // unwarp connection
@@ -270,8 +271,8 @@ private:
             serialNumber_ = 0;
         }
         HILOG_INFO("%{public}s not find connection, make new one:%{public}p.", __func__, connection.GetRefPtr());
-        AsyncTask::CompleteCallback complete = [weak = context_, want, connection, connectId](
-                                                   NativeEngine &engine, AsyncTask &task, int32_t status) {
+        AsyncTask::CompleteCallback complete = [weak = context_, want, connection, connectId](NativeEngine &engine,
+                                                   AsyncTask &task, int32_t status) {
             HILOG_INFO("OnConnectAbility begin");
             auto context = weak.lock();
             if (!context) {
@@ -302,14 +303,14 @@ private:
 
         // unwrap want
         AAFwk::Want want;
-        OHOS::AppExecFwk::UnwrapWant(
-            reinterpret_cast<napi_env>(&engine), reinterpret_cast<napi_value>(info.argv[INDEX_ZERO]), want);
+        OHOS::AppExecFwk::UnwrapWant(reinterpret_cast<napi_env>(&engine),
+            reinterpret_cast<napi_value>(info.argv[INDEX_ZERO]), want);
         HILOG_INFO("%{public}s bundlename:%{public}s abilityname:%{public}s", __func__, want.GetBundle().c_str(),
             want.GetElement().GetAbilityName().c_str());
 
         int32_t accountId = 0;
-        if (!OHOS::AppExecFwk::UnwrapInt32FromJS2(
-                reinterpret_cast<napi_env>(&engine), reinterpret_cast<napi_value>(info.argv[INDEX_ONE]), accountId)) {
+        if (!OHOS::AppExecFwk::UnwrapInt32FromJS2(reinterpret_cast<napi_env>(&engine),
+            reinterpret_cast<napi_value>(info.argv[INDEX_ONE]), accountId)) {
             HILOG_INFO("%{public}s called, the second parameter is invalid.", __func__);
             return engine.CreateUndefined();
         }
@@ -329,7 +330,7 @@ private:
         }
         HILOG_INFO("%{public}s not find connection, make new one:%{public}p.", __func__, connection.GetRefPtr());
         AsyncTask::CompleteCallback complete = [weak = context_, want, accountId, connection, connectId](
-                                                   NativeEngine &engine, AsyncTask &task, int32_t status) {
+            NativeEngine &engine, AsyncTask &task, int32_t status) {
             HILOG_INFO("OnConnectAbilityWithAccount begin");
             auto context = weak.lock();
             if (!context) {
@@ -363,8 +364,8 @@ private:
         // unwrap connectId
         int64_t connectId = -1;
         sptr<JSWallpaperExtensionConnection> connection = nullptr;
-        napi_get_value_int64(
-            reinterpret_cast<napi_env>(&engine), reinterpret_cast<napi_value>(info.argv[INDEX_ZERO]), &connectId);
+        napi_get_value_int64(reinterpret_cast<napi_env>(&engine), reinterpret_cast<napi_value>(info.argv[INDEX_ZERO]),
+            &connectId);
         HILOG_INFO("OnDisconnectAbility connection:%{public}d", static_cast<int32_t>(connectId));
         auto item = std::find_if(connects_.begin(), connects_.end(),
             [&connectId](const std::map<ConnecttionKey, sptr<JSWallpaperExtensionConnection>>::value_type &obj) {
@@ -379,8 +380,8 @@ private:
             HILOG_INFO("%{public}s not find conn exist.", __func__);
         }
         // begin disconnect
-        AsyncTask::CompleteCallback complete = [weak = context_, want, connection](
-                                                   NativeEngine &engine, AsyncTask &task, int32_t status) {
+        AsyncTask::CompleteCallback complete = [weak = context_, want, connection](NativeEngine &engine,
+                                                   AsyncTask &task, int32_t status) {
             HILOG_INFO("OnDisconnectAbility begin");
             auto context = weak.lock();
             if (!context) {
@@ -478,10 +479,10 @@ NativeValue *CreateJsWallpaperExtensionContext(NativeEngine &engine, std::shared
     BindNativeFunction(engine, *object, "startAbility", moduleName, JsWallpaperExtensionContext::StartAbility);
     BindNativeFunction(engine, *object, "terminateSelf", moduleName, JsWallpaperExtensionContext::TerminateAbility);
     BindNativeFunction(engine, *object, "connectAbility", moduleName, JsWallpaperExtensionContext::ConnectAbility);
-    BindNativeFunction(
-        engine, *object, "disconnectAbility", moduleName, JsWallpaperExtensionContext::DisconnectAbility);
-    BindNativeFunction(
-        engine, *object, "startAbilityWithAccount", moduleName, JsWallpaperExtensionContext::StartAbilityWithAccount);
+    BindNativeFunction(engine, *object, "disconnectAbility", moduleName,
+        JsWallpaperExtensionContext::DisconnectAbility);
+    BindNativeFunction(engine, *object, "startAbilityWithAccount", moduleName,
+        JsWallpaperExtensionContext::StartAbilityWithAccount);
     BindNativeFunction(engine, *object, "connectAbilityWithAccount", moduleName,
         JsWallpaperExtensionContext::ConnectAbilityWithAccount);
 
@@ -513,8 +514,8 @@ JSWallpaperExtensionConnection::JSWallpaperExtensionConnection(NativeEngine &eng
 
 JSWallpaperExtensionConnection::~JSWallpaperExtensionConnection() = default;
 
-void JSWallpaperExtensionConnection::OnAbilityConnectDone(
-    const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int resultCode)
+void JSWallpaperExtensionConnection::OnAbilityConnectDone(const AppExecFwk::ElementName &element,
+    const sptr<IRemoteObject> &remoteObject, int resultCode)
 {
     HILOG_INFO("OnAbilityConnectDone begin, resultCode:%{public}d", resultCode);
     if (handler_ == nullptr) {
@@ -533,8 +534,8 @@ void JSWallpaperExtensionConnection::OnAbilityConnectDone(
     handler_->PostTask(task, "OnAbilityConnectDone");
 }
 
-void JSWallpaperExtensionConnection::HandleOnAbilityConnectDone(
-    const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int resultCode)
+void JSWallpaperExtensionConnection::HandleOnAbilityConnectDone(const AppExecFwk::ElementName &element,
+    const sptr<IRemoteObject> &remoteObject, int resultCode)
 {
     HILOG_INFO("HandleOnAbilityConnectDone begin, resultCode:%{public}d", resultCode);
     // wrap ElementName
@@ -586,8 +587,8 @@ void JSWallpaperExtensionConnection::OnAbilityDisconnectDone(const AppExecFwk::E
     handler_->PostTask(task, "OnAbilityDisconnectDone");
 }
 
-void JSWallpaperExtensionConnection::HandleOnAbilityDisconnectDone(
-    const AppExecFwk::ElementName &element, int resultCode)
+void JSWallpaperExtensionConnection::HandleOnAbilityDisconnectDone(const AppExecFwk::ElementName &element,
+    int resultCode)
 {
     HILOG_INFO("HandleOnAbilityDisconnectDone begin, resultCode:%{public}d", resultCode);
     napi_value napiElementName = OHOS::AppExecFwk::WrapElementName(reinterpret_cast<napi_env>(&engine_), element);
@@ -617,8 +618,8 @@ void JSWallpaperExtensionConnection::HandleOnAbilityDisconnectDone(
     auto item = std::find_if(connects_.begin(), connects_.end(),
         [bundleName, abilityName](
             const std::map<ConnecttionKey, sptr<JSWallpaperExtensionConnection>>::value_type &obj) {
-            return (bundleName == obj.first.want.GetBundle())
-                   && (abilityName == obj.first.want.GetElement().GetAbilityName());
+            return (bundleName == obj.first.want.GetBundle()) &&
+                   (abilityName == obj.first.want.GetElement().GetAbilityName());
         });
     if (item != connects_.end()) {
         // match bundlename && abilityname

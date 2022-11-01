@@ -25,9 +25,8 @@ class Runtime;
 /**
  * @brief Basic wallpaper components.
  */
-class WallpaperExtension
-    : public ExtensionBase<WallpaperExtensionContext>
-    , public std::enable_shared_from_this<WallpaperExtension> {
+class WallpaperExtension : public ExtensionBase<WallpaperExtensionContext>,
+                           public std::enable_shared_from_this<WallpaperExtension> {
 public:
     WallpaperExtension() = default;
     virtual ~WallpaperExtension() = default;
@@ -41,9 +40,10 @@ public:
      * @param token the remote token.
      * @return The created context.
      */
-    virtual std::shared_ptr<WallpaperExtensionContext> CreateAndInitContext(
-        const std::shared_ptr<AbilityLocalRecord> &record, const std::shared_ptr<OHOSApplication> &application,
-        std::shared_ptr<AbilityHandler> &handler, const sptr<IRemoteObject> &token) override;
+    virtual std::shared_ptr<WallpaperExtensionContext>
+    CreateAndInitContext(const std::shared_ptr<AbilityLocalRecord> &record,
+        const std::shared_ptr<OHOSApplication> &application, std::shared_ptr<AbilityHandler> &handler,
+        const sptr<IRemoteObject> &token) override;
 
     /**
      * @brief Init the extension.

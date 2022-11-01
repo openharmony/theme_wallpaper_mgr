@@ -35,8 +35,8 @@ public:
 
 class WallpaperColorChangeListenerStub : public IRemoteStub<IWallpaperColorChangeListener> {
 public:
-    virtual int OnRemoteRequest(
-        uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
+    virtual int OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
+        MessageOption &option) override;
 };
 
 class WallpaperColorChangeListenerProxy : public IRemoteProxy<IWallpaperColorChangeListener> {

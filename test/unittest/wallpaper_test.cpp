@@ -13,9 +13,8 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest.h>
-
 #include <ctime>
+#include <gtest/gtest.h>
 
 #include "accesstoken_kit.h"
 #include "directory_ex.h"

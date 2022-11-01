@@ -28,18 +28,18 @@ class NativeReference;
 
 namespace OHOS {
 namespace AbilityRuntime {
-NativeValue *CreateJsWallpaperExtensionContext(
-    NativeEngine &engine, std::shared_ptr<WallpaperExtensionContext> context);
+NativeValue *CreateJsWallpaperExtensionContext(NativeEngine &engine,
+    std::shared_ptr<WallpaperExtensionContext> context);
 
 class JSWallpaperExtensionConnection : public AbilityConnectCallback {
 public:
     explicit JSWallpaperExtensionConnection(NativeEngine &engine);
     ~JSWallpaperExtensionConnection();
-    void OnAbilityConnectDone(
-        const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int resultCode) override;
+    void OnAbilityConnectDone(const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject,
+        int resultCode) override;
     void OnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int resultCode) override;
-    void HandleOnAbilityConnectDone(
-        const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int resultCode);
+    void HandleOnAbilityConnectDone(const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject,
+        int resultCode);
     void HandleOnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int resultCode);
     void SetJsConnectionObject(NativeValue *jsConnectionObject);
     void CallJsFailed(int32_t errorCode);
