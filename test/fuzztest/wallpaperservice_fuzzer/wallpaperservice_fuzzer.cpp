@@ -92,12 +92,12 @@ bool FuzzWallpaperServiceCb(const uint8_t *rawData, size_t size)
 
     MessageParcel data;
     data.WriteInterfaceToken(WALLPAPERCALLBACK_INTERFACE_TOKEN);
-    data.WriteBuffer(rawData, size);
+    uint32_t wallpaperType = ConvertToUint32(rawData);
+    data.WriteInt32(wallpaperType);
     data.RewindRead(0);
     MessageParcel reply;
     MessageOption option;
 
-    GrantNativePermission();
     sptr<WallpaperServiceCbStub> wallpaperCb = new WallpaperServiceCbStub();
     wallpaperCb->OnRemoteRequest(code, data, reply, option);
     return true;
