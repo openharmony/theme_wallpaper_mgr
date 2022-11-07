@@ -21,8 +21,10 @@
 #include "token_setproc.h"
 #include "wallpaper_manager_common_info.h"
 #include "wallpaper_manager_kits.h"
+#include "pixel_map.h"
 
 using namespace OHOS::Security::AccessToken;
+using namespace OHOS::Media;
 
 namespace OHOS {
 constexpr size_t THRESHOLD = 10;
@@ -79,7 +81,7 @@ void ResetWallpaperFuzzTest(const uint8_t *data, size_t size)
     WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType);
 }
 
-void SetWallpaperFuzzTest(const uint8_t *data, size_t size)
+void SetWallpaperByUrlFuzzTest(const uint8_t *data, size_t size)
 {
     uint32_t wallpaperType = ConvertToUint32(data);
     data = data + OFFSET;
@@ -87,6 +89,16 @@ void SetWallpaperFuzzTest(const uint8_t *data, size_t size)
     GrantNativePermission();
     std::string url(reinterpret_cast<const char *>(data), size);
     WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(url, wallpaperType);
+}
+
+void SetWallpaperByMapFuzzTest(const uint8_t *data, size_t size)
+{
+    uint32_t wallpaperType = ConvertToUint32(data);
+    GrantNativePermission();
+    uint32_t color[100] = { 3, 7, 9, 9, 7, 6 };
+    InitializationOptions opts = { { 5, 7 }, OHOS::Media::PixelFormat::ARGB_8888 };
+    std::unique_ptr<PixelMap> pixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, wallpaperType);
 }
 
 void GetFileFuzzTest(const uint8_t *data, size_t size)
@@ -116,7 +128,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::GetColorsFuzzTest(data, size);
     OHOS::GetWallpaperIdFuzzTest(data, size);
     OHOS::ResetWallpaperFuzzTest(data, size);
-    OHOS::SetWallpaperFuzzTest(data, size);
+    OHOS::SetWallpaperByUrlFuzzTest(data, size);
+    OHOS::SetWallpaperByMapFuzzTest(data, size);
     OHOS::GetFileFuzzTest(data, size);
     OHOS::GetPixelMapFuzzTest(data, size);
     return 0;
