@@ -780,19 +780,24 @@ bool WallpaperService::CopySystemWallpaper()
         }
     }
     if (OHOS::FileExists(WALLPAPER_DEFAULT_FILEFULLPATH)) {
-        if (FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemCropFileFullPath_)) {
-            return true;
+        if (!FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemCropFileFullPath_)) {
+            HILOG_ERROR("CopyScreenLockWallpaper copy Crop file error");
+            return false;
         }
-        if (FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemFileFullPath_)) {
-            return true;
+        if (!FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemFileFullPath_)) {
+            HILOG_ERROR("CopyScreenLockWallpaper copy Original file error");
+            return false;
         }
         WallpaperCommonEvent::SendWallpaperSystemSettingMessage();
         if (callbackProxy != nullptr) {
             HILOG_INFO("CopySystemWallpaper callbackProxy OnCall start");
             callbackProxy->OnCall(WALLPAPER_SYSTEM);
         }
+    } else {
+        HILOG_ERROR("FileExists error");
+        return false;
     }
-    return false;
+    return true;
 }
 bool WallpaperService::CopyScreenLockWallpaper()
 {
@@ -803,19 +808,24 @@ bool WallpaperService::CopyScreenLockWallpaper()
         }
     }
     if (OHOS::FileExists(WALLPAPER_DEFAULT_FILEFULLPATH)) {
-        if (FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperLockScreenCropFileFullPath_)) {
-            return true;
+        if (!FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperLockScreenCropFileFullPath_)) {
+            HILOG_ERROR("CopyScreenLockWallpaper copy Crop file error");
+            return false;
         }
-        if (FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperLockScreenFileFullPath_)) {
-            return true;
+        if (!FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperLockScreenFileFullPath_)) {
+            HILOG_ERROR("CopyScreenLockWallpaper copy Original file error");
+            return false;
         }
         WallpaperCommonEvent::SendWallpaperLockSettingMessage();
         if (callbackProxy != nullptr) {
             HILOG_INFO("CopyScreenLockWallpaper callbackProxy OnCall start");
             callbackProxy->OnCall(WALLPAPER_LOCKSCREEN);
         }
+    } else {
+        HILOG_ERROR("FileExists error");
+        return false;
     }
-    return false;
+    return true;
 }
 
 int32_t WallpaperService::SetDefaultDateForWallpaper(int userId, int wpType)
