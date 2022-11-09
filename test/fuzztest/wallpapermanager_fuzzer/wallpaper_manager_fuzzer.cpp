@@ -51,6 +51,43 @@ void GrantNativePermission()
     delete[] perms;
 }
 
+class WallpaperColorChangeListenerFuzzTestImpl : public OHOS::WallpaperMgrService::WallpaperColorChangeListener {
+public:
+    std::vector<RgbaColor> color_;
+    int wallpaperType_;
+    WallpaperColorChangeListenerFuzzTestImpl();
+    ~WallpaperColorChangeListenerFuzzTestImpl()
+    {
+    }
+
+    WallpaperColorChangeListenerFuzzTestImpl(const WallpaperColorChangeListenerFuzzTestImpl &) = delete;
+    WallpaperColorChangeListenerFuzzTestImpl &operator=(const WallpaperColorChangeListenerFuzzTestImpl &) = delete;
+    WallpaperColorChangeListenerFuzzTestImpl(WallpaperColorChangeListenerFuzzTestImpl &&) = delete;
+    WallpaperColorChangeListenerFuzzTestImpl &operator=(WallpaperColorChangeListenerFuzzTestImpl &&) = delete;
+
+    // callback function will be called when the db data is changed.
+    void onColorsChange(std::vector<RgbaColor> color, int wallpaperType);
+
+private:
+    unsigned long callCount_;
+};
+
+void WallpaperColorChangeListenerFuzzTestImpl::onColorsChange(std::vector<RgbaColor> color, int wallpaperType)
+{
+    callCount_++;
+    for (auto const &each : color) {
+        color_.push_back(each);
+    }
+    wallpaperType_ = wallpaperType;
+}
+
+WallpaperColorChangeListenerFuzzTestImpl::WallpaperColorChangeListenerFuzzTestImpl()
+{
+    callCount_ = 0;
+    color_ = {};
+    wallpaperType_ = -1;
+}
+
 uint32_t ConvertToUint32(const uint8_t *ptr)
 {
     if (ptr == nullptr) {
@@ -88,7 +125,10 @@ void SetWallpaperByUrlFuzzTest(const uint8_t *data, size_t size)
     size = size - OFFSET;
     GrantNativePermission();
     std::string url(reinterpret_cast<const char *>(data), size);
+    auto listener = std::make_shared<WallpaperColorChangeListenerFuzzTestImpl>();
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().On(listener);
     WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(url, wallpaperType);
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().Off(listener);
 }
 
 void SetWallpaperByMapFuzzTest(const uint8_t *data, size_t size)
@@ -98,7 +138,10 @@ void SetWallpaperByMapFuzzTest(const uint8_t *data, size_t size)
     uint32_t color[100] = { 3, 7, 9, 9, 7, 6 };
     InitializationOptions opts = { { 5, 7 }, OHOS::Media::PixelFormat::ARGB_8888 };
     std::unique_ptr<PixelMap> pixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    auto listener = std::make_shared<WallpaperColorChangeListenerFuzzTestImpl>();
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().On(listener);
     WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, wallpaperType);
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().Off(listener);
 }
 
 void GetFileFuzzTest(const uint8_t *data, size_t size)

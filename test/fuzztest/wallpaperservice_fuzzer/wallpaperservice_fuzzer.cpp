@@ -23,7 +23,6 @@
 #include "nativetoken_kit.h"
 #include "token_setproc.h"
 #include "wallpaper_service.h"
-#include "wallpaper_service_cb_stub.h"
 
 using namespace OHOS::WallpaperMgrService;
 
@@ -31,7 +30,6 @@ namespace OHOS {
 constexpr size_t THRESHOLD = 10;
 constexpr int32_t OFFSET = 4;
 const std::u16string WALLPAPERSERVICES_INTERFACE_TOKEN = u"ohos.Wallpaper.IWallpaperService";
-const std::u16string WALLPAPERCALLBACK_INTERFACE_TOKEN = u"ohos.Wallpaper.IWallpaperCallback";
 
 using namespace OHOS::Security::AccessToken;
 
@@ -81,25 +79,7 @@ bool FuzzWallpaperService(const uint8_t *rawData, size_t size)
     GrantNativePermission();
     sptr<WallpaperService> mWallpp = new WallpaperService();
     mWallpp->OnRemoteRequest(code, data, reply, option);
-    return true;
-}
 
-bool FuzzWallpaperServiceCb(const uint8_t *rawData, size_t size)
-{
-    uint32_t code = ConvertToUint32(rawData);
-    rawData = rawData + OFFSET;
-    size = size - OFFSET;
-
-    MessageParcel data;
-    data.WriteInterfaceToken(WALLPAPERCALLBACK_INTERFACE_TOKEN);
-    uint32_t wallpaperType = ConvertToUint32(rawData);
-    data.WriteInt32(wallpaperType);
-    data.RewindRead(0);
-    MessageParcel reply;
-    MessageOption option;
-
-    sptr<WallpaperServiceCbStub> wallpaperCb = new WallpaperServiceCbStub();
-    wallpaperCb->OnRemoteRequest(code, data, reply, option);
     return true;
 }
 } // namespace OHOS
@@ -113,6 +93,5 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 
     /* Run your code on data */
     OHOS::FuzzWallpaperService(data, size);
-    OHOS::FuzzWallpaperServiceCb(data, size);
     return 0;
 }
