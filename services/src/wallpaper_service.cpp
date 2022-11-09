@@ -807,12 +807,12 @@ bool WallpaperService::CopyScreenLockWallpaper()
             return false;
         }
     }
-    if (OHOS::FileExists(WALLPAPER_DEFAULT_FILEFULLPATH)) {
-        if (!FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperLockScreenCropFileFullPath_)) {
+    if (OHOS::FileExists(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH)) {
+        if (!FileDeal::CopyFile(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH, wallpaperLockScreenCropFileFullPath_)) {
             HILOG_ERROR("CopyScreenLockWallpaper copy Crop file error");
             return false;
         }
-        if (!FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperLockScreenFileFullPath_)) {
+        if (!FileDeal::CopyFile(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH, wallpaperLockScreenFileFullPath_)) {
             HILOG_ERROR("CopyScreenLockWallpaper copy Original file error");
             return false;
         }
