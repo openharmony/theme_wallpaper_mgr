@@ -25,9 +25,6 @@ ohos_unittest("wallpaper_test") {
     "//third_party/googletest/googlemock/include",
     "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/theme/wallpaper_mgr/utils/include",
-    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
-    "//base/theme/wallpaper_mgr/services/dfx/hidumper_adapter",
-    "//base/theme/wallpaper_mgr/services/dfx/hisysevent_adapter",
     "//base/theme/wallpaper_mgr/services/src/adapter",
     "//foundation/graphic/graphic_2d/interfaces/innerkits/wm",
   ]
@@ -62,10 +59,55 @@ ohos_unittest("wallpaper_test") {
   ]
 }
 
+ohos_unittest("wallpaper_permission_test") {
+  resource_config_file =
+  "//base/theme/wallpaper_mgr/test/unittest/resource/ohos_test.xml"
+  module_out_path = "wallpaper_mgr/wallpaper_permission_test"
+  sources = [ "unittest/wallpaper_permission_test.cpp" ]
+
+  include_dirs = [
+    "//third_party/json/include",
+    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
+    "//base/theme/wallpaper_mgr/utils/include",
+    "//foundation/graphic/graphic_2d/interfaces/innerkits/wm",
+  ]
+  deps = [
+    "${ability_runtime_path}/frameworks/native/ability/native:abilitykit_native",
+    "//base/security/access_token/interfaces/innerkits/token_setproc:libtoken_setproc",
+    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
+    "//base/theme/wallpaper_mgr/services:wallpaper_service",
+    "//foundation/multimedia/image_framework:image_framework",
+    "//foundation/multimedia/image_framework/interfaces/innerkits:image",
+    "//foundation/multimedia/image_framework/interfaces/innerkits:image_native",
+    "//foundation/multimedia/image_framework/interfaces/innerkits:image_native",
+    "//foundation/window/window_manager/utils:libwmutil",
+    "//foundation/window/window_manager/wm:libwm",
+  ]
+  external_deps = [
+    "ability_base:want",
+    "ability_runtime:ability_manager",
+    "access_token:libaccesstoken_sdk",
+    "access_token:libnativetoken",
+    "c_utils:utils",
+    "common_event_service:cesfwk_innerkits",
+    "graphic_standard:surface",
+    "hisysevent_native:libhisysevent",
+    "hitrace_native:hitrace_meter",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+    "os_account:os_account_innerkits",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
+  ]
+}
+
 group("unittest") {
   testonly = true
 
   deps = []
 
-  deps += [ ":wallpaper_test" ]
+  deps += [
+    ":wallpaper_test",
+    ":wallpaper_permission_test"
+  ]
 }
