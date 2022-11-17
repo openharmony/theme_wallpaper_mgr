@@ -54,8 +54,6 @@ ohos_fuzztest("WallpaperServiceFuzzTest") {
   ]
 
   external_deps = [
-    "access_token:libaccesstoken_sdk",
-    "access_token:libnativetoken",
     "graphic_standard:surface",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
