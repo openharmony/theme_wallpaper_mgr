@@ -19,8 +19,6 @@
 #include <cstdint>
 
 #include "message_parcel.h"
-#include "nativetoken_kit.h"
-#include "token_setproc.h"
 #include "wallpaper_service.h"
 
 using namespace OHOS::WallpaperMgrService;
