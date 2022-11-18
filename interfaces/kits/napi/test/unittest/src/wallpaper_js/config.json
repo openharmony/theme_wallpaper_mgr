@@ -16,7 +16,8 @@
     "package": "ohos.acts.theme.wallpaper",
     "name": ".MyApplication",
     "deviceType": [
-      "phone"
+      "default",
+      "tablet"
     ],
     "distro": {
       "deliveryWithInstall": true,
