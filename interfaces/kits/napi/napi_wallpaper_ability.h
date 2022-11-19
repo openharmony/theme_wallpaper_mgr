@@ -150,8 +150,6 @@ struct GetFileContextInfo : public AsyncCall::Context {
     }
 };
 
-extern thread_local std::shared_ptr<WallpaperMgrService::WallpaperColorChangeListener> colorChangeListener_;
-
 class NapiWallpaperAbility : public WallpaperMgrService::WallpaperColorChangeListener {
 public:
     NapiWallpaperAbility(napi_env env, napi_value callback);

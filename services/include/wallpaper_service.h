@@ -48,6 +48,9 @@
 #include "wm_common.h"
 
 namespace OHOS {
+namespace ColorManager {
+class Color;
+}
 namespace WallpaperMgrService {
 enum class ServiceRunningState { STATE_NOT_START, STATE_RUNNING };
 
@@ -114,6 +117,8 @@ private:
     */
     void InitData();
     int64_t WritePixelMapToFile(const std::string &filePath, std::unique_ptr<OHOS::Media::PixelMap> pixelMap);
+    bool CompareColor(RgbaColor &localColor, ColorManager::Color &color);
+    bool SaveColor(int wallpaperType);
     void LoadSettingsLocked(int userId, bool keepDimensionHints);
     std::string GetWallpaperDir(int userId);
     void NotifyLockWallpaperChanged();
@@ -167,6 +172,9 @@ private:
 
     std::string name_;
     std::mutex mtx;
+    RgbaColor lockWallpaperColor_;
+    RgbaColor systemWallpaperColor_;
+    sptr<IWallpaperColorChangeListener> colorChangeListener_ = nullptr;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

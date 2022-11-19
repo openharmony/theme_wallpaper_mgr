@@ -34,9 +34,12 @@
 #include "bundle_mgr_interface.h"
 #include "bundle_mgr_proxy.h"
 #include "canvas.h"
+#include "color_picker.h"
 #include "command.h"
 #include "directory_ex.h"
 #include "dump_helper.h"
+#include "effect_errors.h"
+#include "export/color.h"
 #include "file_deal.h"
 #include "file_ex.h"
 #include "hilog_wrapper.h"
@@ -72,15 +75,9 @@ const std::string WallpaperService::WALLPAPER_BUNDLE_NAME = "com.ohos.wallpaper"
 const std::int64_t INIT_INTERVAL = 10000L;
 const std::int64_t DELAY_TIME = 1000L;
 constexpr int HALF = 2;
-constexpr int DOUBLE = 2;
-constexpr int THREE = 3;
-constexpr int FORE = 4;
-constexpr int FIVE = 5;
 constexpr int SIX = 6;
 constexpr int TEN = 10;
-constexpr int FIFTY = 50;
 constexpr int HUNDRED = 100;
-constexpr int HUNDRED_FIFTY = 150;
 constexpr int FOO_MAX_LEN = 52428800;
 constexpr int MAX_RETRY_TIMES = 20;
 std::mutex WallpaperService::instanceLock_;
@@ -223,6 +220,8 @@ void WallpaperService::InitData()
     wallpaperTmpFullPath_ = wallpaperSystemFilePath_ + "/" + WALLPAPER_TMP_DIRNAME;
     wallpaperCropPath = wallpaperSystemFilePath_ + "/" + WALLPAPER_CROP_PICTURE;
     LoadSettingsLocked(userId_, true);
+    SaveColor(WALLPAPER_SYSTEM);
+    SaveColor(WALLPAPER_LOCKSCREEN);
     HILOG_INFO("WallpaperService::initData --> end ");
 }
 void WallpaperService::StartWallpaperExtension()
@@ -379,13 +378,10 @@ void WallpaperService::MigrateFromOld()
 std::vector<RgbaColor> WallpaperService::GetColors(int wallpaperType)
 {
     std::vector<RgbaColor> Colors;
-    RgbaColor tmpColor;
-    for (int32_t indx = 0; indx < FIVE; indx++) {
-        tmpColor.red = HUNDRED + DOUBLE * indx;
-        tmpColor.blue = FIFTY + THREE * indx;
-        tmpColor.green = FIFTY + FORE * indx;
-        tmpColor.alpha = HUNDRED_FIFTY + DOUBLE * indx;
-        Colors.emplace_back(tmpColor);
+    if (wallpaperType == WALLPAPER_SYSTEM) {
+        Colors.emplace_back(systemWallpaperColor_);
+    } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
+        Colors.emplace_back(lockWallpaperColor_);
     }
     HILOG_INFO(" Service End!");
     return Colors;
@@ -418,6 +414,63 @@ int64_t WallpaperService::WritePixelMapToFile(const std::string &filePath, std::
     HILOG_INFO("FinalizePacking start");
     imagePacker.FinalizePacking(packedSize);
     return packedSize;
+}
+
+bool WallpaperService::CompareColor(RgbaColor &localColor, ColorManager::Color &color)
+{
+    if (localColor.red == color.r * 0XFF && localColor.green == color.g * 0XFF && localColor.blue == color.b * 0XFF &&
+        localColor.alpha == color.a * 0XFF) {
+        return true;
+    } else {
+        localColor.red = color.r * 0XFF;
+        localColor.green = color.g * 0XFF;
+        localColor.blue = color.b * 0XFF;
+        localColor.alpha = color.a * 0XFF;
+        return false;
+    }
+}
+
+bool WallpaperService::SaveColor(int wallpaperType)
+{
+    uint32_t errorCode = 0;
+    std::vector<RgbaColor> Colors;
+    OHOS::Media::SourceOptions opts;
+    opts.formatHint = "image/jpeg";
+    std::unique_ptr<OHOS::Media::ImageSource> imageSource =
+        OHOS::Media::ImageSource::CreateImageSource((wallpaperType == WALLPAPER_SYSTEM ?
+            wallpaperSystemCropFileFullPath_: wallpaperLockScreenCropFileFullPath_), opts, errorCode);
+    if (errorCode != 0) {
+        return false;
+    }
+    OHOS::Media::DecodeOptions decodeOpts;
+    std::unique_ptr<PixelMap> wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
+    if (errorCode != 0) {
+        return false;
+    }
+    auto color = ColorManager::Color();
+    auto colorPicker = Rosen::ColorPicker::CreateColorPicker(std::move(wallpaperPixelMap), errorCode);
+    if (errorCode != 0) {
+        HILOG_ERROR("CreateColorPicker failed");
+        return false;
+    } else {
+        uint32_t ret = colorPicker->GetMainColor(color);
+        if (ret != Rosen::SUCCESS) {
+            HILOG_ERROR("GetMainColor failed ret is : %{public}d", ret);
+            return false;
+        }
+        if (wallpaperType == WALLPAPER_SYSTEM && !CompareColor(systemWallpaperColor_, color)) {
+            Colors.emplace_back(systemWallpaperColor_);
+            if (colorChangeListener_ != nullptr) {
+                colorChangeListener_->onColorsChange(Colors, WALLPAPER_SYSTEM);
+            }
+        } else if (wallpaperType == WALLPAPER_LOCKSCREEN && !CompareColor(lockWallpaperColor_, color)) {
+            Colors.emplace_back(lockWallpaperColor_);
+            if (colorChangeListener_ != nullptr) {
+                colorChangeListener_->onColorsChange(Colors, WALLPAPER_LOCKSCREEN);
+            }
+        }
+    }
+    return true;
 }
 
 bool WallpaperService::MakeCropWallpaper(int wallpaperType)
@@ -476,8 +529,7 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
 {
     StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByMap", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_MAP));
     HILOG_INFO("SetWallpaperByMap");
-    bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
-    if (!permissionSet) {
+    if (!WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
         HILOG_INFO("SetWallpaperByMap no set permission!");
         return static_cast<int32_t>(E_NO_PERMISSION);
     }
@@ -520,6 +572,7 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
     close(fd);
     close(fdw);
     int32_t wallpaperErrorCode = SetWallpaperBackupData(url, wallpaperType);
+    SaveColor(wallpaperType);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByMap", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_MAP));
     return wallpaperErrorCode;
 }
@@ -572,6 +625,7 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
     close(fdw);
     delete[] paperBuf;
     int32_t wallpaperErrorCode = SetWallpaperBackupData(url, wallpaperType);
+    SaveColor(wallpaperType);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByFD", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_FD));
     return wallpaperErrorCode;
 }
@@ -773,59 +827,54 @@ int32_t WallpaperService::ResetWallpaper(int wallpaperType)
 
 bool WallpaperService::CopySystemWallpaper()
 {
+    bool ret = false;
     if (!OHOS::FileExists(wallpaperSystemFilePath_)) {
         if (!OHOS::ForceCreateDirectory(wallpaperSystemFilePath_)) {
-            HILOG_ERROR("CopySystemWallpaper ForceCreateDirectory error");
             return false;
         }
     }
     if (OHOS::FileExists(WALLPAPER_DEFAULT_FILEFULLPATH)) {
-        if (!FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemCropFileFullPath_)) {
-            HILOG_ERROR("CopyScreenLockWallpaper copy Crop file error");
+        ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemCropFileFullPath_);
+        if (ret == true) {
             return false;
         }
-        if (!FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemFileFullPath_)) {
-            HILOG_ERROR("CopyScreenLockWallpaper copy Original file error");
+        ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperSystemFileFullPath_);
+        if (ret == true) {
             return false;
         }
         WallpaperCommonEvent::SendWallpaperSystemSettingMessage();
+        HILOG_INFO("SetDefaultDateForWallpaper callbackProxy->OnCall start");
         if (callbackProxy != nullptr) {
-            HILOG_INFO("CopySystemWallpaper callbackProxy OnCall start");
             callbackProxy->OnCall(WALLPAPER_SYSTEM);
         }
-    } else {
-        HILOG_ERROR("FileExists error");
-        return false;
+        SaveColor(WALLPAPER_SYSTEM);
     }
-    return true;
+    return ret;
 }
 bool WallpaperService::CopyScreenLockWallpaper()
 {
+    bool ret = false;
     if (!OHOS::FileExists(wallpaperLockScreenFilePath_)) {
         if (!OHOS::ForceCreateDirectory(wallpaperLockScreenFilePath_)) {
-            HILOG_ERROR("CopyScreenLockWallpaper ForceCreateDirectory error");
             return false;
         }
     }
-    if (OHOS::FileExists(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH)) {
-        if (!FileDeal::CopyFile(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH, wallpaperLockScreenCropFileFullPath_)) {
-            HILOG_ERROR("CopyScreenLockWallpaper copy Crop file error");
+    if (OHOS::FileExists(WALLPAPER_DEFAULT_FILEFULLPATH)) {
+        if (FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperLockScreenCropFileFullPath_)) {
             return false;
         }
-        if (!FileDeal::CopyFile(WALLPAPER_DEFAULT_LOCK_FILEFULLPATH, wallpaperLockScreenFileFullPath_)) {
-            HILOG_ERROR("CopyScreenLockWallpaper copy Original file error");
+        ret = FileDeal::CopyFile(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperLockScreenFileFullPath_);
+        if (ret == true) {
             return false;
         }
         WallpaperCommonEvent::SendWallpaperLockSettingMessage();
+        HILOG_INFO("SetDefaultDateForWallpaper callbackProxy->OnCall start");
         if (callbackProxy != nullptr) {
-            HILOG_INFO("CopyScreenLockWallpaper callbackProxy OnCall start");
             callbackProxy->OnCall(WALLPAPER_LOCKSCREEN);
         }
-    } else {
-        HILOG_ERROR("FileExists error");
-        return false;
+        SaveColor(WALLPAPER_LOCKSCREEN);
     }
-    return true;
+    return ret;
 }
 
 int32_t WallpaperService::SetDefaultDateForWallpaper(int userId, int wpType)
@@ -833,17 +882,11 @@ int32_t WallpaperService::SetDefaultDateForWallpaper(int userId, int wpType)
     std::string tmpPath = "";
     std::string tmpCropPath = "";
     if (wpType == WALLPAPER_LOCKSCREEN) {
-        if (!CopyScreenLockWallpaper()) {
-            HILOG_ERROR("CopyScreenLockWallpaper error");
-            return static_cast<int32_t>(E_DEAL_FAILED);
-        }
+        CopyScreenLockWallpaper();
         tmpPath = wallpaperLockScreenFileFullPath_;
         tmpCropPath = wallpaperLockScreenCropFileFullPath_;
     } else {
-        if (!CopySystemWallpaper()) {
-            HILOG_ERROR("CopySystemWallpaper error");
-            return static_cast<int32_t>(E_DEAL_FAILED);
-        }
+        CopySystemWallpaper();
         tmpPath = wallpaperSystemFileFullPath_;
         tmpCropPath = wallpaperSystemCropFileFullPath_;
     }
@@ -865,33 +908,21 @@ bool WallpaperService::ScreenshotLiveWallpaper(int scaleNumber, OHOS::Media::Pix
 
 bool WallpaperService::On(sptr<IWallpaperColorChangeListener> listener)
 {
-    std::vector<RgbaColor> Colors;
-    RgbaColor tmpColor;
-    for (int32_t indx = 0; indx < FIVE; indx++) {
-        tmpColor.red = HUNDRED + DOUBLE * indx;
-        tmpColor.blue = FIFTY + THREE * indx;
-        tmpColor.green = FIFTY + FORE * indx;
-        tmpColor.alpha = HUNDRED_FIFTY + DOUBLE * indx;
-        Colors.emplace_back(tmpColor);
+    HILOG_DEBUG("WallpaperService::On in");
+    if (listener == nullptr) {
+        HILOG_ERROR("WallpaperService::On listener is null");
+        return false;
     }
-    listener->onColorsChange(Colors, 0);
+    colorChangeListener_ = listener;
+    HILOG_DEBUG("WallpaperService::On out");
     return true;
 }
 
 bool WallpaperService::Off(sptr<IWallpaperColorChangeListener> listener)
 {
     HILOG_DEBUG("WallpaperService::Off in");
-    std::vector<RgbaColor> Colors;
-    HILOG_INFO(" Service Start!");
-    RgbaColor tmpColor;
-    for (int32_t indx = 0; indx < FIVE; indx++) {
-        tmpColor.red = HUNDRED + DOUBLE * indx;
-        tmpColor.blue = FIFTY + THREE * indx;
-        tmpColor.green = FIFTY + FORE * indx;
-        tmpColor.alpha = HUNDRED_FIFTY + DOUBLE * indx;
-        Colors.emplace_back(tmpColor);
-    }
-    listener->onColorsChange(Colors, 0);
+    (void)listener;
+    colorChangeListener_ = nullptr;
     HILOG_DEBUG("WallpaperService::Off out");
     return true;
 }
@@ -1091,13 +1122,13 @@ int32_t WallpaperService::GetFilePath(int wallpaperType, std::string &filePath)
     if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         auto wallpaperData = lockWallpaperMap_.Find(userId_);
         if (wallpaperData.first) {
-            filePath = wallpaperData.second.cropFile_;
+            filePath = wallpaperData.second.wallpaperFile_;
             return static_cast<int32_t>(E_OK);
         }
     } else if (wallpaperType == WALLPAPER_SYSTEM) {
         auto wallpaperData = wallpaperMap_.Find(userId_);
         if (wallpaperData.first) {
-            filePath = wallpaperData.second.cropFile_;
+            filePath = wallpaperData.second.wallpaperFile_;
             return static_cast<int32_t>(E_OK);
         }
     }

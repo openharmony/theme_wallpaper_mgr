@@ -130,7 +130,7 @@ public:
      * @param callback Provides dominant colors of the wallpaper.
      * @return  true or false
      */
-    virtual bool On(std::shared_ptr<WallpaperColorChangeListener> listener) = 0;
+    virtual bool On(const std::string type, std::shared_ptr<WallpaperColorChangeListener> listener) = 0;
 
     /**
      * Registers a listener for wallpaper color changes to receive notifications about the changes.
@@ -138,7 +138,7 @@ public:
      * changes
      * @param callback Provides dominant colors of the wallpaper.
      */
-    virtual bool Off(std::shared_ptr<WallpaperColorChangeListener> listener) = 0;
+    virtual bool Off(const std::string type, std::shared_ptr<WallpaperColorChangeListener> listener) = 0;
 
     virtual bool RegisterWallpaperCallback(bool (*callback)(int)) = 0;
     using JScallback = bool (*)(int);

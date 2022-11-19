@@ -340,7 +340,7 @@ bool WallpaperServiceProxy::On(sptr<IWallpaperColorChangeListener> listener)
         HILOG_ERROR("listener is nullptr");
         return false;
     }
-    if (!data.WriteParcelable(listener->AsObject())) {
+    if (!data.WriteRemoteObject(listener->AsObject())) {
         HILOG_ERROR("write subscribe type or parcel failed.");
         return false;
     }
@@ -369,7 +369,7 @@ bool WallpaperServiceProxy::Off(sptr<IWallpaperColorChangeListener> listener)
         HILOG_ERROR("listener is nullptr");
         return false;
     }
-    if (!data.WriteParcelable(listener->AsObject())) {
+    if (!data.WriteRemoteObject(listener->AsObject())) {
         HILOG_ERROR("write subscribe type or parcel failed.");
         return false;
     }

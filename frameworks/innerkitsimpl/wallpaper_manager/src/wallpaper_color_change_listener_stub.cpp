@@ -13,64 +13,19 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "WallpaperColorChangeListenerProxy"
-
-#include "iwallpaper_color_change_listener.h"
+#define LOG_TAG "WallpaperColorChangeListenerStub"
 
 #include "hilog_wrapper.h"
 #include "message_parcel.h"
+#include "wallpaper_color_change_listener_stub.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
-constexpr int ONCOLORSCHANGE = 0;
 using namespace std::chrono;
-
-WallpaperColorChangeListenerProxy::WallpaperColorChangeListenerProxy(const sptr<IRemoteObject> &impl)
-    : IRemoteProxy<IWallpaperColorChangeListener>(impl)
-{
-}
-
-void WallpaperColorChangeListenerProxy::onColorsChange(std::vector<RgbaColor> color, int wallpaperType)
-{
-    HILOG_DEBUG("WallpaperColorChangeListenerProxy::onColorsChange Start");
-    MessageParcel data;
-    MessageParcel reply;
-    MessageOption option;
-    if (!data.WriteInterfaceToken(WallpaperColorChangeListenerProxy::GetDescriptor())) {
-        HILOG_ERROR("write descriptor failed");
-        return;
-    }
-
-    unsigned int size = color.size();
-    if (!data.WriteInt32(size)) {
-        HILOG_ERROR("write color size failed");
-        return;
-    }
-    for (unsigned int i = 0; i < size; ++i) {
-        if (!(data.WriteInt32(color[i].red) && data.WriteInt32(color[i].green) && data.WriteInt32(color[i].blue) &&
-                data.WriteInt32(color[i].alpha))) {
-            HILOG_ERROR("write color failed");
-            return;
-        }
-    }
-
-    if (!data.WriteInt32(wallpaperType)) {
-        HILOG_ERROR("write wallpaperType failed");
-        return;
-    }
-
-    int error = Remote()->SendRequest(ONCOLORSCHANGE, data, reply, option);
-    if (error != 0) {
-        HILOG_ERROR("SendRequest failed, error %d", error);
-    }
-    HILOG_DEBUG("WallpaperColorChangeListenerProxy::onColorsChange End");
-}
-
-int32_t WallpaperColorChangeListenerStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
-    MessageOption &option)
+int32_t WallpaperColorChangeListenerStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
+                                                          MessageParcel &reply, MessageOption &option)
 {
     HILOG_DEBUG("WallpaperColorChangeListenerStub::OnRemoteRequest Start");
-    HILOG_DEBUG("%d", code);
     std::u16string descriptor = WallpaperColorChangeListenerStub::GetDescriptor();
     std::u16string remoteDescriptor = data.ReadInterfaceToken();
     if (descriptor != remoteDescriptor) {
@@ -84,8 +39,8 @@ int32_t WallpaperColorChangeListenerStub::OnRemoteRequest(uint32_t code, Message
             for (unsigned int i = 0; i < size; ++i) {
                 RgbaColor colorInfo;
                 colorInfo.red = data.ReadInt32();
-                colorInfo.blue = data.ReadInt32();
                 colorInfo.green = data.ReadInt32();
+                colorInfo.blue = data.ReadInt32();
                 colorInfo.alpha = data.ReadInt32();
                 color.emplace_back(colorInfo);
             }
@@ -94,10 +49,11 @@ int32_t WallpaperColorChangeListenerStub::OnRemoteRequest(uint32_t code, Message
             HILOG_DEBUG("WallpaperColorChangeListenerStub::OnRemoteRequest End");
             return 0;
         }
-        default:
+        default: {
             HILOG_DEBUG("code error, WallpaperColorChangeListenerStub::OnRemoteRequest End");
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
+        }
     }
 }
-} // namespace WallpaperMgrService
-} // namespace OHOS
+}  // namespace WallpaperMgrService
+}  // namespace OHOS

@@ -13,32 +13,31 @@
  * limitations under the License.
  */
 
-#ifndef WALLPAPER_COLOR_CHANGE_LISTENER_CLIENT_H
-#define WALLPAPER_COLOR_CHANGE_LISTENER_CLIENT_H
+#ifndef WALLPAPER_COLOR_CHANGE_LISTENER_PROXY_H
+#define WALLPAPER_COLOR_CHANGE_LISTENER_PROXY_H
 
-#include <memory>
+#include <cstdint>
 #include <vector>
-
-#include "wallpaper_color_change_listener_stub.h"
-#include "wallpaper_color_change_listener.h"
+#include "iremote_broker.h"
+#include "iremote_proxy.h"
+#include "iremote_stub.h"
+#include "refbase.h"
 #include "wallpaper_manager_common_info.h"
+#include "iwallpaper_color_change_listener.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
-class WallpaperColorChangeListenerClient : public WallpaperColorChangeListenerStub {
+class WallpaperColorChangeListenerProxy : public IRemoteProxy<IWallpaperColorChangeListener> {
 public:
-    WallpaperColorChangeListenerClient(std::shared_ptr<WallpaperColorChangeListener> wallpaperColorChangerListener);
-
-    ~WallpaperColorChangeListenerClient();
-
+    explicit WallpaperColorChangeListenerProxy(const sptr<IRemoteObject> &object)
+        : IRemoteProxy<IWallpaperColorChangeListener>(object)
+    {
+    }
+    ~WallpaperColorChangeListenerProxy() = default;
+    static inline BrokerDelegator<WallpaperColorChangeListenerProxy> delegator_;
     void onColorsChange(std::vector<RgbaColor> color, int wallpaperType) override;
-
-    const std::shared_ptr<WallpaperColorChangeListener> GetColorChangeListener() const;
-
-private:
-    // client is responsible for free it when call UnSubscribeKvStore.
-    std::shared_ptr<WallpaperColorChangeListener> wallpaperColorChangerListener_;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
-#endif // WALLPAPER_COLOR_CHANGE_LISTENER_CLIENT_H
+
+#endif  // WALLPAPER_COLOR_CHANGE_LISTENER_H

@@ -151,7 +151,7 @@ int32_t WallpaperServiceStub::OnGetColors(MessageParcel &data, MessageParcel &re
         vecWallpaperColors[size - 1].red, vecWallpaperColors[size - 1].blue, vecWallpaperColors[size - 1].green,
         vecWallpaperColors[size - 1].alpha);
 
-    ret = (size == 0) ? 0 : -1;
+    ret = (size == 0) ? -1 : 0;
     return ret;
 }
 
@@ -253,7 +253,8 @@ int32_t WallpaperServiceStub::OnWallpaperOn(MessageParcel &data, MessageParcel &
     HILOG_DEBUG("WallpaperServiceStub::OnWallpaperOn in");
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
     if (remote == nullptr) {
-        if (!reply.WriteInt32(ERR_NONE)) {
+        HILOG_ERROR("OnWallpaperOn nullptr after ipc");
+        if (!reply.WriteInt32(static_cast<int32_t>(E_READ_PARCEL_ERROR))) {
             return -1;
         }
         return 0;
@@ -275,8 +276,8 @@ int32_t WallpaperServiceStub::OnWallpaperOff(MessageParcel &data, MessageParcel 
     HILOG_DEBUG("WallpaperServiceStub::OnWallpaperOff in");
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
     if (remote == nullptr) {
-        HILOG_WARN("kvStoreObserverProxy nullptr after ipc");
-        if (!reply.WriteInt32(ERR_NONE)) {
+        HILOG_ERROR("OnWallpaperOff nullptr after ipc");
+        if (!reply.WriteInt32(static_cast<int32_t>(E_READ_PARCEL_ERROR))) {
             return -1;
         }
         return 0;
