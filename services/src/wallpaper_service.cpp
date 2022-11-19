@@ -944,7 +944,6 @@ bool WallpaperService::GetWallpaperSafeLocked(int userId, int wpType, WallpaperD
 void WallpaperService::ClearWallpaperLocked(int userId, int wpType)
 {
     HILOG_INFO("Clear wallpaper Start!");
-    std::map<int, WallpaperData>::iterator itr;
     if (wpType == WALLPAPER_LOCKSCREEN) {
         auto wallpaperData = lockWallpaperMap_.Find(userId);
         if (!wallpaperData.first) {
