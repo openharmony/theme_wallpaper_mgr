@@ -244,6 +244,8 @@ HWTEST_F(WallpaperTest, Reset005, TestSize.Level1)
 */
 HWTEST_F(WallpaperTest, IsChangePermitted001, TestSize.Level1)
 {
+    bool ret = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().IsChangePermitted();
+    EXPECT_EQ(ret, true);
 }
 
 /*********************   IsChangePermitted   *********************/
@@ -259,6 +261,8 @@ HWTEST_F(WallpaperTest, IsChangePermitted001, TestSize.Level1)
 */
 HWTEST_F(WallpaperTest, IsOperationAllowed001, TestSize.Level1)
 {
+    bool ret = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().IsOperationAllowed();
+    EXPECT_EQ(ret, true);
 }
 
 /*********************   IsOperationAllowed   *********************/
@@ -403,6 +407,22 @@ HWTEST_F(WallpaperTest, GetFile003, TestSize.Level0)
     int32_t wallpaperFd = 0;
     int wallpaperErrorCode = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(2, wallpaperFd);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "throw parameters error successfully";
+}
+
+/**
+* @tc.name:    GetFile004
+* @tc.desc:    GetFile with wallpaperType[0].
+* @tc.type:    FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(WallpaperTest, GetFile004, TestSize.Level0)
+{
+    HILOG_INFO("GetFile001 begin");
+    int32_t wallpaperFd = 0;
+    int wallpaperErrorCode =
+        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(SYSTYEM, wallpaperFd);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "get File success.";
 }
 /*********************   GetFile   *********************/
 
