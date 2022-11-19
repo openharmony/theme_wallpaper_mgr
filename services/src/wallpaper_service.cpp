@@ -847,6 +847,7 @@ bool WallpaperService::CopySystemWallpaper()
             HILOG_INFO("CopySystemWallpaper callbackProxy OnCall start");
             callbackProxy->OnCall(WALLPAPER_SYSTEM);
         }
+        SaveColor(WALLPAPER_SYSTEM);
     } else {
         HILOG_ERROR("FileExists error");
         return false;
@@ -875,6 +876,7 @@ bool WallpaperService::CopyScreenLockWallpaper()
             HILOG_INFO("CopyScreenLockWallpaper callbackProxy OnCall start");
             callbackProxy->OnCall(WALLPAPER_LOCKSCREEN);
         }
+        SaveColor(WALLPAPER_LOCKSCREEN);
     } else {
         HILOG_ERROR("FileExists error");
         return false;
