@@ -80,7 +80,7 @@ void WallpaperColorChangeListenerFuzzTestImpl::onColorsChange(std::vector<RgbaCo
 }
 
 WallpaperColorChangeListenerFuzzTestImpl::WallpaperColorChangeListenerFuzzTestImpl()
-    : callCount_(0), wallpaperType_(-1)
+    : wallpaperType_(-1), callCount_(0)
 {
 }
 
