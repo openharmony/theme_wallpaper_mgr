@@ -36,9 +36,9 @@ ohos_unittest("wallpaper_test") {
     "//base/security/access_token/interfaces/innerkits/token_setproc:libtoken_setproc",
     "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
     "//base/theme/wallpaper_mgr/services:wallpaper_service",
-    "//foundation/multimedia/image_framework/interfaces/innerkits:image",
     "//foundation/multimedia/image_framework:image_framework",
     "//foundation/multimedia/image_framework/interfaces/innerkits:image_native",
+    "//foundation/multimedia/image_framework/interfaces/kits/js/common:image",
     "//foundation/window/window_manager/utils:libwmutil",
     "//foundation/window/window_manager/wm:libwm",
     "//third_party/googletest:gmock",
@@ -80,6 +80,7 @@ ohos_unittest("wallpaper_permission_test") {
     "//base/theme/wallpaper_mgr/services:wallpaper_service",
     "//foundation/multimedia/image_framework:image_framework",
     "//foundation/multimedia/image_framework/interfaces/innerkits:image_native",
+    "//foundation/multimedia/image_framework/interfaces/kits/js/common:image",
     "//foundation/window/window_manager/utils:libwmutil",
     "//foundation/window/window_manager/wm:libwm",
   ]
