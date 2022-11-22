@@ -18,6 +18,7 @@
 
 #include "accesstoken_kit.h"
 #include "directory_ex.h"
+#include "file_deal.h"
 #include "hilog_wrapper.h"
 #include "nativetoken_kit.h"
 #include "pixel_map.h"
@@ -634,6 +635,27 @@ HWTEST_F(WallpaperTest, SetWallpaperByUrl004, TestSize.Level0)
     int32_t wallpaperErrorCode =
         OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper("/system/etc/errorURL", 1);
     EXPECT_NE(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "throw error successfully";
+}
+
+/**
+* @tc.name:    FILE_DEAL001
+* @tc.desc:    File operation-related interfaces
+* @tc.type:    FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(WallpaperTest, FILE_DEAL001, TestSize.Level0)
+{
+    HILOG_INFO("FILE_DEAL001  begin");
+    FileDeal fileOperation;
+    bool isExist = fileOperation.Mkdir("/system/etc/");
+    EXPECT_EQ(isExist, true);
+    isExist = fileOperation.Mkdir("/system/errorURL/");
+    EXPECT_EQ(isExist, true);
+    isExist = fileOperation.FileIsExist(URL);
+    EXPECT_EQ(isExist, true);
+    isExist = fileOperation.FileIsExist("/system/etc/errorURL");
+    EXPECT_EQ(isExist, false);
 }
 /*********************   SetWallpaperByUrl   *********************/
 } // namespace WallpaperMgrService
