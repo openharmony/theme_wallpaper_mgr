@@ -133,7 +133,7 @@ ErrCode WallpaperManager::CallService(F func, Args &&...args)
     return result;
 }
 
-std::vector<RgbaColor> WallpaperManager::GetColors(int wallpaperType)
+std::vector<uint32_t> WallpaperManager::GetColors(int wallpaperType)
 {
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {

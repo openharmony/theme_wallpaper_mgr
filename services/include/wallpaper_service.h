@@ -68,7 +68,7 @@ public:
     int32_t SetWallpaperByFD(int fd, int wallpaperType, int length) override;
     int32_t SetWallpaperByMap(int fd, int wallpaperType, int length) override;
     int32_t GetPixelMap(int wallpaperType, FdInfo &fdInfo) override;
-    std::vector<RgbaColor> GetColors(int wallpaperType) override;
+    std::vector<uint32_t> GetColors(int wallpaperType) override;
     int32_t GetFile(int32_t wallpaperType, int32_t &wallpaperFd) override;
     int GetWallpaperId(int wallpaperType) override;
     int GetWallpaperMinHeight() override;
@@ -117,7 +117,8 @@ private:
     */
     void InitData();
     int64_t WritePixelMapToFile(const std::string &filePath, std::unique_ptr<OHOS::Media::PixelMap> pixelMap);
-    bool CompareColor(const RgbaColor &localColor, const ColorManager::Color &color);
+    bool CompareColor(const uint32_t &localColor, const ColorManager::Color &color);
+    void ConvertToUint32(const ColorManager::Color &color, uint32_t &localColor);
     bool SaveColor(int wallpaperType);
     void LoadSettingsLocked(int userId, bool keepDimensionHints);
     std::string GetWallpaperDir(int userId);
@@ -172,8 +173,8 @@ private:
 
     std::string name_;
     std::mutex mtx;
-    RgbaColor lockWallpaperColor_;
-    RgbaColor systemWallpaperColor_;
+    uint32_t lockWallpaperColor_;
+    uint32_t systemWallpaperColor_;
     std::map<int, sptr<IWallpaperColorChangeListener>> colorChangeListenerMap_;
     std::mutex listenerMapMutex_;
 };

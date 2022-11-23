@@ -53,7 +53,7 @@ void GrantNativePermission()
 
 class WallpaperColorChangeListenerFuzzTestImpl : public OHOS::WallpaperMgrService::WallpaperColorChangeListener {
 public:
-    std::vector<RgbaColor> color_;
+    std::vector<uint32_t> color_;
     int wallpaperType_;
     WallpaperColorChangeListenerFuzzTestImpl();
     ~WallpaperColorChangeListenerFuzzTestImpl()
@@ -66,13 +66,13 @@ public:
     WallpaperColorChangeListenerFuzzTestImpl &operator=(WallpaperColorChangeListenerFuzzTestImpl &&) = delete;
 
     // callback function will be called when the db data is changed.
-    void OnColorsChange(const std::vector<RgbaColor> &color, int wallpaperType);
+    void OnColorsChange(const std::vector<uint32_t> &color, int wallpaperType);
 
 private:
     unsigned long callCount_;
 };
 
-void WallpaperColorChangeListenerFuzzTestImpl::OnColorsChange(const std::vector<RgbaColor> &color, int wallpaperType)
+void WallpaperColorChangeListenerFuzzTestImpl::OnColorsChange(const std::vector<uint32_t> &color, int wallpaperType)
 {
     callCount_++;
     for (auto const &each : color) {

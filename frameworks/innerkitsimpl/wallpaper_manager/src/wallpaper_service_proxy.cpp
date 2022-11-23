@@ -26,9 +26,9 @@ namespace WallpaperMgrService {
 using namespace OHOS::HiviewDFX;
 constexpr const int32_t ERROR_NONE = 0;
 constexpr const int32_t INVALID_FD = -1;
-std::vector<RgbaColor> WallpaperServiceProxy::GetColors(int wallpaperType)
+std::vector<uint32_t> WallpaperServiceProxy::GetColors(int wallpaperType)
 {
-    std::vector<RgbaColor> Colors;
+    std::vector<uint32_t> Colors;
     MessageParcel data, reply;
     MessageOption option;
 
@@ -44,16 +44,11 @@ std::vector<RgbaColor> WallpaperServiceProxy::GetColors(int wallpaperType)
     int32_t result = Remote()->SendRequest(GET_COLORS, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" get colors result = %{public}d ", result);
+        return Colors;
     }
 
-    int tmpsize = reply.ReadInt32();
-    for (int i = 0; i < tmpsize; ++i) {
-        RgbaColor colorInfo;
-        colorInfo.red = reply.ReadInt32();
-        colorInfo.blue = reply.ReadInt32();
-        colorInfo.green = reply.ReadInt32();
-        colorInfo.alpha = reply.ReadInt32();
-        Colors.emplace_back(colorInfo);
+    if (!reply.ReadUInt32Vector(&Colors)) {
+        HILOG_ERROR(" Failed to ReadUInt32Vector ");
     }
     return Colors;
 }

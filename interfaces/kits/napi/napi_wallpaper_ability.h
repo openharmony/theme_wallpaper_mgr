@@ -43,7 +43,7 @@ namespace WallpaperNAPI {
 
 struct GetContextInfo : public AsyncCall::Context {
     int wallpaperType = 0;
-    std::vector<RgbaColor> colors;
+    std::vector<uint32_t> colors;
     int wallpaperId = 0;
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     napi_status status = napi_generic_failure;
@@ -154,7 +154,7 @@ class NapiWallpaperAbility : public WallpaperMgrService::WallpaperColorChangeLis
 public:
     NapiWallpaperAbility(napi_env env, napi_value callback);
     virtual ~NapiWallpaperAbility();
-    void OnColorsChange(const std::vector<RgbaColor> &color, int wallpaperType) override;
+    void OnColorsChange(const std::vector<uint32_t> &color, int wallpaperType) override;
     static bool IsValidArgCount(size_t argc, size_t expectationSize);
     static bool IsValidArgType(napi_env env, napi_value argValue, napi_valuetype expectationType);
     static bool IsValidArgRange(napi_env env, napi_value argValue);
@@ -175,9 +175,9 @@ public:
 private:
     struct EventDataWorker {
         const NapiWallpaperAbility *listener = nullptr;
-        const std::vector<RgbaColor> color;
+        const std::vector<uint32_t> color;
         const int wallpaperType;
-        EventDataWorker(const NapiWallpaperAbility *const &listenerIn, const std::vector<RgbaColor> &colorIn,
+        EventDataWorker(const NapiWallpaperAbility *const &listenerIn, const std::vector<uint32_t> &colorIn,
             const int wallpaperTypeIn)
             : listener(listenerIn), color(colorIn), wallpaperType(wallpaperTypeIn)
         {

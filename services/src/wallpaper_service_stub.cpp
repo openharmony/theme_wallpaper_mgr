@@ -133,26 +133,15 @@ int32_t WallpaperServiceStub::OnGetPixelMap(MessageParcel &data, MessageParcel &
 
 int32_t WallpaperServiceStub::OnGetColors(MessageParcel &data, MessageParcel &reply)
 {
-    int32_t ret = -1;
     HILOG_INFO("WallpaperServiceStub::OnGetColors start.");
-
     int wallpaperType = data.ReadInt32();
-    std::vector<RgbaColor> vecWallpaperColors = GetColors(wallpaperType);
-
-    unsigned int size = vecWallpaperColors.size();
-    reply.WriteInt32(size);
-    for (unsigned int i = 0; i < size; ++i) {
-        reply.WriteInt32(vecWallpaperColors[i].red);
-        reply.WriteInt32(vecWallpaperColors[i].blue);
-        reply.WriteInt32(vecWallpaperColors[i].green);
-        reply.WriteInt32(vecWallpaperColors[i].alpha);
+    std::vector<uint32_t> vecWallpaperColors = GetColors(wallpaperType);
+    auto size = vecWallpaperColors.size();
+    if (!reply.WriteUInt32Vector(vecWallpaperColors)) {
+        HILOG_ERROR("WallpaperServiceStub::OnGetColors WriteUInt32Vector error.");
+        return -1;
     }
-    HILOG_DEBUG("End. size[%{public}d]LastData[%{public}d][%{public}d][%{public}d][%{public}d]", size,
-        vecWallpaperColors[size - 1].red, vecWallpaperColors[size - 1].blue, vecWallpaperColors[size - 1].green,
-        vecWallpaperColors[size - 1].alpha);
-
-    ret = (size == 0) ? -1 : 0;
-    return ret;
+    return (size == 0) ? -1 : 0;
 }
 
 int32_t WallpaperServiceStub::OnGetFile(MessageParcel &data, MessageParcel &reply)

@@ -50,7 +50,7 @@ std::string WallpaperJSUtil::Convert2String(napi_env env, napi_value jsString)
     return value;
 }
 
-napi_value WallpaperJSUtil::Convert2JSRgbaArray(napi_env env, const std::vector<RgbaColor> &color)
+napi_value WallpaperJSUtil::Convert2JSRgbaArray(napi_env env, const std::vector<uint32_t> &color)
 {
     HILOG_DEBUG("Convert2JSRgbaArray in");
     napi_value result = nullptr;
@@ -62,19 +62,24 @@ napi_value WallpaperJSUtil::Convert2JSRgbaArray(napi_env env, const std::vector<
     int index = 0;
     for (const auto it : color) {
         HILOG_DEBUG("Convert2JSRgbaArray for");
+        RgbaColor color;
+        color.red = (it >> RED_OFFSET) & BYTE_MASK;
+        color.green = (it >> GREEN_OFFSET) & BYTE_MASK;
+        color.blue = (it >> BLUE_OFFSET) & BYTE_MASK;
+        color.alpha = (it >> ALPHA_OFFSET) & BYTE_MASK;
         napi_value element = nullptr;
         napi_create_array_with_length(env, ARRAY_LENGTH, &element);
         napi_value jsRgba = nullptr;
-        napi_create_int32(env, it.red, &jsRgba);
+        napi_create_int32(env, color.red, &jsRgba);
         napi_set_element(env, element, ZERO, jsRgba);
         jsRgba = nullptr;
-        napi_create_int32(env, it.green, &jsRgba);
+        napi_create_int32(env, color.green, &jsRgba);
         napi_set_element(env, element, ONE, jsRgba);
         jsRgba = nullptr;
-        napi_create_int32(env, it.blue, &jsRgba);
+        napi_create_int32(env, color.blue, &jsRgba);
         napi_set_element(env, element, TWO, jsRgba);
         jsRgba = nullptr;
-        napi_create_int32(env, it.alpha, &jsRgba);
+        napi_create_int32(env, color.alpha, &jsRgba);
         napi_set_element(env, element, THREE, jsRgba);
         napi_set_element(env, result, index++, element);
     }

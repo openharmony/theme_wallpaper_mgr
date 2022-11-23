@@ -28,7 +28,7 @@ public:
     /**
        * Called when wallpaper colors change
       */
-    virtual void OnWallpaperColorsChanged(vector<RgbaColor> colors, int which, int userId);
+    virtual void OnWallpaperColorsChanged(vector<uint32_t> colors, int which, int userId);
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

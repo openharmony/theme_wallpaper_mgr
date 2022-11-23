@@ -101,7 +101,7 @@ void WallpaperTest::TearDown(void)
 
 class WallpaperColorChangeListenerTestImpl : public OHOS::WallpaperMgrService::WallpaperColorChangeListener {
 public:
-    std::vector<RgbaColor> color_;
+    std::vector<uint32_t> color_;
     int wallpaperType_;
     WallpaperColorChangeListenerTestImpl();
     ~WallpaperColorChangeListenerTestImpl()
@@ -114,7 +114,7 @@ public:
     WallpaperColorChangeListenerTestImpl &operator=(WallpaperColorChangeListenerTestImpl &&) = delete;
 
     // callback function will be called when the db data is changed.
-    void OnColorsChange(const std::vector<RgbaColor> &color, int wallpaperType);
+    void OnColorsChange(const std::vector<uint32_t> &color, int wallpaperType);
 
     // reset the callCount_ to zero.
     void ResetToZero();
@@ -125,7 +125,7 @@ private:
     unsigned long callCount_;
 };
 
-void WallpaperColorChangeListenerTestImpl::OnColorsChange(const std::vector<RgbaColor> &color, int wallpaperType)
+void WallpaperColorChangeListenerTestImpl::OnColorsChange(const std::vector<uint32_t> &color, int wallpaperType)
 {
     callCount_++;
     for (auto const &each : color) {
@@ -295,7 +295,7 @@ HWTEST_F(WallpaperTest, GetColors001, TestSize.Level0)
 {
     HILOG_INFO("GetColors001 begin");
 
-    std::vector<RgbaColor> Color = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(SYSTYEM);
+    std::vector<uint32_t> Color = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(SYSTYEM);
     bool result = Color.empty();
     EXPECT_FALSE(result);
 }
@@ -310,7 +310,7 @@ HWTEST_F(WallpaperTest, GetColors001, TestSize.Level0)
 HWTEST_F(WallpaperTest, GetColors002, TestSize.Level0)
 {
     HILOG_INFO("GetColors002 begin");
-    std::vector<RgbaColor> Color = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN);
+    std::vector<uint32_t> Color = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN);
     bool result = Color.empty();
     EXPECT_FALSE(result);
 }

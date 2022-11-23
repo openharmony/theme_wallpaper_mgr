@@ -33,6 +33,11 @@ struct RgbaColor {
     int green;
     int alpha;
 };
+constexpr const uint32_t BLUE_OFFSET{ 0x00 };
+constexpr const uint32_t GREEN_OFFSET{ 0x08 };
+constexpr const uint32_t RED_OFFSET{ 0x10 };
+constexpr const uint32_t ALPHA_OFFSET{ 0x18 };
+constexpr const uint32_t BYTE_MASK{ 0xFF };
 enum WallpaperType {
     /**
      * Indicates the home screen wallpaper.

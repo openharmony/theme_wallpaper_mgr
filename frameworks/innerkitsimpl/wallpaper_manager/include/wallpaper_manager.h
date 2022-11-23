@@ -67,9 +67,9 @@ public:
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
-     * @return RgbaColor type of array callback function
+     * @return number type of array callback function
      */
-    std::vector<RgbaColor> GetColors(int wallpaperType) final;
+    std::vector<uint32_t> GetColors(int wallpaperType) final;
 
     /**
      * Obtains the ID of the wallpaper of the specified type.

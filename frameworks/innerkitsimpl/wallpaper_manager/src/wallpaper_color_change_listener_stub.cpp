@@ -32,18 +32,13 @@ int32_t WallpaperColorChangeListenerStub::OnRemoteRequest(uint32_t code, Message
     }
     switch (code) {
         case ONCOLORSCHANGE: {
-            std::vector<RgbaColor> color;
-            unsigned int size = data.ReadInt32();
-            for (unsigned int i = 0; i < size; ++i) {
-                RgbaColor colorInfo;
-                colorInfo.red = data.ReadInt32();
-                colorInfo.green = data.ReadInt32();
-                colorInfo.blue = data.ReadInt32();
-                colorInfo.alpha = data.ReadInt32();
-                color.emplace_back(colorInfo);
+            std::vector<uint32_t> color;
+            if (!data.ReadUInt32Vector(&color)) {
+                HILOG_ERROR("ONCOLORSCHANGE ReadUInt32Vector error");
+                return -1;
             }
             int wallpaperType = data.ReadInt32();
-            onColorsChange(color, wallpaperType);
+            OnColorsChange(color, wallpaperType);
             HILOG_DEBUG("WallpaperColorChangeListenerStub::OnRemoteRequest End");
             return 0;
         }
