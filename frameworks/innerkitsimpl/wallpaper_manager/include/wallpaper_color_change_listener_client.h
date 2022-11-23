@@ -19,8 +19,8 @@
 #include <memory>
 #include <vector>
 
-#include "wallpaper_color_change_listener_stub.h"
 #include "wallpaper_color_change_listener.h"
+#include "wallpaper_color_change_listener_stub.h"
 #include "wallpaper_manager_common_info.h"
 
 namespace OHOS {
@@ -31,7 +31,7 @@ public:
 
     ~WallpaperColorChangeListenerClient();
 
-    void onColorsChange(std::vector<RgbaColor> color, int wallpaperType) override;
+    void OnColorsChange(const std::vector<RgbaColor> &color, int wallpaperType) override;
 
     const std::shared_ptr<WallpaperColorChangeListener> GetColorChangeListener() const;
 

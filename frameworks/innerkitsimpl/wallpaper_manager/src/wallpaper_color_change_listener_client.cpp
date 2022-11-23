@@ -33,11 +33,11 @@ WallpaperColorChangeListenerClient::~WallpaperColorChangeListenerClient()
     HILOG_INFO("start");
 }
 
-void WallpaperColorChangeListenerClient::onColorsChange(std::vector<RgbaColor> color, int wallpaperType)
+void WallpaperColorChangeListenerClient::OnColorsChange(const std::vector<RgbaColor> &color, int wallpaperType)
 {
     HILOG_INFO("start");
     if (wallpaperColorChangerListener_ != nullptr) {
-        wallpaperColorChangerListener_->onColorsChange(color, wallpaperType);
+        wallpaperColorChangerListener_->OnColorsChange(color, wallpaperType);
     }
 }
 

@@ -416,18 +416,13 @@ int64_t WallpaperService::WritePixelMapToFile(const std::string &filePath, std::
     return packedSize;
 }
 
-bool WallpaperService::CompareColor(RgbaColor &localColor, ColorManager::Color &color)
+bool WallpaperService::CompareColor(const RgbaColor &localColor, const ColorManager::Color &color)
 {
-    if (localColor.red == color.r * 0XFF && localColor.green == color.g * 0XFF && localColor.blue == color.b * 0XFF &&
-        localColor.alpha == color.a * 0XFF) {
+    if ((localColor.red == color.r * 0XFF) && (localColor.green == color.g * 0XFF) &&
+        (localColor.blue == color.b * 0XFF) && (localColor.alpha == color.a * 0XFF)) {
         return true;
-    } else {
-        localColor.red = color.r * 0XFF;
-        localColor.green = color.g * 0XFF;
-        localColor.blue = color.b * 0XFF;
-        localColor.alpha = color.a * 0XFF;
-        return false;
     }
+    return false;
 }
 
 bool WallpaperService::SaveColor(int wallpaperType)
@@ -926,7 +921,8 @@ bool WallpaperService::On(sptr<IWallpaperColorChangeListener> listener)
         HILOG_ERROR("WallpaperService::On listener is null");
         return false;
     }
-    colorChangeListener_ = listener;
+    std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
+    colorChangeListenerMap_.insert(std::pair(IPCSkeleton::GetCallingTokenID(), listener));
     HILOG_DEBUG("WallpaperService::On out");
     return true;
 }
@@ -935,7 +931,12 @@ bool WallpaperService::Off(sptr<IWallpaperColorChangeListener> listener)
 {
     HILOG_DEBUG("WallpaperService::Off in");
     (void)listener;
-    colorChangeListener_ = nullptr;
+    std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
+    auto iter = colorChangeListenerMap_.find(IPCSkeleton::GetCallingTokenID());
+    if (iter != colorChangeListenerMap_.end()) {
+        iter->second = nullptr;
+        colorChangeListenerMap_.erase(iter);
+    }
     HILOG_DEBUG("WallpaperService::Off out");
     return true;
 }

@@ -29,13 +29,11 @@ namespace OHOS {
 namespace WallpaperMgrService {
 class IWallpaperColorChangeListener : public IRemoteBroker {
 public:
-    enum Message {
-        ONCOLORSCHANGE = 0
-    };
+    enum Message { ONCOLORSCHANGE = 0 };
     DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.WallpaperMgrService.IWallpaperColorChangeListener");
     virtual void onColorsChange(std::vector<RgbaColor> color, int wallpaperType) = 0;
 };
-}  // namespace WallpaperMgrService
-}  // namespace OHOS
+} // namespace WallpaperMgrService
+} // namespace OHOS
 
 #endif // I_WALLPAPER_COLOR_CHANGE_LISTENER_H

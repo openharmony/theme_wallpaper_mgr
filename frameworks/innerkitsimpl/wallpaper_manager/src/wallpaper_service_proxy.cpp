@@ -365,14 +365,13 @@ bool WallpaperServiceProxy::Off(sptr<IWallpaperColorChangeListener> listener)
         HILOG_ERROR(" Failed to write parcelable ");
         return false;
     }
-    if (listener == nullptr) {
-        HILOG_ERROR("listener is nullptr");
-        return false;
+    if (listener != nullptr) {
+        if (!data.WriteRemoteObject(listener->AsObject())) {
+            HILOG_ERROR("write subscribe type or parcel failed.");
+            return false;
+        }
     }
-    if (!data.WriteRemoteObject(listener->AsObject())) {
-        HILOG_ERROR("write subscribe type or parcel failed.");
-        return false;
-    }
+
     int32_t result = Remote()->SendRequest(OFF, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperServiceProxy::Off fail, result = %{public}d ", result);

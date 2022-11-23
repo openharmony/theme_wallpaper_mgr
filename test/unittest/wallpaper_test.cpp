@@ -114,7 +114,7 @@ public:
     WallpaperColorChangeListenerTestImpl &operator=(WallpaperColorChangeListenerTestImpl &&) = delete;
 
     // callback function will be called when the db data is changed.
-    void onColorsChange(std::vector<RgbaColor> color, int wallpaperType);
+    void OnColorsChange(const std::vector<RgbaColor> &color, int wallpaperType);
 
     // reset the callCount_ to zero.
     void ResetToZero();
@@ -125,7 +125,7 @@ private:
     unsigned long callCount_;
 };
 
-void WallpaperColorChangeListenerTestImpl::onColorsChange(std::vector<RgbaColor> color, int wallpaperType)
+void WallpaperColorChangeListenerTestImpl::OnColorsChange(const std::vector<RgbaColor> &color, int wallpaperType)
 {
     callCount_++;
     for (auto const &each : color) {
@@ -137,7 +137,6 @@ void WallpaperColorChangeListenerTestImpl::onColorsChange(std::vector<RgbaColor>
 WallpaperColorChangeListenerTestImpl::WallpaperColorChangeListenerTestImpl()
 {
     callCount_ = 0;
-    color_ = {};
     wallpaperType_ = -1;
 }
 
@@ -274,9 +273,9 @@ HWTEST_F(WallpaperTest, IsOperationAllowed001, TestSize.Level1)
 */
 HWTEST_F(WallpaperTest, On001, TestSize.Level1)
 {
+    HILOG_INFO("On001 begin");
     auto listener = std::make_shared<WallpaperColorChangeListenerTestImpl>();
-    auto onStatus = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().On("colorChange", listener);
-    EXPECT_EQ(onStatus, true) << "subscribe wallpaper color change failed.";
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().On("colorChange", listener);
 
     auto offSubStatus = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().Off("colorChange", listener);
     EXPECT_EQ(offSubStatus, true) << "unsubscribe wallpaper color change failed.";

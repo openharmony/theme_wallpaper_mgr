@@ -128,7 +128,7 @@ public:
      * @param callback Provides dominant colors of the wallpaper.
      * @return  true or false
      */
-    bool On(const std::string type, std::shared_ptr<WallpaperColorChangeListener> listener) final;
+    bool On(const std::string &type, std::shared_ptr<WallpaperColorChangeListener> listener) final;
 
     /**
      * Registers a listener for wallpaper color changes to receive notifications about the changes.
@@ -136,7 +136,7 @@ public:
      * changes
      * @param callback Provides dominant colors of the wallpaper.
      */
-    bool Off(const std::string type, std::shared_ptr<WallpaperColorChangeListener> listener) final;
+    bool Off(const std::string &type, std::shared_ptr<WallpaperColorChangeListener> listener) final;
 
     bool RegisterWallpaperCallback(bool (*callback)(int)) final;
 
@@ -171,7 +171,6 @@ private:
     std::mutex wpFdLock_;
     std::map<int32_t, int32_t> wallpaperFdMap_;
     std::mutex wpProxyLock_;
-    std::map<std::string, sptr<IWallpaperColorChangeListener>> registeredListenerMap_;
     std::mutex listenerMapMutex_;
     bool (*callback)(int);
 };

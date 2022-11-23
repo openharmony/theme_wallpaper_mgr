@@ -117,7 +117,7 @@ private:
     */
     void InitData();
     int64_t WritePixelMapToFile(const std::string &filePath, std::unique_ptr<OHOS::Media::PixelMap> pixelMap);
-    bool CompareColor(RgbaColor &localColor, ColorManager::Color &color);
+    bool CompareColor(const RgbaColor &localColor, const ColorManager::Color &color);
     bool SaveColor(int wallpaperType);
     void LoadSettingsLocked(int userId, bool keepDimensionHints);
     std::string GetWallpaperDir(int userId);
@@ -174,7 +174,8 @@ private:
     std::mutex mtx;
     RgbaColor lockWallpaperColor_;
     RgbaColor systemWallpaperColor_;
-    sptr<IWallpaperColorChangeListener> colorChangeListener_ = nullptr;
+    std::map<int, sptr<IWallpaperColorChangeListener>> colorChangeListenerMap_;
+    std::mutex listenerMapMutex_;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

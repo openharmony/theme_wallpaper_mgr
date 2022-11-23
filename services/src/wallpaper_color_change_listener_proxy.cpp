@@ -23,9 +23,9 @@ namespace OHOS {
 namespace WallpaperMgrService {
 using namespace std::chrono;
 
-void WallpaperColorChangeListenerProxy::onColorsChange(std::vector<RgbaColor> color, int wallpaperType)
+void WallpaperColorChangeListenerProxy::OnColorsChange(const std::vector<RgbaColor> &color, int wallpaperType)
 {
-    HILOG_DEBUG("WallpaperColorChangeListenerProxy::onColorsChange Start");
+    HILOG_DEBUG("WallpaperColorChangeListenerProxy::OnColorsChange Start");
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -56,7 +56,7 @@ void WallpaperColorChangeListenerProxy::onColorsChange(std::vector<RgbaColor> co
     if (error != 0) {
         HILOG_ERROR("SendRequest failed, error %{public}d", error);
     }
-    HILOG_DEBUG("WallpaperColorChangeListenerProxy::onColorsChange End");
+    HILOG_DEBUG("WallpaperColorChangeListenerProxy::OnColorsChange End");
 }
 }  // namespace WallpaperMgrService
 }  // namespace OHOS

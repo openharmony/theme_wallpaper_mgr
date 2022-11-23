@@ -625,9 +625,9 @@ NapiWallpaperAbility::~NapiWallpaperAbility()
     MiscServices::UvQueue::Call(env_, workData, afterCallback);
 }
 
-void NapiWallpaperAbility::onColorsChange(std::vector<RgbaColor> color, int wallpaperType)
+void NapiWallpaperAbility::OnColorsChange(const std::vector<RgbaColor> &color, int wallpaperType)
 {
-    WallpaperMgrService::WallpaperColorChangeListener::onColorsChange(color, wallpaperType);
+    WallpaperMgrService::WallpaperColorChangeListener::OnColorsChange(color, wallpaperType);
     EventDataWorker *eventDataWorker = new EventDataWorker(this, color, wallpaperType);
     uv_work_t *work = new uv_work_t;
     work->data = eventDataWorker;

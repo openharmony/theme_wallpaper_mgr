@@ -31,7 +31,7 @@ public:
     {
     }
 
-    virtual void onColorsChange(std::vector<RgbaColor> color, int wallpaperType)
+    virtual void OnColorsChange(const std::vector<RgbaColor> &color, int wallpaperType)
     {
     }
 };

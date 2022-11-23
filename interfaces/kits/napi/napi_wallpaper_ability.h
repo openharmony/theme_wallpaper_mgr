@@ -154,7 +154,7 @@ class NapiWallpaperAbility : public WallpaperMgrService::WallpaperColorChangeLis
 public:
     NapiWallpaperAbility(napi_env env, napi_value callback);
     virtual ~NapiWallpaperAbility();
-    void onColorsChange(std::vector<RgbaColor> color, int wallpaperType) override;
+    void OnColorsChange(const std::vector<RgbaColor> &color, int wallpaperType) override;
     static bool IsValidArgCount(size_t argc, size_t expectationSize);
     static bool IsValidArgType(napi_env env, napi_value argValue, napi_valuetype expectationType);
     static bool IsValidArgRange(napi_env env, napi_value argValue);

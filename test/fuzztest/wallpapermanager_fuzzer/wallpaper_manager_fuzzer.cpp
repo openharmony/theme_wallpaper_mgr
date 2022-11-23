@@ -66,13 +66,13 @@ public:
     WallpaperColorChangeListenerFuzzTestImpl &operator=(WallpaperColorChangeListenerFuzzTestImpl &&) = delete;
 
     // callback function will be called when the db data is changed.
-    void onColorsChange(std::vector<RgbaColor> color, int wallpaperType);
+    void OnColorsChange(const std::vector<RgbaColor> &color, int wallpaperType);
 
 private:
     unsigned long callCount_;
 };
 
-void WallpaperColorChangeListenerFuzzTestImpl::onColorsChange(std::vector<RgbaColor> color, int wallpaperType)
+void WallpaperColorChangeListenerFuzzTestImpl::OnColorsChange(const std::vector<RgbaColor> &color, int wallpaperType)
 {
     callCount_++;
     for (auto const &each : color) {

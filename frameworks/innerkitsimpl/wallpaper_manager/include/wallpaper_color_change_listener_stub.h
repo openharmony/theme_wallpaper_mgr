@@ -18,23 +18,24 @@
 
 #include <cstdint>
 #include <vector>
+
 #include "iremote_broker.h"
 #include "iremote_proxy.h"
 #include "iremote_stub.h"
+#include "iwallpaper_color_change_listener.h"
 #include "refbase.h"
 #include "wallpaper_manager_common_info.h"
-#include "iwallpaper_color_change_listener.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
 
 class WallpaperColorChangeListenerStub : public IRemoteStub<IWallpaperColorChangeListener> {
 public:
-    virtual int OnRemoteRequest(uint32_t code, MessageParcel &data,
-                                MessageParcel &reply, MessageOption &option) override;
+    virtual int OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
+        MessageOption &option) override;
 };
 
-}  // namespace WallpaperMgrService
-}  // namespace OHOS
+} // namespace WallpaperMgrService
+} // namespace OHOS
 
-#endif  // WALLPAPER_COLOR_CHANGE_LISTENER_H
+#endif // WALLPAPER_COLOR_CHANGE_LISTENER_H

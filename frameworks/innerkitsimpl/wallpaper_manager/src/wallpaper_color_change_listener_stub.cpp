@@ -12,18 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#define LOG_TAG "WallpaperColorChangeListenerStub"
+#include "wallpaper_color_change_listener_stub.h"
 
 #include "hilog_wrapper.h"
 #include "message_parcel.h"
-#include "wallpaper_color_change_listener_stub.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
 using namespace std::chrono;
-int32_t WallpaperColorChangeListenerStub::OnRemoteRequest(uint32_t code, MessageParcel &data,
-                                                          MessageParcel &reply, MessageOption &option)
+int32_t WallpaperColorChangeListenerStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
+    MessageOption &option)
 {
     HILOG_DEBUG("WallpaperColorChangeListenerStub::OnRemoteRequest Start");
     std::u16string descriptor = WallpaperColorChangeListenerStub::GetDescriptor();
@@ -55,5 +53,5 @@ int32_t WallpaperColorChangeListenerStub::OnRemoteRequest(uint32_t code, Message
         }
     }
 }
-}  // namespace WallpaperMgrService
-}  // namespace OHOS
+} // namespace WallpaperMgrService
+} // namespace OHOS

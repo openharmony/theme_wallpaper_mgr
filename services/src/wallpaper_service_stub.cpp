@@ -275,15 +275,13 @@ int32_t WallpaperServiceStub::OnWallpaperOff(MessageParcel &data, MessageParcel 
 {
     HILOG_DEBUG("WallpaperServiceStub::OnWallpaperOff in");
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
+    bool status = false;
     if (remote == nullptr) {
-        HILOG_ERROR("OnWallpaperOff nullptr after ipc");
-        if (!reply.WriteInt32(static_cast<int32_t>(E_READ_PARCEL_ERROR))) {
-            return -1;
-        }
-        return 0;
+        status = Off(nullptr);
+    } else {
+        sptr<IWallpaperColorChangeListener> WallpaperListenerProxy = iface_cast<IWallpaperColorChangeListener>(remote);
+        status = Off(std::move(WallpaperListenerProxy));
     }
-    sptr<IWallpaperColorChangeListener> WallpaperListenerProxy = iface_cast<IWallpaperColorChangeListener>(remote);
-    bool status = Off(std::move(WallpaperListenerProxy));
     int32_t ret = (status == true) ? 0 : -1;
     if (!reply.WriteInt32(ret)) {
         return -1;
