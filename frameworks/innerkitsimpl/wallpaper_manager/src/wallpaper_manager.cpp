@@ -131,7 +131,7 @@ template<typename F, typename... Args> ErrCode WallpaperManager::CallService(F f
     return result;
 }
 
-std::vector<RgbaColor> WallpaperManager::GetColors(int wallpaperType)
+std::vector<uint64_t> WallpaperManager::GetColors(int wallpaperType)
 {
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
@@ -404,7 +404,7 @@ bool WallpaperManager::ScreenshotLiveWallpaper(int wallpaperType, OHOS::Media::P
     return wpServerProxy->ScreenshotLiveWallpaper(wallpaperType, pixelMap);
 }
 
-bool WallpaperManager::On(std::shared_ptr<WallpaperColorChangeListener> listener)
+bool WallpaperManager::On(const std::string &type, std::shared_ptr<WallpaperColorChangeListener> listener)
 {
     HILOG_DEBUG("WallpaperManager::On in");
     auto wpServerProxy = GetService();
@@ -418,30 +418,17 @@ bool WallpaperManager::On(std::shared_ptr<WallpaperColorChangeListener> listener
     }
     std::lock_guard<std::mutex> lck(listenerMapMutex_);
 
-    if (registeredListeners_.count(listener.get()) == 1) {
-        HILOG_ERROR("already listened");
-        return false;
-    }
-
     sptr<WallpaperColorChangeListenerClient> ipcListener = new (std::nothrow)
         WallpaperColorChangeListenerClient(listener);
     if (ipcListener == nullptr) {
         HILOG_ERROR("new WallpaperColorChangeListenerClient failed");
         return false;
     }
-    bool status = wpServerProxy->On(ipcListener);
-    if (status == false) {
-        const auto temp = registeredListeners_.insert({ listener.get(), ipcListener });
-        if (!temp.second) {
-            HILOG_ERROR("local insert error");
-            return false;
-        }
-    }
     HILOG_DEBUG("WallpaperManager::On out");
-    return true;
+    return wpServerProxy->On(ipcListener);
 }
 
-bool WallpaperManager::Off(std::shared_ptr<WallpaperColorChangeListener> listener)
+bool WallpaperManager::Off(const std::string &type, std::shared_ptr<WallpaperColorChangeListener> listener)
 {
     HILOG_DEBUG("WallpaperManager::Off in");
     auto wpServerProxy = GetService();
@@ -449,22 +436,23 @@ bool WallpaperManager::Off(std::shared_ptr<WallpaperColorChangeListener> listene
         HILOG_ERROR("Get proxy failed");
         return false;
     }
-    if (listener == nullptr) {
-        HILOG_ERROR("listener is nullptr.");
-        return false;
-    }
     std::lock_guard<std::mutex> lck(listenerMapMutex_);
-    auto it = registeredListeners_.find(listener.get());
-    if (it == registeredListeners_.end()) {
-        HILOG_ERROR("never listened");
-        return true;
+    bool status = false;
+    if (listener != nullptr) {
+        sptr<WallpaperColorChangeListenerClient> ipcListener = new (std::nothrow)
+            WallpaperColorChangeListenerClient(listener);
+        if (ipcListener == nullptr) {
+            HILOG_ERROR("new WallpaperColorChangeListenerClient failed");
+            return false;
+        }
+        status = wpServerProxy->Off(ipcListener);
+    } else {
+        status = wpServerProxy->Off(nullptr);
     }
-    bool status = wpServerProxy->Off(it->second);
     if (status == false) {
-        HILOG_ERROR("off failed code=%d.", ERR_NONE);
+        HILOG_ERROR("off failed");
         return false;
     }
-    registeredListeners_.erase(it);
     HILOG_DEBUG("WallpaperManager::Off out");
     return true;
 }

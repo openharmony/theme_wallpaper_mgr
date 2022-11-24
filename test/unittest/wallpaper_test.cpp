@@ -101,7 +101,7 @@ void WallpaperTest::TearDown(void)
 
 class WallpaperColorChangeListenerTestImpl : public OHOS::WallpaperMgrService::WallpaperColorChangeListener {
 public:
-    std::vector<RgbaColor> color_;
+    std::vector<uint64_t> color_;
     int wallpaperType_;
     WallpaperColorChangeListenerTestImpl();
     ~WallpaperColorChangeListenerTestImpl()
@@ -114,7 +114,7 @@ public:
     WallpaperColorChangeListenerTestImpl &operator=(WallpaperColorChangeListenerTestImpl &&) = delete;
 
     // callback function will be called when the db data is changed.
-    void onColorsChange(std::vector<RgbaColor> color, int wallpaperType);
+    void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType);
 
     // reset the callCount_ to zero.
     void ResetToZero();
@@ -125,7 +125,7 @@ private:
     unsigned long callCount_;
 };
 
-void WallpaperColorChangeListenerTestImpl::onColorsChange(std::vector<RgbaColor> color, int wallpaperType)
+void WallpaperColorChangeListenerTestImpl::OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType)
 {
     callCount_++;
     for (auto const &each : color) {
@@ -274,11 +274,11 @@ HWTEST_F(WallpaperTest, IsOperationAllowed001, TestSize.Level1)
 */
 HWTEST_F(WallpaperTest, On001, TestSize.Level1)
 {
+    HILOG_INFO("On001 begin");
     auto listener = std::make_shared<WallpaperColorChangeListenerTestImpl>();
-    auto onStatus = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().On(listener);
-    EXPECT_EQ(onStatus, true) << "subscribe wallpaper color change failed.";
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().On("colorChange", listener);
 
-    auto offSubStatus = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().Off(listener);
+    auto offSubStatus = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().Off("colorChange", listener);
     EXPECT_EQ(offSubStatus, true) << "unsubscribe wallpaper color change failed.";
 }
 
@@ -296,8 +296,8 @@ HWTEST_F(WallpaperTest, GetColors001, TestSize.Level0)
 {
     HILOG_INFO("GetColors001 begin");
 
-    std::vector<RgbaColor> Color = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(SYSTYEM);
-    bool result = Color.empty();
+    std::vector<uint64_t> color = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(SYSTYEM);
+    bool result = color.empty();
     EXPECT_FALSE(result);
 }
 
@@ -311,8 +311,8 @@ HWTEST_F(WallpaperTest, GetColors001, TestSize.Level0)
 HWTEST_F(WallpaperTest, GetColors002, TestSize.Level0)
 {
     HILOG_INFO("GetColors002 begin");
-    std::vector<RgbaColor> Color = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN);
-    bool result = Color.empty();
+    std::vector<uint64_t> color = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN);
+    bool result = color.empty();
     EXPECT_FALSE(result);
 }
 /*********************   GetColors   *********************/

@@ -21,6 +21,6 @@
 
 class WallpaperOnColorsChangedListener {
 public:
-    virtual void onColorsChanged(std::vector<RgbaColor> color, int wallpaperType) = 0;
+    virtual void onColorsChanged(const std::vector<uint64_t> &color, int wallpaperType) = 0;
 };
 #endif

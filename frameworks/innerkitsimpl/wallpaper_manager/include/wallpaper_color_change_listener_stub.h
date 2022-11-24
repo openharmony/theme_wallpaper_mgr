@@ -12,25 +12,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef WALLPAPER_JS_UTIL_H
-#define WALLPAPER_JS_UTIL_H
+
+#ifndef WALLPAPER_COLOR_CHANGE_LISTENER_STUB_H
+#define WALLPAPER_COLOR_CHANGE_LISTENER_STUB_H
 
 #include <cstdint>
-#include <string>
 #include <vector>
-#include "napi/native_common.h"
-#include "napi/native_api.h"
-#include "napi/native_node_api.h"
+
+#include "iremote_broker.h"
+#include "iremote_proxy.h"
+#include "iremote_stub.h"
+#include "iwallpaper_color_change_listener.h"
+#include "refbase.h"
 #include "wallpaper_manager_common_info.h"
 
-namespace OHOS::WallpaperNAPI {
-class WallpaperJSUtil {
-public:
-    static constexpr int32_t MAX_LEN = 4096;
-    static constexpr int32_t MAX_ARGC = 6;
+namespace OHOS {
+namespace WallpaperMgrService {
 
-    static std::string Convert2String(napi_env env, napi_value jsString);
-    static napi_value Convert2JSRgbaArray(napi_env env, const std::vector<uint64_t> &color);
+class WallpaperColorChangeListenerStub : public IRemoteStub<IWallpaperColorChangeListener> {
+public:
+    virtual int OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
+        MessageOption &option) override;
 };
-}
-#endif // WALLPAPER_JS_UTIL_H
+
+} // namespace WallpaperMgrService
+} // namespace OHOS
+
+#endif // WALLPAPER_COLOR_CHANGE_LISTENER_H

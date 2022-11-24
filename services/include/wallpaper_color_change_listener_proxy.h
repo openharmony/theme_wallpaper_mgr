@@ -13,28 +13,31 @@
  * limitations under the License.
  */
 
-#ifndef WALLPAPER_COLOR_CHANGE_LISTENER_H
-#define WALLPAPER_COLOR_CHANGE_LISTENER_H
+#ifndef WALLPAPER_COLOR_CHANGE_LISTENER_PROXY_H
+#define WALLPAPER_COLOR_CHANGE_LISTENER_PROXY_H
 
-#include <memory>
+#include <cstdint>
 #include <vector>
-
+#include "iremote_broker.h"
+#include "iremote_proxy.h"
+#include "iremote_stub.h"
+#include "refbase.h"
 #include "wallpaper_manager_common_info.h"
+#include "iwallpaper_color_change_listener.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
-class WallpaperColorChangeListener {
+class WallpaperColorChangeListenerProxy : public IRemoteProxy<IWallpaperColorChangeListener> {
 public:
-    WallpaperColorChangeListener() = default;
-
-    virtual ~WallpaperColorChangeListener()
+    explicit WallpaperColorChangeListenerProxy(const sptr<IRemoteObject> &object)
+        : IRemoteProxy<IWallpaperColorChangeListener>(object)
     {
     }
-
-    virtual void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType)
-    {
-    }
+    ~WallpaperColorChangeListenerProxy() = default;
+    static inline BrokerDelegator<WallpaperColorChangeListenerProxy> delegator_;
+    void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType) override;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
-#endif // WALLPAPER_COLOR_CHANGE_LISTENER_H
+
+#endif  // WALLPAPER_COLOR_CHANGE_LISTENER_H

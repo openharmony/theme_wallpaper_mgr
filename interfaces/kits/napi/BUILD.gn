@@ -25,6 +25,7 @@ ohos_shared_library("wallpaper") {
     "//base/theme/wallpaper_mgr/utils/include",
     "//third_party/libuv/include",
     "//commonlibrary/c_utils/base/include",
+    "//foundation/graphic/graphic_2d/utils/color_manager",
   ]
 
   sources = [
@@ -34,7 +35,10 @@ ohos_shared_library("wallpaper") {
     "native_module.cpp",
     "wallpaper_js_util.cpp",
   ]
-  deps = [ "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager" ]
+  deps = [
+    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
+    "//foundation/graphic/graphic_2d/utils/color_manager:color_manager",
+  ]
 
   external_deps = [
     "c_utils:utils",

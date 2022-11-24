@@ -536,7 +536,6 @@ napi_value NAPI_ScreenshotLiveWallpaper(napi_env env, napi_callback_info info)
     return nullptr;
 }
 
-thread_local std::shared_ptr<WallpaperMgrService::WallpaperColorChangeListener> colorChangeListener_;
 
 napi_value NAPI_On(napi_env env, napi_callback_info info)
 {
@@ -559,18 +558,11 @@ napi_value NAPI_On(napi_env env, napi_callback_info info)
     std::shared_ptr<WallpaperMgrService::WallpaperColorChangeListener> listener =
         std::make_shared<NapiWallpaperAbility>(env, argv[1]);
 
-    bool status = WallpaperMgrService::WallpaperManagerkits::GetInstance().On(listener);
+    bool status = WallpaperMgrService::WallpaperManagerkits::GetInstance().On(type, listener);
     if (!status) {
         HILOG_ERROR("WallpaperMgrService::WallpaperManagerkits::GetInstance().On failed!");
         return nullptr;
     }
-
-    if (colorChangeListener_ != nullptr) {
-        HILOG_DEBUG("WallpaperMgrService::WallpaperManagerkits::GetInstance().Off");
-        WallpaperMgrService::WallpaperManagerkits::GetInstance().Off(listener);
-    }
-
-    colorChangeListener_ = std::move(listener);
 
     napi_value result = nullptr;
     napi_get_undefined(env, &result);
@@ -603,22 +595,11 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info)
         listener = std::make_shared<NapiWallpaperAbility>(env, argv[1]);
     }
 
-    if (colorChangeListener_ != nullptr) {
-        listener = std::move(colorChangeListener_);
-    }
-
-    if (listener == nullptr) {
-        HILOG_ERROR("listener is null");
-        return nullptr;
-    }
-
-    bool status = WallpaperMgrService::WallpaperManagerkits::GetInstance().Off(listener);
+    bool status = WallpaperMgrService::WallpaperManagerkits::GetInstance().Off(type, listener);
     if (!status) {
         HILOG_ERROR("WallpaperMgrService::WallpaperManagerkits::GetInstance().Off failed!");
         return nullptr;
     }
-
-    colorChangeListener_ = nullptr;
 
     napi_value result = nullptr;
     napi_get_undefined(env, &result);
@@ -643,9 +624,9 @@ NapiWallpaperAbility::~NapiWallpaperAbility()
     MiscServices::UvQueue::Call(env_, workData, afterCallback);
 }
 
-void NapiWallpaperAbility::onColorsChange(std::vector<RgbaColor> color, int wallpaperType)
+void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType)
 {
-    WallpaperMgrService::WallpaperColorChangeListener::onColorsChange(color, wallpaperType);
+    WallpaperMgrService::WallpaperColorChangeListener::OnColorsChange(color, wallpaperType);
     EventDataWorker *eventDataWorker = new EventDataWorker(this, color, wallpaperType);
     uv_work_t *work = new uv_work_t;
     work->data = eventDataWorker;
@@ -664,7 +645,7 @@ void NapiWallpaperAbility::onColorsChange(std::vector<RgbaColor> color, int wall
             napi_get_global(eventDataInner->listener->env_, &global);
             napi_value result;
             napi_status callStatus =
-                napi_call_function(eventDataInner->listener->env_, global, callback, 1, args, &result);
+                napi_call_function(eventDataInner->listener->env_, global, callback, 2, args, &result);
             if (callStatus != napi_ok) {
                 HILOG_ERROR(
                     "notify data change failed callStatus:%{public}d callback:%{public}p", callStatus, callback);

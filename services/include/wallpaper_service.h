@@ -47,6 +47,9 @@
 #include "ability_connect_callback_interface.h"
 
 namespace OHOS {
+namespace ColorManager {
+class Color;
+}
 namespace WallpaperMgrService {
 enum class ServiceRunningState {
     STATE_NOT_START,
@@ -67,7 +70,7 @@ public:
     int32_t SetWallpaperByFD(int fd, int wallpaperType, int length) override;
     int32_t SetWallpaperByMap(int fd, int wallpaperType, int length) override;
     int32_t GetPixelMap(int wallpaperType, FdInfo &fdInfo) override;
-    std::vector<RgbaColor> GetColors(int wallpaperType) override;
+    std::vector<uint64_t> GetColors(int wallpaperType) override;
     int32_t GetFile(int32_t wallpaperType, int32_t &wallpaperFd) override;
     int  GetWallpaperId(int wallpaperType) override;
     int  GetWallpaperMinHeight() override;
@@ -115,6 +118,8 @@ private:
     */
     void InitData();
     int64_t WritePixelMapToFile(const std::string &filePath, std::unique_ptr< OHOS::Media::PixelMap> pixelMap);
+    bool CompareColor(const uint64_t &localColor, const ColorManager::Color &color);
+    bool SaveColor(int wallpaperType);
     void LoadSettingsLocked(int userId, bool keepDimensionHints);
     std::string GetWallpaperDir(int userId);
     void NotifyLockWallpaperChanged();
@@ -169,6 +174,10 @@ private:
 
     std::string name_;
     std::mutex mtx;
+    uint64_t lockWallpaperColor_;
+    uint64_t systemWallpaperColor_;
+    std::map<int, sptr<IWallpaperColorChangeListener>> colorChangeListenerMap_;
+    std::mutex listenerMapMutex_;
 };
 }
 } // OHOS
