@@ -378,16 +378,16 @@ void WallpaperService::MigrateFromOld()
     }
 }
 
-std::vector<uint32_t> WallpaperService::GetColors(int wallpaperType)
+std::vector<uint64_t> WallpaperService::GetColors(int wallpaperType)
 {
-    std::vector<uint32_t> Colors;
+    std::vector<uint64_t> colors;
     if (wallpaperType == WALLPAPER_SYSTEM) {
-        Colors.emplace_back(systemWallpaperColor_);
+        colors.emplace_back(systemWallpaperColor_);
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
-        Colors.emplace_back(lockWallpaperColor_);
+        colors.emplace_back(lockWallpaperColor_);
     }
     HILOG_INFO(" Service End!");
-    return Colors;
+    return colors;
 }
 
 int32_t WallpaperService::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
@@ -419,29 +419,12 @@ int64_t WallpaperService::WritePixelMapToFile(const std::string &filePath, std::
     return packedSize;
 }
 
-bool WallpaperService::CompareColor(const uint32_t &localColor, const ColorManager::Color &color)
+bool WallpaperService::CompareColor(const uint64_t &localColor, const ColorManager::Color &color)
 {
-    if (((localColor >> RED_OFFSET) & BYTE_MASK) == color.r * BYTE_MASK &&
-        ((localColor >> GREEN_OFFSET) & BYTE_MASK) == color.g * BYTE_MASK &&
-        ((localColor >> BLUE_OFFSET) & BYTE_MASK) == color.b * BYTE_MASK &&
-        ((localColor >> ALPHA_OFFSET) & BYTE_MASK) == color.a * BYTE_MASK) {
+    if (localColor == color.PackValue()) {
         return true;
     }
     return false;
-}
-
-void WallpaperService::ConvertToUint32(const ColorManager::Color &color, uint32_t &localColor)
-{
-    if (color.a < 0 || color.r < 0 || color.g < 0 || color.b < 0) {
-        HILOG_ERROR("ConvertToUint32 error");
-        return;
-    }
-    localColor = (static_cast<uint32_t>(color.a * BYTE_MASK) << ALPHA_OFFSET) +
-                 (static_cast<uint32_t>(color.r * BYTE_MASK) << RED_OFFSET) +
-                 (static_cast<uint32_t>(color.g * BYTE_MASK) << GREEN_OFFSET) +
-                 (static_cast<uint32_t>(color.b * BYTE_MASK) << BLUE_OFFSET);
-    HILOG_DEBUG("red:%{public}f,green:%{public}f,blue:%{public}f,alpha:%{public}f", color.r, color.g, color.b, color.a);
-    HILOG_DEBUG("localColor:%{public}u", localColor);
 }
 
 bool WallpaperService::SaveColor(int wallpaperType)
@@ -474,18 +457,18 @@ bool WallpaperService::SaveColor(int wallpaperType)
         HILOG_ERROR("GetMainColor failed ret is : %{public}d", ret);
         return false;
     }
-    std::vector<uint32_t> Colors;
+    std::vector<uint64_t> colors;
     if (wallpaperType == WALLPAPER_SYSTEM && !CompareColor(systemWallpaperColor_, color)) {
-        ConvertToUint32(color, systemWallpaperColor_);
-        Colors.emplace_back(systemWallpaperColor_);
+        systemWallpaperColor_ = color.PackValue();
+        colors.emplace_back(systemWallpaperColor_);
         for (const auto listener : colorChangeListenerMap_) {
-            listener.second->OnColorsChange(Colors, WALLPAPER_SYSTEM);
+            listener.second->OnColorsChange(colors, WALLPAPER_SYSTEM);
         }
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN && !CompareColor(lockWallpaperColor_, color)) {
-        ConvertToUint32(color, lockWallpaperColor_);
-        Colors.emplace_back(lockWallpaperColor_);
+        lockWallpaperColor_ = color.PackValue();
+        colors.emplace_back(lockWallpaperColor_);
         for (const auto listener : colorChangeListenerMap_) {
-            listener.second->OnColorsChange(Colors, WALLPAPER_LOCKSCREEN);
+            listener.second->OnColorsChange(colors, WALLPAPER_LOCKSCREEN);
         }
     }
     return true;

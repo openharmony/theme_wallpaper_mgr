@@ -26,31 +26,31 @@ namespace WallpaperMgrService {
 using namespace OHOS::HiviewDFX;
 constexpr const int32_t ERROR_NONE = 0;
 constexpr const int32_t INVALID_FD = -1;
-std::vector<uint32_t> WallpaperServiceProxy::GetColors(int wallpaperType)
+std::vector<uint64_t> WallpaperServiceProxy::GetColors(int wallpaperType)
 {
-    std::vector<uint32_t> Colors;
+    std::vector<uint64_t> colors;
     MessageParcel data, reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return Colors;
+        return colors;
     }
     if (!data.WriteInt32(wallpaperType)) {
         HILOG_ERROR(" Failed to WriteInt32 ");
-        return Colors;
+        return colors;
     }
 
     int32_t result = Remote()->SendRequest(GET_COLORS, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" get colors result = %{public}d ", result);
-        return Colors;
+        return colors;
     }
 
-    if (!reply.ReadUInt32Vector(&Colors)) {
-        HILOG_ERROR(" Failed to ReadUInt32Vector ");
+    if (!reply.ReadUInt64Vector(&colors)) {
+        HILOG_ERROR(" Failed to ReadUInt64Vector ");
     }
-    return Colors;
+    return colors;
 }
 
 int32_t WallpaperServiceProxy::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)

@@ -133,7 +133,7 @@ ErrCode WallpaperManager::CallService(F func, Args &&...args)
     return result;
 }
 
-std::vector<uint32_t> WallpaperManager::GetColors(int wallpaperType)
+std::vector<uint64_t> WallpaperManager::GetColors(int wallpaperType)
 {
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
@@ -427,7 +427,7 @@ bool WallpaperManager::On(const std::string &type, std::shared_ptr<WallpaperColo
         return false;
     }
     HILOG_DEBUG("WallpaperManager::On out");
-    return  wpServerProxy->On(ipcListener);
+    return wpServerProxy->On(ipcListener);
 }
 
 bool WallpaperManager::Off(const std::string &type, std::shared_ptr<WallpaperColorChangeListener> listener)

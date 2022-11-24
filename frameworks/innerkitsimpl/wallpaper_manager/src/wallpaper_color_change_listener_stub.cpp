@@ -32,9 +32,9 @@ int32_t WallpaperColorChangeListenerStub::OnRemoteRequest(uint32_t code, Message
     }
     switch (code) {
         case ONCOLORSCHANGE: {
-            std::vector<uint32_t> color;
-            if (!data.ReadUInt32Vector(&color)) {
-                HILOG_ERROR("ONCOLORSCHANGE ReadUInt32Vector error");
+            std::vector<uint64_t> color;
+            if (!data.ReadUInt64Vector(&color)) {
+                HILOG_ERROR("ONCOLORSCHANGE ReadUInt64Vector error");
                 return -1;
             }
             int wallpaperType = data.ReadInt32();
@@ -43,7 +43,7 @@ int32_t WallpaperColorChangeListenerStub::OnRemoteRequest(uint32_t code, Message
             return 0;
         }
         default: {
-            HILOG_DEBUG("code error, WallpaperColorChangeListenerStub::OnRemoteRequest End");
+            HILOG_ERROR("code error, WallpaperColorChangeListenerStub::OnRemoteRequest End");
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
         }
     }

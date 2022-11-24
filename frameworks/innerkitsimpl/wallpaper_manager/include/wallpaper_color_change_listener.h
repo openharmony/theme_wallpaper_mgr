@@ -31,7 +31,7 @@ public:
     {
     }
 
-    virtual void OnColorsChange(const std::vector<uint32_t> &color, int wallpaperType)
+    virtual void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType)
     {
     }
 };

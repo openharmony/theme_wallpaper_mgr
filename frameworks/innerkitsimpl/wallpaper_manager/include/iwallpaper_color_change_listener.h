@@ -31,7 +31,7 @@ class IWallpaperColorChangeListener : public IRemoteBroker {
 public:
     enum Message { ONCOLORSCHANGE = 0 };
     DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.WallpaperMgrService.IWallpaperColorChangeListener");
-    virtual void OnColorsChange(const std::vector<uint32_t> &color, int wallpaperType) = 0;
+    virtual void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType) = 0;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

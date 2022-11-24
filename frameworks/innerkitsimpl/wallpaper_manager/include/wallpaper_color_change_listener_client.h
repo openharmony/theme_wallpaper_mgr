@@ -31,7 +31,7 @@ public:
 
     ~WallpaperColorChangeListenerClient();
 
-    void OnColorsChange(const std::vector<uint32_t> &color, int wallpaperType) override;
+    void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType) override;
 
     const std::shared_ptr<WallpaperColorChangeListener> GetColorChangeListener() const;
 

@@ -23,7 +23,7 @@ namespace OHOS {
 namespace WallpaperMgrService {
 using namespace std::chrono;
 
-void WallpaperColorChangeListenerProxy::OnColorsChange(const std::vector<uint32_t> &color, int wallpaperType)
+void WallpaperColorChangeListenerProxy::OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType)
 {
     HILOG_DEBUG("WallpaperColorChangeListenerProxy::OnColorsChange Start");
     MessageParcel data;
@@ -34,7 +34,7 @@ void WallpaperColorChangeListenerProxy::OnColorsChange(const std::vector<uint32_
         return;
     }
 
-    if (!data.WriteUInt32Vector(color)) {
+    if (!data.WriteUInt64Vector(color)) {
         HILOG_ERROR("write color failed");
         return;
     }

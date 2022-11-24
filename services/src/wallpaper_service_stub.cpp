@@ -135,10 +135,10 @@ int32_t WallpaperServiceStub::OnGetColors(MessageParcel &data, MessageParcel &re
 {
     HILOG_INFO("WallpaperServiceStub::OnGetColors start.");
     int wallpaperType = data.ReadInt32();
-    std::vector<uint32_t> vecWallpaperColors = GetColors(wallpaperType);
+    std::vector<uint64_t> vecWallpaperColors = GetColors(wallpaperType);
     auto size = vecWallpaperColors.size();
-    if (!reply.WriteUInt32Vector(vecWallpaperColors)) {
-        HILOG_ERROR("WallpaperServiceStub::OnGetColors WriteUInt32Vector error.");
+    if (!reply.WriteUInt64Vector(vecWallpaperColors)) {
+        HILOG_ERROR("WallpaperServiceStub::OnGetColors WriteUInt64Vector error.");
         return -1;
     }
     return (size == 0) ? -1 : 0;

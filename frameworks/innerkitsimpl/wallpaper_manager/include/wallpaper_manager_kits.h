@@ -71,7 +71,7 @@ public:
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of array callback function
      */
-    virtual std::vector<uint32_t> GetColors(int wallpaperType) = 0;
+    virtual std::vector<uint64_t> GetColors(int wallpaperType) = 0;
 
     /**
      * Obtains the ID of the wallpaper of the specified type.

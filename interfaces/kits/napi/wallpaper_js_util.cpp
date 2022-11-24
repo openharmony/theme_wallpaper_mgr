@@ -14,7 +14,7 @@
  */
 #define LOG_TAG "WallpaperJSUtil"
 #include "wallpaper_js_util.h"
-
+#include "export/color.h"
 #include "hilog_wrapper.h"
 
 namespace OHOS::WallpaperNAPI {
@@ -23,6 +23,7 @@ const static int32_t ZERO = 0;
 const static int32_t ONE = 1;
 const static int32_t TWO = 2;
 const static int32_t THREE = 3;
+constexpr const uint32_t COLOR_MASK{ 0xFF };
 
 std::string WallpaperJSUtil::Convert2String(napi_env env, napi_value jsString)
 {
@@ -50,7 +51,7 @@ std::string WallpaperJSUtil::Convert2String(napi_env env, napi_value jsString)
     return value;
 }
 
-napi_value WallpaperJSUtil::Convert2JSRgbaArray(napi_env env, const std::vector<uint32_t> &color)
+napi_value WallpaperJSUtil::Convert2JSRgbaArray(napi_env env, const std::vector<uint64_t> &color)
 {
     HILOG_DEBUG("Convert2JSRgbaArray in");
     napi_value result = nullptr;
@@ -62,24 +63,20 @@ napi_value WallpaperJSUtil::Convert2JSRgbaArray(napi_env env, const std::vector<
     int index = 0;
     for (const auto it : color) {
         HILOG_DEBUG("Convert2JSRgbaArray for");
-        RgbaColor color;
-        color.red = (it >> RED_OFFSET) & BYTE_MASK;
-        color.green = (it >> GREEN_OFFSET) & BYTE_MASK;
-        color.blue = (it >> BLUE_OFFSET) & BYTE_MASK;
-        color.alpha = (it >> ALPHA_OFFSET) & BYTE_MASK;
+        ColorManager::Color colors(it);
         napi_value element = nullptr;
         napi_create_array_with_length(env, ARRAY_LENGTH, &element);
         napi_value jsRgba = nullptr;
-        napi_create_int32(env, color.red, &jsRgba);
+        napi_create_int32(env, static_cast<int32_t>(colors.r * COLOR_MASK), &jsRgba);
         napi_set_element(env, element, ZERO, jsRgba);
         jsRgba = nullptr;
-        napi_create_int32(env, color.green, &jsRgba);
+        napi_create_int32(env, static_cast<int32_t>(colors.g * COLOR_MASK), &jsRgba);
         napi_set_element(env, element, ONE, jsRgba);
         jsRgba = nullptr;
-        napi_create_int32(env, color.blue, &jsRgba);
+        napi_create_int32(env, static_cast<int32_t>(colors.b * COLOR_MASK), &jsRgba);
         napi_set_element(env, element, TWO, jsRgba);
         jsRgba = nullptr;
-        napi_create_int32(env, color.alpha, &jsRgba);
+        napi_create_int32(env, static_cast<int32_t>(colors.a * COLOR_MASK), &jsRgba);
         napi_set_element(env, element, THREE, jsRgba);
         napi_set_element(env, result, index++, element);
     }

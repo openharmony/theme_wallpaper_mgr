@@ -35,7 +35,7 @@ public:
     }
     ~WallpaperColorChangeListenerProxy() = default;
     static inline BrokerDelegator<WallpaperColorChangeListenerProxy> delegator_;
-    void OnColorsChange(const std::vector<uint32_t> &color, int wallpaperType) override;
+    void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType) override;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
