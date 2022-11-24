@@ -58,14 +58,11 @@ napi_value WallpaperJSUtil::Convert2JSRgbaArray(napi_env env, const std::vector<
     int index = 0;
     for (const auto it : color) {
         HILOG_DEBUG("Convert2JSRgbaArray for");
+        ColorManager::Color colors(it);
         napi_value red = nullptr;
         napi_value green = nullptr;
         napi_value blue = nullptr;
         napi_value alpha = nullptr;
-        napi_create_int32(env, color.red, &red);
-        napi_create_int32(env, color.green, &green);
-        napi_create_int32(env, color.blue, &blue);
-        napi_create_int32(env, color.alpha, &alpha);
         napi_create_int32(env, static_cast<int32_t>(colors.r * COLOR_MASK), &red);
         napi_create_int32(env, static_cast<int32_t>(colors.g * COLOR_MASK), &green);
         napi_create_int32(env, static_cast<int32_t>(colors.b * COLOR_MASK), &blue);
