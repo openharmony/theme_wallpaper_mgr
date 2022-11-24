@@ -1080,13 +1080,13 @@ int32_t WallpaperService::GetFilePath(int wallpaperType, std::string &filePath)
     if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         auto wallpaperData = lockWallpaperMap_.Find(userId_);
         if (wallpaperData.first) {
-            filePath = wallpaperData.second.wallpaperFile_;
+            filePath = wallpaperData.second.cropFile_;
             return static_cast<int32_t>(E_OK);
         }
     } else if (wallpaperType == WALLPAPER_SYSTEM) {
         auto wallpaperData = wallpaperMap_.Find(userId_);
         if (wallpaperData.first) {
-            filePath = wallpaperData.second.wallpaperFile_;
+            filePath = wallpaperData.second.cropFile_;
             return static_cast<int32_t>(E_OK);
         }
     }
