@@ -599,8 +599,7 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
 {
     StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByFD", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_FD));
     HILOG_INFO("SetWallpaperByFD");
-    bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
-    if (!permissionSet) {
+    if (!WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
         return static_cast<int32_t>(E_NO_PERMISSION);
     }
     std::string url = wallpaperTmpFullPath_;
