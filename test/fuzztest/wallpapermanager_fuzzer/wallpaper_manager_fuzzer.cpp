@@ -75,17 +75,13 @@ private:
 void WallpaperColorChangeListenerFuzzTestImpl::onColorsChange(std::vector<RgbaColor> color, int wallpaperType)
 {
     callCount_++;
-    for (auto const &each : color) {
-        color_.push_back(each);
-    }
+    std::copy(color.begin(), color.end(), std::back_inserter(color_));
     wallpaperType_ = wallpaperType;
 }
 
 WallpaperColorChangeListenerFuzzTestImpl::WallpaperColorChangeListenerFuzzTestImpl()
+    : wallpaperType_(-1), callCount_(0)
 {
-    callCount_ = 0;
-    color_ = {};
-    wallpaperType_ = -1;
 }
 
 uint32_t ConvertToUint32(const uint8_t *ptr)
