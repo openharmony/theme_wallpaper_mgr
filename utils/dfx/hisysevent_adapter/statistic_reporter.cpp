@@ -129,10 +129,10 @@ ReportStatus StatisticReporter::InvokeUsageTime(time_t curTime)
         return ReportStatus::ERROR;
     }
 
-    int nRet = HiSysEvent::Write(HiSysEvent::Domain::THEME, USAGETIME_STATISTIC,
-        HiSysEvent::EventType::STATISTIC, WALLPAPER_INFO, statisicMsg);
-    HILOG_INFO(" InvokeUsageTime nRet = %{public}d.", nRet);
-    return nRet == 0 ? ReportStatus::SUCCESS : ReportStatus::ERROR;
+    HiSysEvent::Write(HiSysEvent::Domain::THEME, USAGETIME_STATISTIC, HiSysEvent::EventType::STATISTIC,
+        WALLPAPER_INFO, statisicMsg);
+    HILOG_INFO(" InvokeUsageTime end.");
+    return ReportStatus::SUCCESS;
 }
 } // namespace MiscServices
 } // namespace OHOS
