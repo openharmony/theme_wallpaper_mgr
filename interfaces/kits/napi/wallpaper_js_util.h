@@ -31,7 +31,7 @@ public:
     static constexpr int32_t MAX_ARGC = 6;
 
     static std::string Convert2String(napi_env env, napi_value jsString);
-    static napi_value Convert2JSRgbaArray(napi_env env, const std::vector<RgbaColor> &color);
+    static napi_value Convert2JSRgbaArray(napi_env env, const std::vector<uint64_t> &color);
 };
 } // namespace OHOS::WallpaperNAPI
 #endif // WALLPAPER_JS_UTIL_H
