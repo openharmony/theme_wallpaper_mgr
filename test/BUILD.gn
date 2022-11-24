@@ -33,6 +33,7 @@ ohos_unittest("wallpaper_test") {
   ]
   deps = [
     "${ability_runtime_path}/frameworks/native/ability/native:abilitykit_native",
+    "${utils_path}:wallpaper_utils",
     "//base/security/access_token/interfaces/innerkits/token_setproc:libtoken_setproc",
     "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
     "//base/theme/wallpaper_mgr/services:wallpaper_service",
@@ -102,12 +103,37 @@ ohos_unittest("wallpaper_permission_test") {
   ]
 }
 
+ohos_unittest("wallpaper_dfx_test") {
+  resource_config_file =
+      "//base/theme/wallpaper_mgr/test/unittest/resource/ohos_test.xml"
+  module_out_path = "wallpaper_mgr/wallpaper_dfx_test"
+  sources = [ "unittest/wallpaper_dfx_test.cpp" ]
+
+  include_dirs = [
+    "//third_party/json/include",
+    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
+    "//base/theme/wallpaper_mgr/utils/include",
+  ]
+  deps = [
+    "${utils_path}:wallpaper_utils",
+    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
+    "//base/theme/wallpaper_mgr/services:wallpaper_service",
+  ]
+  external_deps = [
+    "c_utils:utils",
+    "hisysevent_native:libhisysevent",
+    "hitrace_native:hitrace_meter",
+    "hiviewdfx_hilog_native:libhilog",
+  ]
+}
+
 group("unittest") {
   testonly = true
 
   deps = []
 
   deps += [
+    ":wallpaper_dfx_test",
     ":wallpaper_permission_test",
     ":wallpaper_test",
   ]
