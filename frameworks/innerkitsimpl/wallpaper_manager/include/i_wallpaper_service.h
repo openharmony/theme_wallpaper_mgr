@@ -43,7 +43,6 @@ public:
         GET_WALLPAPER_MIN_HEIGHT,
         GET_WALLPAPER_MIN_WIDTH,
         RESET_WALLPAPER,
-        SCREEN_SHOT_LIVE_WALLPAPER,
         ON,
         OFF,
         IS_CHANGE_PERMITTED,
@@ -115,17 +114,6 @@ public:
      * @permission ohos.permission.SET_WALLPAPER
      */
     virtual int32_t ResetWallpaper(int wallpaperType) = 0;
-
-    /**
-     * Screen shot live wallpaper
-     * @param scale
-     * @param pixelFormat
-     * @return image.PixelMap png type The bitmap file of wallpaper
-     * @permission ohos.permission.CAPTURE_SCREEN
-     * @systemapi Hide this for inner system use.
-     * @return  true or false
-     */
-    virtual bool ScreenshotLiveWallpaper(int sacleNumber, OHOS::Media::PixelMap pixelMap) = 0;
 
     /**
      * Registers a listener for wallpaper color changes to receive notifications about the changes.

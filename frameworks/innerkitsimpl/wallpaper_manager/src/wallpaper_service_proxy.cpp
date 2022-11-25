@@ -306,27 +306,6 @@ int32_t WallpaperServiceProxy::ResetWallpaper(int wallpaperType)
     return reply.ReadInt32();
 }
 
-bool WallpaperServiceProxy::ScreenshotLiveWallpaper(int sacleNumber, OHOS::Media::PixelMap pixelMap)
-{
-    bool bFlag = false;
-    MessageParcel data, reply;
-    MessageOption option;
-
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        HILOG_ERROR(" Failed to write parcelable ");
-        return false;
-    }
-
-    int32_t result = Remote()->SendRequest(SCREEN_SHOT_LIVE_WALLPAPER, data, reply, option);
-    if (result != ERR_NONE) {
-        HILOG_ERROR(" WallpaperServiceProxy::ScreenshotLiveWallpaper  fail, result = %{public}d ", result);
-        return false;
-    }
-
-    bFlag = true;
-    return bFlag;
-}
-
 bool WallpaperServiceProxy::On(sptr<IWallpaperColorChangeListener> listener)
 {
     HILOG_DEBUG("WallpaperServiceProxy::On in");

@@ -530,11 +530,6 @@ void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context
     context->SetExecution(std::move(exec));
 }
 
-napi_value NAPI_ScreenshotLiveWallpaper(napi_env env, napi_callback_info info)
-{
-    JsError::ThrowError(env, ErrorThrowType::EQUIPMENT_ERROR, EQUIPMENTERRORMESSAGE);
-    return nullptr;
-}
 
 thread_local std::shared_ptr<WallpaperMgrService::WallpaperColorChangeListener> colorChangeListener_;
 
