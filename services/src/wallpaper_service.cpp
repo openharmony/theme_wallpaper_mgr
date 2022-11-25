@@ -910,11 +910,6 @@ int32_t WallpaperService::SetDefaultDateForWallpaper(int userId, int wpType)
     }
     return static_cast<int32_t>(E_OK);
 }
-bool WallpaperService::ScreenshotLiveWallpaper(int scaleNumber, OHOS::Media::PixelMap pixelMap)
-{
-    bool bFlag = false;
-    return bFlag;
-}
 
 bool WallpaperService::On(sptr<IWallpaperColorChangeListener> listener)
 {
