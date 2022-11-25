@@ -422,10 +422,7 @@ int64_t WallpaperService::WritePixelMapToFile(const std::string &filePath, std::
 
 bool WallpaperService::CompareColor(const uint64_t &localColor, const ColorManager::Color &color)
 {
-    if (localColor == color.PackValue()) {
-        return true;
-    }
-    return false;
+    return localColor == color.PackValue();
 }
 
 bool WallpaperService::SaveColor(int wallpaperType)
