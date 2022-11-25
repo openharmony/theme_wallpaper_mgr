@@ -112,17 +112,6 @@ public:
     int32_t ResetWallpaper(std::int32_t wallpaperType) final;
 
     /**
-     * Screen shot live wallpaper
-     * @param scale
-     * @param pixelFormat
-     * @return image.PixelMap png type The bitmap file of wallpaper
-     * @permission ohos.permission.CAPTURE_SCREEN
-     * @systemapi Hide this for inner system use.
-     * @return  true or false
-     */
-    bool ScreenshotLiveWallpaper(int wallpaperType, OHOS::Media::PixelMap pixelMap) final;
-
-    /**
      * Registers a listener for wallpaper color changes to receive notifications about the changes.
      * @param type The incoming colorChange table open receiver pick a color change wallpaper wallpaper color changes
      * @param callback Provides dominant colors of the wallpaper.
@@ -163,7 +152,6 @@ private:
 
     void ResetService(const wptr<IRemoteObject> &remote);
     sptr<IWallpaperService> GetService();
-    int64_t WritePixelMapToFile(const std::string &filePath, std::unique_ptr<OHOS::Media::PixelMap> pixelMap);
     int64_t WritePixelMapToStream(std::ostream &outputStream, std::unique_ptr<OHOS::Media::PixelMap> pixelMap);
 
     sptr<IWallpaperService> wpProxy_{};

@@ -43,7 +43,6 @@ public:
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
     int32_t ResetWallpaper(int wallpaperType) override;
-    bool ScreenshotLiveWallpaper(int sacleNumber, OHOS::Media::PixelMap pixelMap) override;
     bool On(sptr<IWallpaperColorChangeListener> listener) override;
     bool Off(sptr<IWallpaperColorChangeListener> listener) override;
     bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) override;
