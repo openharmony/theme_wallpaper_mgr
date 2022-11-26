@@ -131,7 +131,7 @@ ReportStatus StatisticReporter::InvokeUsageTime(time_t curTime)
         return ReportStatus::ERROR;
     }
 
-    HiSysEvent::Write(HiSysEvent::Domain::THEME, USAGETIME_STATISTIC, HiSysEvent::EventType::STATISTIC,
+    HiSysEventWrite(HiSysEvent::Domain::THEME, USAGETIME_STATISTIC, HiSysEvent::EventType::STATISTIC,
         WALLPAPER_INFO, statisicMsg);
     HILOG_INFO(" InvokeUsageTime end.");
     return ReportStatus::SUCCESS;
