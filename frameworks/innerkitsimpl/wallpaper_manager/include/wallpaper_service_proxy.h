@@ -31,7 +31,7 @@ public:
     int32_t SetWallpaperByFD(int fd, int wallpaperType, int length) override;
     int32_t SetWallpaperByMap(int fd, int wallpaperType, int length) override;
     int32_t GetPixelMap(int wallpaperType, IWallpaperService::FdInfo &fdInfo) override;
-    std::vector<RgbaColor> GetColors(int wallpaperType) override;
+    std::vector<uint64_t> GetColors(int wallpaperType) override;
     int32_t GetFile(int wallpaperType, int32_t &wallpaperFd) override;
     int  GetWallpaperId(int wallpaperType) override;
     int  GetWallpaperMinHeight() override;

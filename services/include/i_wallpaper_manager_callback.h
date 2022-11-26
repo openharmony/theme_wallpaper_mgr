@@ -27,7 +27,7 @@ namespace WallpaperMgrService {
         /**
        * Called when wallpaper colors change
       */
-        virtual void OnWallpaperColorsChanged(vector<RgbaColor>  colors, int which, int userId);
+    virtual void OnWallpaperColorsChanged(vector<uint64_t> colors, int which, int userId);
     };
 }
 } // namespace OHOS

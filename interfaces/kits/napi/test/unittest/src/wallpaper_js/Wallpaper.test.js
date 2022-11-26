@@ -53,9 +53,6 @@ describe('WallpaperJSTest', function () {
     it('getColorsSyncTest001', 0, function () {
         try {
             let data = wallpaper.getColorsSync(WALLPAPER_SYSTEM);
-            let RgbaColor = {
-                red: data[0][0], green: data[0][1], blue: data[0][2], alpha: data[0][3]
-            }
             console.info('getColorsSyncTest001 data : ' + JSON.stringify(data));
             if (data != undefined) {
                 expect(true).assertTrue();
@@ -76,9 +73,6 @@ describe('WallpaperJSTest', function () {
     it('getColorsSyncTest002', 0, function () {
         try {
             let data = wallpaper.getColorsSync(WALLPAPER_LOCKSCREEN);
-            let RgbaColor = {
-                red: data[0][0], green: data[0][1], blue: data[0][2], alpha: data[0][3]
-            }
             console.info('getColorsSyncTest002 data : ' + JSON.stringify(data));
             if (data != undefined) {
                 expect(true).assertTrue();

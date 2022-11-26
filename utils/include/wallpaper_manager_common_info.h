@@ -27,12 +27,6 @@ static const std::string WALLPAPER_LOCKSCREEN_DIRNAME = "lockscreen";
 static const std::string WALLPAPER_DEFAULT_FILEFULLPATH = "/system/etc/wallpaperdefault.jpeg";
 static const std::string WALLPAPER_DEFAULT_LOCK_FILEFULLPATH = "/system/etc/wallpaperlockdefault.jpeg";
 static const std::string WALLPAPER_CROP_PICTURE = "crop_file";
-struct RgbaColor {
-    int red;
-    int blue;
-    int green;
-    int alpha;
-};
 enum WallpaperType {
     /**
      * Indicates the home screen wallpaper.

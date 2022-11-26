@@ -26,36 +26,31 @@ namespace WallpaperMgrService {
 using namespace OHOS::HiviewDFX;
 constexpr const int32_t ERROR_NONE = 0;
 constexpr const int32_t INVALID_FD = -1;
-std::vector<RgbaColor> WallpaperServiceProxy::GetColors(int wallpaperType)
+std::vector<uint64_t> WallpaperServiceProxy::GetColors(int wallpaperType)
 {
-    std::vector<RgbaColor> Colors;
+    std::vector<uint64_t> colors;
     MessageParcel data, reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return Colors;
+        return colors;
     }
     if (!data.WriteInt32(wallpaperType)) {
         HILOG_ERROR(" Failed to WriteInt32 ");
-        return Colors;
+        return colors;
     }
 
     int32_t result = Remote()->SendRequest(GET_COLORS, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" get colors result = %{public}d ", result);
+        return colors;
     }
 
-    int tmpsize = reply.ReadInt32();
-    for (int i = 0; i < tmpsize; ++i) {
-        RgbaColor colorInfo;
-        colorInfo.red = reply.ReadInt32();
-        colorInfo.blue = reply.ReadInt32();
-        colorInfo.green = reply.ReadInt32();
-        colorInfo.alpha = reply.ReadInt32();
-        Colors.emplace_back(colorInfo);
+    if (!reply.ReadUInt64Vector(&colors)) {
+        HILOG_ERROR(" Failed to ReadUInt64Vector ");
     }
-    return Colors;
+    return colors;
 }
 
 int32_t WallpaperServiceProxy::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
@@ -340,7 +335,7 @@ bool WallpaperServiceProxy::On(sptr<IWallpaperColorChangeListener> listener)
         HILOG_ERROR("listener is nullptr");
         return false;
     }
-    if (!data.WriteParcelable(listener->AsObject())) {
+    if (!data.WriteRemoteObject(listener->AsObject())) {
         HILOG_ERROR("write subscribe type or parcel failed.");
         return false;
     }
@@ -365,14 +360,13 @@ bool WallpaperServiceProxy::Off(sptr<IWallpaperColorChangeListener> listener)
         HILOG_ERROR(" Failed to write parcelable ");
         return false;
     }
-    if (listener == nullptr) {
-        HILOG_ERROR("listener is nullptr");
-        return false;
+    if (listener != nullptr) {
+        if (!data.WriteRemoteObject(listener->AsObject())) {
+            HILOG_ERROR("write subscribe type or parcel failed.");
+            return false;
+        }
     }
-    if (!data.WriteParcelable(listener->AsObject())) {
-        HILOG_ERROR("write subscribe type or parcel failed.");
-        return false;
-    }
+
     int32_t result = Remote()->SendRequest(OFF, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperServiceProxy::Off fail, result = %{public}d ", result);

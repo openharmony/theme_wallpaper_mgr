@@ -28,23 +28,11 @@ namespace OHOS {
 namespace WallpaperMgrService {
 class IWallpaperColorChangeListener : public IRemoteBroker {
 public:
+    enum Message { ONCOLORSCHANGE = 0 };
     DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.WallpaperMgrService.IWallpaperColorChangeListener");
-    virtual void onColorsChange(std::vector<RgbaColor> color, int wallpaperType) = 0;
+    virtual void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType) = 0;
 };
+} // namespace WallpaperMgrService
+} // namespace OHOS
 
-class WallpaperColorChangeListenerStub : public IRemoteStub<IWallpaperColorChangeListener> {
-public:
-    virtual int OnRemoteRequest(uint32_t code, MessageParcel &data,
-                                MessageParcel &reply, MessageOption &option) override;
-};
-
-class WallpaperColorChangeListenerProxy : public IRemoteProxy<IWallpaperColorChangeListener> {
-public:
-    explicit WallpaperColorChangeListenerProxy(const sptr<IRemoteObject> &impl);
-    ~WallpaperColorChangeListenerProxy() = default;
-    void onColorsChange(std::vector<RgbaColor> color, int wallpaperType) override;
-};
-}  // namespace WallpaperMgrService
-}  // namespace OHOS
-
-#endif  // I_WALLPAPER_COLOR_CHANGE_LISTENER_H
+#endif // I_WALLPAPER_COLOR_CHANGE_LISTENER_H

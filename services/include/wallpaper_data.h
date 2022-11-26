@@ -30,7 +30,6 @@ public:
     std::string cropFile_;      // eventual destination
     std::string name_;
     int wallpaperId_;
-    std::vector<RgbaColor> mMainColors_;
     bool allowBackup;
     /**
      * The component name of the currently set live wallpaper.

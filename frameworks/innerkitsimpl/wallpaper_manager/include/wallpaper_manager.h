@@ -65,9 +65,9 @@ public:
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
-     * @return RgbaColor type of array callback function
+     * @return number type of array callback function
      */
-    std::vector<RgbaColor> GetColors(int wallpaperType) final;
+    std::vector<uint64_t> GetColors(int wallpaperType) final;
 
     /**
      * Obtains the ID of the wallpaper of the specified type.
@@ -126,7 +126,7 @@ public:
      * @param callback Provides dominant colors of the wallpaper.
      * @return  true or false
      */
-    bool On(std::shared_ptr<WallpaperColorChangeListener> listener) final;
+    bool On(const std::string &type, std::shared_ptr<WallpaperColorChangeListener> listener) final;
 
     /**
      * Registers a listener for wallpaper color changes to receive notifications about the changes.
@@ -134,7 +134,7 @@ public:
      * changes
      * @param callback Provides dominant colors of the wallpaper.
      */
-    bool Off(std::shared_ptr<WallpaperColorChangeListener> listener) final;
+    bool Off(const std::string &type, std::shared_ptr<WallpaperColorChangeListener> listener) final;
 
     bool RegisterWallpaperCallback(bool (*callback) (int)) final;
 
@@ -168,7 +168,6 @@ private:
     std::mutex wpFdLock_;
     std::map<int32_t, int32_t> wallpaperFdMap_;
     std::mutex wpProxyLock_;
-    std::map<WallpaperColorChangeListener *, sptr<IWallpaperColorChangeListener>> registeredListeners_;
     std::mutex listenerMapMutex_;
     bool (*callback) (int);
 };

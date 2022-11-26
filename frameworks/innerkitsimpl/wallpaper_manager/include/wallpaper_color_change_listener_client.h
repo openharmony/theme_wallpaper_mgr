@@ -18,26 +18,27 @@
 
 #include <memory>
 #include <vector>
-#include "iwallpaper_color_change_listener.h"
+
 #include "wallpaper_color_change_listener.h"
+#include "wallpaper_color_change_listener_stub.h"
 #include "wallpaper_manager_common_info.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
 class WallpaperColorChangeListenerClient : public WallpaperColorChangeListenerStub {
 public:
-    WallpaperColorChangeListenerClient(
-        std::shared_ptr<WallpaperColorChangeListener> wallpaperColorChangerListener);
+    WallpaperColorChangeListenerClient(std::shared_ptr<WallpaperColorChangeListener> wallpaperColorChangerListener);
 
     ~WallpaperColorChangeListenerClient();
 
-    void onColorsChange(std::vector<RgbaColor> color, int wallpaperType) override;
+    void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType) override;
 
     const std::shared_ptr<WallpaperColorChangeListener> GetColorChangeListener() const;
+
 private:
     // client is responsible for free it when call UnSubscribeKvStore.
     std::shared_ptr<WallpaperColorChangeListener> wallpaperColorChangerListener_;
 };
-}  // namespace WallpaperMgrService
-}  // namespace OHOS
-#endif  // WALLPAPER_COLOR_CHANGE_LISTENER_CLIENT_H
+} // namespace WallpaperMgrService
+} // namespace OHOS
+#endif // WALLPAPER_COLOR_CHANGE_LISTENER_CLIENT_H

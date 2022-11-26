@@ -28,9 +28,9 @@ config("wallpaper_manager_config") {
 
 ohos_shared_library("wallpapermanager") {
   sources = [
-    "src/iwallpaper_color_change_listener.cpp",
     "src/uv_queue.cpp",
     "src/wallpaper_color_change_listener_client.cpp",
+    "src/wallpaper_color_change_listener_stub.cpp",
     "src/wallpaper_manager.cpp",
     "src/wallpaper_manager_kits.cpp",
     "src/wallpaper_service_cb_stub.cpp",
