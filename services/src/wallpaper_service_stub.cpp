@@ -40,7 +40,6 @@ WallpaperServiceStub::WallpaperServiceStub()
     memberFuncMap_[GET_FILE] = &WallpaperServiceStub::OnGetFile;
     memberFuncMap_[GET_WALLPAPER_MIN_HEIGHT] = &WallpaperServiceStub::OnGetWallpaperMinHeight;
     memberFuncMap_[GET_WALLPAPER_MIN_WIDTH] = &WallpaperServiceStub::OnGetWallpaperMinWidth;
-    memberFuncMap_[SCREEN_SHOT_LIVE_WALLPAPER] = &WallpaperServiceStub::OnScreenshotLiveWallpaper;
     memberFuncMap_[ON] = &WallpaperServiceStub::OnWallpaperOn;
     memberFuncMap_[OFF] = &WallpaperServiceStub::OnWallpaperOff;
     memberFuncMap_[IS_CHANGE_PERMITTED] = &WallpaperServiceStub::OnIsChangePermitted;
@@ -227,13 +226,6 @@ int32_t WallpaperServiceStub::OnResetWallpaper(MessageParcel &data, MessageParce
         HILOG_ERROR("Write result data failed");
     }
     int32_t ret = wallpaperErrorCode == static_cast<int32_t>(E_OK) ? 0 : -1;
-    return ret;
-}
-
-int32_t WallpaperServiceStub::OnScreenshotLiveWallpaper(MessageParcel &data, MessageParcel &reply)
-{
-    int32_t ret = -1;
-    HILOG_INFO("WallpaperServiceStub::OnScreenshotLiveWallpaper start.");
     return ret;
 }
 

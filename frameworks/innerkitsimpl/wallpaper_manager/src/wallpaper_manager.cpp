@@ -272,28 +272,7 @@ int64_t WallpaperManager::WritePixelMapToStream(
     imagePacker.AddImage(*pixelMap);
     int64_t packedSize = 0;
     imagePacker.FinalizePacking(packedSize);
-    HILOG_INFO("FrameWork WritePixelMapToFile End! packedSize=%{public}lld.", static_cast<long long>(packedSize));
-    return packedSize;
-}
-
-int64_t WallpaperManager::WritePixelMapToFile(
-    const std::string &filePath, std::unique_ptr<OHOS::Media::PixelMap> pixelMap)
-{
-    OHOS::Media::ImagePacker imagePacker;
-    OHOS::Media::PackOption option;
-    option.format = "image/jpeg";
-    option.quality = OPTION_QUALITY;
-    option.numberHint = 1;
-    std::set<std::string> formats;
-    uint32_t ret = imagePacker.GetSupportedFormats(formats);
-    if (ret != 0) {
-        HILOG_ERROR("image packer get supported format failed, ret=%{public}u.", ret);
-    }
-    imagePacker.StartPacking(filePath, option);
-    imagePacker.AddImage(*pixelMap);
-    int64_t packedSize = 0;
-    imagePacker.FinalizePacking(packedSize);
-    HILOG_INFO("FrameWork WritePixelMapToFile End! packedSize=%{public}lld.", static_cast<long long>(packedSize));
+    HILOG_INFO("FrameWork WritePixelMapToStream End! packedSize=%{public}lld.", static_cast<long long>(packedSize));
     return packedSize;
 }
 
@@ -393,15 +372,6 @@ int32_t WallpaperManager::ResetWallpaper(std::int32_t wallpaperType)
         CloseWallpaperFd(wallpaperType);
     }
     return wallpaperErrorCode;
-}
-bool WallpaperManager::ScreenshotLiveWallpaper(int wallpaperType, OHOS::Media::PixelMap pixelMap)
-{
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
-        return false;
-    }
-    return wpServerProxy->ScreenshotLiveWallpaper(wallpaperType, pixelMap);
 }
 
 bool WallpaperManager::On(const std::string &type, std::shared_ptr<WallpaperColorChangeListener> listener)

@@ -41,7 +41,6 @@ private:
     int32_t OnIsChangePermitted(MessageParcel &data, MessageParcel &reply);
     int32_t OnIsOperationAllowed(MessageParcel &data, MessageParcel &reply);
     int32_t OnResetWallpaper(MessageParcel &data, MessageParcel &reply);
-    int32_t OnScreenshotLiveWallpaper(MessageParcel &data, MessageParcel &reply);
     int32_t OnWallpaperOn(MessageParcel &data, MessageParcel &reply);
     int32_t OnWallpaperOff(MessageParcel &data, MessageParcel &reply);
     int32_t OnRegisterWallpaperCallback(MessageParcel &data, MessageParcel &reply);

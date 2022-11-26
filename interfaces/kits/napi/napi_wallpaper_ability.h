@@ -208,7 +208,6 @@ napi_value NAPI_SetWallpaper(napi_env env, napi_callback_info info);
 napi_value NAPI_SetImage(napi_env env, napi_callback_info info);
 napi_value NAPI_GetPixelMap(napi_env env, napi_callback_info info);
 napi_value NAPI_GetImage(napi_env env, napi_callback_info info);
-napi_value NAPI_ScreenshotLiveWallpaper(napi_env env, napi_callback_info info);
 napi_value NAPI_On(napi_env env, napi_callback_info info);
 napi_value NAPI_Off(napi_env env, napi_callback_info info);
 } // namespace WallpaperNAPI
