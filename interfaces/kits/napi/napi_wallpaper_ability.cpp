@@ -530,8 +530,6 @@ void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context
     context->SetExecution(std::move(exec));
 }
 
-
-
 napi_value NAPI_On(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_On in");
