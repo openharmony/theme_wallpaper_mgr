@@ -28,7 +28,7 @@ describe('WallpaperJSTest', function () {
     beforeAll(async function () {
         // input testsuit setup step，setup invoked before all testcases
         console.info('beforeAll called')
-        CreateImageToUrl();
+        createImageToUrl();
     })
     beforeEach(function () {
         // input testcase setup step，setup invoked before each testcases
@@ -41,20 +41,34 @@ describe('WallpaperJSTest', function () {
     afterAll(function () {
         // input testsuit teardown step，teardown invoked after all testcases
         console.info('afterAll called')
+        wallpaper.restore(WALLPAPER_SYSTEM, function (err, data) {
+            if (err) {
+                console.info('restore failed : ' + JSON.stringify(err));
+            } else {
+                console.info('restore successful');
+            }
+        })
+
     })
 
-    function CreateImageToUrl() {
+    function createImageToUrl() {
         const color = new ArrayBuffer(96);
         let opts = {editable: true, pixelFormat: 3, size: {height: 4, width: 6}};
         image.createPixelMap(color, opts).then((pixelMap) => {
             const imagePackerApi = image.createImagePacker();
             let packOpts = {format: "image/jpeg", quality: 98};
             imagePackerApi.packing(pixelMap, packOpts, (err, data) => {
-                let fd = fileio.openSync(URL, 0o2 | 0o100, 0o666);
-                let ret = fileio.writeSync(fd, data);
-                fileio.close(fd);
-                console.log("file write ret:" + JSON.stringify(ret));
+                if(err){
+                    console.log("packing error:" + JSON.stringify(error));
+                }else{
+                    let fd = fileio.openSync(URL, 0o2 | 0o100, 0o666);
+                    let ret = fileio.writeSync(fd, data);
+                    fileio.close(fd);
+                    console.log("file write ret:" + JSON.stringify(ret));
+                }
             })
+        }).catch(error=>{
+            console.log("createPixelMap error:" + JSON.stringify(error));
         })
     }
 
