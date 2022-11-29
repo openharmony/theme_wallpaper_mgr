@@ -39,35 +39,6 @@ namespace OHOS {
 namespace WallpaperMgrService {
 constexpr const char *URL = "/data/test/theme/wallpaper/wallpaper_test.JPG";
 
-void CreateTempImage()
-{
-    std::unique_ptr<PixelMap> pixelMap = CreateTempPixelMap();
-    ImagePacker imagePacker;
-    PackOption option;
-    option.format = "image/jpeg";
-    option.quality = HUNDRED;
-    option.numberHint = 1;
-    std::set<std::string> formats;
-    imagePacker.GetSupportedFormats(formats);
-    imagePacker.StartPacking(URL, option);
-    HILOG_INFO("AddImage start");
-    imagePacker.AddImage(*pixelMap);
-    int64_t packedSize = 0;
-    HILOG_INFO("FinalizePacking start");
-    imagePacker.FinalizePacking(packedSize);
-    if (packedSize == 0) {
-        HILOG_INFO("FinalizePacking error");
-    }
-}
-
-std::unique_ptr<PixelMap> CreateTempPixelMap()
-{
-    uint32_t color[100] = { 3, 7, 9, 9, 7, 6 };
-    InitializationOptions opts = { { 5, 7 }, OHOS::Media::PixelFormat::ARGB_8888 };
-    std::unique_ptr<PixelMap> pixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
-    return pixelMap;
-}
-
 class WallpaperPermissionTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -100,6 +71,35 @@ void WallpaperPermissionTest::SetUp(void)
 
 void WallpaperPermissionTest::TearDown(void)
 {
+}
+
+void CreateTempImage()
+{
+    std::unique_ptr<PixelMap> pixelMap = CreateTempPixelMap();
+    ImagePacker imagePacker;
+    PackOption option;
+    option.format = "image/jpeg";
+    option.quality = HUNDRED;
+    option.numberHint = 1;
+    std::set<std::string> formats;
+    imagePacker.GetSupportedFormats(formats);
+    imagePacker.StartPacking(URL, option);
+    HILOG_INFO("AddImage start");
+    imagePacker.AddImage(*pixelMap);
+    int64_t packedSize = 0;
+    HILOG_INFO("FinalizePacking start");
+    imagePacker.FinalizePacking(packedSize);
+    if (packedSize == 0) {
+        HILOG_INFO("FinalizePacking error");
+    }
+}
+
+std::unique_ptr<PixelMap> CreateTempPixelMap()
+{
+    uint32_t color[100] = { 3, 7, 9, 9, 7, 6 };
+    InitializationOptions opts = { { 5, 7 }, OHOS::Media::PixelFormat::ARGB_8888 };
+    std::unique_ptr<PixelMap> pixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    return pixelMap;
 }
 
 /*********************   ResetWallpaper   *********************/
