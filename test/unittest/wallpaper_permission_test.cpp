@@ -19,6 +19,7 @@
 #include "accesstoken_kit.h"
 #include "directory_ex.h"
 #include "hilog_wrapper.h"
+#include "image_packer.h"
 #include "nativetoken_kit.h"
 #include "pixel_map.h"
 #include "token_setproc.h"
@@ -26,6 +27,7 @@
 #include "wallpaper_manager_kits.h"
 
 constexpr int LOCKSCREEN = 1;
+constexpr int HUNDRED = 100;
 using namespace testing::ext;
 using namespace testing;
 using namespace OHOS::Media;
@@ -35,7 +37,30 @@ using namespace OHOS::Security::AccessToken;
 
 namespace OHOS {
 namespace WallpaperMgrService {
-constexpr const char *URL = "/system/etc/wallpaper_test.JPG";
+constexpr const char *URL = "/data/test/wallpaper_test.JPG";
+
+void CreateImageToUrl()
+{
+    uint32_t color[100] = { 3, 7, 9, 9, 7, 6 };
+    InitializationOptions opts = { { 5, 7 }, OHOS::Media::PixelFormat::ARGB_8888 };
+    std::unique_ptr<PixelMap> pixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    ImagePacker imagePacker;
+    PackOption option;
+    option.format = "image/jpeg";
+    option.quality = HUNDRED;
+    option.numberHint = 1;
+    std::set<std::string> formats;
+    imagePacker.GetSupportedFormats(formats);
+    imagePacker.StartPacking(URL, option);
+    HILOG_INFO("AddImage start");
+    imagePacker.AddImage(*pixelMap);
+    int64_t packedSize = 0;
+    HILOG_INFO("FinalizePacking start");
+    imagePacker.FinalizePacking(packedSize);
+    if (packedSize == 0) {
+        HILOG_INFO("FinalizePacking error");
+    }
+}
 
 class WallpaperPermissionTest : public testing::Test {
 public:
@@ -54,6 +79,7 @@ const std::string VALID_SCHEMA_STRICT_DEFINE = "{\"SCHEMA_VERSION\":\"1.0\","
 
 void WallpaperPermissionTest::SetUpTestCase(void)
 {
+    CreateImageToUrl();
     HILOG_INFO("SetUpPermissionTestCase");
 }
 
