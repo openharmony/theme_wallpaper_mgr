@@ -39,7 +39,7 @@ using namespace OHOS::Security::AccessToken;
 
 namespace OHOS {
 namespace WallpaperMgrService {
-constexpr const char *URL = "/data/test/wallpaper_test.JPG";
+constexpr const char *URL = "/data/test/theme/wallpaper/wallpaper_test.JPG";
 void GrantNativePermission()
 {
     const char **perms = new const char *[2];
@@ -66,11 +66,9 @@ void GrantNativePermission()
     delete[] perms;
 }
 
-void CreateImageToUrl()
+void CreateTempImage()
 {
-    uint32_t color[100] = { 3, 7, 9, 9, 7, 6 };
-    InitializationOptions opts = { { 5, 7 }, OHOS::Media::PixelFormat::ARGB_8888 };
-    std::unique_ptr<PixelMap> pixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    std::unique_ptr<PixelMap> pixelMap = CreateTempPixelMap();
     ImagePacker imagePacker;
     PackOption option;
     option.format = "image/jpeg";
@@ -87,6 +85,14 @@ void CreateImageToUrl()
     if (packedSize == 0) {
         HILOG_INFO("FinalizePacking error");
     }
+}
+
+std::unique_ptr<PixelMap> CreateTempPixelMap()
+{
+    uint32_t color[100] = { 3, 7, 9, 9, 7, 6 };
+    InitializationOptions opts = { { 5, 7 }, OHOS::Media::PixelFormat::ARGB_8888 };
+    std::unique_ptr<PixelMap> pixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    return pixelMap;
 }
 
 class WallpaperTest : public testing::Test {
@@ -108,7 +114,7 @@ void WallpaperTest::SetUpTestCase(void)
 {
     HILOG_INFO("SetUpTestCase");
     GrantNativePermission();
-    CreateImageToUrl();
+    CreateTempImage()
     HILOG_INFO("SetUpTestCase end");
 }
 
@@ -558,9 +564,7 @@ HWTEST_F(WallpaperTest, GetPiexlMap003, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetWallpaperByMap001, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByMap001  begin");
-    uint32_t color[100] = { 3, 7, 9, 9, 7, 6 };
-    InitializationOptions opts = { { 5, 7 }, OHOS::Media::PixelFormat::ARGB_8888 };
-    std::unique_ptr<PixelMap> pixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    std::unique_ptr<PixelMap> pixelMap = CreateTempPixelMap();
     int32_t wallpaperErrorCode =
         OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, SYSTYEM);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to set SYSTYEM PiexlMap.";
@@ -576,9 +580,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap001, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetWallpaperByMap002, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByMap002  begin");
-    uint32_t color[100] = { 3, 7, 9, 9, 7, 6 };
-    InitializationOptions opts = { { 5, 7 }, OHOS::Media::PixelFormat::ARGB_8888 };
-    std::unique_ptr<PixelMap> pixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    std::unique_ptr<PixelMap> pixelMap = CreateTempPixelMap();
     int32_t wallpaperErrorCode =
         OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, LOCKSCREEN);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to set LOCKSCREEN PiexlMap.";
@@ -594,9 +596,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap002, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetWallpaperByMap003, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByMap003  begin");
-    uint32_t color[100] = { 3, 7, 9, 9, 7, 6 };
-    InitializationOptions opts = { { 5, 7 }, OHOS::Media::PixelFormat::ARGB_8888 };
-    std::unique_ptr<PixelMap> pixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    std::unique_ptr<PixelMap> pixelMap = CreateTempPixelMap();
     int32_t wallpaperErrorCode =
         OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, 2);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to throw parameters error";
@@ -659,7 +659,8 @@ HWTEST_F(WallpaperTest, SetWallpaperByUrl004, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByUrl004  begin");
     int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper("/system/etc/errorURL", 1);
+        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper("/data/test/theme/wallpaper/"
+                                                                                    "errorURL", 1);
     EXPECT_NE(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to throw error";
 }
 
@@ -674,13 +675,13 @@ HWTEST_F(WallpaperTest, FILE_DEAL001, TestSize.Level0)
 {
     HILOG_INFO("FILE_DEAL001  begin");
     FileDeal fileOperation;
-    bool isExist = fileOperation.Mkdir("/data/test/");
+    bool isExist = fileOperation.Mkdir("/data/test/theme/wallpaper/");
     EXPECT_EQ(isExist, true);
-    isExist = fileOperation.Mkdir("/data/errorURL/");
+    isExist = fileOperation.Mkdir("/data/test/theme/errorURL/");
     EXPECT_EQ(isExist, true);
     isExist = fileOperation.FileIsExist(URL);
     EXPECT_EQ(isExist, true);
-    isExist = fileOperation.FileIsExist("/data/test/errorURL");
+    isExist = fileOperation.FileIsExist("/data/test/theme/wallpaper/errorURL");
     EXPECT_EQ(isExist, false);
 }
 /*********************   SetWallpaperByUrl   *********************/
