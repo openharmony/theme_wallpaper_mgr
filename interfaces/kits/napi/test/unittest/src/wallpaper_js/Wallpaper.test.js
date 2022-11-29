@@ -15,21 +15,20 @@
 // @ts-nocheck
 import wallpaper from '@ohos.wallpaper'
 import image from '@ohos.multimedia.image'
+import fileio from '@ohos.fileio'
 
 import {describe, beforeAll, beforeEach, afterEach, afterAll, it, expect} from 'deccjsunit/index'
 
 const WALLPAPER_SYSTEM = 0;
 const WALLPAPER_LOCKSCREEN = 1;
 const PARAMETER_ERROR = "401";
-
-let imageSourceSystem = '/system/etc/wallpaper_system.JPG';
-let imageSourceLockscreen = 'system/etc/wallpaper_lock.JPG';
-
+const URL = "/data/storage/el2/base/haps/wp.jpeg";
 
 describe('WallpaperJSTest', function () {
     beforeAll(async function () {
         // input testsuit setup step，setup invoked before all testcases
         console.info('beforeAll called')
+        createImageToUrl();
     })
     beforeEach(function () {
         // input testcase setup step，setup invoked before each testcases
@@ -42,11 +41,40 @@ describe('WallpaperJSTest', function () {
     afterAll(function () {
         // input testsuit teardown step，teardown invoked after all testcases
         console.info('afterAll called')
+        wallpaper.restore(WALLPAPER_SYSTEM, function (err, data) {
+            if (err) {
+                console.info('restore failed : ' + JSON.stringify(err));
+            } else {
+                console.info('restore successful');
+            }
+        })
+
     })
+
+    function createImageToUrl() {
+        const color = new ArrayBuffer(96);
+        let opts = {editable: true, pixelFormat: 3, size: {height: 4, width: 6}};
+        image.createPixelMap(color, opts).then((pixelMap) => {
+            const imagePackerApi = image.createImagePacker();
+            let packOpts = {format: "image/jpeg", quality: 98};
+            imagePackerApi.packing(pixelMap, packOpts, (err, data) => {
+                if(err){
+                    console.log("packing error:" + JSON.stringify(error));
+                }else{
+                    let fd = fileio.openSync(URL, 0o2 | 0o100, 0o666);
+                    let ret = fileio.writeSync(fd, data);
+                    fileio.close(fd);
+                    console.log("file write ret:" + JSON.stringify(ret));
+                }
+            })
+        }).catch(error=>{
+            console.log("createPixelMap error:" + JSON.stringify(error));
+        })
+    }
 
     /**
      * @tc.name:      getColorsSyncTest001
-     * @tc.desc:      Test getColorsSync() WALLPAPER_SYSTEM Colors by syncing.
+     * @tc.desc:      Test getColorsSync() to gets WALLPAPER_SYSTEM Colors by syncing.
      * @tc.type:      FUNC
      * @tc.require:   issueI5UHRG
      */
@@ -66,7 +94,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getColorsSyncTest002
-     * @tc.desc:      Test getColorsSync() WALLPAPER_LOCKSCREEN Colors by syncing.
+     * @tc.desc:      Test getColorsSync() to gets WALLPAPER_LOCKSCREEN Colors by syncing.
      * @tc.type:      FUNC
      * @tc.require:   issueI5UHRG
      */
@@ -119,7 +147,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getIdSyncTest001
-     * @tc.desc:      Test getIdSync() to the ID of the wallpaper of the specified type.
+     * @tc.desc:      Test getIdSync() to gets the ID of the wallpaper of the specified type.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
@@ -138,7 +166,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getIdSyncTest002
-     * @tc.desc:      Test getIdSync() to the ID of the wallpaper of the specified type.
+     * @tc.desc:      Test getIdSync() to gets the ID of the wallpaper of the specified type.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
@@ -192,7 +220,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getFileSyncTest001
-     * @tc.desc:      Test getFileSync() to File of the wallpaper of the specified type.
+     * @tc.desc:      Test getFileSync() to gets File of the wallpaper of the specified type.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
@@ -210,7 +238,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getFileSyncTest002
-     * @tc.desc:      Test getFileSync() to the File of the wallpaper of the specified type.
+     * @tc.desc:      Test getFileSync() to gets the File of the wallpaper of the specified type.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
@@ -228,7 +256,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getFileSyncTest003
-     * @tc.desc:      Test getFileSync() after getFileSync() to File of the wallpaper of the specified type.
+     * @tc.desc:      Test getFileSync() after getFileSync() to gets File of the wallpaper of the specified type.
      * @tc.type:      FUNC test
      * @tc.require:   issueI60MT1
      */
@@ -250,7 +278,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getFileSyncTest004
-     * @tc.desc:      Test getFileSync() after getFileSync() to the File of the wallpaper of the specified type.
+     * @tc.desc:      Test getFileSync() after getFileSync() to gets the File of the wallpaper of the specified type.
      * @tc.type:      FUNC test
      * @tc.require:   issueI60MT1
      */
@@ -306,7 +334,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getMinHeightSyncTest001
-     * @tc.desc:      Test getMinHeightSync() to the minHeight of the WALLPAPER_SYSTEM of the specified type.
+     * @tc.desc:      Test getMinHeightSync() to gets the minHeight of the WALLPAPER_SYSTEM of the specified type.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
@@ -322,7 +350,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getMinWidthSyncTest001
-     * @tc.desc:      Test getMinWidthSync() to the minHeight of the WALLPAPER_SYSTEM of the specified type.
+     * @tc.desc:      Test getMinWidthSync() to gets the minHeight of the WALLPAPER_SYSTEM of the specified type.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
@@ -558,7 +586,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getImagePromiseLockTest001
-     * @tc.desc:      Test getImage() to get a PixelMap of the specified type.
+     * @tc.desc:      Test getImage() to gets a PixelMap of the specified type.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
@@ -583,7 +611,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getImageCallbackSystemTest002
-     * @tc.desc:      Test getImage() to get a PixelMap of the specified type.
+     * @tc.desc:      Test getImage() to gets a PixelMap of the specified type.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
@@ -609,7 +637,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getImagePromiseSystemTest003
-     * @tc.desc:      Test getImage() to get a PixelMap of the specified type.
+     * @tc.desc:      Test getImage() to gets a PixelMap of the specified type.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
@@ -634,7 +662,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      getImageCallbackLockTest004
-     * @tc.desc:      Test getImage() to get a PixelMap of the specified type.
+     * @tc.desc:      Test getImage() to gets a PixelMap of the specified type.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
@@ -765,7 +793,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageURLPromiseLockTest001', 0, async function (done) {
         try {
-            wallpaper.setImage(imageSourceLockscreen, WALLPAPER_LOCKSCREEN).then((data) => {
+            wallpaper.setImage(URL, WALLPAPER_LOCKSCREEN).then((data) => {
                 console.info('setImageURLPromiseLockTest001 data : ' + JSON.stringify(data));
                 expect(true).assertTrue();
                 done();
@@ -789,7 +817,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageURLCallbackSystemTest002', 0, async function (done) {
         try {
-            wallpaper.setImage(imageSourceSystem, WALLPAPER_SYSTEM, function (err, data) {
+            wallpaper.setImage(URL, WALLPAPER_SYSTEM, function (err, data) {
                 if (err) {
                     console.info('setImageURLCallbackSystemTest002 err : ' + JSON.stringify(err.message));
                     expect(null).assertFail();
@@ -814,7 +842,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageURLPromiseSystemTest003', 0, async function (done) {
         try {
-            wallpaper.setImage(imageSourceSystem, WALLPAPER_SYSTEM).then((data) => {
+            wallpaper.setImage(URL, WALLPAPER_SYSTEM).then((data) => {
                 console.info('setImageURLPromiseSystemTest003 data : ' + JSON.stringify(data));
                 expect(true).assertTrue();
                 done();
@@ -838,7 +866,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageURLCallbackLockTest004', 0, async function (done) {
         try {
-            wallpaper.setImage(imageSourceLockscreen, WALLPAPER_LOCKSCREEN, function (err, data) {
+            wallpaper.setImage(URL, WALLPAPER_LOCKSCREEN, function (err, data) {
                 if (err) {
                     console.info('setImageURLCallbackLockTest004 err : ' + JSON.stringify(err));
                     expect(null).assertFail();
@@ -980,7 +1008,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageCallbackThrowErrorTest009', 0, async function (done) {
         try {
-            wallpaper.setImage(imageSourceLockscreen, 2, function (err, data) {
+            wallpaper.setImage(URL, 2, function (err, data) {
                 if (err) {
                     console.info('setImageCallbackThrowErrorTest009 err : ' + JSON.stringify(err));
                     expect(err.code == PARAMETER_ERROR).assertEqual(true)
@@ -1003,7 +1031,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageCallbackThrowErrorTest010', 0, async function (done) {
         try {
-            wallpaper.setImage(imageSourceLockscreen, function (err, data) {
+            wallpaper.setImage(URL, function (err, data) {
                 if (err) {
                     console.info('setImageCallbackThrowErrorTest010 err : ' + JSON.stringify(err));
                     expect(null).assertFail();
@@ -1027,7 +1055,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImagePromiseThrowErrorTest011', 0, async function (done) {
         try {
-            wallpaper.setImage(imageSourceLockscreen, 2).then((data) => {
+            wallpaper.setImage(URL, 2).then((data) => {
                 expect(null).assertFail();
                 done();
             }).catch((err) => {
@@ -1140,6 +1168,796 @@ describe('WallpaperJSTest', function () {
             })
         } catch (error) {
             expect(error.code == PARAMETER_ERROR).assertEqual(true)
+        }
+    })
+
+    /**
+     * @tc.name:      setWallpaperMapPromiseLockTest001
+     * @tc.desc:      Test setWallpaper() to sets a wallpaper of the specified type based on Map.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('setWallpaperMapPromiseLockTest001', 0, async function (done) {
+        try {
+            var buffer = new ArrayBuffer(128);
+            var opt = {
+                size: {height: 5, width: 5}, pixelFormat: 3, editable: true, alphaType: 1, scaleMode: 1
+            };
+            image.createPixelMap(buffer, opt).then(async (pixelMap) => {
+                wallpaper.setWallpaper(pixelMap, WALLPAPER_LOCKSCREEN).then((data) => {
+                    console.info('setWallpaperMapPromiseLockTest001 data : ' + JSON.stringify(data));
+                    expect(true).assertTrue();
+                    done();
+                }).catch((err) => {
+                    console.info('setWallpaperMapPromiseLockTest001 err : ' + JSON.stringify(err));
+                    expect(null).assertFail();
+                    done();
+                });
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setWallpaperMapCallbackSystemTest002
+     * @tc.desc:      Test setWallpaper() to sets a wallpaper of the specified type based on Map.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('setWallpaperMapCallbackSystemTest002', 0, async function (done) {
+        try {
+            var buffer = new ArrayBuffer(128);
+            var opt = {
+                size: {height: 5, width: 5}, pixelFormat: 3, editable: true, alphaType: 1, scaleMode: 1
+            };
+            image.createPixelMap(buffer, opt).then(async (pixelMap) => {
+                wallpaper.setWallpaper(pixelMap, WALLPAPER_SYSTEM, function (err, data) {
+                    if (err) {
+                        console.info('setWallpaperMapCallbackSystemTest002 err : ' + JSON.stringify(err));
+                        expect(null).assertFail();
+                    } else {
+                        console.info('setWallpaperMapCallbackSystemTest002 data : ' + JSON.stringify(data));
+                        expect(true).assertTrue();
+                    }
+                    done();
+                });
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setWallpaperMapPromiseSystemTest003
+     * @tc.desc:      Test setWallpaper() to sets a wallpaper of the specified type based on Map.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('setWallpaperMapPromiseSystemTest003', 0, function (done) {
+        try {
+            var buffer = new ArrayBuffer(128);
+            var opt = {
+                size: {height: 5, width: 5}, pixelFormat: 3, editable: true, alphaType: 1, scaleMode: 1
+            };
+            image.createPixelMap(buffer, opt).then(async (pixelMap) => {
+                wallpaper.setWallpaper(pixelMap, WALLPAPER_SYSTEM).then((data) => {
+                    console.info('setWallpaperMapPromiseSystemTest003 data : ' + JSON.stringify(data));
+                    expect(true).assertTrue();
+                    done();
+                }).catch((err) => {
+                    console.info('setWallpaperMapPromiseSystemTest003 err : ' + JSON.stringify(err));
+                    expect(null).assertFail();
+                    done();
+                });
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setWallpaperMapCallbackLockTest004
+     * @tc.desc:      Test setWallpaper() to sets a wallpaper of the specified type based on Map.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('setWallpaperMapCallbackLockTest004', 0, async function (done) {
+        try {
+            var buffer = new ArrayBuffer(128);
+            var opt = {
+                size: {height: 5, width: 5}, pixelFormat: 3, editable: true, alphaType: 1, scaleMode: 1
+            };
+            image.createPixelMap(buffer, opt).then(async (pixelMap) => {
+                wallpaper.setWallpaper(pixelMap, WALLPAPER_LOCKSCREEN, function (err, data) {
+                    if (err) {
+                        console.info('setWallpaperMapCallbackLockTest004 err : ' + JSON.stringify(err));
+                        expect(null).assertFail();
+                    } else {
+                        console.info('setWallpaperMapCallbackLockTest004 data : ' + JSON.stringify(data));
+                        expect(true).assertTrue();
+                    }
+                    done();
+                });
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+
+    /**
+     * @tc.name:      getPixelMapPromiseLockTest001
+     * @tc.desc:      Test getPixelMap() to gets a PixelMap of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getPixelMapPromiseLockTest001', 0, async function (done) {
+        try {
+            wallpaper.getPixelMap(WALLPAPER_LOCKSCREEN).then((data) => {
+                console.info('getPixelMapPromiseLockTest001 data : ' + JSON.stringify(data));
+                if (data != undefined) {
+                    expect(true).assertTrue();
+                }
+                done();
+            }).catch((err) => {
+                console.info('getPixelMapPromiseLockTest001 err : ' + JSON.stringify(err));
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getPixelMapCallbackSystemTest002
+     * @tc.desc:      Test getPixelMap() to gets a PixelMap of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getPixelMapCallbackSystemTest002', 0, async function (done) {
+        try {
+            wallpaper.getPixelMap(WALLPAPER_SYSTEM, function (err, data) {
+                if (err) {
+                    console.info('getPixelMapCallbackSystemTest002 err : ' + JSON.stringify(err));
+                    expect(null).assertFail();
+                } else {
+                    console.info('getPixelMapCallbackSystemTest002 data : ' + JSON.stringify(data));
+                    if (data != undefined) {
+                        expect(true).assertTrue();
+                    }
+                }
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getPixelMapPromiseSystemTest003
+     * @tc.desc:      Test getPixelMap() to gets a PixelMap of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getPixelMapPromiseSystemTest003', 0, async function (done) {
+        try {
+            wallpaper.getPixelMap(WALLPAPER_SYSTEM).then((data) => {
+                console.info('getPixelMapPromiseSystemTest003 data : ' + JSON.stringify(data));
+                if (data != undefined) {
+                    expect(true).assertTrue();
+                }
+                done();
+            }).catch((err) => {
+                console.info('getPixelMapPromiseSystemTest003 err : ' + JSON.stringify(err));
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getPixelMapCallbackLockTest004
+     * @tc.desc:      Test getPixelMap() to gets a PixelMap of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getPixelMapCallbackLockTest004', 0, async function (done) {
+        try {
+            wallpaper.getPixelMap(WALLPAPER_LOCKSCREEN, function (err, data) {
+                if (err) {
+                    console.info('getPixelMapCallbackLockTest004 err : ' + JSON.stringify(err));
+                    expect(null).assertFail();
+                } else {
+                    console.info('getPixelMapCallbackLockTest004 data : ' + JSON.stringify(data));
+                    if (data != undefined) {
+                        expect(true).assertTrue();
+                    }
+                }
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      resetCallbackSystemTest001
+     * @tc.desc:      Test reset() to removes a wallpaper of the specified type and restores the default one.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('resetCallbackSystemTest001', 0, async function (done) {
+        try {
+            wallpaper.reset(WALLPAPER_SYSTEM, function (err, data) {
+                if (err) {
+                    console.info('resetCallbackSystemTest001 err : ' + JSON.stringify(err));
+                    expect(null).assertFail()
+                } else {
+                    console.info('resetCallbackSystemTest001 data : ' + JSON.stringify(data));
+                    expect(true).assertTrue();
+                }
+                done();
+            })
+
+        } catch (error) {
+            console.info('resetCallbackSystemTest001 error : ' + JSON.stringify(error));
+            expect(null).assertFail();
+            done();
+        }
+
+    })
+
+    /**
+     * @tc.name:      resetPromiseSystemTest002
+     * @tc.desc:      Test reset() to removes a wallpaper of the specified type and restores the default one.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('resetPromiseSystemTest002', 0, async function (done) {
+        try {
+            wallpaper.reset(WALLPAPER_SYSTEM).then((data) => {
+                console.info('resetPromiseSystemTest002 data : ' + JSON.stringify(data));
+                expect(true).assertTrue();
+                done();
+            }).catch((err) => {
+                console.info('resetPromiseSystemTest002 err : ' + JSON.stringify(err));
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      resetCallbackLockTest003
+     * @tc.desc:      Test reset() to removes a wallpaper of the specified type and restores the default one.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('resetCallbackLockTest003', 0, async function (done) {
+        try {
+            wallpaper.reset(WALLPAPER_LOCKSCREEN, function (err, data) {
+                if (err) {
+                    console.info('resetCallbackLockTest003 err : ' + JSON.stringify(err));
+                    expect(null).assertFail();
+                } else {
+                    console.info('resetCallbackLockTest003 data : ' + JSON.stringify(data));
+                    expect(true).assertTrue();
+                }
+                done();
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      resetPromiseLockTest004
+     * @tc.desc:      Test reset() to removes a wallpaper of the specified type and restores the default one.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('resetPromiseLockTest004', 0, async function (done) {
+        try {
+            wallpaper.reset(WALLPAPER_LOCKSCREEN).then((data) => {
+                console.info('resetPromiseLockTest004 data : ' + JSON.stringify(data));
+                expect(true).assertTrue();
+                done();
+            }).catch((err) => {
+                console.info('resetPromiseLockTest004 err : ' + JSON.stringify(err));
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      isOperationAllowedCallbackTest001
+     * @tc.desc:      Test isOperationAllowed() to checks whether a user is allowed to set wallpapers.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('isOperationAllowedCallbackTest001', 0, async function (done) {
+        try {
+            wallpaper.isOperationAllowed(function (err, data) {
+                if (err) {
+                    console.info('isOperationAllowedCallbackTest001 err : ' + JSON.stringify(err));
+                    expect(null).assertFail();
+                } else {
+                    console.info('isOperationAllowedCallbackTest001 data : ' + JSON.stringify(data));
+                    expect(true).assertTrue();
+                }
+                done();
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      isOperationAllowedPromiseTest002
+     * @tc.desc:      Test isOperationAllowed() to checks whether a user is allowed to set wallpapers.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('resetPromiseLockTest004', 0, async function (done) {
+        try {
+            wallpaper.isOperationAllowed().then((data) => {
+                console.info('resetPromiseLockTest004 data : ' + JSON.stringify(data));
+                expect(true).assertTrue();
+                done();
+            }).catch((err) => {
+                console.info('resetPromiseLockTest004 err : ' + JSON.stringify(err));
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      isChangePermittedCallbackTest001
+     * @tc.desc:      Test isChangePermitted() to checks whether to allow the application to change the
+     *                    wallpaper for the current user.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('isChangePermittedCallbackTest001', 0, async function (done) {
+        try {
+            wallpaper.isChangePermitted(function (err, data) {
+                if (err) {
+                    console.info('isChangePermittedCallbackTest001 err : ' + JSON.stringify(err));
+                    expect(null).assertFail();
+                } else {
+                    console.info('isChangePermittedCallbackTest001 data : ' + JSON.stringify(data));
+                    expect(true).assertTrue();
+                }
+                done();
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      isChangePermittedPromiseTest002
+     * @tc.desc:      Test isChangePermitted() to checks whether to allow the application to change the
+     *                    wallpaper for the current user.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('isChangePermittedPromiseTest002', 0, async function (done) {
+        try {
+            wallpaper.isChangePermitted().then((data) => {
+                console.info('isChangePermittedPromiseTest002 data : ' + JSON.stringify(data));
+                expect(true).assertTrue();
+                done();
+            }).catch((err) => {
+                console.info('isChangePermittedPromiseTest002 err : ' + JSON.stringify(err));
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getMinWidthCallbackTest001
+     * @tc.desc:      Test getMinWidth() to gets the minWidth of the WALLPAPER_SYSTEM of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getMinWidthCallbackTest001', 0, async function (done) {
+        try {
+            wallpaper.getMinWidth(function (err, data) {
+                if (err) {
+                    console.info('getMinWidthCallbackTest001 err : ' + JSON.stringify(err));
+                    expect(null).assertFail();
+                } else {
+                    console.info('getMinWidthCallbackTest001 data : ' + JSON.stringify(data));
+                    expect(true).assertTrue();
+                }
+                done();
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getMinWidthPromiseTest002
+     * @tc.desc:      Test getMinWidth() to gets the minWidth of the WALLPAPER_SYSTEM of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getMinWidthPromiseTest002', 0, async function (done) {
+        try {
+            wallpaper.getMinWidth().then((data) => {
+                console.info('getMinWidthPromiseTest002 data : ' + JSON.stringify(data));
+                expect(true).assertTrue();
+                done();
+            }).catch((err) => {
+                console.info('getMinWidthPromiseTest002 err : ' + JSON.stringify(err));
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getMinHeightCallbackTest001
+     * @tc.desc:      Test getMinHeight() to gets the minHeight of the WALLPAPER_SYSTEM of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getMinHeightCallbackTest001', 0, async function (done) {
+        try {
+            wallpaper.getMinHeight(function (err, data) {
+                if (err) {
+                    console.info('getMinHeightCallbackTest001 err : ' + JSON.stringify(err));
+                    expect(null).assertFail();
+                } else {
+                    console.info('getMinHeightCallbackTest001 data : ' + JSON.stringify(data));
+                    expect(true).assertTrue();
+                }
+                done();
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getMinHeightPromiseTest002
+     * @tc.desc:      Test getMinHeight() to gets the minHeight of the WALLPAPER_SYSTEM of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getMinHeightPromiseTest002', 0, async function (done) {
+        try {
+            wallpaper.getMinHeight().then((data) => {
+                console.info('getMinHeightPromiseTest002 data : ' + JSON.stringify(data));
+                expect(true).assertTrue();
+                done();
+            }).catch((err) => {
+                console.info('getMinHeightPromiseTest002 err : ' + JSON.stringify(err));
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getFileCallbackTest001
+     * @tc.desc:      Test getFile() to gets the File of the wallpaper of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getFileCallbackTest001', 0, async function (done) {
+        try {
+            wallpaper.getFile(WALLPAPER_SYSTEM, function (err, data) {
+                if (err) {
+                    console.info('getFileCallbackTest001 err : ' + JSON.stringify(err));
+                    expect(null).assertFail();
+                } else {
+                    console.info('getFileCallbackTest001 data : ' + JSON.stringify(data));
+                    expect(true).assertTrue();
+                }
+                done();
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getFilePromiseTest002
+     * @tc.desc:      Test getFile() to get the File of the wallpaper of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getFilePromiseTest002', 0, async function (done) {
+        try {
+            wallpaper.getFile(WALLPAPER_SYSTEM).then((data) => {
+                console.info('getFilePromiseTest002 data : ' + JSON.stringify(data));
+                expect(true).assertTrue();
+                done();
+            }).catch((err) => {
+                console.info('getFilePromiseTest002 err : ' + JSON.stringify(err));
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getFileCallbackTest003
+     * @tc.desc:      Test getFile() to gets the File of the wallpaper of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getFileCallbackTest003', 0, async function (done) {
+        try {
+            wallpaper.getFile(WALLPAPER_LOCKSCREEN, function (err, data) {
+                if (err) {
+                    console.info('getFileCallbackTest003 err : ' + JSON.stringify(err));
+                    expect(null).assertFail();
+                } else {
+                    console.info('getFileCallbackTest003 data : ' + JSON.stringify(data));
+                    expect(true).assertTrue();
+                }
+                done();
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getFilePromiseTest004
+     * @tc.desc:      Test getFile() to gets the File of the wallpaper of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getFilePromiseTest004', 0, async function (done) {
+        try {
+            wallpaper.getFile(WALLPAPER_LOCKSCREEN).then((data) => {
+                console.info('getFilePromiseTest004 data : ' + JSON.stringify(data));
+                expect(true).assertTrue();
+                done();
+            }).catch((err) => {
+                console.info('getFilePromiseTest004 err : ' + JSON.stringify(err));
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getIdCallbackTest001
+     * @tc.desc:      Test getId() to gets the ID of the wallpaper of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getIdCallbackTest001', 0, async function (done) {
+        try {
+            wallpaper.getId(WALLPAPER_SYSTEM, function (err, data) {
+                if (err) {
+                    console.info('getIdCallbackTest001 err : ' + JSON.stringify(err));
+                    expect(null).assertFail();
+                } else {
+                    console.info('getIdCallbackTest001 data : ' + JSON.stringify(data));
+                    expect(true).assertTrue();
+                }
+                done();
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getIdPromiseTest002
+     * @tc.desc:      Test getId() to gets the ID of the wallpaper of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getIdPromiseTest002', 0, async function (done) {
+        try {
+            wallpaper.getId(WALLPAPER_SYSTEM).then((data) => {
+                console.info('getIdPromiseTest002 data : ' + JSON.stringify(data));
+                expect(true).assertTrue();
+                done();
+            }).catch((err) => {
+                console.info('getIdPromiseTest002 err : ' + JSON.stringify(err));
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getIdCallbackTest003
+     * @tc.desc:      Test getId() to gets the ID of the wallpaper of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getIdCallbackTest003', 0, async function (done) {
+        try {
+            wallpaper.getId(WALLPAPER_LOCKSCREEN, function (err, data) {
+                if (err) {
+                    console.info('getIdCallbackTest003 err : ' + JSON.stringify(err));
+                    expect(null).assertFail();
+                } else {
+                    console.info('getIdCallbackTest003 data : ' + JSON.stringify(data));
+                    expect(true).assertTrue();
+                }
+                done();
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getIdPromiseTest004
+     * @tc.desc:      Test getId() to gets the ID of the wallpaper of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getIdPromiseTest004', 0, async function (done) {
+        try {
+            wallpaper.getId(WALLPAPER_LOCKSCREEN).then((data) => {
+                console.info('getIdPromiseTest004 data : ' + JSON.stringify(data));
+                expect(true).assertTrue();
+                done();
+            }).catch((err) => {
+                console.info('getIdPromiseTest004 err : ' + JSON.stringify(err));
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getColorsCallbackTest001
+     * @tc.desc:      Test getColors() to gets WALLPAPER_SYSTEM Colors.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getColorsCallbackTest001', 0, async function (done) {
+        try {
+            wallpaper.getColors(WALLPAPER_SYSTEM, function (err, data) {
+                if (err) {
+                    console.info('getColorsCallbackTest001 err : ' + JSON.stringify(err));
+                    expect(null).assertFail();
+                } else {
+                    console.info('getColorsCallbackTest001 data : ' + JSON.stringify(data));
+                    expect(true).assertTrue();
+                }
+                done();
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getColorsPromiseTest002
+     * @tc.desc:      Test getColors() to gets WALLPAPER_SYSTEM Colors.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getColorsPromiseTest002', 0, async function (done) {
+        try {
+            wallpaper.getColors(WALLPAPER_SYSTEM).then((data) => {
+                console.info('getColorsPromiseTest002 data : ' + JSON.stringify(data));
+                expect(true).assertTrue();
+                done();
+            }).catch((err) => {
+                console.info('getColorsPromiseTest002 err : ' + JSON.stringify(err));
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getColorsCallbackTest003
+     * @tc.desc:      Test getColors() to gets WALLPAPER_LOCKSCREEN Colors.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getColorsCallbackTest003', 0, async function (done) {
+        try {
+            wallpaper.getColors(WALLPAPER_LOCKSCREEN, function (err, data) {
+                if (err) {
+                    console.info('getColorsCallbackTest003 err : ' + JSON.stringify(err));
+                    expect(null).assertFail();
+                } else {
+                    console.info('getColorsCallbackTest003 data : ' + JSON.stringify(data));
+                    expect(true).assertTrue();
+                }
+                done();
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      getColorsPromiseTest004
+     * @tc.desc:      Test getColors() to gets WALLPAPER_LOCKSCREEN Colors.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('getColorsPromiseTest004', 0, async function (done) {
+        try {
+            wallpaper.getColors(WALLPAPER_LOCKSCREEN).then((data) => {
+                console.info('getColorsPromiseTest004 data : ' + JSON.stringify(data));
+                expect(true).assertTrue();
+                done();
+            }).catch((err) => {
+                console.info('getColorsPromiseTest004 err : ' + JSON.stringify(err));
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
         }
     })
 })
