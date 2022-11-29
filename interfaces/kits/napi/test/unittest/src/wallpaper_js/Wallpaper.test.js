@@ -15,21 +15,20 @@
 // @ts-nocheck
 import wallpaper from '@ohos.wallpaper'
 import image from '@ohos.multimedia.image'
+import fileio from '@ohos.fileio'
 
 import {describe, beforeAll, beforeEach, afterEach, afterAll, it, expect} from 'deccjsunit/index'
 
 const WALLPAPER_SYSTEM = 0;
 const WALLPAPER_LOCKSCREEN = 1;
 const PARAMETER_ERROR = "401";
-
-let imageSourceSystem = '/system/etc/wallpaper_system.JPG';
-let imageSourceLockscreen = 'system/etc/wallpaper_lock.JPG';
-
+const URL = "/data/storage/el2/base/haps/wp.jpeg";
 
 describe('WallpaperJSTest', function () {
     beforeAll(async function () {
         // input testsuit setup step，setup invoked before all testcases
         console.info('beforeAll called')
+        CreateImageToUrl();
     })
     beforeEach(function () {
         // input testcase setup step，setup invoked before each testcases
@@ -43,6 +42,24 @@ describe('WallpaperJSTest', function () {
         // input testsuit teardown step，teardown invoked after all testcases
         console.info('afterAll called')
     })
+
+    function CreateImageToUrl()
+    {
+        const color = new ArrayBuffer(96);
+        let opts = {editable: true, pixelFormat: 3, size: {height: 4, width: 6}};
+        image.createPixelMap(color, opts).then((pixelMap) => {
+            const imagePackerApi = image.createImagePacker();
+            let packOpts = {format: "image/jpeg", quality: 98};
+            imagePackerApi.packing(
+                pixelMap, packOpts, (err, data) => {
+                    let fd = fileio.openSync(URL, 0o2 | 0o100, 0o666);
+                    let ret = fileio.writeSync(fd, data);
+                    fileio.close(fd);
+                    console.log("file write ret:" + JSON.stringify(ret));
+                }
+            )
+        })
+    }
 
     /**
      * @tc.name:      getColorsSyncTest001
@@ -765,7 +782,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageURLPromiseLockTest001', 0, async function (done) {
         try {
-            wallpaper.setImage(imageSourceLockscreen, WALLPAPER_LOCKSCREEN).then((data) => {
+            wallpaper.setImage(URL, WALLPAPER_LOCKSCREEN).then((data) => {
                 console.info('setImageURLPromiseLockTest001 data : ' + JSON.stringify(data));
                 expect(true).assertTrue();
                 done();
@@ -789,7 +806,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageURLCallbackSystemTest002', 0, async function (done) {
         try {
-            wallpaper.setImage(imageSourceSystem, WALLPAPER_SYSTEM, function (err, data) {
+            wallpaper.setImage(URL, WALLPAPER_SYSTEM, function (err, data) {
                 if (err) {
                     console.info('setImageURLCallbackSystemTest002 err : ' + JSON.stringify(err.message));
                     expect(null).assertFail();
@@ -814,7 +831,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageURLPromiseSystemTest003', 0, async function (done) {
         try {
-            wallpaper.setImage(imageSourceSystem, WALLPAPER_SYSTEM).then((data) => {
+            wallpaper.setImage(URL, WALLPAPER_SYSTEM).then((data) => {
                 console.info('setImageURLPromiseSystemTest003 data : ' + JSON.stringify(data));
                 expect(true).assertTrue();
                 done();
@@ -838,7 +855,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageURLCallbackLockTest004', 0, async function (done) {
         try {
-            wallpaper.setImage(imageSourceLockscreen, WALLPAPER_LOCKSCREEN, function (err, data) {
+            wallpaper.setImage(URL, WALLPAPER_LOCKSCREEN, function (err, data) {
                 if (err) {
                     console.info('setImageURLCallbackLockTest004 err : ' + JSON.stringify(err));
                     expect(null).assertFail();
@@ -980,7 +997,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageCallbackThrowErrorTest009', 0, async function (done) {
         try {
-            wallpaper.setImage(imageSourceLockscreen, 2, function (err, data) {
+            wallpaper.setImage(URL, 2, function (err, data) {
                 if (err) {
                     console.info('setImageCallbackThrowErrorTest009 err : ' + JSON.stringify(err));
                     expect(err.code == PARAMETER_ERROR).assertEqual(true)
@@ -1003,7 +1020,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageCallbackThrowErrorTest010', 0, async function (done) {
         try {
-            wallpaper.setImage(imageSourceLockscreen, function (err, data) {
+            wallpaper.setImage(URL, function (err, data) {
                 if (err) {
                     console.info('setImageCallbackThrowErrorTest010 err : ' + JSON.stringify(err));
                     expect(null).assertFail();
@@ -1027,7 +1044,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImagePromiseThrowErrorTest011', 0, async function (done) {
         try {
-            wallpaper.setImage(imageSourceLockscreen, 2).then((data) => {
+            wallpaper.setImage(URL, 2).then((data) => {
                 expect(null).assertFail();
                 done();
             }).catch((err) => {
