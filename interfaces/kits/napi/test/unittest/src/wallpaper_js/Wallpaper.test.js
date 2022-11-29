@@ -28,7 +28,7 @@ describe('WallpaperJSTest', function () {
     beforeAll(async function () {
         // input testsuit setup step，setup invoked before all testcases
         console.info('beforeAll called')
-        createTempImage();
+        await createTempImage();
     })
     beforeEach(function () {
         // input testcase setup step，setup invoked before each testcases
@@ -51,8 +51,8 @@ describe('WallpaperJSTest', function () {
 
     })
 
-    function createTempImage() {
-        let pixelMap = createTempPixelMap();
+    async function createTempImage() {
+        let pixelMap = await createTempPixelMap();
         const imagePackerApi = image.createImagePacker();
         let packOpts = {format: "image/jpeg", quality: 98};
         imagePackerApi.packing(pixelMap, packOpts, (err, data) => {
@@ -67,10 +67,10 @@ describe('WallpaperJSTest', function () {
         })
     }
 
-    function createTempPixelMap() {
+    async function createTempPixelMap() {
         const color = new ArrayBuffer(96);
         let opts = {editable: true, pixelFormat: 3, size: {height: 4, width: 6}};
-        let pixelMap = image.createPixelMap(color, opts);
+        let pixelMap = await image.createPixelMap(color, opts);
         return pixelMap;
     }
 
@@ -887,7 +887,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageMapPromiseLockTest005', 0, async function (done) {
         try {
-            let pixelMap = createTempPixelMap();
+            let pixelMap = await createTempPixelMap();
             wallpaper.setImage(pixelMap, WALLPAPER_LOCKSCREEN).then((data) => {
                 expect(true).assertTrue();
                 done();
@@ -910,7 +910,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageMapCallbackSystemTest006', 0, async function (done) {
         try {
-            let pixelMap = createTempPixelMap();
+            let pixelMap = await createTempPixelMap();
             wallpaper.setImage(pixelMap, WALLPAPER_SYSTEM, function (err, data) {
                 if (err) {
                     console.info(`setImageMapCallbackSystemTest006 err : ${err}`);
@@ -932,9 +932,9 @@ describe('WallpaperJSTest', function () {
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
-    it('setImageMapPromiseSystemTest007', 0, function (done) {
+    it('setImageMapPromiseSystemTest007', 0, async function (done) {
         try {
-            let pixelMap = createTempPixelMap();
+            let pixelMap = await createTempPixelMap();
             wallpaper.setImage(pixelMap, WALLPAPER_SYSTEM).then((data) => {
                 expect(true).assertTrue();
                 done();
@@ -958,7 +958,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageMapCallbackLockTest008', 0, async function (done) {
         try {
-            let pixelMap = createTempPixelMap();
+            let pixelMap = await createTempPixelMap();
             wallpaper.setImage(pixelMap, WALLPAPER_LOCKSCREEN, function (err, data) {
                 if (err) {
                     console.info(`setImageMapCallbackLockTest008 err : ${err}`);
@@ -1150,7 +1150,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setWallpaperMapPromiseLockTest001', 0, async function (done) {
         try {
-            let pixelMap = createTempPixelMap();
+            let pixelMap = await createTempPixelMap();
             wallpaper.setWallpaper(pixelMap, WALLPAPER_LOCKSCREEN).then((data) => {
                 expect(true).assertTrue();
                 done();
@@ -1174,7 +1174,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setWallpaperMapCallbackSystemTest002', 0, async function (done) {
         try {
-            let pixelMap = createTempPixelMap();
+            let pixelMap = await createTempPixelMap();
             wallpaper.setWallpaper(pixelMap, WALLPAPER_SYSTEM, function (err, data) {
                 if (err) {
                     console.info(`setWallpaperMapCallbackSystemTest002 err : ${err}`);
@@ -1196,9 +1196,9 @@ describe('WallpaperJSTest', function () {
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
-    it('setWallpaperMapPromiseSystemTest003', 0, function (done) {
+    it('setWallpaperMapPromiseSystemTest003', 0, async function (done) {
         try {
-            let pixelMap = createTempPixelMap();
+            let pixelMap = await createTempPixelMap();
             wallpaper.setWallpaper(pixelMap, WALLPAPER_SYSTEM).then((data) => {
                 expect(true).assertTrue();
                 done();
@@ -1222,7 +1222,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setWallpaperMapCallbackLockTest004', 0, async function (done) {
         try {
-            let pixelMap = createTempPixelMap();
+            let pixelMap = await createTempPixelMap();
             wallpaper.setWallpaper(pixelMap, WALLPAPER_LOCKSCREEN, function (err, data) {
                 if (err) {
                     console.info(`setWallpaperMapCallbackLockTest004 err : ${err}`);
