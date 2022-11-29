@@ -18,9 +18,6 @@ import image from '@ohos.multimedia.image'
 import fileio from '@ohos.fileio'
 
 import {describe, beforeAll, beforeEach, afterEach, afterAll, it, expect} from 'deccjsunit/index'
-import {
-    getColors, getFile, getId, getMinHeight, getMinWidth, getPixelMap, isChangePermitted, reset
-} from "../../../../../jskits/@ohos.wallpaper";
 
 const WALLPAPER_SYSTEM = 0;
 const WALLPAPER_LOCKSCREEN = 1;
