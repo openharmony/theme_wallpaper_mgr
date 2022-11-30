@@ -104,8 +104,6 @@ ohos_unittest("wallpaper_permission_test") {
 }
 
 ohos_unittest("wallpaper_dfx_test") {
-  resource_config_file =
-      "//base/theme/wallpaper_mgr/test/unittest/resource/ohos_test.xml"
   module_out_path = "wallpaper_mgr/wallpaper_dfx_test"
   sources = [ "unittest/wallpaper_dfx_test.cpp" ]
 

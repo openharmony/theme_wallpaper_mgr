@@ -14,8 +14,6 @@
 import("//build/test.gni")
 
 ohos_js_unittest("WallpaperJSTest") {
-  resource_config_file = "//base/theme/wallpaper_mgr/interfaces/kits/napi/test/unittest/resource/ohos_test.xml"
-
   module_out_path = "theme/wallpaperJsTest"
 
   hap_profile = "./config.json"
