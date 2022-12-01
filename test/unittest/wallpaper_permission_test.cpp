@@ -37,7 +37,7 @@ using namespace OHOS::Security::AccessToken;
 
 namespace OHOS {
 namespace WallpaperMgrService {
-constexpr const char *URL = "/data/test/theme/wallpaper/wallpaper_test.JPG";
+constexpr const char *URI = "/data/test/theme/wallpaper/wallpaper_test.JPG";
 
 class WallpaperPermissionTest : public testing::Test {
 public:
@@ -85,7 +85,7 @@ void WallpaperPermissionTest::CreateTempImage()
     option.numberHint = 1;
     std::set<std::string> formats;
     imagePacker.GetSupportedFormats(formats);
-    imagePacker.StartPacking(URL, option);
+    imagePacker.StartPacking(URI, option);
     HILOG_INFO("AddImage start");
     imagePacker.AddImage(*pixelMap);
     int64_t packedSize = 0;
@@ -174,21 +174,21 @@ HWTEST_F(WallpaperPermissionTest, SetWallpaperByMapPermission001, TestSize.Level
 }
 /*********************   SetWallpaperByMap   *********************/
 
-/*********************   SetWallpaperByUrl   *********************/
+/*********************   SetWallpaperByUri   *********************/
 /**
-* @tc.name:    SetWallpaperByUrlPermission001
-* @tc.desc:    SetWallpaperByUrl with wallpaperType[1] throw permission error.
+* @tc.name:    SetWallpaperByUriPermission001
+* @tc.desc:    SetWallpaperByUri with wallpaperType[1] throw permission error.
 * @tc.type:    FUNC
 * @tc.require: issueI60MT1
 * @tc.author:  lvbai
 */
-HWTEST_F(WallpaperPermissionTest, SetWallpaperByUrlPermission001, TestSize.Level0)
+HWTEST_F(WallpaperPermissionTest, SetWallpaperByUriPermission001, TestSize.Level0)
 {
-    HILOG_INFO("SetWallpaperByUrlPermission001  begin");
+    HILOG_INFO("SetWallpaperByUriPermission001  begin");
     int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URL, LOCKSCREEN);
+        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NO_PERMISSION)) << "throw permission error successfully";
 }
-/*********************   SetWallpaperByUrl   *********************/
+/*********************   SetWallpaperByUri   *********************/
 } // namespace WallpaperMgrService
 } // namespace OHOS

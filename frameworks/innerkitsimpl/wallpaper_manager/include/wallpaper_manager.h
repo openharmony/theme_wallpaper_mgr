@@ -153,6 +153,7 @@ private:
     void ResetService(const wptr<IRemoteObject> &remote);
     sptr<IWallpaperService> GetService();
     int64_t WritePixelMapToStream(std::ostream &outputStream, std::unique_ptr<OHOS::Media::PixelMap> pixelMap);
+    bool GetRealPath(const std::string &inOriPath, std::string &outRealPath);
 
     sptr<IWallpaperService> wpProxy_{};
     sptr<IRemoteObject::DeathRecipient> deathRecipient_{};
