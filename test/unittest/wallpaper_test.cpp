@@ -670,7 +670,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri004, TestSize.Level0)
 * @tc.name:    SetWallpaperByUri005
 * @tc.desc:    SetWallpaperByUri with unsafe uri.
 * @tc.type:    FUNC
-* @tc.require:
+* @tc.require: issueI647HI
 * @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByUri005, TestSize.Level0)
