@@ -39,7 +39,7 @@ using namespace OHOS::Security::AccessToken;
 
 namespace OHOS {
 namespace WallpaperMgrService {
-constexpr const char *URL = "/data/test/theme/wallpaper/wallpaper_test.JPG";
+constexpr const char *URI = "/data/test/theme/wallpaper/wallpaper_test.JPG";
 void GrantNativePermission()
 {
     const char **perms = new const char *[2];
@@ -167,7 +167,7 @@ void WallpaperTest::CreateTempImage()
     option.numberHint = 1;
     std::set<std::string> formats;
     imagePacker.GetSupportedFormats(formats);
-    imagePacker.StartPacking(URL, option);
+    imagePacker.StartPacking(URI, option);
     HILOG_INFO("AddImage start");
     imagePacker.AddImage(*pixelMap);
     int64_t packedSize = 0;
@@ -605,65 +605,81 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap003, TestSize.Level0)
 }
 /*********************   SetWallpaperByMap   *********************/
 
-/*********************   SetWallpaperByUrl   *********************/
+/*********************   SetWallpaperByUri   *********************/
 /**
-* @tc.name:    SetWallpaperByUrl001
-* @tc.desc:    SetWallpaperByUrl with wallpaperType[0] .
+* @tc.name:    SetWallpaperByUri001
+* @tc.desc:    SetWallpaperByUri with wallpaperType[0] .
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
 * @tc.author:  lvbai
 */
-HWTEST_F(WallpaperTest, SetWallpaperByUrl001, TestSize.Level0)
+HWTEST_F(WallpaperTest, SetWallpaperByUri001, TestSize.Level0)
 {
-    HILOG_INFO("SetWallpaperByUrl001  begin");
+    HILOG_INFO("SetWallpaperByUri001  begin");
     int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URL, SYSTYEM);
+        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URI, SYSTYEM);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to set SYSTYEM.";
 }
 
 /**
-* @tc.name:    SetWallpaperByUrl002
-* @tc.desc:    SetWallpaperByUrl with wallpaperType[1].
+* @tc.name:    SetWallpaperByUri002
+* @tc.desc:    SetWallpaperByUri with wallpaperType[1].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
 * @tc.author:  lvbai
 */
-HWTEST_F(WallpaperTest, SetWallpaperByUrl002, TestSize.Level0)
+HWTEST_F(WallpaperTest, SetWallpaperByUri002, TestSize.Level0)
 {
-    HILOG_INFO("SetWallpaperByUrl002  begin");
+    HILOG_INFO("SetWallpaperByUri002  begin");
     int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URL, LOCKSCREEN);
+        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to set LOCKSCREEN.";
 }
 
 /**
-* @tc.name:    SetWallpaperByUrl003
-* @tc.desc:    SetWallpaperByUrl with wallpaperType[2] throw parameters error.
+* @tc.name:    SetWallpaperByUri003
+* @tc.desc:    SetWallpaperByUri with wallpaperType[2] throw parameters error.
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
 * @tc.author:  lvbai
 */
-HWTEST_F(WallpaperTest, SetWallpaperByUrl003, TestSize.Level0)
+HWTEST_F(WallpaperTest, SetWallpaperByUri003, TestSize.Level0)
 {
-    HILOG_INFO("SetWallpaperByUrl003  begin");
-    int32_t wallpaperErrorCode = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URL, 2);
+    HILOG_INFO("SetWallpaperByUri003  begin");
+    int32_t wallpaperErrorCode = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URI, 2);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to throw error";
 }
 
 /**
-* @tc.name:    SetWallpaperByUrl004
-* @tc.desc:    SetWallpaperByUrl with error url.
+* @tc.name:    SetWallpaperByUri004
+* @tc.desc:    SetWallpaperByUri with error uri.
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
 * @tc.author:  lvbai
 */
-HWTEST_F(WallpaperTest, SetWallpaperByUrl004, TestSize.Level0)
+HWTEST_F(WallpaperTest, SetWallpaperByUri004, TestSize.Level0)
 {
-    HILOG_INFO("SetWallpaperByUrl004  begin");
+    HILOG_INFO("SetWallpaperByUri004  begin");
     int32_t wallpaperErrorCode =
         OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper("/data/test/theme/wallpaper/"
-                                                                                    "errorURL", 1);
+                                                                                    "errorURI", 1);
     EXPECT_NE(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to throw error";
+}
+
+/**
+* @tc.name:    SetWallpaperByUri005
+* @tc.desc:    SetWallpaperByUri with unsafe uri.
+* @tc.type:    FUNC
+* @tc.require: issueI647HI
+* @tc.author:  lvbai
+*/
+HWTEST_F(WallpaperTest, SetWallpaperByUri005, TestSize.Level0)
+{
+    HILOG_INFO("SetWallpaperByUri005  begin");
+    int32_t wallpaperErrorCode =
+        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper("../data/test/theme/wallpaper/"
+                                                                                    "errorURI", 1);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_FILE_ERROR)) << "Failed to throw error";
 }
 
 /**
@@ -679,13 +695,13 @@ HWTEST_F(WallpaperTest, FILE_DEAL001, TestSize.Level0)
     FileDeal fileOperation;
     bool isExist = fileOperation.Mkdir("/data/test/theme/wallpaper/");
     EXPECT_EQ(isExist, true);
-    isExist = fileOperation.Mkdir("/data/test/theme/errorURL/");
+    isExist = fileOperation.Mkdir("/data/test/theme/errorURI/");
     EXPECT_EQ(isExist, true);
-    isExist = fileOperation.FileIsExist(URL);
+    isExist = fileOperation.FileIsExist(URI);
     EXPECT_EQ(isExist, true);
-    isExist = fileOperation.FileIsExist("/data/test/theme/wallpaper/errorURL");
+    isExist = fileOperation.FileIsExist("/data/test/theme/wallpaper/errorURI");
     EXPECT_EQ(isExist, false);
 }
-/*********************   SetWallpaperByUrl   *********************/
+/*********************   SetWallpaperByUri   *********************/
 } // namespace WallpaperMgrService
 } // namespace OHOS

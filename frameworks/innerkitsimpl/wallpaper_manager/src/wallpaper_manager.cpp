@@ -163,24 +163,24 @@ int32_t WallpaperManager::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
     return wallpaperErrorCode;
 }
 
-int32_t WallpaperManager::SetWallpaper(std::string url, int wallpaperType)
+int32_t WallpaperManager::SetWallpaper(std::string uri, int wallpaperType)
 {
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
-    if (!OHOS::FileExists(url)) {
-        HILOG_ERROR("file is not exist! %{public}s", url.c_str());
+    std::string fileRealPath;
+    if (!GetRealPath(uri, fileRealPath)) {
+        HILOG_ERROR("get real path file failed, len = %{public}zu", uri.size());
         return static_cast<int32_t>(E_FILE_ERROR);
     }
-    FILE *pixMap = std::fopen(url.c_str(), "rb");
+    FILE *pixMap = std::fopen(fileRealPath.c_str(), "rb");
     if (pixMap == nullptr) {
-        HILOG_ERROR("fopen faild, %{public}s, %{public}s", url.c_str(), strerror(errno));
+        HILOG_ERROR("fopen faild, %{public}s, %{public}s", fileRealPath.c_str(), strerror(errno));
         return static_cast<int32_t>(E_FILE_ERROR);
     }
-    int fend = fseek(pixMap, 0, SEEK_END);
-    if (fend != 0) {
+    if (fseek(pixMap, 0, SEEK_END) != 0) {
         HILOG_ERROR("fseek faild");
         return static_cast<int32_t>(E_FILE_ERROR);
     }
@@ -189,18 +189,15 @@ int32_t WallpaperManager::SetWallpaper(std::string url, int wallpaperType)
         HILOG_ERROR("ftell faild");
         return static_cast<int32_t>(E_FILE_ERROR);
     }
-    int fset = fseek(pixMap, 0, SEEK_SET);
-    if (fset != 0) {
+    if (fseek(pixMap, 0, SEEK_SET) != 0) {
         HILOG_ERROR("fseek faild");
         return static_cast<int32_t>(E_FILE_ERROR);
     }
-    int closeRes = fclose(pixMap);
-    if (closeRes != 0) {
+    if (fclose(pixMap) != 0) {
         HILOG_ERROR("fclose faild");
         return static_cast<int32_t>(E_FILE_ERROR);
     }
-
-    int fd = open(url.c_str(), O_RDONLY, 0660);
+    int fd = open(fileRealPath.c_str(), O_RDONLY, 0660);
     if (fd < 0) {
         HILOG_ERROR("open file failed");
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
@@ -480,6 +477,22 @@ void WallpaperManager::CloseWallpaperFd(int32_t wallpaperType)
         close(iter->second);
         wallpaperFdMap_.erase(iter);
     }
+}
+
+bool WallpaperManager::GetRealPath(const std::string &inOriPath, std::string &outRealPath)
+{
+    char realPath[PATH_MAX + 1] = { 0x00 };
+    if (inOriPath.size() > PATH_MAX || realpath(inOriPath.c_str(), realPath) == nullptr) {
+        HILOG_ERROR("get real path fail");
+        return false;
+    }
+    outRealPath = std::string(realPath);
+
+    if (!OHOS::FileExists(outRealPath)) {
+        HILOG_ERROR("real path file is not exist! %{public}s", outRealPath.c_str());
+        return false;
+    }
+    return true;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

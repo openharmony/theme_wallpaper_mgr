@@ -22,7 +22,7 @@ import {describe, beforeAll, beforeEach, afterEach, afterAll, it, expect} from '
 const WALLPAPER_SYSTEM = 0;
 const WALLPAPER_LOCKSCREEN = 1;
 const PARAMETER_ERROR = "401";
-const URL = "/data/storage/el2/base/haps/js.jpeg";
+const URI = "/data/storage/el2/base/haps/js.jpeg";
 
 describe('WallpaperJSTest', function () {
     beforeAll(async function () {
@@ -59,7 +59,7 @@ describe('WallpaperJSTest', function () {
             if (err) {
                 console.info(`packing error: ${err}`)
             } else {
-                let fd = fileio.openSync(URL, 0o2 | 0o100, 0o666);
+                let fd = fileio.openSync(URI, 0o2 | 0o100, 0o666);
                 let ret = fileio.writeSync(fd, data);
                 fileio.close(fd);
                 console.log(`file write ret: ${ret}`);
@@ -825,19 +825,19 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:      setImageURLPromiseLockTest001
+     * @tc.name:      setImageURIPromiseLockTest001
      * @tc.desc:      Test setImage() to sets a wallpaper of the specified type based on the uri path from a
      *                    JPEG or PNG file or the pixel map of a PNG file.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
-    it('setImageURLPromiseLockTest001', 0, async function (done) {
+    it('setImageURIPromiseLockTest001', 0, async function (done) {
         try {
-            wallpaper.setImage(URL, WALLPAPER_LOCKSCREEN).then((data) => {
+            wallpaper.setImage(URI, WALLPAPER_LOCKSCREEN).then((data) => {
                 expect(true).assertTrue();
                 done();
             }).catch((err) => {
-                console.info(`setImageURLPromiseLockTest001 err : ${err}`);
+                console.info(`setImageURIPromiseLockTest001 err : ${err}`);
                 expect(null).assertFail();
                 done();
             });
@@ -848,17 +848,17 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:      setImageURLCallbackSystemTest002
+     * @tc.name:      setImageURICallbackSystemTest002
      * @tc.desc:      Test setImage() to sets a wallpaper of the specified type based on the uri path from a
      *                    JPEG or PNG file or the pixel map of a PNG file.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
-    it('setImageURLCallbackSystemTest002', 0, async function (done) {
+    it('setImageURICallbackSystemTest002', 0, async function (done) {
         try {
-            wallpaper.setImage(URL, WALLPAPER_SYSTEM, function (err, data) {
+            wallpaper.setImage(URI, WALLPAPER_SYSTEM, function (err, data) {
                 if (err) {
-                    console.info(`setImageURLCallbackSystemTest002 err : ${err}`);
+                    console.info(`setImageURICallbackSystemTest002 err : ${err}`);
                     expect(null).assertFail();
                 } else {
                     expect(true).assertTrue();
@@ -872,19 +872,19 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:      setImageURLPromiseSystemTest003
+     * @tc.name:      setImageURIPromiseSystemTest003
      * @tc.desc:      Test setImage() to sets a wallpaper of the specified type based on the uri path from a
      *                    JPEG or PNG file or the pixel map of a PNG file.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
-    it('setImageURLPromiseSystemTest003', 0, async function (done) {
+    it('setImageURIPromiseSystemTest003', 0, async function (done) {
         try {
-            wallpaper.setImage(URL, WALLPAPER_SYSTEM).then((data) => {
+            wallpaper.setImage(URI, WALLPAPER_SYSTEM).then((data) => {
                 expect(true).assertTrue();
                 done();
             }).catch((err) => {
-                console.info(`setImageURLPromiseSystemTest003 err : ${err}`);
+                console.info(`setImageURIPromiseSystemTest003 err : ${err}`);
                 expect(null).assertFail();
                 done();
             });
@@ -895,17 +895,17 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:      setImageURLCallbackLockTest004
+     * @tc.name:      setImageURICallbackLockTest004
      * @tc.desc:      Test setImage() to sets a wallpaper of the specified type based on the uri path from a
      *                    JPEG or PNG file or the pixel map of a PNG file.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
-    it('setImageURLCallbackLockTest004', 0, async function (done) {
+    it('setImageURICallbackLockTest004', 0, async function (done) {
         try {
-            wallpaper.setImage(URL, WALLPAPER_LOCKSCREEN, function (err, data) {
+            wallpaper.setImage(URI, WALLPAPER_LOCKSCREEN, function (err, data) {
                 if (err) {
-                    console.info(`setImageURLCallbackLockTest004 err : ${err}`);
+                    console.info(`setImageURICallbackLockTest004 err : ${err}`);
                     expect(null).assertFail();
                 } else {
                     expect(true).assertTrue();
@@ -1022,7 +1022,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageCallbackThrowErrorTest009', 0, async function (done) {
         try {
-            wallpaper.setImage(URL, 2, function (err, data) {
+            wallpaper.setImage(URI, 2, function (err, data) {
                 if (err) {
                     console.info(`setImageCallbackThrowErrorTest009 err : ${err}`);
                     expect(err.code == PARAMETER_ERROR).assertEqual(true)
@@ -1044,7 +1044,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageCallbackThrowErrorTest010', 0, async function (done) {
         try {
-            wallpaper.setImage(URL, function (err, data) {
+            wallpaper.setImage(URI, function (err, data) {
                 if (err) {
                     console.info(`setImageCallbackThrowErrorTest010 err : ${err}`);
                     expect(null).assertFail();
@@ -1067,7 +1067,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImagePromiseThrowErrorTest011', 0, async function (done) {
         try {
-            wallpaper.setImage(URL, 2).then((data) => {
+            wallpaper.setImage(URI, 2).then((data) => {
                 expect(null).assertFail();
                 done();
             }).catch((err) => {
