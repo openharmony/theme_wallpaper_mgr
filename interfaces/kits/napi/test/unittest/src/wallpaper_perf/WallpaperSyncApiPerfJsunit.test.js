@@ -28,7 +28,7 @@ describe('WallpaperPerfJSTest', function () {
         console.info('afterAll');
     })
 
-    var BASE_CONUT = 100;
+    const SAMPLE_SIZE = 100;
 
     /**
      * @tc.name      on_performance_test_001
@@ -37,12 +37,12 @@ describe('WallpaperPerfJSTest', function () {
      * @tc.require
      */
     it('on_performance_test_001', 0, function (done) {
-        let startTime = new Date().getTime();
-        for (var index = 0; index < BASE_CONUT; index++) {
-            wallpaper.on('colorChange', function (colors, wallpaperType){})
-        }
-        computeAverageTime(startTime, BASE_CONUT, "on_performance_test_001 averageTime:");
-        done();
+        let info = "on_performance_test_001 averageTime:";
+        calcAverageTime(SAMPLE_SIZE, () => {
+            wallpaper.off('colorChange', function (colors, wallpaperType) {
+            }, info);
+            done();
+        })
     })
 
     /**
@@ -52,11 +52,10 @@ describe('WallpaperPerfJSTest', function () {
      * @tc.require
      */
     it('getColorsSync_performance_test_001', 0, function (done) {
-        let startTime = new Date().getTime();
-        for (var index = 0; index < BASE_CONUT; index++) {
-            var data = wallpaper.getColorsSync(WALLPAPER_SYSTEM);
-        }
-        computeAverageTime(startTime, BASE_CONUT, "getColorsSync_performance_test_001 averageTime:");
+        let info = "getColorsSync_performance_test_001 averageTime:";
+        calcAverageTime(SAMPLE_SIZE, () => {
+            wallpaper.getColorsSync(WALLPAPER_SYSTEM)
+        }, info);
         done();
     })
 
@@ -67,11 +66,10 @@ describe('WallpaperPerfJSTest', function () {
      * @tc.require
      */
     it('getColorsSync_performance_test_002', 0, function (done) {
-        let startTime = new Date().getTime();
-        for (var index = 0; index < BASE_CONUT; index++) {
-            var data = wallpaper.getColorsSync(WALLPAPER_LOCKSCREEN);
-        }
-        computeAverageTime(startTime, BASE_CONUT, "getColorsSync_performance_test_002 averageTime:");
+        let info = "getColorsSync_performance_test_002 averageTime:";
+        calcAverageTime(SAMPLE_SIZE, () => {
+            wallpaper.getColorsSync(WALLPAPER_LOCKSCREEN)
+        }, info);
         done();
     })
 
@@ -82,11 +80,10 @@ describe('WallpaperPerfJSTest', function () {
      * @tc.require
      */
     it('getIdSync_performance_test_001', 0, function (done) {
-        let startTime = new Date().getTime();
-        for (var index = 0; index < BASE_CONUT; index++) {
-            var id = wallpaper.getIdSync(WALLPAPER_SYSTEM);
-        }
-        computeAverageTime(startTime, BASE_CONUT, "getIdSync_performance_test_001 averageTime:");
+        let info = "getIdSync_performance_test_001 averageTime:";
+        calcAverageTime(SAMPLE_SIZE, () => {
+            wallpaper.getIdSync(WALLPAPER_SYSTEM)
+        }, info);
         done();
     })
 
@@ -97,11 +94,10 @@ describe('WallpaperPerfJSTest', function () {
      * @tc.require
      */
     it('getIdSync_performance_test_002', 0, function (done) {
-        let startTime = new Date().getTime();
-        for (var index = 0; index < BASE_CONUT; index++) {
-            var id = wallpaper.getIdSync(WALLPAPER_LOCKSCREEN);
-        }
-        computeAverageTime(startTime, BASE_CONUT, "getIdSync_performance_test_002 averageTime:");
+        let info = "getIdSync_performance_test_002 averageTime:";
+        calcAverageTime(SAMPLE_SIZE, () => {
+            wallpaper.getIdSync(WALLPAPER_LOCKSCREEN)
+        }, info);
         done();
     })
 
@@ -112,11 +108,10 @@ describe('WallpaperPerfJSTest', function () {
      * @tc.require
      */
     it('getFileSync_performance_test_001', 0, function (done) {
-        let startTime = new Date().getTime();
-        for (var index = 0; index < BASE_CONUT; index++) {
-            var data = wallpaper.getFileSync(WALLPAPER_SYSTEM);
-        }
-        computeAverageTime(startTime, BASE_CONUT, "getFileSync_performance_test_001 averageTime:");
+        let info = "getFileSync_performance_test_001 averageTime:";
+        calcAverageTime(SAMPLE_SIZE, () => {
+            wallpaper.getFileSync(WALLPAPER_SYSTEM)
+        }, info);
         done();
     })
 
@@ -127,11 +122,10 @@ describe('WallpaperPerfJSTest', function () {
      * @tc.require
      */
     it('getFileSync_performance_test_002', 0, function (done) {
-        let startTime = new Date().getTime();
-        for (var index = 0; index < BASE_CONUT; index++) {
-            var data = wallpaper.getFileSync(WALLPAPER_LOCKSCREEN);
-        }
-        computeAverageTime(startTime, BASE_CONUT, "getFileSync_performance_test_002 averageTime:");
+        let info = "getFileSync_performance_test_002 averageTime:";
+        calcAverageTime(SAMPLE_SIZE, () => {
+            wallpaper.getFileSync(WALLPAPER_LOCKSCREEN)
+        }, info);
         done();
     })
 
@@ -142,11 +136,10 @@ describe('WallpaperPerfJSTest', function () {
      * @tc.require
      */
     it('getMinHeightSync_performance_test_001', 0, function (done) {
-        let startTime = new Date().getTime();
-        for (var index = 0; index < BASE_CONUT; index++) {
-            var data = wallpaper.getMinHeightSync();
-        }
-        computeAverageTime(startTime, BASE_CONUT, "getMinHeightSync_performance_test_001 averageTime:");
+        let info = "getMinHeightSync_performance_test_001 averageTime:";
+        calcAverageTime(SAMPLE_SIZE, () => {
+            wallpaper.getMinHeightSync()
+        }, info);
         done();
     })
 
@@ -157,11 +150,10 @@ describe('WallpaperPerfJSTest', function () {
      * @tc.require
      */
     it('getMinWidthSync_performance_test_001', 0, function (done) {
-        let startTime = new Date().getTime();
-        for (var index = 0; index < BASE_CONUT; index++) {
-            var data = wallpaper.getMinWidthSync();
-        }
-        computeAverageTime(startTime, BASE_CONUT, "getMinWidthSync_performance_test_001 averageTime:");
+        let info = "getMinWidthSync_performance_test_001 averageTime:";
+        calcAverageTime(SAMPLE_SIZE, () => {
+            wallpaper.getMinWidthSync()
+        }, info);
         done();
     })
 
@@ -172,11 +164,10 @@ describe('WallpaperPerfJSTest', function () {
      * @tc.require
      */
     it('isChangeAllowed_performance_test_001', 0, function (done) {
-        let startTime = new Date().getTime();
-        for (var index = 0; index < BASE_CONUT; index++) {
-            var data = wallpaper.isChangeAllowed();
-        }
-        computeAverageTime(startTime, BASE_CONUT, "isChangeAllowed_performance_test_001 averageTime:");
+        let info = "isChangeAllowed_performance_test_001 averageTime:";
+        calcAverageTime(SAMPLE_SIZE, () => {
+            wallpaper.isChangeAllowed()
+        }, info);
         done();
     })
 
@@ -187,11 +178,10 @@ describe('WallpaperPerfJSTest', function () {
      * @tc.require
      */
     it('isUserChangeAllowed_performance_test_001', 0, function (done) {
-        let startTime = new Date().getTime();
-        for (var index = 0; index < BASE_CONUT; index++) {
-            var data = wallpaper.isUserChangeAllowed();
-        }
-        computeAverageTime(startTime, BASE_CONUT, "isUserChangeAllowed_performance_test_001 averageTime:");
+        let info = "isUserChangeAllowed_performance_test_001 averageTime:";
+        calcAverageTime(SAMPLE_SIZE, () => {
+            wallpaper.isUserChangeAllowed()
+        }, info);
         done();
     })
 
@@ -202,17 +192,25 @@ describe('WallpaperPerfJSTest', function () {
      * @tc.require
      */
     it('off_performance_test_001', 0, function (done) {
-        let startTime = new Date().getTime();
-        for (var index = 0; index < BASE_CONUT; index++) {
-            wallpaper.off('colorChange', function (colors, wallpaperType){})
-        }
-        computeAverageTime(startTime, BASE_CONUT, "off_performance_test_001 averageTime:");
+        let info = "off_performance_test_001 averageTime:";
+        calcAverageTime(SAMPLE_SIZE, () => {
+            wallpaper.off('colorChange', function (colors, wallpaperType) {
+            })
+        }, info);
         done();
     })
 
-    function computeAverageTime(startTime, baseCount, message) {
+    function outputAverageTime(startTime, baseCount, message) {
         var endTime = new Date().getTime();
         var averageTime = ((endTime - startTime) * 1000) / baseCount;
         console.info(message + averageTime);
+    }
+
+    function calcAverageTime(times, callback, info) {
+        let startTime = new Date().getTime();
+        for (let index = 0; index < times; index++) {
+            callback();
+        }
+        outputAverageTime(startTime, times, info);
     }
 });

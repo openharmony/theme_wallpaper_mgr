@@ -24,7 +24,5 @@ ohos_js_unittest("WallpaperPerfJSTest") {
 group("unittest") {
   testonly = true
   deps = []
-  deps += [
-    ":WallpaperPerfJSTest",
-  ]
+  deps += [ ":WallpaperPerfJSTest" ]
 }

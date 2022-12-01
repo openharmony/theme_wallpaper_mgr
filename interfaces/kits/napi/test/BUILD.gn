@@ -18,8 +18,6 @@ group("unittest") {
   testonly = true
   deps = []
 
-  deps += [
-    "unittest/src/wallpaper_js:unittest",
-  ]
+  deps += [ "unittest/src/wallpaper_js:unittest" ]
 }
 ###############################################################################
