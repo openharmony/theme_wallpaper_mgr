@@ -233,7 +233,7 @@ int32_t WallpaperServiceStub::OnWallpaperOn(MessageParcel &data, MessageParcel &
     sptr<IWallpaperColorChangeListener> WallpaperListenerProxy = iface_cast<IWallpaperColorChangeListener>(remote);
 
     bool status = On(std::move(WallpaperListenerProxy));
-    int32_t ret = (status) ? 0 : -1;
+    int32_t ret = status ? 0 : -1;
     if (!reply.WriteInt32(ret)) {
         HILOG_ERROR("WriteInt32 failed");
         return -1;
@@ -253,7 +253,7 @@ int32_t WallpaperServiceStub::OnWallpaperOff(MessageParcel &data, MessageParcel 
         sptr<IWallpaperColorChangeListener> WallpaperListenerProxy = iface_cast<IWallpaperColorChangeListener>(remote);
         status = Off(std::move(WallpaperListenerProxy));
     }
-    int32_t ret = (status) ? 0 : -1;
+    int32_t ret = status ? 0 : -1;
     if (!reply.WriteInt32(ret)) {
         return -1;
     }
