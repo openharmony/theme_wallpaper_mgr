@@ -119,13 +119,11 @@ private:
     bool SaveColor(int wallpaperType);
     void LoadSettingsLocked(int userId, bool keepDimensionHints);
     std::string GetWallpaperDir();
-    void NotifyLockWallpaperChanged();
     void MigrateFromOld();
     bool GetWallpaperSafeLocked(int userId, int wpType, WallpaperData paperdata);
     void ClearWallpaperLocked(int userId, int wpType);
     int32_t SetDefaultDateForWallpaper(int userId, int wpType);
     int MakeWallpaperIdLocked();
-    bool ChangingToSame(ComponentName componentName, WallpaperData wallpaper);
     bool WPCheckCallingPermission(const std::string &promissionName);
     bool WPGetBundleNameByUid(std::int32_t uid, std::string &bname);
     bool MakeCropWallpaper(int wallpaperType);
@@ -159,7 +157,6 @@ private:
     ConcurrentMap<int, WallpaperData> lockWallpaperMap_;
     std::atomic<uint32_t> wallpaperId_;
     int userId_;
-    IWallpaperManagerCallback *keyguardListener_;
     static const std::string WALLPAPER;
     static const std::string WALLPAPER_CROP;
     static const std::string WALLPAPER_LOCK_ORIG;

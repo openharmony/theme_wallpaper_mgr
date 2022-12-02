@@ -305,11 +305,6 @@ void WallpaperService::LoadSettingsLocked(int userId, bool keepDimensionHints)
     HILOG_INFO("load Setting locked end.");
 }
 
-bool WallpaperService::ChangingToSame(ComponentName componentName, WallpaperData wallpaper)
-{
-    return wallpaper.wallpaperComponent.equals(componentName);
-}
-
 void WallpaperService::MigrateFromOld()
 {
     if (!OHOS::FileExists(wallpaperLockScreenFilePath_)) {
