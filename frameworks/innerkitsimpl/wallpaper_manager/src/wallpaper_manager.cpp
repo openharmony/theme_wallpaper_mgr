@@ -247,7 +247,7 @@ int32_t WallpaperManager::SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &p
     }
     close(fd[1]);
     int32_t wallpaperErrorCode = wpServerProxy->SetWallpaperByMap(fd[0], wallpaperType, mapSize);
-    close(fd);
+    close(fd[0]);
     if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
         CloseWallpaperFd(wallpaperType);
     }
