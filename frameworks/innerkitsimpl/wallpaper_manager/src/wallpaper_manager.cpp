@@ -205,6 +205,7 @@ int32_t WallpaperManager::SetWallpaper(std::string uri, int wallpaperType)
     }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
     int32_t wallpaperErrorCode = wpServerProxy->SetWallpaperByFD(fd, wallpaperType, length);
+    close(fd);
     if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
         CloseWallpaperFd(wallpaperType);
     }
@@ -246,6 +247,7 @@ int32_t WallpaperManager::SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &p
     }
     close(fd[1]);
     int32_t wallpaperErrorCode = wpServerProxy->SetWallpaperByMap(fd[0], wallpaperType, mapSize);
+    close(fd);
     if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
         CloseWallpaperFd(wallpaperType);
     }
@@ -418,7 +420,7 @@ bool WallpaperManager::Off(const std::string &type, std::shared_ptr<WallpaperCol
     } else {
         status = wpServerProxy->Off(nullptr);
     }
-    if (status == false) {
+    if (!status) {
         HILOG_ERROR("off failed");
         return false;
     }
@@ -446,14 +448,14 @@ bool WallpaperManager::RegisterWallpaperCallback(bool (*callback)(int))
         return false;
     }
 
-    if (callback == NULL) {
+    if (callback == nullptr) {
         HILOG_ERROR("callback is NULL.");
         return false;
     }
     HILOG_INFO("  WallpaperManager::RegisterWallpaperCallback");
 
     bool status = wpServerProxy->RegisterWallpaperCallback(new WallpaperServiceCbStub());
-    if (status == false) {
+    if (!status) {
         HILOG_ERROR("off failed code=%d.", ERR_NONE);
         return false;
     }

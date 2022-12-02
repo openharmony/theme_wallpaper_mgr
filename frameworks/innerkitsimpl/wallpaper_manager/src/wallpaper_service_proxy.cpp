@@ -109,7 +109,7 @@ int32_t WallpaperServiceProxy::SetWallpaperByMap(int fd, int wallpaperType, int 
 
     int32_t result = Remote()->SendRequest(SET_WALLPAPER_MAP, data, reply, option);
     if (result != ERR_NONE) {
-        HILOG_ERROR(" WallpaperCalbackProxy::SetWallpaperfail, result = %{public}d ", result);
+        HILOG_ERROR(" WallpaperCalbackProxy::SetWallpaper fail, result = %{public}d ", result);
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
 

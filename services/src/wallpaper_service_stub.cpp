@@ -28,8 +28,7 @@ namespace OHOS {
 namespace WallpaperMgrService {
 using namespace OHOS::HiviewDFX;
 using namespace OHOS::Media;
-constexpr const int32_t RET_SUCCESS = 0;
-constexpr const int32_t RET_ERROR = -1;
+
 WallpaperServiceStub::WallpaperServiceStub()
 {
     memberFuncMap_[SET_WALLPAPER_URI_FD] = &WallpaperServiceStub::OnSetWallpaperUriByFD;
@@ -79,16 +78,15 @@ int32_t WallpaperServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data
 }
 int32_t WallpaperServiceStub::OnSetWallpaperByMap(MessageParcel &data, MessageParcel &reply)
 {
-    HILOG_INFO("WallpaperServiceStub::SetWallpaperUri start.");
+    HILOG_INFO("WallpaperServiceStub::SetWallpaperMap start.");
 
     int fd = data.ReadFileDescriptor();
     int wallpaperType = data.ReadInt32();
     int length = data.ReadInt32();
     int32_t wallpaperErrorCode = SetWallpaperByMap(fd, wallpaperType, length);
+    close(fd);
     reply.WriteInt32(wallpaperErrorCode);
-
-    int32_t ret = wallpaperErrorCode == static_cast<int32_t>(E_OK) ? 0 : -1;
-    return ret;
+    return static_cast<int32_t>(E_OK) ? 0 : -1;
 }
 int32_t WallpaperServiceStub::OnSetWallpaperUriByFD(MessageParcel &data, MessageParcel &reply)
 {
@@ -100,10 +98,9 @@ int32_t WallpaperServiceStub::OnSetWallpaperUriByFD(MessageParcel &data, Message
     int length = data.ReadInt32();
     HILOG_INFO("SetWallpaperByFD start");
     int32_t wallpaperErrorCode = SetWallpaperByFD(fd, wallpaperType, length);
+    close(fd);
     reply.WriteInt32(wallpaperErrorCode);
-
-    int32_t ret = wallpaperErrorCode == static_cast<int32_t>(E_OK) ? 0 : -1;
-    return ret;
+    return wallpaperErrorCode == static_cast<int32_t>(E_OK) ? 0 : -1;
 }
 
 int32_t WallpaperServiceStub::OnGetPixelMap(MessageParcel &data, MessageParcel &reply)
@@ -152,7 +149,7 @@ int32_t WallpaperServiceStub::OnGetFile(MessageParcel &data, MessageParcel &repl
     int32_t wallpaperErrorCode = GetFile(wallpaperType, wallpaperFd);
     reply.WriteFileDescriptor(wallpaperFd);
     reply.WriteInt32(wallpaperErrorCode);
-    return (wallpaperFd >= RET_SUCCESS) ? RET_SUCCESS : RET_ERROR;
+    return (wallpaperFd >= 0) ? 0 : -1;
 }
 
 int32_t WallpaperServiceStub::OnGetWallpaperId(MessageParcel &data, MessageParcel &reply)
@@ -193,40 +190,33 @@ int32_t WallpaperServiceStub::OnGetWallpaperMinWidth(MessageParcel &data, Messag
 
 int32_t WallpaperServiceStub::OnIsChangePermitted(MessageParcel &data, MessageParcel &reply)
 {
-    int32_t ret = -1;
     HILOG_INFO("WallpaperServiceStub::OnIsChangePermitted start.");
     auto bResult = IsChangePermitted();
     if (!reply.WriteBool(bResult)) {
         HILOG_ERROR("Write result data failed");
     }
-    ret = (bResult == true) ? 0 : -1;
-
-    return ret;
+    return (bResult) ? 0 : -1;
 }
 
 int32_t WallpaperServiceStub::OnIsOperationAllowed(MessageParcel &data, MessageParcel &reply)
 {
-    int32_t ret = -1;
     HILOG_INFO("WallpaperServiceStub::OnIsOperationAllowed start.");
     auto bResult = IsOperationAllowed();
     if (!reply.WriteBool(bResult)) {
         HILOG_ERROR("Write result data failed");
     }
-    ret = (bResult == true) ? 0 : -1;
-    return ret;
+    return (bResult) ? 0 : -1;
 }
 
 int32_t WallpaperServiceStub::OnResetWallpaper(MessageParcel &data, MessageParcel &reply)
 {
     HILOG_INFO("WallpaperServiceStub::OnResetWallpaper start.");
-
     int wallpaperType = data.ReadInt32();
     auto wallpaperErrorCode = ResetWallpaper(wallpaperType);
     if (!reply.WriteInt32(wallpaperErrorCode)) {
         HILOG_ERROR("Write result data failed");
     }
-    int32_t ret = wallpaperErrorCode == static_cast<int32_t>(E_OK) ? 0 : -1;
-    return ret;
+    return wallpaperErrorCode == static_cast<int32_t>(E_OK) ? 0 : -1;
 }
 
 int32_t WallpaperServiceStub::OnWallpaperOn(MessageParcel &data, MessageParcel &reply)
@@ -243,7 +233,7 @@ int32_t WallpaperServiceStub::OnWallpaperOn(MessageParcel &data, MessageParcel &
     sptr<IWallpaperColorChangeListener> WallpaperListenerProxy = iface_cast<IWallpaperColorChangeListener>(remote);
 
     bool status = On(std::move(WallpaperListenerProxy));
-    int32_t ret = (status == true) ? 0 : -1;
+    int32_t ret = (status) ? 0 : -1;
     if (!reply.WriteInt32(ret)) {
         HILOG_ERROR("WriteInt32 failed");
         return -1;
@@ -263,7 +253,7 @@ int32_t WallpaperServiceStub::OnWallpaperOff(MessageParcel &data, MessageParcel 
         sptr<IWallpaperColorChangeListener> WallpaperListenerProxy = iface_cast<IWallpaperColorChangeListener>(remote);
         status = Off(std::move(WallpaperListenerProxy));
     }
-    int32_t ret = (status == true) ? 0 : -1;
+    int32_t ret = (status) ? 0 : -1;
     if (!reply.WriteInt32(ret)) {
         return -1;
     }
@@ -275,13 +265,12 @@ int32_t WallpaperServiceStub::OnRegisterWallpaperCallback(MessageParcel &data, M
 {
     HILOG_INFO("  WallpaperServiceStub::OnRegisterWallpaperCallback start");
     sptr<IRemoteObject> object = data.ReadRemoteObject();
-
-    sptr<IWallpaperCallback> callbackProxy = iface_cast<IWallpaperCallback>(object);
-    if (callbackProxy == nullptr) {
+    if (object == nullptr) {
         HILOG_ERROR("RegisterWallpaperCallback failed");
-        reply.WriteInt32(1);
-        return 1;
+        reply.WriteInt32(-1);
+        return -1;
     }
+    sptr<IWallpaperCallback> callbackProxy = iface_cast<IWallpaperCallback>(object);
 
     RegisterWallpaperCallback(callbackProxy);
     reply.WriteInt32(0);

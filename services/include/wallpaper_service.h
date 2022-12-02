@@ -82,7 +82,6 @@ public:
     int Dump(int fd, const std::vector<std::u16string> &args) override;
 
 public:
-    bool SetLockWallpaperCallback(IWallpaperManagerCallback *cb);
     static void OnBootPhase();
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
     void ReporterUsageTimeStatisic();
@@ -119,10 +118,9 @@ private:
     bool CompareColor(const uint64_t &localColor, const ColorManager::Color &color);
     bool SaveColor(int wallpaperType);
     void LoadSettingsLocked(int userId, bool keepDimensionHints);
-    std::string GetWallpaperDir(int userId);
+    std::string GetWallpaperDir();
     void NotifyLockWallpaperChanged();
     void MigrateFromOld();
-    bool BindWallpaperComponentLocked(ComponentName &componentName, bool force, bool fromUser, WallpaperData wallpaper);
     bool GetWallpaperSafeLocked(int userId, int wpType, WallpaperData paperdata);
     void ClearWallpaperLocked(int userId, int wpType);
     int32_t SetDefaultDateForWallpaper(int userId, int wpType);
@@ -159,7 +157,7 @@ private:
     COLORSLISTENERMAP colorsChangedListeners_;
     ConcurrentMap<int, WallpaperData> wallpaperMap_;
     ConcurrentMap<int, WallpaperData> lockWallpaperMap_;
-    int wallpaperId_;
+    std::atomic<uint32_t> wallpaperId_;
     int userId_;
     IWallpaperManagerCallback *keyguardListener_;
     static const std::string WALLPAPER;
