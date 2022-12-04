@@ -200,17 +200,13 @@ describe('WallpaperPerfJSTest', function () {
         done();
     })
 
-    function outputAverageTime(startTime, baseCount, message) {
-        var endTime = new Date().getTime();
-        var averageTime = ((endTime - startTime) * 1000) / baseCount;
-        console.info(message + averageTime);
-    }
-
     function calcAverageTime(times, callback, info) {
         let startTime = new Date().getTime();
         for (let index = 0; index < times; index++) {
             callback();
         }
-        outputAverageTime(startTime, times, info);
+        let endTime = new Date().getTime();
+        let averageTime = ((endTime - startTime) * 1000) / times;
+        console.info(info + averageTime);
     }
 });
