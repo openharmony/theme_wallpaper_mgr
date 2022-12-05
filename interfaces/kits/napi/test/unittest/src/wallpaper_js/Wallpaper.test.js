@@ -26,7 +26,7 @@ const URI = "/data/storage/el2/base/haps/js.jpeg";
 
 describe('WallpaperJSTest', function () {
     beforeAll(async function () {
-        // input testsuit setup step，setup invoked before all testcases
+        // input testsuite setup step，setup invoked before all testcases
         console.info('beforeAll called')
         await createTempImage();
     })
@@ -39,7 +39,7 @@ describe('WallpaperJSTest', function () {
         console.info('afterEach called')
     })
     afterAll(function () {
-        // input testsuit teardown step，teardown invoked after all testcases
+        // input testsuite teardown step，teardown invoked after all testcases
         console.info('afterAll called')
         wallpaper.restore(WALLPAPER_SYSTEM, function (err, data) {
             if (err) {

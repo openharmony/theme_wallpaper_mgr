@@ -120,7 +120,7 @@ HWTEST_F(WallpaperDfxTest, WallpaperDfxTest_Dump_ShowHelp_001, TestSize.Level0)
 
 /**
 * @tc.name: WallpaperDfxTest_DumpAllMethod_001
-* @tc.desc: Dump ShowIllealInfomation.
+* @tc.desc: Dump ShowIllegalInformation.
 * @tc.type: FUNC
 * @tc.require:
 * @tc.author:

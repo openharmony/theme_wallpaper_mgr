@@ -116,7 +116,7 @@ int32_t WallpaperService::Init()
     bool ret = Publish(WallpaperService::GetInstance());
     if (!ret) {
         HILOG_ERROR("Publish failed.");
-        ReporterFault(FaultType::SERVICE_FAULT, FaultCode::SF_SERVICE_UNAVAIABLE);
+        ReporterFault(FaultType::SERVICE_FAULT, FaultCode::SF_SERVICE_UNAVAILABLE);
         return -1;
     }
     HILOG_INFO("Publish success.");
@@ -489,22 +489,22 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     if (wallpaperPixelMap == nullptr || errorCode != 0) {
         return ret;
     }
-    int32_t pictrueHeight = wallpaperPixelMap->GetHeight();
-    int32_t pictrueWidth = wallpaperPixelMap->GetWidth();
+    int32_t pictureHeight = wallpaperPixelMap->GetHeight();
+    int32_t pictureWidth = wallpaperPixelMap->GetWidth();
     int pyScrWidth = GetWallpaperMinWidth();
     int pyScrHeight = GetWallpaperMinHeight();
     bool bHeightFlag = false, bWidthFlag = false;
-    if (pictrueHeight > pyScrHeight) {
-        decodeOpts.CropRect.top = (pictrueHeight - pyScrHeight) / HALF;
+    if (pictureHeight > pyScrHeight) {
+        decodeOpts.CropRect.top = (pictureHeight - pyScrHeight) / HALF;
         bHeightFlag = true;
     }
-    if (pictrueWidth > pyScrWidth) {
-        decodeOpts.CropRect.left = (pictrueWidth - pyScrWidth) / HALF;
+    if (pictureWidth > pyScrWidth) {
+        decodeOpts.CropRect.left = (pictureWidth - pyScrWidth) / HALF;
         bWidthFlag = true;
     }
-    decodeOpts.CropRect.height = bHeightFlag ? pyScrHeight : pictrueHeight;
+    decodeOpts.CropRect.height = bHeightFlag ? pyScrHeight : pictureHeight;
     decodeOpts.desiredSize.height = decodeOpts.CropRect.height;
-    decodeOpts.CropRect.width = bWidthFlag ? pyScrWidth : pictrueHeight;
+    decodeOpts.CropRect.width = bWidthFlag ? pyScrWidth : pictureHeight;
     decodeOpts.desiredSize.width = decodeOpts.CropRect.width;
     wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     if (errorCode != 0) {
@@ -658,7 +658,7 @@ int32_t WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int 
     if (wallpaperType == WALLPAPER_SYSTEM) {
         wallpaperMap_.InsertOrAssign(userId_, wallpaperData);
         WallpaperCommonEvent::SendWallpaperSystemSettingMessage();
-        ReporterUsageTimeStatisic();
+        ReporterUsageTimeStatistic();
         HILOG_INFO("  SetWallpaperBackupData callbackProxy->OnCall start");
         if (callbackProxy != nullptr) {
             callbackProxy->OnCall(wallpaperType);
@@ -666,7 +666,7 @@ int32_t WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int 
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId_, wallpaperData);
         WallpaperCommonEvent::SendWallpaperLockSettingMessage();
-        ReporterUsageTimeStatisic();
+        ReporterUsageTimeStatistic();
         HILOG_INFO("  SetWallpaperBackupData callbackProxy->OnCall start");
         if (callbackProxy != nullptr) {
             callbackProxy->OnCall(wallpaperType);
@@ -678,7 +678,7 @@ int32_t WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int 
     return (retFileCp && retCropFileCp) ? static_cast<int32_t>(E_OK) : static_cast<int32_t>(E_DEAL_FAILED);
 }
 
-void WallpaperService::ReporterUsageTimeStatisic()
+void WallpaperService::ReporterUsageTimeStatistic()
 {
     int userId = static_cast<int>(IPCSkeleton::GetCallingUid());
     std::string bundleName;
@@ -1023,7 +1023,7 @@ bool WallpaperService::WPCheckCallingPermission(const std::string &permissionNam
         tokenType == Security::AccessToken::TOKEN_HAP) {
         result = AccessTokenProxy::VerifyAccessToken(callerToken, permissionName);
     } else {
-        HILOG_INFO("Check permission tokenId ilegal");
+        HILOG_INFO("Check permission tokenId illegal");
         return false;
     }
     if (result == Security::AccessToken::TypePermissionState::PERMISSION_GRANTED) {

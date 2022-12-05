@@ -46,7 +46,7 @@ bool DumpHelper::Dispatch(int fd, const std::vector<std::string> &args)
         std::string output;
         bool ret = handler->second->DoAction(args, output);
         if (!ret) {
-            HILOG_INFO("DoAction faild");
+            HILOG_INFO("DoAction failed");
         }
         dprintf(fd, "\n%s", output.c_str());
         return ret;

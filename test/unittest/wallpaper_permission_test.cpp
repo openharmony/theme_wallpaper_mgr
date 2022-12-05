@@ -138,23 +138,23 @@ HWTEST_F(WallpaperPermissionTest, GetFilePermission001, TestSize.Level0)
 }
 /*********************   GetFile   *********************/
 
-/*********************   GetPiexlMap   *********************/
+/*********************   GetPixelMap   *********************/
 /**
-* @tc.name:    GetPiexlMapPermission001
+* @tc.name:    GetPixelMapPermission001
 * @tc.desc:    GetPixelMap with wallpaperType[1] throw permission error.
 * @tc.type:    FUNC
 * @tc.require: issueI60MT1
 * @tc.author:  lvbai
 */
-HWTEST_F(WallpaperPermissionTest, GetPiexlMapPermission001, TestSize.Level0)
+HWTEST_F(WallpaperPermissionTest, GetPixelMapPermission001, TestSize.Level0)
 {
-    HILOG_INFO("GetPiexlMapPermission001  begin");
+    HILOG_INFO("GetPixelMapPermission001  begin");
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     int32_t wallpaperErrorCode =
         OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(LOCKSCREEN, pixelMap);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NO_PERMISSION)) << "throw permission error successfully";
 }
-/*********************   GetPiexlMap   *********************/
+/*********************   GetPixelMap   *********************/
 
 /*********************   SetWallpaperByMap   *********************/
 /**
