@@ -278,11 +278,10 @@ std::string WallpaperService::GetWallpaperDir()
 
 int WallpaperService::MakeWallpaperIdLocked()
 {
-    auto id = ++wallpaperId_;
-    while (id == 0) {
-        id = ++wallpaperId_;
-    }
-    return id;
+    do {
+        ++wallpaperId_;
+    } while (wallpaperId_ == 0);
+    return wallpaperId_;
 }
 
 void WallpaperService::LoadSettingsLocked(int userId, bool keepDimensionHints)

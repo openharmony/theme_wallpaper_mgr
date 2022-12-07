@@ -155,7 +155,7 @@ private:
     COLORSLISTENERMAP colorsChangedListeners_;
     ConcurrentMap<int, WallpaperData> wallpaperMap_;
     ConcurrentMap<int, WallpaperData> lockWallpaperMap_;
-    std::atomic<uint32_t> wallpaperId_;
+    int wallpaperId_;
     int userId_;
     static const std::string WALLPAPER;
     static const std::string WALLPAPER_CROP;
