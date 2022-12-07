@@ -29,8 +29,8 @@ namespace WallpaperMgrService {
 using namespace OHOS::HiviewDFX;
 using namespace OHOS::Media;
 
-constexpr int INVALID_FD = -1;
-constexpr int VALID_FD = 0;
+constexpr int32_t INVALID_FD = -1;
+constexpr int32_t VALID_FD = 0;
 
 WallpaperServiceStub::WallpaperServiceStub()
 {
