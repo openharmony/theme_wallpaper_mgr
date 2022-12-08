@@ -24,7 +24,6 @@
 namespace OHOS {
 namespace WallpaperMgrService {
 using namespace OHOS::HiviewDFX;
-constexpr const int32_t ERROR_NONE = 0;
 constexpr const int32_t INVALID_FD = -1;
 std::vector<uint64_t> WallpaperServiceProxy::GetColors(int wallpaperType)
 {
@@ -68,11 +67,10 @@ int32_t WallpaperServiceProxy::GetFile(int32_t wallpaperType, int32_t &wallpaper
     }
 
     int32_t result = Remote()->SendRequest(GET_FILE, data, reply, option);
-    if (result != ERROR_NONE) {
+    if (result != ERR_NONE) {
         HILOG_ERROR(" get file result = %{public}d ", result);
         return INVALID_FD;
     }
-
     wallpaperFd = reply.ReadFileDescriptor();
     int32_t wallpaperErrorCode = reply.ReadInt32();
     return wallpaperErrorCode;
@@ -109,7 +107,7 @@ int32_t WallpaperServiceProxy::SetWallpaperByMap(int fd, int wallpaperType, int 
 
     int32_t result = Remote()->SendRequest(SET_WALLPAPER_MAP, data, reply, option);
     if (result != ERR_NONE) {
-        HILOG_ERROR(" WallpaperCallbackProxy::SetWallpaperfail, result = %{public}d ", result);
+        HILOG_ERROR(" WallpaperCallbackProxy::SetWallpaper fail, result = %{public}d ", result);
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
 
@@ -325,7 +323,7 @@ bool WallpaperServiceProxy::On(sptr<IWallpaperColorChangeListener> listener)
     }
 
     int32_t status = reply.ReadInt32();
-    bool ret = (status == 0) ? true : false;
+    bool ret = (status == static_cast<int32_t>(E_OK)) ? true : false;
     HILOG_DEBUG("WallpaperServiceProxy::On out");
     return ret;
 }
@@ -353,7 +351,7 @@ bool WallpaperServiceProxy::Off(sptr<IWallpaperColorChangeListener> listener)
     }
 
     int32_t status = reply.ReadInt32();
-    bool ret = (status == 0) ? true : false;
+    bool ret = (status == static_cast<int32_t>(E_OK)) ? true : false;
     HILOG_DEBUG("WallpaperServiceProxy::Off out");
     return ret;
 }
@@ -383,7 +381,7 @@ bool WallpaperServiceProxy::RegisterWallpaperCallback(const sptr<IWallpaperCallb
     }
 
     int32_t status = reply.ReadInt32();
-    bool ret = (status == 0) ? true : false;
+    bool ret = (status == static_cast<int32_t>(E_OK)) ? true : false;
     HILOG_DEBUG("WallpaperServiceProxy::REGISTER_CALLBACK out");
     return ret;
 }
