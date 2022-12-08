@@ -58,6 +58,7 @@
 #include "wallpaper_common_event.h"
 #include "wallpaper_service_cb_proxy.h"
 #include "window.h"
+#include "tokenid_kit.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -65,6 +66,7 @@ REGISTER_SYSTEM_ABILITY_BY_ID(WallpaperService, WALLPAPER_MANAGER_SERVICE_ID, tr
 
 using namespace OHOS::Media;
 using namespace OHOS::MiscServices;
+using namespace OHOS::Security::AccessToken;
 
 const std::string WallpaperService::WALLPAPER = "wallpaper_orig";
 const std::string WallpaperService::WALLPAPER_CROP = "wallpaper";
@@ -700,6 +702,10 @@ int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdIn
         HILOG_INFO("GetPixelMap no get permission!");
         return static_cast<int32_t>(E_NO_PERMISSION);
     }
+    if (!IsSystemApp()) {
+        HILOG_INFO("callingApp is not systemApp!");
+        return static_cast<int32_t>(E_NO_PERMISSION);
+    }
     HILOG_INFO("WallpaperService::getPixelMap MID ");
     std::string filePath = "";
     if (GetFilePath(wallpaperType, filePath) != static_cast<int32_t>(E_OK)) {
@@ -1017,16 +1023,16 @@ bool WallpaperService::WPCheckCallingPermission(const std::string &permissionNam
 {
     bool bflag = false;
     int result;
-    Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
-    auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken);
-    if (tokenType == Security::AccessToken::TOKEN_NATIVE || tokenType == Security::AccessToken::TOKEN_SHELL ||
-        tokenType == Security::AccessToken::TOKEN_HAP) {
-        result = AccessTokenProxy::VerifyAccessToken(callerToken, permissionName);
+    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+    if (tokenType == TOKEN_NATIVE || tokenType == TOKEN_SHELL ||
+        tokenType == TOKEN_HAP) {
+        result = AccessTokenKit::VerifyAccessToken(callerToken, permissionName);
     } else {
         HILOG_INFO("Check permission tokenId ilegal");
         return false;
     }
-    if (result == Security::AccessToken::TypePermissionState::PERMISSION_GRANTED) {
+    if (result == TypePermissionState::PERMISSION_GRANTED) {
         bflag = true;
     } else {
         bflag = false;
@@ -1088,9 +1094,9 @@ int WallpaperService::Dump(int fd, const std::vector<std::u16string> &args)
     int uid = static_cast<int>(IPCSkeleton::GetCallingUid());
     const int maxUid = 10000;
     if (uid > maxUid) {
-        Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
-        auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken);
-        if (tokenType != Security::AccessToken::TOKEN_NATIVE && tokenType != Security::AccessToken::TOKEN_SHELL) {
+        AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+        auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+        if (tokenType != TOKEN_NATIVE && tokenType != TOKEN_SHELL) {
             return 1;
         }
     }
@@ -1143,6 +1149,12 @@ int32_t WallpaperService::GetFilePath(int wallpaperType, std::string &filePath)
         }
     }
     return static_cast<int32_t>(E_PARAMETERS_INVALID);
+}
+
+bool WallpaperService::IsSystemApp()
+{
+    uint64_t tokenId = IPCSkeleton::GetCallingFullTokenID();
+    return TokenIdKit::IsSystemAppByFullTokenID(tokenId);
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS
