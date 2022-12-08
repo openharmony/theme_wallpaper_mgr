@@ -151,12 +151,12 @@ int32_t WallpaperServiceStub::OnGetFile(MessageParcel &data, MessageParcel &repl
     int32_t wallpaperType = data.ReadInt32();
     int wallpaperFd;
     int32_t wallpaperErrorCode = GetFile(wallpaperType, wallpaperFd);
-    if (!reply.WriteInt32(wallpaperErrorCode)) {
-        HILOG_ERROR("WriteInt32 fail");
-        return IPC_STUB_WRITE_PARCEL_ERR;
-    }
     if (!reply.WriteFileDescriptor(wallpaperFd)) {
         HILOG_ERROR("WriteFileDescriptor fail");
+        return IPC_STUB_WRITE_PARCEL_ERR;
+    }
+    if (!reply.WriteInt32(wallpaperErrorCode)) {
+        HILOG_ERROR("WriteInt32 fail");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     return ERR_NONE;

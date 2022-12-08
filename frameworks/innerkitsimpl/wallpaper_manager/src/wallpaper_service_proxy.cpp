@@ -71,8 +71,8 @@ int32_t WallpaperServiceProxy::GetFile(int32_t wallpaperType, int32_t &wallpaper
         HILOG_ERROR(" get file result = %{public}d ", result);
         return INVALID_FD;
     }
-    int32_t wallpaperErrorCode = reply.ReadInt32();
     wallpaperFd = reply.ReadFileDescriptor();
+    int32_t wallpaperErrorCode = reply.ReadInt32();
     return wallpaperErrorCode;
 }
 
