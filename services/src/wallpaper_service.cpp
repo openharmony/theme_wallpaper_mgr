@@ -703,8 +703,8 @@ int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdIn
         return static_cast<int32_t>(E_NO_PERMISSION);
     }
     if (!IsSystemApp()) {
-        HILOG_INFO("callingApp is not systemApp!");
-        return static_cast<int32_t>(E_NO_PERMISSION);
+        HILOG_INFO("CallingApp is not SystemApp");
+        return static_cast<int32_t>(E_NOT_SYSTEM_APP);
     }
     HILOG_INFO("WallpaperService::getPixelMap MID ");
     std::string filePath = "";
@@ -1153,8 +1153,13 @@ int32_t WallpaperService::GetFilePath(int wallpaperType, std::string &filePath)
 
 bool WallpaperService::IsSystemApp()
 {
+    HILOG_INFO("IsSystemApp start");
     uint64_t tokenId = IPCSkeleton::GetCallingFullTokenID();
-    return TokenIdKit::IsSystemAppByFullTokenID(tokenId);
+    if (tokenId != TokenIdKit::IsSystemAppByFullTokenID(tokenId)) {
+        HILOG_ERROR("CallingApp is not SystemApp");
+        return false;
+    }
+    return true;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

@@ -45,6 +45,10 @@ JsErrorInfo JsError::ConvertErrorCode(int32_t wallpaperErrorCode)
             errorObject.code = static_cast<int32_t>(ErrorThrowType::PERMISSION_ERROR);
             errorObject.message = PERMISSIONDENIEDMESSAGE;
             break;
+        case E_NOT_SYSTEM_APP:
+            errorObject.code = static_cast<int32_t>(ErrorThrowType::SYSTEM_APP_PERMISSION_ERROR);
+            errorObject.message = PERMISSIONFAILEDMESSAGE;
+            break;
         default:
             HILOG_DEBUG("Non-existent error type!");
             break;
