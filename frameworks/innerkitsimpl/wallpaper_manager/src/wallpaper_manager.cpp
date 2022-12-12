@@ -306,7 +306,6 @@ int32_t WallpaperManager::GetPixelMap(int wallpaperType, std::shared_ptr<OHOS::M
         HILOG_ERROR("ImageSource::CreatePixelMap failed,errcode= %{public}d", errorCode);
         return static_cast<int32_t>(E_IMAGE_ERRCODE);
     }
-    close(fdInfo.fd);
     return wallpaperErrorCode;
 }
 

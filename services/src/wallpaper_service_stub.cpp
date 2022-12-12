@@ -125,6 +125,7 @@ int32_t WallpaperServiceStub::OnGetPixelMap(MessageParcel &data, MessageParcel &
             HILOG_ERROR("WriteFileDescriptor fail");
             ret = -1;
         }
+        close(fdInfo.fd);
     }
     HILOG_INFO(" OnGetPixelMap ret = %{public}d", ret);
     return ret;
@@ -151,8 +152,9 @@ int32_t WallpaperServiceStub::OnGetFile(MessageParcel &data, MessageParcel &repl
     int wallpaperFd;
     int32_t wallpaperErrorCode = GetFile(wallpaperType, wallpaperFd);
     reply.WriteFileDescriptor(wallpaperFd);
+    close(wallpaperFd);
     reply.WriteInt32(wallpaperErrorCode);
-    return (wallpaperFd >= RET_SUCCESS) ? RET_SUCCESS : RET_ERROR;
+    return wallpaperErrorCode;
 }
 
 int32_t WallpaperServiceStub::OnGetWallpaperId(MessageParcel &data, MessageParcel &reply)
