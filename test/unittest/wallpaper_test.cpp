@@ -361,16 +361,17 @@ HWTEST_F(WallpaperTest, GetColors002, TestSize.Level0)
 * @tc.name: GetId001
 * @tc.desc: GetId with wallpaperType[0].
 * @tc.type: FUNC
-* @tc.require:
-* @tc.author:
+* @tc.require: issueI65VF1
+* @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, GetId001, TestSize.Level0)
 {
     HILOG_INFO("GetId001 begin");
     bool result = false;
-    int ida = HUNDRED;
-    ida = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(SYSTYEM);
-    if (ida != HUNDRED) {
+    int id = -1;
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM);
+    id = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(SYSTYEM);
+    if (id == -1) {
         result = true;
     }
     EXPECT_TRUE(result);
@@ -380,16 +381,57 @@ HWTEST_F(WallpaperTest, GetId001, TestSize.Level0)
 * @tc.name: GetId002
 * @tc.desc: GetId with wallpaperType[1].
 * @tc.type: FUNC
-* @tc.require:
-* @tc.author:
+* @tc.require: issueI65VF1
+* @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, GetId002, TestSize.Level0)
 {
     HILOG_INFO("GetId002 begin");
     bool result = false;
-    int ida = HUNDRED;
-    ida = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
-    if (ida != HUNDRED) {
+    int id = -1;
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN);
+    id = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
+    if (id == -1) {
+        result = true;
+    }
+    EXPECT_TRUE(result);
+}
+
+/**
+* @tc.name: GetId003
+* @tc.desc: GetId with wallpaperType[0] after setWallpaper.
+* @tc.type: FUNC
+* @tc.require: issueI65VF1
+* @tc.author: lvbai
+*/
+HWTEST_F(WallpaperTest, GetId003, TestSize.Level0)
+{
+    HILOG_INFO("GetId003 begin");
+    bool result = false;
+    int id = -1;
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URI, SYSTYEM);
+    id = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(SYSTYEM);
+    if (id >= 0) {
+        result = true;
+    }
+    EXPECT_TRUE(result);
+}
+
+/**
+* @tc.name: GetId004
+* @tc.desc: GetId with wallpaperType[1] after setWallpaper.
+* @tc.type: FUNC
+* @tc.require: issueI65VF1
+* @tc.author: lvbai
+*/
+HWTEST_F(WallpaperTest, GetId004, TestSize.Level0)
+{
+    HILOG_INFO("GetId004 begin");
+    bool result = false;
+    int id = -1;
+    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN);
+    id = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
+    if (id >= 0) {
         result = true;
     }
     EXPECT_TRUE(result);

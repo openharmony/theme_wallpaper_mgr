@@ -204,7 +204,7 @@ void WallpaperService::InitData()
 {
     HILOG_INFO("WallpaperService::initData --> start ");
     userId_ = 0;
-    wallpaperId_ = 0;
+    wallpaperId_ = -1;
     wallpaperMap_.Clear();
     lockWallpaperMap_.Clear();
     userId_ = GetUserId();
@@ -278,10 +278,10 @@ std::string WallpaperService::GetWallpaperDir()
 
 int WallpaperService::MakeWallpaperIdLocked()
 {
-    do {
-        ++wallpaperId_;
-    } while (wallpaperId_ == 0);
-    return wallpaperId_;
+    if(wallpaperId_ == INT32_MAX){
+        wallpaperId_ = -1;
+    }
+    return ++wallpaperId_;
 }
 
 void WallpaperService::LoadSettingsLocked(int userId, bool keepDimensionHints)
@@ -866,7 +866,7 @@ int32_t WallpaperService::SetDefaultDateForWallpaper(int userId, int wpType)
         tmpCropPath = wallpaperSystemCropFileFullPath_;
     }
     WallpaperData wallpaperData(userId, tmpPath, tmpCropPath);
-    wallpaperData.wallpaperId_ = 0;
+    wallpaperData.wallpaperId_ = -1;
     wallpaperData.allowBackup = true;
     if (wpType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);

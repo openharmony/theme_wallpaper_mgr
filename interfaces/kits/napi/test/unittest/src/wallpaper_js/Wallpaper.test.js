@@ -192,11 +192,12 @@ describe('WallpaperJSTest', function () {
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
-    it('getIdSyncTest001', 0, function () {
+    it('getIdSyncTest001', 0, async function () {
+        await wallpaper.reset(WALLPAPER_SYSTEM);
         try {
             let data = wallpaper.getIdSync(WALLPAPER_SYSTEM);
             console.info(`getIdSyncTest001 data : ${data}`);
-            if (data != undefined) {
+            if (data === -1) {
                 expect(true).assertTrue();
             }
         } catch (error) {
@@ -211,11 +212,12 @@ describe('WallpaperJSTest', function () {
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
-    it('getIdSyncTest002', 0, function () {
+    it('getIdSyncTest002', 0, async function () {
+        await wallpaper.reset(WALLPAPER_LOCKSCREEN);
         try {
             let data = wallpaper.getIdSync(WALLPAPER_LOCKSCREEN);
             console.info(`getIdSyncTest002 data : ${data}`);
-            if (data != undefined) {
+            if (data === -1) {
                 expect(true).assertTrue();
             }
         } catch (error) {
@@ -255,6 +257,46 @@ describe('WallpaperJSTest', function () {
         } catch (error) {
             console.info(`getIdSyncTest004 error : ${error}`);
             expect(error.code == PARAMETER_ERROR).assertEqual(true)
+        }
+    })
+
+    /**
+     * @tc.name:      getIdSyncTest005
+     * @tc.desc:      Test getIdSync() to gets the ID of the wallpaper of the specified type after setImage.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI65VF1
+     */
+    it('getIdSyncTest005', 0, async function () {
+        await wallpaper.setImage(URI, WALLPAPER_SYSTEM);
+        try {
+            let data = wallpaper.getIdSync(WALLPAPER_SYSTEM);
+            console.info(`getIdSyncTest005 data : ${data}`);
+            if (data >= 0) {
+                expect(true).assertTrue();
+            }
+        } catch (error) {
+            console.info(`getIdSyncTest005 error : ${error}`);
+            expect(null).assertFail();
+        }
+    })
+
+    /**
+     * @tc.name:      getIdSyncTest006
+     * @tc.desc:      Test getIdSync() to gets the ID of the wallpaper of the specified type.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI65VF1
+     */
+    it('getIdSyncTest006', 0, async function () {
+        await wallpaper.setImage(URI, WALLPAPER_LOCKSCREEN);
+        try {
+            let data = wallpaper.getIdSync(WALLPAPER_LOCKSCREEN);
+            console.info(`getIdSyncTest006 data : ${data}`);
+            if (data >= 0) {
+                expect(true).assertTrue();
+            }
+        } catch (error) {
+            console.info(`getIdSyncTest006 error : ${error}`);
+            expect(null).assertFail();
         }
     })
 
