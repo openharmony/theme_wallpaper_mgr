@@ -27,8 +27,8 @@ namespace OHOS::WallpaperNAPI {
 constexpr const char *PARAMETERERRORMESSAGE = "BusinessError 401: Parameter error.";
 constexpr const char *PERMISSIONDENIEDMESSAGE = "BusinessError 201: Permission Denied.";
 constexpr const char *EQUIPMENTERRORMESSAGE = "BusinessError 801: Equipment error.";
-constexpr const char *PERMISSIONFAILEDMESSAGE = "BusinessError 202: Permission verification failed,
-                                                application which is not a system application uses system API.";
+constexpr const char *PERMISSIONFAILEDMESSAGE = "BusinessError 202: Permission verification failed,"
+                                                "application which is not a system application uses system API.";
 enum ErrorThrowType : int32_t {
     PERMISSION_ERROR = 201,
     SYSTEM_APP_PERMISSION_ERROR = 202,
