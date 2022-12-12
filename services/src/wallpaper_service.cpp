@@ -1132,11 +1132,7 @@ bool WallpaperService::IsSystemApp()
 {
     HILOG_INFO("IsSystemApp start");
     uint64_t tokenId = IPCSkeleton::GetCallingFullTokenID();
-    if (!TokenIdKit::IsSystemAppByFullTokenID(tokenId)) {
-        HILOG_ERROR("CallingApp is not SystemApp");
-        return false;
-    }
-    return true;
+    return TokenIdKit::IsSystemAppByFullTokenID(tokenId);
 }
 
 int32_t WallpaperService::GetImageFd(int wallpaperType, int &fd)
