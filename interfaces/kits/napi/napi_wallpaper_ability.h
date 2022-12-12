@@ -131,7 +131,7 @@ struct SetContextInfo : public AsyncCall::Context {
 
 struct GetFileContextInfo : public AsyncCall::Context {
     int32_t wallpaperType = 0;
-    int32_t wallpaperFd = 0;
+    int32_t wallpaperFd = -1;
     napi_status status = napi_generic_failure;
     GetFileContextInfo() : Context(nullptr, nullptr){};
     GetFileContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)){};
