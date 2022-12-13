@@ -278,7 +278,7 @@ std::string WallpaperService::GetWallpaperDir()
 
 int WallpaperService::MakeWallpaperIdLocked()
 {
-    if(wallpaperId_ == INT32_MAX){
+    if (wallpaperId_ == INT32_MAX) {
         wallpaperId_ = -1;
     }
     return ++wallpaperId_;
