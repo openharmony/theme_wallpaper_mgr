@@ -32,7 +32,6 @@ constexpr int LOCKSCREEN = 1;
 constexpr int INVALID_WALLPAPER_TYPE = 2;
 constexpr int HUNDRED = 100;
 constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
-constexpr int32_t INVALID_FD = -1;
 constexpr const char *URI = "/data/test/theme/wallpaper/wallpaper_test.JPG";
 
 using namespace testing::ext;
@@ -448,7 +447,7 @@ HWTEST_F(WallpaperTest, GetFile001, TestSize.Level0)
 HWTEST_F(WallpaperTest, GetFile002, TestSize.Level0)
 {
     HILOG_INFO("GetFile002 begin");
-    int32_t wallpaperFd = INVALID_FD;
+    int32_t wallpaperFd = 0;
     int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetFile(LOCKSCREEN, wallpaperFd);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to get File.";
 }
@@ -463,7 +462,7 @@ HWTEST_F(WallpaperTest, GetFile002, TestSize.Level0)
 HWTEST_F(WallpaperTest, GetFile003, TestSize.Level0)
 {
     HILOG_INFO("GetFile003 begin");
-    int32_t wallpaperFd = INVALID_FD;
+    int32_t wallpaperFd = 0;
     int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetFile(INVALID_WALLPAPER_TYPE, wallpaperFd);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to throw parameters error";
 }
