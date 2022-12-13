@@ -125,8 +125,10 @@ int32_t WallpaperServiceStub::OnGetPixelMap(MessageParcel &data, MessageParcel &
         }
         if (!reply.WriteFileDescriptor(fdInfo.fd)) {
             HILOG_ERROR("WriteFileDescriptor fail");
+            close(fdInfo.fd);
             return IPC_STUB_WRITE_PARCEL_ERR;
         }
+        close(fdInfo.fd);
     }
     return ERR_NONE;
 }
@@ -153,8 +155,10 @@ int32_t WallpaperServiceStub::OnGetFile(MessageParcel &data, MessageParcel &repl
     int32_t wallpaperErrorCode = GetFile(wallpaperType, wallpaperFd);
     if (!reply.WriteFileDescriptor(wallpaperFd)) {
         HILOG_ERROR("WriteFileDescriptor fail");
+        close(wallpaperFd);
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
+    close(wallpaperFd);
     if (!reply.WriteInt32(wallpaperErrorCode)) {
         HILOG_ERROR("WriteInt32 fail");
         return IPC_STUB_WRITE_PARCEL_ERR;

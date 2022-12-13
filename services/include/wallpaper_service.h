@@ -130,6 +130,9 @@ private:
     int32_t SetWallpaperBackupData(std::string uriOrPixelMap, int wallpaperType);
     int32_t ConnectExtensionAbility(const OHOS::AAFwk::Want &want);
     int32_t GetFilePath(int wallpaperType, std::string &filePath);
+    bool IsSystemApp();
+    int32_t GetImageFd(int wallpaperType, int &fd);
+    int32_t GetImageSize(int wallpaperType, int &size);
 
 private:
     int32_t Init();
