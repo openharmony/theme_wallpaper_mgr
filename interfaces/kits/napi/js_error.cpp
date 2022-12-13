@@ -23,12 +23,11 @@ void JsError::ThrowError(napi_env env, int32_t errorCode, const std::string &err
     HILOG_DEBUG("ThrowError in");
     napi_value message;
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, errorMessage.c_str(), NAPI_AUTO_LENGTH, &message));
-    napi_value code;
-    int32_t errorCodeValue = static_cast<int32_t>(errorCode);
-    NAPI_CALL_RETURN_VOID(env,
-        napi_create_string_utf8(env, std::to_string(errorCodeValue).c_str(), NAPI_AUTO_LENGTH, &code));
     napi_value error;
-    NAPI_CALL_RETURN_VOID(env, napi_create_error(env, code, message, &error));
+    NAPI_CALL_RETURN_VOID(env, napi_create_error(env, nullptr, message, &error));
+    napi_value code;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, errorCode, &code));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, error, "code", code));
     NAPI_CALL_RETURN_VOID(env, napi_throw(env, error));
 }
 
@@ -44,6 +43,10 @@ JsErrorInfo JsError::ConvertErrorCode(int32_t wallpaperErrorCode)
         case E_NO_PERMISSION:
             errorObject.code = static_cast<int32_t>(ErrorThrowType::PERMISSION_ERROR);
             errorObject.message = PERMISSIONDENIEDMESSAGE;
+            break;
+        case E_NOT_SYSTEM_APP:
+            errorObject.code = static_cast<int32_t>(ErrorThrowType::SYSTEM_APP_PERMISSION_ERROR);
+            errorObject.message = PERMISSIONFAILEDMESSAGE;
             break;
         default:
             HILOG_DEBUG("Non-existent error type!");

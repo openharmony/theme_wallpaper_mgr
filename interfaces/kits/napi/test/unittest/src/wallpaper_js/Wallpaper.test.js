@@ -21,7 +21,7 @@ import {describe, beforeAll, beforeEach, afterEach, afterAll, it, expect} from '
 
 const WALLPAPER_SYSTEM = 0;
 const WALLPAPER_LOCKSCREEN = 1;
-const PARAMETER_ERROR = "401";
+const PARAMETER_ERROR = 401;
 const URI = "/data/storage/el2/base/haps/js.jpeg";
 
 describe('WallpaperJSTest', function () {

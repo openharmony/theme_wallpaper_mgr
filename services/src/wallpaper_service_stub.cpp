@@ -128,8 +128,10 @@ int32_t WallpaperServiceStub::OnGetPixelMap(MessageParcel &data, MessageParcel &
         }
         if (!reply.WriteFileDescriptor(fdInfo.fd)) {
             HILOG_ERROR("WriteFileDescriptor fail");
+            close(fdInfo.fd);
             return IPC_STUB_WRITE_PARCEL_ERR;
         }
+        close(fdInfo.fd);
     }
     return ERR_NONE;
 }
