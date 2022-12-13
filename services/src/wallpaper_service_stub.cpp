@@ -154,10 +154,13 @@ int32_t WallpaperServiceStub::OnGetFile(MessageParcel &data, MessageParcel &repl
     HILOG_INFO("WallpaperServiceStub::OnGetFile start.");
 
     int32_t wallpaperType = data.ReadInt32();
-    int wallpaperFd;
+    int32_t wallpaperFd = INVALID_FD;
     int32_t wallpaperErrorCode = GetFile(wallpaperType, wallpaperFd);
     if (!reply.WriteInt32(wallpaperErrorCode)) {
         HILOG_ERROR("WriteInt32 fail");
+        if(wallpaperFd > INVALID_FD){
+            close(wallpaperFd);
+        }
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     if (wallpaperErrorCode == static_cast<int32_t>(E_OK) && !reply.WriteFileDescriptor(wallpaperFd)) {
@@ -165,7 +168,9 @@ int32_t WallpaperServiceStub::OnGetFile(MessageParcel &data, MessageParcel &repl
         close(wallpaperFd);
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
-    close(wallpaperFd);
+    if(wallpaperFd > INVALID_FD){
+        close(wallpaperFd);
+    }
     return ERR_NONE;
 }
 
