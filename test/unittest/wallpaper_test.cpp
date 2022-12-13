@@ -229,7 +229,7 @@ HWTEST_F(WallpaperTest, Reset003, TestSize.Level1)
 {
     HILOG_INFO("Reset003 begin.");
     int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(INVALID_WALLPAPER_TYPE);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to reset .";
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to throw error.";
 }
 
 /**
@@ -538,7 +538,7 @@ HWTEST_F(WallpaperTest, GetPiexlMap001, TestSize.Level0)
     HILOG_INFO("GetPiexlMap001  begin");
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetPixelMap(SYSTYEM, pixelMap);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "throw permission error successfully.";
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "Failed to throw permission error.";
 }
 
 /**
@@ -553,7 +553,7 @@ HWTEST_F(WallpaperTest, GetPiexlMap002, TestSize.Level0)
     HILOG_INFO("GetPiexlMap002  begin");
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetPixelMap(LOCKSCREEN, pixelMap);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "throw permission error successfully.";
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "Failed to throw permission error.";
 }
 /*********************   GetPiexlMap   *********************/
 

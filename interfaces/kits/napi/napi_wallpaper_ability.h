@@ -40,7 +40,6 @@
 #define BUSINESS_ERROR_CODE_OK 0
 namespace OHOS {
 namespace WallpaperNAPI {
-constexpr int32_t INVALID_FD = -1;
 
 struct GetContextInfo : public AsyncCall::Context {
     int wallpaperType = 0;
@@ -131,6 +130,7 @@ struct SetContextInfo : public AsyncCall::Context {
 };
 
 struct GetFileContextInfo : public AsyncCall::Context {
+    static constexpr int32_t INVALID_FD = -1;
     int32_t wallpaperType = 0;
     int32_t wallpaperFd = INVALID_FD;
     napi_status status = napi_generic_failure;

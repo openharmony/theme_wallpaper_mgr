@@ -162,8 +162,10 @@ int32_t WallpaperServiceStub::OnGetFile(MessageParcel &data, MessageParcel &repl
     }
     if (wallpaperErrorCode == static_cast<int32_t>(E_OK) && !reply.WriteFileDescriptor(wallpaperFd)) {
         HILOG_ERROR("WriteFileDescriptor fail");
+        close(wallpaperFd);
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
+    close(wallpaperFd);
     return ERR_NONE;
 }
 
