@@ -29,7 +29,11 @@
 
 constexpr int SYSTYEM = 0;
 constexpr int LOCKSCREEN = 1;
+constexpr int INVALID_WALLPAPER_TYPE = 2;
 constexpr int HUNDRED = 100;
+constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
+constexpr const char *URI = "/data/test/theme/wallpaper/wallpaper_test.JPG";
+
 using namespace testing::ext;
 using namespace testing;
 using namespace OHOS::Media;
@@ -39,7 +43,6 @@ using namespace OHOS::Security::AccessToken;
 
 namespace OHOS {
 namespace WallpaperMgrService {
-constexpr const char *URI = "/data/test/theme/wallpaper/wallpaper_test.JPG";
 void GrantNativePermission()
 {
     const char **perms = new const char *[2];
@@ -94,8 +97,8 @@ void WallpaperTest::SetUpTestCase(void)
 void WallpaperTest::TearDownTestCase(void)
 {
     HILOG_INFO("TearDownTestCase");
-    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(0);
-    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(1);
+    WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM);
+    WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN);
 }
 
 void WallpaperTest::SetUp(void)
@@ -106,7 +109,7 @@ void WallpaperTest::TearDown(void)
 {
 }
 
-class WallpaperColorChangeListenerTestImpl : public OHOS::WallpaperMgrService::WallpaperColorChangeListener {
+class WallpaperColorChangeListenerTestImpl : public WallpaperColorChangeListener {
 public:
     std::vector<uint64_t> color_;
     int wallpaperType_;
@@ -196,10 +199,9 @@ std::unique_ptr<PixelMap> WallpaperTest::CreateTempPixelMap()
 */
 HWTEST_F(WallpaperTest, Reset001, TestSize.Level1)
 {
-    HILOG_INFO("Reset001.");
-    int wallpaperType = 0;
-    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType),
-        static_cast<int32_t>(E_OK)) << "Failed to reset.";
+    HILOG_INFO("Reset001 begin.");
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to reset.";
 }
 
 /**
@@ -211,9 +213,9 @@ HWTEST_F(WallpaperTest, Reset001, TestSize.Level1)
 */
 HWTEST_F(WallpaperTest, Reset002, TestSize.Level1)
 {
-    int wallpaperType = 1;
-    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType),
-        static_cast<int32_t>(E_OK)) << "Failed to reset.";
+    HILOG_INFO("Reset002 begin.");
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to reset.";
 }
 
 /**
@@ -225,9 +227,9 @@ HWTEST_F(WallpaperTest, Reset002, TestSize.Level1)
 */
 HWTEST_F(WallpaperTest, Reset003, TestSize.Level1)
 {
-    int wallpaperType = 2;
-    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType),
-        static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to reset .";
+    HILOG_INFO("Reset003 begin.");
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(INVALID_WALLPAPER_TYPE);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to throw error.";
 }
 
 /**
@@ -239,12 +241,13 @@ HWTEST_F(WallpaperTest, Reset003, TestSize.Level1)
 */
 HWTEST_F(WallpaperTest, Reset004, TestSize.Level1)
 {
-    int wallpaperType = 0;
-    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType),
-        static_cast<int32_t>(E_OK)) << "Failed to  reset.";
+    HILOG_INFO("Reset004 begin.");
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to reset.";
+
     /* duplicate reset */
-    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType),
-        static_cast<int32_t>(E_OK)) << "Failed to  reset.";
+    wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to reset.";
 }
 
 /**
@@ -256,14 +259,15 @@ HWTEST_F(WallpaperTest, Reset004, TestSize.Level1)
 */
 HWTEST_F(WallpaperTest, Reset005, TestSize.Level1)
 {
-    int wallpaperType = 1;
-    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType),
-        static_cast<int32_t>(E_OK)) << "Failed to reset.";
-    int firstId = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(wallpaperType);
+    HILOG_INFO("Reset005 begin.");
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to reset.";
+    int firstId = WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
+
     /* duplicate reset */
-    EXPECT_EQ(OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType),
-        static_cast<int32_t>(E_OK)) << "Failed to  reset.";
-    int secondId = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(wallpaperType);
+    wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to reset.";
+    int secondId = WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
     EXPECT_EQ(firstId, secondId) << "Id should be same one.";
 }
 /*********************   ResetWallpaper   *********************/
@@ -279,8 +283,7 @@ HWTEST_F(WallpaperTest, Reset005, TestSize.Level1)
 */
 HWTEST_F(WallpaperTest, IsChangePermitted001, TestSize.Level1)
 {
-    bool ret = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().IsChangePermitted();
-    EXPECT_EQ(ret, true);
+    EXPECT_EQ(WallpaperManagerkits::GetInstance().IsChangePermitted(), true);
 }
 
 /*********************   IsChangePermitted   *********************/
@@ -296,8 +299,7 @@ HWTEST_F(WallpaperTest, IsChangePermitted001, TestSize.Level1)
 */
 HWTEST_F(WallpaperTest, IsOperationAllowed001, TestSize.Level1)
 {
-    bool ret = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().IsOperationAllowed();
-    EXPECT_EQ(ret, true);
+    EXPECT_EQ(WallpaperManagerkits::GetInstance().IsOperationAllowed(), true);
 }
 
 /*********************   IsOperationAllowed   *********************/
@@ -315,9 +317,9 @@ HWTEST_F(WallpaperTest, On001, TestSize.Level1)
 {
     HILOG_INFO("On001 begin");
     auto listener = std::make_shared<WallpaperColorChangeListenerTestImpl>();
-    OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().On("colorChange", listener);
+    WallpaperManagerkits::GetInstance().On("colorChange", listener);
 
-    auto offSubStatus = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().Off("colorChange", listener);
+    auto offSubStatus = WallpaperManagerkits::GetInstance().Off("colorChange", listener);
     EXPECT_EQ(offSubStatus, true) << "unsubscribe wallpaper color change.";
 }
 
@@ -334,10 +336,8 @@ HWTEST_F(WallpaperTest, On001, TestSize.Level1)
 HWTEST_F(WallpaperTest, GetColors001, TestSize.Level0)
 {
     HILOG_INFO("GetColors001 begin");
-
-    std::vector<uint64_t> color = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(SYSTYEM);
-    bool result = color.empty();
-    EXPECT_FALSE(result);
+    std::vector<uint64_t> color = WallpaperManagerkits::GetInstance().GetColors(SYSTYEM);
+    EXPECT_FALSE(color.empty());
 }
 
 /**
@@ -350,9 +350,8 @@ HWTEST_F(WallpaperTest, GetColors001, TestSize.Level0)
 HWTEST_F(WallpaperTest, GetColors002, TestSize.Level0)
 {
     HILOG_INFO("GetColors002 begin");
-    std::vector<uint64_t> color = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN);
-    bool result = color.empty();
-    EXPECT_FALSE(result);
+    std::vector<uint64_t> color = WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN);
+    EXPECT_FALSE(color.empty());
 }
 /*********************   GetColors   *********************/
 
@@ -361,38 +360,64 @@ HWTEST_F(WallpaperTest, GetColors002, TestSize.Level0)
 * @tc.name: GetId001
 * @tc.desc: GetId with wallpaperType[0].
 * @tc.type: FUNC
-* @tc.require:
-* @tc.author:
+* @tc.require: issueI65VF1
+* @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, GetId001, TestSize.Level0)
 {
     HILOG_INFO("GetId001 begin");
-    bool result = false;
-    int ida = HUNDRED;
-    ida = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(SYSTYEM);
-    if (ida != HUNDRED) {
-        result = true;
-    }
-    EXPECT_TRUE(result);
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to ResetWallpaper";
+    int32_t id = WallpaperManagerkits::GetInstance().GetWallpaperId(SYSTYEM);
+    EXPECT_EQ(id, DEFAULT_WALLPAPER_ID) << "Failed to GetId";
 }
 
 /**
 * @tc.name: GetId002
 * @tc.desc: GetId with wallpaperType[1].
 * @tc.type: FUNC
-* @tc.require:
-* @tc.author:
+* @tc.require: issueI65VF1
+* @tc.author: lvbai
 */
 HWTEST_F(WallpaperTest, GetId002, TestSize.Level0)
 {
     HILOG_INFO("GetId002 begin");
-    bool result = false;
-    int ida = HUNDRED;
-    ida = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
-    if (ida != HUNDRED) {
-        result = true;
-    }
-    EXPECT_TRUE(result);
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to ResetWallpaper";
+    int32_t id = WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
+    EXPECT_EQ(id, DEFAULT_WALLPAPER_ID) << "Failed to GetId";
+}
+
+/**
+* @tc.name: GetId003
+* @tc.desc: GetId with wallpaperType[0] after setWallpaper.
+* @tc.type: FUNC
+* @tc.require: issueI65VF1
+* @tc.author: lvbai
+*/
+HWTEST_F(WallpaperTest, GetId003, TestSize.Level0)
+{
+    HILOG_INFO("GetId003 begin");
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, SYSTYEM);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to SetWallpaper";
+    int32_t id = WallpaperManagerkits::GetInstance().GetWallpaperId(SYSTYEM);
+    EXPECT_GT(id, DEFAULT_WALLPAPER_ID) << "Failed to GetId";
+}
+
+/**
+* @tc.name: GetId004
+* @tc.desc: GetId with wallpaperType[1] after setWallpaper.
+* @tc.type: FUNC
+* @tc.require: issueI65VF1
+* @tc.author: lvbai
+*/
+HWTEST_F(WallpaperTest, GetId004, TestSize.Level0)
+{
+    HILOG_INFO("GetId004 begin");
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to SetWallpaper";
+    int32_t id = WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
+    EXPECT_GT(id, DEFAULT_WALLPAPER_ID) << "Failed to GetId";
 }
 /*********************   GetId   *********************/
 
@@ -408,8 +433,7 @@ HWTEST_F(WallpaperTest, GetFile001, TestSize.Level0)
 {
     HILOG_INFO("GetFile001 begin");
     int32_t wallpaperFd = 0;
-    int wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(SYSTYEM, wallpaperFd);
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetFile(SYSTYEM, wallpaperFd);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to get File.";
 }
 
@@ -424,8 +448,7 @@ HWTEST_F(WallpaperTest, GetFile002, TestSize.Level0)
 {
     HILOG_INFO("GetFile002 begin");
     int32_t wallpaperFd = 0;
-    int wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(LOCKSCREEN, wallpaperFd);
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetFile(LOCKSCREEN, wallpaperFd);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to get File.";
 }
 
@@ -440,7 +463,7 @@ HWTEST_F(WallpaperTest, GetFile003, TestSize.Level0)
 {
     HILOG_INFO("GetFile003 begin");
     int32_t wallpaperFd = 0;
-    int wallpaperErrorCode = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(2, wallpaperFd);
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetFile(INVALID_WALLPAPER_TYPE, wallpaperFd);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to throw parameters error";
 }
 
@@ -455,8 +478,7 @@ HWTEST_F(WallpaperTest, GetFile004, TestSize.Level0)
 {
     HILOG_INFO("GetFile001 begin");
     int32_t wallpaperFd = 0;
-    int wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(SYSTYEM, wallpaperFd);
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetFile(SYSTYEM, wallpaperFd);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to get File.";
 }
 /*********************   GetFile   *********************/
@@ -474,7 +496,7 @@ HWTEST_F(WallpaperTest, getMinHeight001, TestSize.Level0)
     HILOG_INFO("WallpaperReset001  begin");
     bool result = false;
     int hight = 0;
-    hight = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperMinHeight();
+    hight = WallpaperManagerkits::GetInstance().GetWallpaperMinHeight();
     if (hight != 0) {
         result = true;
     }
@@ -495,7 +517,7 @@ HWTEST_F(WallpaperTest, getMinWidth001, TestSize.Level0)
     HILOG_INFO("getMinWidth001  begin");
     bool result = false;
     int width = 0;
-    width = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperMinWidth();
+    width = WallpaperManagerkits::GetInstance().GetWallpaperMinWidth();
     if (width != 0) {
         result = true;
     }
@@ -515,9 +537,8 @@ HWTEST_F(WallpaperTest, GetPiexlMap001, TestSize.Level0)
 {
     HILOG_INFO("GetPiexlMap001  begin");
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
-    int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(SYSTYEM, pixelMap);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "throw permission error successfully.";
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetPixelMap(SYSTYEM, pixelMap);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "Failed to throw permission error.";
 }
 
 /**
@@ -531,9 +552,8 @@ HWTEST_F(WallpaperTest, GetPiexlMap002, TestSize.Level0)
 {
     HILOG_INFO("GetPiexlMap002  begin");
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
-    int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(LOCKSCREEN, pixelMap);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "throw permission error successfully.";
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetPixelMap(LOCKSCREEN, pixelMap);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "Failed to throw permission error.";
 }
 /*********************   GetPiexlMap   *********************/
 
@@ -549,8 +569,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap001, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByMap001  begin");
     std::unique_ptr<PixelMap> pixelMap = WallpaperTest::CreateTempPixelMap();
-    int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, SYSTYEM);
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, SYSTYEM);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to set SYSTYEM PiexlMap.";
 }
 
@@ -565,8 +584,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap002, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByMap002  begin");
     std::unique_ptr<PixelMap> pixelMap = WallpaperTest::CreateTempPixelMap();
-    int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, LOCKSCREEN);
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, LOCKSCREEN);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to set LOCKSCREEN PiexlMap.";
 }
 
@@ -581,8 +599,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap003, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByMap003  begin");
     std::unique_ptr<PixelMap> pixelMap = WallpaperTest::CreateTempPixelMap();
-    int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, 2);
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, INVALID_WALLPAPER_TYPE);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to throw parameters error";
 }
 /*********************   SetWallpaperByMap   *********************/
@@ -598,8 +615,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap003, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetWallpaperByUri001, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByUri001  begin");
-    int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URI, SYSTYEM);
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, SYSTYEM);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to set SYSTYEM.";
 }
 
@@ -613,8 +629,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri001, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetWallpaperByUri002, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByUri002  begin");
-    int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN);
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to set LOCKSCREEN.";
 }
 
@@ -628,7 +643,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri002, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetWallpaperByUri003, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByUri003  begin");
-    int32_t wallpaperErrorCode = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URI, 2);
+    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, INVALID_WALLPAPER_TYPE);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to throw error";
 }
 
@@ -643,8 +658,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri004, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByUri004  begin");
     int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper("/data/test/theme/wallpaper/"
-                                                                                    "errorURI", 1);
+        WallpaperManagerkits::GetInstance().SetWallpaper("/data/test/theme/wallpaper/errorURI", LOCKSCREEN);
     EXPECT_NE(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to throw error";
 }
 
@@ -659,9 +673,8 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri005, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByUri005  begin");
     int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper("../data/test/theme/wallpaper/"
-                                                                                    "errorURI", 1);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_FILE_ERROR)) << "Failed to throw error";
+        WallpaperManagerkits::GetInstance().SetWallpaper("../data/test/theme/wallpaper/errorURI", LOCKSCREEN);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_FILE_ERROR)) << "Failed to return error";
 }
 
 /**
