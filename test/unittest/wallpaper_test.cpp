@@ -517,8 +517,7 @@ HWTEST_F(WallpaperTest, GetPiexlMap001, TestSize.Level0)
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     int32_t wallpaperErrorCode =
         OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(SYSTYEM, pixelMap);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "get SYSTYEM PiexlMap success.";
-    ASSERT_NE(pixelMap, nullptr) << "get LOCKSCREEN PiexlMap ptr nullptr.";
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "throw permission error successfully.";
 }
 
 /**
@@ -534,24 +533,7 @@ HWTEST_F(WallpaperTest, GetPiexlMap002, TestSize.Level0)
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     int32_t wallpaperErrorCode =
         OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(LOCKSCREEN, pixelMap);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "get LOCKSCREEN PiexlMap success.";
-    ASSERT_NE(pixelMap, nullptr) << "get LOCKSCREEN PiexlMap ptr nullptr.";
-}
-
-/**
-* @tc.name:    GetPiexlMap003
-* @tc.desc:    GetPixelMap with wallpaperType[2] throw parameters error.
-* @tc.type:    FUNC
-* @tc.require: issueI5UHRG
-* @tc.author:  lvbai
-*/
-HWTEST_F(WallpaperTest, GetPiexlMap003, TestSize.Level0)
-{
-    HILOG_INFO("GetPiexlMap003  begin");
-    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
-    int32_t wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(2, pixelMap);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to throw parameters error";
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "throw permission error successfully.";
 }
 /*********************   GetPiexlMap   *********************/
 
