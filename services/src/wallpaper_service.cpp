@@ -82,6 +82,7 @@ constexpr int TEN = 10;
 constexpr int HUNDRED = 100;
 constexpr int FOO_MAX_LEN = 52428800;
 constexpr int MAX_RETRY_TIMES = 20;
+constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
 std::mutex WallpaperService::instanceLock_;
 
 sptr<WallpaperService> WallpaperService::instance_;
@@ -206,7 +207,7 @@ void WallpaperService::InitData()
 {
     HILOG_INFO("WallpaperService::initData --> start ");
     userId_ = 0;
-    wallpaperId_ = -1;
+    wallpaperId_ = DEFAULT_WALLPAPER_ID;
     wallpaperMap_.Clear();
     lockWallpaperMap_.Clear();
     userId_ = GetUserId();
@@ -281,7 +282,7 @@ std::string WallpaperService::GetWallpaperDir()
 int WallpaperService::MakeWallpaperIdLocked()
 {
     if (wallpaperId_ == INT32_MAX) {
-        wallpaperId_ = -1;
+        wallpaperId_ = DEFAULT_WALLPAPER_ID;
     }
     return ++wallpaperId_;
 }
@@ -849,7 +850,7 @@ int32_t WallpaperService::SetDefaultDateForWallpaper(int userId, int wpType)
         tmpCropPath = wallpaperSystemCropFileFullPath_;
     }
     WallpaperData wallpaperData(userId, tmpPath, tmpCropPath);
-    wallpaperData.wallpaperId_ = -1;
+    wallpaperData.wallpaperId_ = DEFAULT_WALLPAPER_ID;
     wallpaperData.allowBackup = true;
     if (wpType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
