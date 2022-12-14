@@ -177,24 +177,24 @@ int32_t WallpaperManager::SetWallpaper(std::string uri, int wallpaperType)
     }
     FILE *pixMap = std::fopen(fileRealPath.c_str(), "rb");
     if (pixMap == nullptr) {
-        HILOG_ERROR("fopen faild, %{public}s, %{public}s", fileRealPath.c_str(), strerror(errno));
+        HILOG_ERROR("fopen failed, %{public}s, %{public}s", fileRealPath.c_str(), strerror(errno));
         return static_cast<int32_t>(E_FILE_ERROR);
     }
     if (fseek(pixMap, 0, SEEK_END) != 0) {
-        HILOG_ERROR("fseek faild");
+        HILOG_ERROR("fseek failed");
         return static_cast<int32_t>(E_FILE_ERROR);
     }
     int length = ftell(pixMap);
     if (length <= 0) {
-        HILOG_ERROR("ftell faild");
+        HILOG_ERROR("ftell failed");
         return static_cast<int32_t>(E_FILE_ERROR);
     }
     if (fseek(pixMap, 0, SEEK_SET) != 0) {
-        HILOG_ERROR("fseek faild");
+        HILOG_ERROR("fseek failed");
         return static_cast<int32_t>(E_FILE_ERROR);
     }
     if (fclose(pixMap) != 0) {
-        HILOG_ERROR("fclose faild");
+        HILOG_ERROR("fclose failed");
         return static_cast<int32_t>(E_FILE_ERROR);
     }
     int fd = open(fileRealPath.c_str(), O_RDONLY, 0660);
@@ -225,7 +225,7 @@ int32_t WallpaperManager::SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &p
     std::ostream ostream(stringBuf);
     int mapSize = WritePixelMapToStream(ostream, std::move(pixelMap));
     if (mapSize <= 0) {
-        HILOG_ERROR("WritePixelMapToStream faild");
+        HILOG_ERROR("WritePixelMapToStream failed");
         return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
     char *buffer = new (std::nothrow) char[mapSize];
@@ -240,7 +240,7 @@ int32_t WallpaperManager::SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &p
     fcntl(fd[0], F_SETPIPE_SZ, mapSize);
     int32_t writeSize = write(fd[1], buffer, mapSize);
     if (writeSize != mapSize) {
-        HILOG_ERROR("write to fd faild");
+        HILOG_ERROR("write to fd failed");
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         delete[] buffer;
         return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);

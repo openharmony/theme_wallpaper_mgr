@@ -84,7 +84,7 @@ public:
 public:
     static void OnBootPhase();
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
-    void ReporterUsageTimeStatisic();
+    void ReporterUsageTimeStatistic();
     void RegisterSubscriber(int times);
     void StartWallpaperExtension();
 
@@ -124,7 +124,7 @@ private:
     void ClearWallpaperLocked(int userId, int wpType);
     int32_t SetDefaultDateForWallpaper(int userId, int wpType);
     int MakeWallpaperIdLocked();
-    bool WPCheckCallingPermission(const std::string &promissionName);
+    bool WPCheckCallingPermission(const std::string &permissionName);
     bool WPGetBundleNameByUid(std::int32_t uid, std::string &bname);
     bool MakeCropWallpaper(int wallpaperType);
     int32_t SetWallpaperBackupData(std::string uriOrPixelMap, int wallpaperType);

@@ -56,9 +56,9 @@ int32_t WallpaperServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data
     MessageOption &option)
 {
     HILOG_INFO(" start##ret = %{public}u", code);
-    std::u16string myDescripter = WallpaperServiceStub::GetDescriptor();
-    std::u16string remoteDescripter = data.ReadInterfaceToken();
-    if (myDescripter != remoteDescripter) {
+    std::u16string myDescriptor = WallpaperServiceStub::GetDescriptor();
+    std::u16string remoteDescriptor = data.ReadInterfaceToken();
+    if (myDescriptor != remoteDescriptor) {
         HILOG_ERROR(" end##descriptor checked fail");
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -179,24 +179,24 @@ int32_t WallpaperServiceStub::OnGetWallpaperId(MessageParcel &data, MessageParce
     HILOG_INFO("WallpaperServiceStub::OnGetWallpaperId start.");
 
     int wallpaperType = data.ReadInt32();
-    int wallpaerid = GetWallpaperId(wallpaperType);
-    if (!reply.WriteInt32(wallpaerid)) {
+    int wallpaperid = GetWallpaperId(wallpaperType);
+    if (!reply.WriteInt32(wallpaperid)) {
         HILOG_ERROR("Write result data failed");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
-    HILOG_INFO("End. Id[%{public}d]", wallpaerid);
+    HILOG_INFO("End. Id[%{public}d]", wallpaperid);
     return ERR_NONE;
 }
 
 int32_t WallpaperServiceStub::OnGetWallpaperMinHeight(MessageParcel &data, MessageParcel &reply)
 {
     HILOG_INFO("WallpaperServiceStub::OnGetWallpaperMinHeight start.");
-    int wallpaerMinHeight = GetWallpaperMinHeight();
-    if (!reply.WriteInt32(wallpaerMinHeight)) {
+    int wallpaperMinHeight = GetWallpaperMinHeight();
+    if (!reply.WriteInt32(wallpaperMinHeight)) {
         HILOG_ERROR("Write result data failed");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
-    HILOG_INFO("End. height[%{public}d]", wallpaerMinHeight);
+    HILOG_INFO("End. height[%{public}d]", wallpaperMinHeight);
     return ERR_NONE;
 }
 

@@ -495,9 +495,9 @@ HWTEST_F(WallpaperTest, getMinHeight001, TestSize.Level0)
 {
     HILOG_INFO("WallpaperReset001  begin");
     bool result = false;
-    int hight = 0;
-    hight = WallpaperManagerkits::GetInstance().GetWallpaperMinHeight();
-    if (hight != 0) {
+    int height = 0;
+    height = WallpaperManagerkits::GetInstance().GetWallpaperMinHeight();
+    if (height != 0) {
         result = true;
     }
     EXPECT_TRUE(result);
@@ -525,37 +525,37 @@ HWTEST_F(WallpaperTest, getMinWidth001, TestSize.Level0)
 }
 /*********************   GetWallpaperMinWidth   *********************/
 
-/*********************   GetPiexlMap   *********************/
+/*********************   GetPixelMap   *********************/
 /**
-* @tc.name:    GetPiexlMap001
+* @tc.name:    GetPixelMap001
 * @tc.desc:    GetPixelMap with wallpaperType[0].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
 * @tc.author:  lvbai
 */
-HWTEST_F(WallpaperTest, GetPiexlMap001, TestSize.Level0)
+HWTEST_F(WallpaperTest, GetPixelMap001, TestSize.Level0)
 {
-    HILOG_INFO("GetPiexlMap001  begin");
+    HILOG_INFO("GetPixelMap001  begin");
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetPixelMap(SYSTYEM, pixelMap);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "Failed to throw permission error.";
 }
 
 /**
-* @tc.name:    GetPiexlMap002
+* @tc.name:    GetPixelMap002
 * @tc.desc:    GetPixelMap with wallpaperType[1].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
 * @tc.author:  lvbai
 */
-HWTEST_F(WallpaperTest, GetPiexlMap002, TestSize.Level0)
+HWTEST_F(WallpaperTest, GetPixelMap002, TestSize.Level0)
 {
-    HILOG_INFO("GetPiexlMap002  begin");
+    HILOG_INFO("GetPixelMap002  begin");
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetPixelMap(LOCKSCREEN, pixelMap);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "Failed to throw permission error.";
 }
-/*********************   GetPiexlMap   *********************/
+/*********************   GetPixelMap   *********************/
 
 /*********************   SetWallpaperByMap   *********************/
 /**
@@ -570,7 +570,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap001, TestSize.Level0)
     HILOG_INFO("SetWallpaperByMap001  begin");
     std::unique_ptr<PixelMap> pixelMap = WallpaperTest::CreateTempPixelMap();
     int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, SYSTYEM);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to set SYSTYEM PiexlMap.";
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to set SYSTYEM PixelMap.";
 }
 
 /**
@@ -585,7 +585,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap002, TestSize.Level0)
     HILOG_INFO("SetWallpaperByMap002  begin");
     std::unique_ptr<PixelMap> pixelMap = WallpaperTest::CreateTempPixelMap();
     int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, LOCKSCREEN);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to set LOCKSCREEN PiexlMap.";
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to set LOCKSCREEN PixelMap.";
 }
 
 /**

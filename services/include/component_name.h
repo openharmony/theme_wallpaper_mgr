@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef SERVICES_INCLUDE_WALLPAPER_COMMONENT_NAME_H
-#define SERVICES_INCLUDE_WALLPAPER_COMMONENT_NAME_H
+#ifndef SERVICES_INCLUDE_WALLPAPER_COMPONENT_NAME_H
+#define SERVICES_INCLUDE_WALLPAPER_COMPONENT_NAME_H
 #include <string>
 
 namespace OHOS {
@@ -42,4 +42,4 @@ private:
 } // namespace WallpaperMgrService
 } // namespace OHOS
 
-#endif
+#endif //SERVICES_INCLUDE_WALLPAPER_COMPONENT_NAME_H
