@@ -82,7 +82,6 @@ constexpr int TEN = 10;
 constexpr int HUNDRED = 100;
 constexpr int FOO_MAX_LEN = 52428800;
 constexpr int MAX_RETRY_TIMES = 20;
-constexpr int S_IREAD = 0440;
 std::mutex WallpaperService::instanceLock_;
 
 sptr<WallpaperService> WallpaperService::instance_;
