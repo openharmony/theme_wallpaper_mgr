@@ -1101,7 +1101,7 @@ bool WallpaperService::IsSystemApp()
     return TokenIdKit::IsSystemAppByFullTokenID(tokenId);
 }
 
-int32_t WallpaperService::GetImageFd(int wallpaperType, int &fd)
+int32_t WallpaperService::GetImageFd(int32_t wallpaperType, int32_t &fd)
 {
     HILOG_INFO("WallpaperService::GetImageFd start ");
     std::string filePath = "";
@@ -1109,7 +1109,7 @@ int32_t WallpaperService::GetImageFd(int wallpaperType, int &fd)
         return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
     mtx.lock();
-    fd = open(filePath.c_str(), O_RDONLY, 0440);
+    fd = open(filePath.c_str(), O_RDONLY, S_IREAD);
     if (fd < 0) {
         HILOG_ERROR("open failed");
         ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
@@ -1121,7 +1121,7 @@ int32_t WallpaperService::GetImageFd(int wallpaperType, int &fd)
     return static_cast<int32_t>(E_OK);
 }
 
-int32_t WallpaperService::GetImageSize(int wallpaperType, int &size)
+int32_t WallpaperService::GetImageSize(int32_t wallpaperType, int32_t &size)
 {
     HILOG_INFO("WallpaperService::GetImageSize start ");
     std::string filePath = "";
