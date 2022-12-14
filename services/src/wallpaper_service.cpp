@@ -82,7 +82,7 @@ constexpr int TEN = 10;
 constexpr int HUNDRED = 100;
 constexpr int FOO_MAX_LEN = 52428800;
 constexpr int MAX_RETRY_TIMES = 20;
-constexpr int ACCESS_PERMISSION_BITS = 0440;
+constexpr int S_IREAD = 0440;
 std::mutex WallpaperService::instanceLock_;
 
 sptr<WallpaperService> WallpaperService::instance_;
@@ -1101,7 +1101,7 @@ bool WallpaperService::IsSystemApp()
     return TokenIdKit::IsSystemAppByFullTokenID(tokenId);
 }
 
-int32_t WallpaperService::GetImageFd(const int32_t wallpaperType, int32_t &fd)
+int32_t WallpaperService::GetImageFd(int32_t wallpaperType, int32_t &fd)
 {
     HILOG_INFO("WallpaperService::GetImageFd start ");
     std::string filePath = "";
@@ -1109,7 +1109,7 @@ int32_t WallpaperService::GetImageFd(const int32_t wallpaperType, int32_t &fd)
         return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
     mtx.lock();
-    fd = open(filePath.c_str(), O_RDONLY, ACCESS_PERMISSION_BITS);
+    fd = open(filePath.c_str(), O_RDONLY, S_IREAD);
     if (fd < 0) {
         HILOG_ERROR("open failed");
         ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
@@ -1121,7 +1121,7 @@ int32_t WallpaperService::GetImageFd(const int32_t wallpaperType, int32_t &fd)
     return static_cast<int32_t>(E_OK);
 }
 
-int32_t WallpaperService::GetImageSize(const int32_t wallpaperType, int32_t &size)
+int32_t WallpaperService::GetImageSize(int32_t wallpaperType, int32_t &size)
 {
     HILOG_INFO("WallpaperService::GetImageSize start ");
     std::string filePath = "";
