@@ -52,8 +52,7 @@ bool FuzzWallpaperService(const uint8_t *rawData, size_t size)
     MessageParcel reply;
     MessageOption option;
 
-    sptr<WallpaperService> mWallpp = new WallpaperService();
-    mWallpp->OnRemoteRequest(code, data, reply, option);
+    WallpaperService::GetInstance()->OnRemoteRequest(code, data, reply, option);
 
     return true;
 }
