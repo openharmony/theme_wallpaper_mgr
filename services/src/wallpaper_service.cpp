@@ -456,6 +456,7 @@ bool WallpaperService::SaveColor(int wallpaperType)
         return false;
     }
     std::vector<uint64_t> colors;
+    std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
     if (wallpaperType == WALLPAPER_SYSTEM && !CompareColor(systemWallpaperColor_, color)) {
         systemWallpaperColor_ = color.PackValue();
         colors.emplace_back(systemWallpaperColor_);
