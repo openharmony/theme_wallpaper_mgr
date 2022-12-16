@@ -94,25 +94,8 @@ protected:
     void OnAddSystemAbility(int32_t systemAbilityId, const std::string &deviceId) override;
 
 private:
-    /**
-     * Get current user id.
-     * @param none
-     * @return  userid
-     */
     int GetUserId();
-
-    /**
-     * Get current Display Id.
-     * @param none
-     * @return  displayid
-     */
     int GetDisplayId();
-
-    /**
-    *  initData ,such as dir,filename,and so on.
-    * @param
-    * @return none
-    */
     void InitData();
     int64_t WritePixelMapToFile(const std::string &filePath, std::unique_ptr<OHOS::Media::PixelMap> pixelMap);
     bool CompareColor(const uint64_t &localColor, const ColorManager::Color &color);

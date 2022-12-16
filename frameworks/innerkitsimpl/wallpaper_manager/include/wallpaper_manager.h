@@ -45,7 +45,7 @@ public:
     * values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    int32_t SetWallpaper(std::string url, int wallpaperType) final;
+    int32_t SetWallpaper(std::string uri, int wallpaperType) final;
 
     /**
     * Wallpaper set.

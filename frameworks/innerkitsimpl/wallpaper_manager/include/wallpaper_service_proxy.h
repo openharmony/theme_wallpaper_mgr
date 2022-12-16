@@ -46,13 +46,13 @@ public:
     bool On(sptr<IWallpaperColorChangeListener> listener) override;
     bool Off(sptr<IWallpaperColorChangeListener> listener) override;
     bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) override;
-    std::string getUrl();
+    std::string getUri();
 
 private:
-    bool StartSocket(std::string url, std::string name);
+    bool StartSocket(std::string uri, std::string name);
     static inline BrokerDelegator<WallpaperServiceProxy> delegator_;
     sptr<OHOS::Media::PixelMap> Pmdata_;
-    std::string FWReadUrl = "";
+    std::string FWReadUri = "";
     int32_t mapSize = 0;
 };
 } // namespace WallpaperMgrService

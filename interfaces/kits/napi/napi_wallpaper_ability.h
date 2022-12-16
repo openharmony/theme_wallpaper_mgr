@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 
-#include "async_call.h"
+#include "call.h"
 #include "napi/native_api.h"
 #include "napi/native_common.h"
 #include "napi/native_node_api.h"
@@ -41,7 +41,7 @@
 namespace OHOS {
 namespace WallpaperNAPI {
 
-struct GetContextInfo : public AsyncCall::Context {
+struct GetContextInfo : public Call::Context {
     int wallpaperType = 0;
     std::vector<uint64_t> colors;
     int wallpaperId = 0;
@@ -64,7 +64,7 @@ struct GetContextInfo : public AsyncCall::Context {
     }
 };
 
-struct GetMinContextInfo : public AsyncCall::Context {
+struct GetMinContextInfo : public Call::Context {
     int minHeight = 0;
     int minWidth = 0;
     napi_status status = napi_generic_failure;
@@ -85,7 +85,7 @@ struct GetMinContextInfo : public AsyncCall::Context {
     }
 };
 
-struct PermissionContextInfo : public AsyncCall::Context {
+struct PermissionContextInfo : public Call::Context {
     bool isChangePermitted = false;
     bool isOperationAllowed = false;
     napi_status status = napi_generic_failure;
@@ -106,9 +106,9 @@ struct PermissionContextInfo : public AsyncCall::Context {
     }
 };
 
-struct SetContextInfo : public AsyncCall::Context {
+struct SetContextInfo : public Call::Context {
     int wallpaperType = 0;
-    std::string url = "";
+    std::string uri = "";
     std::unique_ptr<OHOS::Media::PixelMap> pixelMap;
     napi_status status = napi_generic_failure;
     bool isPixelEmp = false;
@@ -129,7 +129,7 @@ struct SetContextInfo : public AsyncCall::Context {
     }
 };
 
-struct GetFileContextInfo : public AsyncCall::Context {
+struct GetFileContextInfo : public Call::Context {
     int32_t wallpaperType = 0;
     int32_t wallpaperFd = 0;
     napi_status status = napi_generic_failure;
@@ -159,7 +159,7 @@ public:
     static bool IsValidArgType(napi_env env, napi_value argValue, napi_valuetype expectationType);
     static bool IsValidArgRange(napi_env env, napi_value argValue);
     static bool CheckValidArgWallpaperType(napi_env env, size_t argc, napi_value argValue,
-        std::shared_ptr<AsyncCall::Context> ctx);
+        std::shared_ptr<Call::Context> ctx);
     static void GetColorsInner(std::shared_ptr<GetContextInfo> context);
     static void GetIdInner(std::shared_ptr<GetContextInfo> context);
     static void GetFileInner(std::shared_ptr<GetFileContextInfo> context);

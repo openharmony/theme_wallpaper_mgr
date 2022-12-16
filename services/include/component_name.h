@@ -23,21 +23,14 @@ class ComponentName {
 public:
     ComponentName();
     ComponentName(std::string pkg, std::string cls);
-    /**
-     * * Return the package name of this component.
-    */
     std::string GetPackageName() const;
-
-    /**
-     * Return the class name of this component.
-     */
     std::string GetClassName() const;
-    bool equals(const ComponentName &obj);
+    bool equals(const ComponentName &obj) const;
     void SetComponentInfo(std::string pkg, std::string cls);
 
 private:
-    std::string mPackage;
-    std::string mClass;
+    std::string package_;
+    std::string class_;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

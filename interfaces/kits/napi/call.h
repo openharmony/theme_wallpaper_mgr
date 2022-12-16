@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef WALLPAPER_ASYNC_CALL_H
-#define WALLPAPER_ASYNC_CALL_H
+#ifndef WALLPAPER_CALL_H
+#define WALLPAPER_CALL_H
 
 #include <functional>
 #include <memory>
@@ -23,7 +23,7 @@
 #include "napi/native_node_api.h"
 
 namespace OHOS::WallpaperNAPI {
-class AsyncCall final {
+class Call final {
 public:
     class Context {
     public:
@@ -75,7 +75,7 @@ public:
         };
 
     protected:
-        friend class AsyncCall;
+        friend class Call;
         InputAction input_ = nullptr;
         OutputAction output_ = nullptr;
         ExecAction exec_ = nullptr;
@@ -85,10 +85,10 @@ public:
 
     // The default AsyncCallback in the parameters is at the end position.
     static constexpr size_t ASYNC_DEFAULT_POS = -1;
-    AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos = ASYNC_DEFAULT_POS,
+    Call(napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos = ASYNC_DEFAULT_POS,
         bool isNewInterfaces = true);
-    ~AsyncCall();
-    napi_value Call(napi_env env);
+    ~Call();
+    napi_value AsyncCall(napi_env env);
     napi_value SyncCall(napi_env env);
 
 private:
@@ -109,4 +109,4 @@ private:
 };
 } // namespace OHOS::WallpaperNAPI
 
-#endif // WALLPAPER_ASYNC_CALL_H
+#endif // WALLPAPER_CALL_H

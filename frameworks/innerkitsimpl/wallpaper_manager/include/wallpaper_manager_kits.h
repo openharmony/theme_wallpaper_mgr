@@ -47,7 +47,7 @@ public:
     * WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    virtual int32_t SetWallpaper(std::string url, int wallpaperType) = 0;
+    virtual int32_t SetWallpaper(std::string uri, int wallpaperType) = 0;
 
     /**
     * Wallpaper set.

@@ -508,7 +508,7 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
     if (length == 0 || length > FOO_MAX_LEN) {
         return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
-    std::string url = wallpaperTmpFullPath_;
+    std::string uri = wallpaperTmpFullPath_;
     char *paperBuf = new (std::nothrow) char[length];
     if (paperBuf == nullptr) {
         return static_cast<int32_t>(E_NO_MEMORY);
@@ -521,7 +521,7 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
         mtx.unlock();
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
-    int fdw = open(url.c_str(), O_WRONLY | O_CREAT, 0660);
+    int fdw = open(uri.c_str(), O_WRONLY | O_CREAT, 0660);
     if (fdw == -1) {
         HILOG_ERROR("WallpaperService:: fdw fail");
         delete[] paperBuf;
@@ -539,7 +539,7 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
     }
     delete[] paperBuf;
     close(fdw);
-    int32_t wallpaperErrorCode = SetWallpaperBackupData(url, wallpaperType);
+    int32_t wallpaperErrorCode = SetWallpaperBackupData(uri, wallpaperType);
     SaveColor(wallpaperType);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByMap", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_MAP));
     return wallpaperErrorCode;
@@ -552,7 +552,7 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
     if (!WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
         return static_cast<int32_t>(E_NO_PERMISSION);
     }
-    std::string url = wallpaperTmpFullPath_;
+    std::string uri = wallpaperTmpFullPath_;
     if (length == 0 || length > FOO_MAX_LEN) {
         return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
@@ -568,7 +568,7 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
         mtx.unlock();
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
-    int fdw = open(url.c_str(), O_WRONLY | O_CREAT, 0660);
+    int fdw = open(uri.c_str(), O_WRONLY | O_CREAT, 0660);
     if (fdw == -1) {
         HILOG_ERROR("WallpaperService:: fdw fail");
         delete[] paperBuf;
@@ -586,7 +586,7 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
     }
     close(fdw);
     delete[] paperBuf;
-    int32_t wallpaperErrorCode = SetWallpaperBackupData(url, wallpaperType);
+    int32_t wallpaperErrorCode = SetWallpaperBackupData(uri, wallpaperType);
     SaveColor(wallpaperType);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByFD", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_FD));
     return wallpaperErrorCode;

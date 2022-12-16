@@ -76,10 +76,10 @@ int32_t WallpaperServiceProxy::GetFile(int32_t wallpaperType, int32_t &wallpaper
     return wallpaperErrorCode;
 }
 
-std::string WallpaperServiceProxy::getUrl()
+std::string WallpaperServiceProxy::getUri()
 {
-    HILOG_INFO("return FWReadUrl= %{public}s ", FWReadUrl.c_str());
-    return FWReadUrl;
+    HILOG_INFO("return FWReadUri= %{public}s ", FWReadUri.c_str());
+    return FWReadUri;
 }
 int32_t WallpaperServiceProxy::SetWallpaperByMap(int fd, int wallpaperType, int length)
 {

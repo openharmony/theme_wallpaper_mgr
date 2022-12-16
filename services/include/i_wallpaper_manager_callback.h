@@ -26,8 +26,8 @@ class IWallpaperManagerCallback {
 public:
     virtual void OnWallpaperChanged();
     /**
-       * Called when wallpaper colors change
-      */
+     * Called when wallpaper colors change
+     */
     virtual void OnWallpaperColorsChanged(vector<uint32_t> colors, int which, int userId);
 };
 } // namespace WallpaperMgrService

@@ -35,8 +35,8 @@ class WallpaperExtension {
             this.wallpaperWindow.moveTo(0, 0).then(() => {
                 console.log(WindowName + "resetSize");
                 this.wallpaperWindow.resetSize(480, 960).then(() => {
-                    console.log(WindowName + " resetSize" + JSON.stringify(this.wallpaperURL));
-                    this.loadUiContent(this.wallpaperURL);
+                    console.log(WindowName + " resetSize" + JSON.stringify(this.wallpaperURI));
+                    this.loadUiContent(this.wallpaperURI);
                     console.log(WindowName + " window created");
                     windowsCreated = true;
                 })
@@ -50,23 +50,23 @@ class WallpaperExtension {
         console.log(WindowName + "onWallpaperExtensionCreated");
     }
 
-    setUiContent(url) {
+    setUiContent(uri) {
         console.log(WindowName + " setUiContent");
         if (windowsCreated) {
             console.log(WindowName + " loadUiContent");
-            loadUiContent(url);
+            loadUiContent(uri);
         } else {
-            console.log(WindowName + " save wallpaperURL");
-            this.wallpaperURL = url;
+            console.log(WindowName + " save wallpaperURI");
+            this.wallpaperURI = uri;
         }
     }
 
-    loadUiContent(url) {
-        console.log(WindowName + "initUiContent" + url);
+    loadUiContent(uri) {
+        console.log(WindowName + "initUiContent" + uri);
         console.log(WindowName + JSON.stringify(this.wallpaperWindow));
         console.log(WindowName + JSON.stringify(this.wallpaperWindow.loadContent));
-        console.log(WindowName + JSON.stringify(this.wallpaperWindow.loadContent(url)));
-        this.wallpaperWindow.loadContent(url).then(() => {
+        console.log(WindowName + JSON.stringify(this.wallpaperWindow.loadContent(uri)));
+        this.wallpaperWindow.loadContent(uri).then(() => {
             console.log(WindowName + " loadContent");
             this.wallpaperWindow.show().then(() => {
                 console.log(WindowName + " window is show");
