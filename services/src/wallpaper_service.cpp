@@ -456,16 +456,17 @@ bool WallpaperService::SaveColor(int wallpaperType)
         return false;
     }
     std::vector<uint64_t> colors;
-    std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
     if (wallpaperType == WALLPAPER_SYSTEM && !CompareColor(systemWallpaperColor_, color)) {
         systemWallpaperColor_ = color.PackValue();
         colors.emplace_back(systemWallpaperColor_);
+        std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
         for (const auto listener : colorChangeListenerMap_) {
             listener.second->OnColorsChange(colors, WALLPAPER_SYSTEM);
         }
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN && !CompareColor(lockWallpaperColor_, color)) {
         lockWallpaperColor_ = color.PackValue();
         colors.emplace_back(lockWallpaperColor_);
+        std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
         for (const auto listener : colorChangeListenerMap_) {
             listener.second->OnColorsChange(colors, WALLPAPER_LOCKSCREEN);
         }
