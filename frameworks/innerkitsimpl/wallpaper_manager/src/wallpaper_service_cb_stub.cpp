@@ -29,9 +29,9 @@ int32_t WallpaperServiceCbStub::OnRemoteRequest(uint32_t code, MessageParcel &da
 {
     HILOG_INFO("  WallpaperServiceCbStub::OnRemoteRequest");
     HILOG_INFO(" start##ret = %{public}u", code);
-    std::u16string myDescripter = WallpaperServiceCbStub::GetDescriptor();
-    std::u16string remoteDescripter = data.ReadInterfaceToken();
-    if (myDescripter != remoteDescripter) {
+    std::u16string myDescriptor = WallpaperServiceCbStub::GetDescriptor();
+    std::u16string remoteDescriptor = data.ReadInterfaceToken();
+    if (myDescriptor != remoteDescriptor) {
         HILOG_ERROR(" end##descriptor checked fail");
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }

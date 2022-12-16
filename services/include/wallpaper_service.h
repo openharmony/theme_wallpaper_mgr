@@ -84,7 +84,7 @@ public:
 public:
     static void OnBootPhase();
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
-    void ReporterUsageTimeStatisic();
+    void ReporterUsageTimeStatistic();
     void RegisterSubscriber(int times);
     void StartWallpaperExtension();
 
@@ -107,12 +107,15 @@ private:
     void ClearWallpaperLocked(int userId, int wpType);
     int32_t SetDefaultDateForWallpaper(int userId, int wpType);
     int MakeWallpaperIdLocked();
-    bool WPCheckCallingPermission(const std::string &promissionName);
+    bool WPCheckCallingPermission(const std::string &permissionName);
     bool WPGetBundleNameByUid(std::int32_t uid, std::string &bname);
     bool MakeCropWallpaper(int wallpaperType);
     int32_t SetWallpaperBackupData(std::string uriOrPixelMap, int wallpaperType);
     int32_t ConnectExtensionAbility(const OHOS::AAFwk::Want &want);
     int32_t GetFilePath(int wallpaperType, std::string &filePath);
+    bool IsSystemApp();
+    int32_t GetImageFd(int32_t wallpaperType, int32_t &fd);
+    int32_t GetImageSize(int32_t wallpaperType, int32_t &size);
 
 private:
     int32_t Init();
@@ -138,7 +141,7 @@ private:
     COLORSLISTENERMAP colorsChangedListeners_;
     ConcurrentMap<int, WallpaperData> wallpaperMap_;
     ConcurrentMap<int, WallpaperData> lockWallpaperMap_;
-    int wallpaperId_;
+    atomic<int32_t> wallpaperId_;
     int userId_;
     static const std::string WALLPAPER;
     static const std::string WALLPAPER_CROP;

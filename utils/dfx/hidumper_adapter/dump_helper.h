@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef DISTRIBUTEDDATA_SERVICE_DUMPE_HELPER_H
-#define DISTRIBUTEDDATA_SERVICE_DUMPE_HELPER_H
+#ifndef DISTRIBUTEDDATA_SERVICE_DUMP_HELPER_H
+#define DISTRIBUTEDDATA_SERVICE_DUMP_HELPER_H
 
 #include <functional>
 #include <map>
@@ -35,4 +35,4 @@ private:
 };
 } // namespace MiscServices
 } // namespace OHOS
-#endif // DISTRIBUTEDDATA_SERVICE_DUMPE_HELPER_H
+#endif // DISTRIBUTEDDATA_SERVICE_DUMP_HELPER_H

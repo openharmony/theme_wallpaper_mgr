@@ -109,30 +109,30 @@ void StatisticReporter::StartTimerThread()
 ReportStatus StatisticReporter::InvokeUsageTime(time_t curTime)
 {
     HILOG_INFO(" InvokeUsageTime start.");
-    std::string statisicMsg;
+    std::string statisticMsg;
     std::lock_guard<std::mutex> lock(usageTimeMutex_);
-    for (auto const &uasgeTime : usageTimeStat_) {
-        statisicMsg.append(USER_ID).append(":" + std::to_string(uasgeTime.first) + ",");
-        std::vector<UsageTimeStat> vecUasgeTime = uasgeTime.second;
-        for (auto const &stat : vecUasgeTime) {
+    for (auto const &usageTime : usageTimeStat_) {
+        statisticMsg.append(USER_ID).append(":" + std::to_string(usageTime.first) + ",");
+        std::vector<UsageTimeStat> vecUsageTime = usageTime.second;
+        for (auto const &stat : vecUsageTime) {
             std::string cumulativeTime(stat.cumulativeTime);
             if (cumulativeTime.empty()) {
                 int nDiff = curTime - stat.startTime;
                 cumulativeTime = std::to_string(nDiff / ONE_HOUR_IN_SECONDS);
             }
 
-            statisicMsg.append(PACKAGES_NAME)
+            statisticMsg.append(PACKAGES_NAME)
                 .append(":" + stat.packagesName + ",")
                 .append(CUMULATIVE_TIME)
                 .append(":" + cumulativeTime + "hours,");
         }
     }
-    if (statisicMsg.empty()) {
+    if (statisticMsg.empty()) {
         return ReportStatus::ERROR;
     }
 
     HiSysEventWrite(HiSysEvent::Domain::THEME, USAGETIME_STATISTIC, HiSysEvent::EventType::STATISTIC,
-        WALLPAPER_INFO, statisicMsg);
+        WALLPAPER_INFO, statisticMsg);
     HILOG_INFO(" InvokeUsageTime end.");
     return ReportStatus::SUCCESS;
 }

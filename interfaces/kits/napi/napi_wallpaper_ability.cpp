@@ -351,7 +351,7 @@ napi_value NAPI_Reset(napi_env env, napi_callback_info info)
 
 napi_value NAPI_Restore(napi_env env, napi_callback_info info)
 {
-    HILOG_DEBUG("NAPI_Rrestore in");
+    HILOG_DEBUG("NAPI_Restore in");
     auto context = std::make_shared<SetContextInfo>();
     NapiWallpaperAbility::RestoreInner(context);
     Call call(env, info, context, 1, true);

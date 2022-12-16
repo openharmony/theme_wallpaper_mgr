@@ -58,6 +58,7 @@
 #include "wallpaper_common_event.h"
 #include "wallpaper_service_cb_proxy.h"
 #include "window.h"
+#include "tokenid_kit.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -65,6 +66,7 @@ REGISTER_SYSTEM_ABILITY_BY_ID(WallpaperService, WALLPAPER_MANAGER_SERVICE_ID, tr
 
 using namespace OHOS::Media;
 using namespace OHOS::MiscServices;
+using namespace OHOS::Security::AccessToken;
 
 const std::string WallpaperService::WALLPAPER = "wallpaper_orig";
 const std::string WallpaperService::WALLPAPER_CROP = "wallpaper";
@@ -80,6 +82,7 @@ constexpr int TEN = 10;
 constexpr int HUNDRED = 100;
 constexpr int FOO_MAX_LEN = 52428800;
 constexpr int MAX_RETRY_TIMES = 20;
+constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
 std::mutex WallpaperService::instanceLock_;
 
 sptr<WallpaperService> WallpaperService::instance_;
@@ -116,7 +119,7 @@ int32_t WallpaperService::Init()
     bool ret = Publish(WallpaperService::GetInstance());
     if (!ret) {
         HILOG_ERROR("Publish failed.");
-        ReporterFault(FaultType::SERVICE_FAULT, FaultCode::SF_SERVICE_UNAVAIABLE);
+        ReporterFault(FaultType::SERVICE_FAULT, FaultCode::SF_SERVICE_UNAVAILABLE);
         return -1;
     }
     HILOG_INFO("Publish success.");
@@ -204,7 +207,7 @@ void WallpaperService::InitData()
 {
     HILOG_INFO("WallpaperService::initData --> start ");
     userId_ = 0;
-    wallpaperId_ = 0;
+    wallpaperId_ = DEFAULT_WALLPAPER_ID;
     wallpaperMap_.Clear();
     lockWallpaperMap_.Clear();
     userId_ = GetUserId();
@@ -278,10 +281,10 @@ std::string WallpaperService::GetWallpaperDir()
 
 int WallpaperService::MakeWallpaperIdLocked()
 {
-    do {
-        ++wallpaperId_;
-    } while (wallpaperId_ == 0);
-    return wallpaperId_;
+    if (wallpaperId_ == INT32_MAX) {
+        wallpaperId_ = DEFAULT_WALLPAPER_ID;
+    }
+    return ++wallpaperId_;
 }
 
 void WallpaperService::LoadSettingsLocked(int userId, bool keepDimensionHints)
@@ -366,10 +369,13 @@ std::vector<uint64_t> WallpaperService::GetColors(int wallpaperType)
 
 int32_t WallpaperService::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
 {
-    FdInfo fdInfo;
-    int wallpaperErrorCode = GetPixelMap(wallpaperType, fdInfo);
-    wallpaperFd = fdInfo.fd;
-    return wallpaperErrorCode;
+    if (!WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER)) {
+        HILOG_ERROR("GetPixelMap no get permission!");
+        return static_cast<int32_t>(E_NO_PERMISSION);
+    }
+    int ret = GetImageFd(wallpaperType, wallpaperFd);
+    HILOG_INFO("GetImageFd fd:%{public}d, ret:%{public}d", wallpaperFd, ret);
+    return ret;
 }
 
 int64_t WallpaperService::WritePixelMapToFile(const std::string &filePath, std::unique_ptr<PixelMap> pixelMap)
@@ -463,22 +469,22 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     if (wallpaperPixelMap == nullptr || errorCode != 0) {
         return ret;
     }
-    int32_t pictrueHeight = wallpaperPixelMap->GetHeight();
-    int32_t pictrueWidth = wallpaperPixelMap->GetWidth();
+    int32_t pictureHeight = wallpaperPixelMap->GetHeight();
+    int32_t pictureWidth = wallpaperPixelMap->GetWidth();
     int pyScrWidth = GetWallpaperMinWidth();
     int pyScrHeight = GetWallpaperMinHeight();
     bool bHeightFlag = false, bWidthFlag = false;
-    if (pictrueHeight > pyScrHeight) {
-        decodeOpts.CropRect.top = (pictrueHeight - pyScrHeight) / HALF;
+    if (pictureHeight > pyScrHeight) {
+        decodeOpts.CropRect.top = (pictureHeight - pyScrHeight) / HALF;
         bHeightFlag = true;
     }
-    if (pictrueWidth > pyScrWidth) {
-        decodeOpts.CropRect.left = (pictrueWidth - pyScrWidth) / HALF;
+    if (pictureWidth > pyScrWidth) {
+        decodeOpts.CropRect.left = (pictureWidth - pyScrWidth) / HALF;
         bWidthFlag = true;
     }
-    decodeOpts.CropRect.height = bHeightFlag ? pyScrHeight : pictrueHeight;
+    decodeOpts.CropRect.height = bHeightFlag ? pyScrHeight : pictureHeight;
     decodeOpts.desiredSize.height = decodeOpts.CropRect.height;
-    decodeOpts.CropRect.width = bWidthFlag ? pyScrWidth : pictrueHeight;
+    decodeOpts.CropRect.width = bWidthFlag ? pyScrWidth : pictureHeight;
     decodeOpts.desiredSize.width = decodeOpts.CropRect.width;
     wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     if (errorCode != 0) {
@@ -623,7 +629,7 @@ int32_t WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int 
     if (wallpaperType == WALLPAPER_SYSTEM) {
         wallpaperMap_.InsertOrAssign(userId_, wallpaperData);
         WallpaperCommonEvent::SendWallpaperSystemSettingMessage();
-        ReporterUsageTimeStatisic();
+        ReporterUsageTimeStatistic();
         HILOG_INFO("  SetWallpaperBackupData callbackProxy->OnCall start");
         if (callbackProxy != nullptr) {
             callbackProxy->OnCall(wallpaperType);
@@ -631,7 +637,7 @@ int32_t WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int 
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId_, wallpaperData);
         WallpaperCommonEvent::SendWallpaperLockSettingMessage();
-        ReporterUsageTimeStatisic();
+        ReporterUsageTimeStatistic();
         HILOG_INFO("  SetWallpaperBackupData callbackProxy->OnCall start");
         if (callbackProxy != nullptr) {
             callbackProxy->OnCall(wallpaperType);
@@ -643,7 +649,7 @@ int32_t WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int 
     return (retFileCp && retCropFileCp) ? static_cast<int32_t>(E_OK) : static_cast<int32_t>(E_DEAL_FAILED);
 }
 
-void WallpaperService::ReporterUsageTimeStatisic()
+void WallpaperService::ReporterUsageTimeStatistic()
 {
     int userId = static_cast<int>(IPCSkeleton::GetCallingUid());
     std::string bundleName;
@@ -660,49 +666,27 @@ void WallpaperService::ReporterUsageTimeStatisic()
 int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
     HILOG_INFO("WallpaperService::getPixelMap start ");
+    if (!IsSystemApp()) {
+        HILOG_INFO("CallingApp is not SystemApp");
+        return static_cast<int32_t>(E_NOT_SYSTEM_APP);
+    }
+
     bool permissionGet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER);
     if (!permissionGet) {
         HILOG_INFO("GetPixelMap no get permission!");
         return static_cast<int32_t>(E_NO_PERMISSION);
     }
-    HILOG_INFO("WallpaperService::getPixelMap MID ");
-    std::string filePath = "";
-    if (GetFilePath(wallpaperType, filePath) != static_cast<int32_t>(E_OK)) {
-        return static_cast<int32_t>(E_PARAMETERS_INVALID);
-    }
 
-    if (!OHOS::FileExists(filePath)) {
-        HILOG_ERROR("file is not exist!");
-        return static_cast<int32_t>(E_NOT_FOUND);
+    int ret = GetImageSize(wallpaperType, fdInfo.size);
+    if (ret != static_cast<int32_t>(E_OK)) {
+        HILOG_ERROR("GetImageSize failed");
+        return ret;
     }
-    mtx.lock();
-    FILE *pixmap = fopen(filePath.c_str(), "rb");
-    if (pixmap == nullptr) {
-        HILOG_ERROR("fopen failed");
-        mtx.unlock();
-        return static_cast<int32_t>(E_FILE_ERROR);
+    ret = GetImageFd(wallpaperType, fdInfo.fd);
+    if (ret != static_cast<int32_t>(E_OK)) {
+        HILOG_ERROR("GetImageFd failed");
+        return ret;
     }
-    int fend = fseek(pixmap, 0, SEEK_END);
-    int length = ftell(pixmap);
-    int fset = fseek(pixmap, 0, SEEK_SET);
-    if (length <= 0 || fend != 0 || fset != 0) {
-        HILOG_ERROR("ftell failed or fseek failed");
-        fclose(pixmap);
-        mtx.unlock();
-        return static_cast<int32_t>(E_FILE_ERROR);
-    }
-
-    fdInfo.size = length;
-    int closeRes = fclose(pixmap);
-    int fd = open(filePath.c_str(), O_RDONLY, 0440);
-    mtx.unlock();
-    if (closeRes != 0 || fd < 0) {
-        HILOG_ERROR("open failed");
-        ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
-        return static_cast<int32_t>(E_DEAL_FAILED);
-    }
-    fdInfo.fd = fd;
-    HILOG_INFO("fdInfo.fd = %{public}d", fdInfo.fd);
     return static_cast<int32_t>(E_OK);
 }
 
@@ -866,7 +850,7 @@ int32_t WallpaperService::SetDefaultDateForWallpaper(int userId, int wpType)
         tmpCropPath = wallpaperSystemCropFileFullPath_;
     }
     WallpaperData wallpaperData(userId, tmpPath, tmpCropPath);
-    wallpaperData.wallpaperId_ = 0;
+    wallpaperData.wallpaperId_ = DEFAULT_WALLPAPER_ID;
     wallpaperData.allowBackup = true;
     if (wpType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
@@ -982,16 +966,16 @@ bool WallpaperService::WPCheckCallingPermission(const std::string &permissionNam
 {
     bool bflag = false;
     int result;
-    Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
-    auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken);
-    if (tokenType == Security::AccessToken::TOKEN_NATIVE || tokenType == Security::AccessToken::TOKEN_SHELL ||
-        tokenType == Security::AccessToken::TOKEN_HAP) {
-        result = AccessTokenProxy::VerifyAccessToken(callerToken, permissionName);
+    AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+    if (tokenType == TOKEN_NATIVE || tokenType == TOKEN_SHELL ||
+        tokenType == TOKEN_HAP) {
+        result = AccessTokenKit::VerifyAccessToken(callerToken, permissionName);
     } else {
-        HILOG_INFO("Check permission tokenId ilegal");
+        HILOG_INFO("Check permission tokenId illegal");
         return false;
     }
-    if (result == Security::AccessToken::TypePermissionState::PERMISSION_GRANTED) {
+    if (result == TypePermissionState::PERMISSION_GRANTED) {
         bflag = true;
     } else {
         bflag = false;
@@ -1053,9 +1037,9 @@ int WallpaperService::Dump(int fd, const std::vector<std::u16string> &args)
     int uid = static_cast<int>(IPCSkeleton::GetCallingUid());
     const int maxUid = 10000;
     if (uid > maxUid) {
-        Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
-        auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken);
-        if (tokenType != Security::AccessToken::TOKEN_NATIVE && tokenType != Security::AccessToken::TOKEN_SHELL) {
+        AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+        auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
+        if (tokenType != TOKEN_NATIVE && tokenType != TOKEN_SHELL) {
             return 1;
         }
     }
@@ -1108,6 +1092,66 @@ int32_t WallpaperService::GetFilePath(int wallpaperType, std::string &filePath)
         }
     }
     return static_cast<int32_t>(E_PARAMETERS_INVALID);
+}
+
+bool WallpaperService::IsSystemApp()
+{
+    HILOG_INFO("IsSystemApp start");
+    uint64_t tokenId = IPCSkeleton::GetCallingFullTokenID();
+    return TokenIdKit::IsSystemAppByFullTokenID(tokenId);
+}
+
+int32_t WallpaperService::GetImageFd(int32_t wallpaperType, int32_t &fd)
+{
+    HILOG_INFO("WallpaperService::GetImageFd start ");
+    std::string filePath = "";
+    if (GetFilePath(wallpaperType, filePath) != static_cast<int32_t>(E_OK)) {
+        return static_cast<int32_t>(E_PARAMETERS_INVALID);
+    }
+    mtx.lock();
+    fd = open(filePath.c_str(), O_RDONLY, S_IREAD);
+    if (fd < 0) {
+        HILOG_ERROR("open failed");
+        ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
+        mtx.unlock();
+        return static_cast<int32_t>(E_DEAL_FAILED);
+    }
+    HILOG_INFO("fd = %{public}d", fd);
+    mtx.unlock();
+    return static_cast<int32_t>(E_OK);
+}
+
+int32_t WallpaperService::GetImageSize(int32_t wallpaperType, int32_t &size)
+{
+    HILOG_INFO("WallpaperService::GetImageSize start ");
+    std::string filePath = "";
+    if (GetFilePath(wallpaperType, filePath) != static_cast<int32_t>(E_OK)) {
+        return static_cast<int32_t>(E_PARAMETERS_INVALID);
+    }
+
+    if (!OHOS::FileExists(filePath)) {
+        HILOG_ERROR("file is not exist!");
+        return static_cast<int32_t>(E_NOT_FOUND);
+    }
+    mtx.lock();
+    FILE *fd = fopen(filePath.c_str(), "rb");
+    if (fd == nullptr) {
+        HILOG_ERROR("fopen failed");
+        mtx.unlock();
+        return static_cast<int32_t>(E_FILE_ERROR);
+    }
+    int fend = fseek(fd, 0, SEEK_END);
+    size = ftell(fd);
+    int fset = fseek(fd, 0, SEEK_SET);
+    if (size <= 0 || fend != 0 || fset != 0) {
+        HILOG_ERROR("ftell failed or fseek failed");
+        fclose(fd);
+        mtx.unlock();
+        return static_cast<int32_t>(E_FILE_ERROR);
+    }
+    fclose(fd);
+    mtx.unlock();
+    return static_cast<int32_t>(E_OK);
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

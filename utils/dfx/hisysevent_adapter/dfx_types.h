@@ -22,7 +22,7 @@ namespace OHOS {
 namespace MiscServices {
 enum class FaultCode {
     // Service Fault
-    SF_SERVICE_UNAVAIABLE = 0,
+    SF_SERVICE_UNAVAILABLE = 0,
     SF_SERVICE_SUBSCRIBECOMMINEVENT,
     SF_STARTABILITY_FAILED,
 
