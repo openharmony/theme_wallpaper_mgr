@@ -459,12 +459,14 @@ bool WallpaperService::SaveColor(int wallpaperType)
     if (wallpaperType == WALLPAPER_SYSTEM && !CompareColor(systemWallpaperColor_, color)) {
         systemWallpaperColor_ = color.PackValue();
         colors.emplace_back(systemWallpaperColor_);
+        std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
         for (const auto listener : colorChangeListenerMap_) {
             listener.second->OnColorsChange(colors, WALLPAPER_SYSTEM);
         }
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN && !CompareColor(lockWallpaperColor_, color)) {
         lockWallpaperColor_ = color.PackValue();
         colors.emplace_back(lockWallpaperColor_);
+        std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
         for (const auto listener : colorChangeListenerMap_) {
             listener.second->OnColorsChange(colors, WALLPAPER_LOCKSCREEN);
         }
@@ -911,7 +913,7 @@ bool WallpaperService::On(sptr<IWallpaperColorChangeListener> listener)
         return false;
     }
     std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
-    colorChangeListenerMap_.insert(std::pair(IPCSkeleton::GetCallingTokenID(), listener));
+    colorChangeListenerMap_.insert_or_assign(IPCSkeleton::GetCallingTokenID(), listener);
     HILOG_DEBUG("WallpaperService::On out");
     return true;
 }
