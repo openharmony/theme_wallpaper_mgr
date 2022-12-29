@@ -22,14 +22,14 @@ ComponentName::ComponentName()
 
 ComponentName::ComponentName(std::string pkg, std::string cls)
 {
-    package_ = pkg;
-    class_ = cls;
+    package_ = std::move(pkg);
+    class_ = std::move(cls);
 }
 
 void ComponentName::SetComponentInfo(std::string pkg, std::string cls)
 {
-    package_ = pkg;
-    class_ = cls;
+    package_ = std::move(pkg);
+    class_ = std::move(cls);
 }
 
 std::string ComponentName::GetPackageName() const

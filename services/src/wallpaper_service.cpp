@@ -68,11 +68,11 @@ using namespace OHOS::Media;
 using namespace OHOS::MiscServices;
 using namespace OHOS::Security::AccessToken;
 
-const std::string WallpaperService::WALLPAPER = "wallpaper_orig";
-const std::string WallpaperService::WALLPAPER_CROP = "wallpaper";
-const std::string WallpaperService::WALLPAPER_LOCK_ORIG = "wallpaper_lock_orig";
-const std::string WallpaperService::WALLPAPER_LOCK_CROP = "wallpaper_lock";
-const std::string WallpaperService::WALLPAPER_BUNDLE_NAME = "com.ohos.wallpaper";
+constexpr const char* WALLPAPER = "wallpaper_orig";
+constexpr const char* WALLPAPER_CROP = "wallpaper";
+constexpr const char* WALLPAPER_LOCK_ORIG = "wallpaper_lock_orig";
+constexpr const char* WALLPAPER_LOCK_CROP = "wallpaper_lock";
+constexpr const char* OHOS_WALLPAPER_BUNDLE_NAME = "com.ohos.wallpaper";
 
 const std::int64_t INIT_INTERVAL = 10000L;
 const std::int64_t DELAY_TIME = 1000L;
@@ -142,7 +142,7 @@ void WallpaperService::OnStart()
         [this, uid](const std::vector<std::string> &input, std::string &output) -> bool {
             int32_t height = GetWallpaperMinHeight();
             int32_t width = GetWallpaperMinWidth();
-            std::string bundleName(WALLPAPER_BUNDLE_NAME);
+            std::string bundleName(OHOS_WALLPAPER_BUNDLE_NAME);
             WPGetBundleNameByUid(uid, bundleName);
             output.append("height\t\t\t: " + std::to_string(height) + "\n")
                 .append("width\t\t\t: " + std::to_string(width) + "\n")
@@ -234,7 +234,7 @@ void WallpaperService::StartWallpaperExtension()
     int time = 0;
     ErrCode ret = 0;
     AAFwk::Want want;
-    want.SetElementName(WALLPAPER_BUNDLE_NAME, "WallpaperExtAbility");
+    want.SetElementName(OHOS_WALLPAPER_BUNDLE_NAME, "WallpaperExtAbility");
     AAFwk::AbilityManagerClient::GetInstance()->Connect();
     HILOG_INFO("WallpaperService::Startwhile");
     while (1) {
@@ -256,7 +256,7 @@ void WallpaperService::OnBootPhase()
 {
     HILOG_INFO("WallpaperService OnBootPhase");
     AAFwk::Want want;
-    want.SetElementName(WALLPAPER_BUNDLE_NAME, "WallpaperExtAbility");
+    want.SetElementName(OHOS_WALLPAPER_BUNDLE_NAME, "WallpaperExtAbility");
     AAFwk::AbilityManagerClient::GetInstance()->Connect();
     AAFwk::AbilityManagerClient::GetInstance()->StartAbility(want);
 }
@@ -608,7 +608,7 @@ void WallpaperService::ReporterUsageTimeStatistic()
     std::string bundleName;
     bool bRet = WPGetBundleNameByUid(userId, bundleName);
     if (!bRet) {
-        bundleName = WALLPAPER_BUNDLE_NAME;
+        bundleName = OHOS_WALLPAPER_BUNDLE_NAME;
     }
     UsageTimeStat timeStat;
     timeStat.packagesName = bundleName;

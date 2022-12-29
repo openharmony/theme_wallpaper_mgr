@@ -252,7 +252,7 @@ void NapiWallpaperAbility::GetMinWidthInner(std::shared_ptr<GetMinContextInfo> c
 {
     HILOG_DEBUG("GetMinWidthInner in");
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
-        napi_status status = napi_create_int32(env, context->minHeight, result);
+        napi_status status = napi_create_int32(env, context->minWidth, result);
         HILOG_DEBUG("output  napi_create_int32[%{public}d]", status);
         return status;
     };

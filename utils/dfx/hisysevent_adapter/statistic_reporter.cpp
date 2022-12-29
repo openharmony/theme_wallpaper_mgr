@@ -82,7 +82,7 @@ void StatisticReporter::StartTimerThread()
                 int nHours = EXEC_HOUR_TIME - currentHour;
                 int nMin = EXEC_MIN_TIME - currentMin;
                 int nTime = (nMin)*ONE_MINUTE_IN_SECONDS + (nHours)*ONE_HOUR_IN_SECONDS;
-                HILOG_INFO(" StartTimerThread if nHours=%{public}d,nMin=%{public}d,nTime=%{public}d", nHours, nMin,
+                HILOG_INFO("StartTimerThread if nHours=%{public}d,nMin=%{public}d,nTime=%{public}d", nHours, nMin,
                     nTime);
                 sleep(nTime);
                 current = time(nullptr);
@@ -108,7 +108,7 @@ void StatisticReporter::StartTimerThread()
 
 ReportStatus StatisticReporter::InvokeUsageTime(time_t curTime)
 {
-    HILOG_INFO(" InvokeUsageTime start.");
+    HILOG_INFO("InvokeUsageTime start.");
     std::string statisticMsg;
     std::lock_guard<std::mutex> lock(usageTimeMutex_);
     for (auto const &usageTime : usageTimeStat_) {

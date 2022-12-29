@@ -142,11 +142,6 @@ private:
     ConcurrentMap<int, WallpaperData> lockWallpaperMap_;
     atomic<int32_t> wallpaperId_;
     int userId_;
-    static const std::string WALLPAPER;
-    static const std::string WALLPAPER_CROP;
-    static const std::string WALLPAPER_LOCK_ORIG;
-    static const std::string WALLPAPER_LOCK_CROP;
-    static const std::string WALLPAPER_BUNDLE_NAME;
     sptr<IWallpaperCallback> callbackProxy = nullptr;
 
     std::string name_;
