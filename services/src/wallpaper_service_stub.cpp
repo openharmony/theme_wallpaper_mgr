@@ -31,8 +31,7 @@ using namespace OHOS::Media;
 
 WallpaperServiceStub::WallpaperServiceStub()
 {
-    memberFuncMap_[SET_WALLPAPER_URI_FD] = &WallpaperServiceStub::OnSetWallpaperUriByFD;
-    memberFuncMap_[SET_WALLPAPER_MAP] = &WallpaperServiceStub::OnSetWallpaperByMap;
+    memberFuncMap_[SET_WALLPAPER] = &WallpaperServiceStub::OnSetWallpaper;
     memberFuncMap_[GET_PIXELMAP] = &WallpaperServiceStub::OnGetPixelMap;
     memberFuncMap_[GET_COLORS] = &WallpaperServiceStub::OnGetColors;
     memberFuncMap_[GET_WALLPAPER_ID] = &WallpaperServiceStub::OnGetWallpaperId;
@@ -76,31 +75,14 @@ int32_t WallpaperServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data
     HILOG_INFO(" end##ret = %{public}d", ret);
     return ret;
 }
-int32_t WallpaperServiceStub::OnSetWallpaperByMap(MessageParcel &data, MessageParcel &reply)
+int32_t WallpaperServiceStub::OnSetWallpaper(MessageParcel &data, MessageParcel &reply)
 {
-    HILOG_INFO("WallpaperServiceStub::SetWallpaperMap start.");
+    HILOG_INFO("WallpaperServiceStub::SetWallpaper start.");
 
     int fd = data.ReadFileDescriptor();
     int wallpaperType = data.ReadInt32();
     int length = data.ReadInt32();
-    int32_t wallpaperErrorCode = SetWallpaperByMap(fd, wallpaperType, length);
-    close(fd);
-    if (!reply.WriteInt32(wallpaperErrorCode)) {
-        HILOG_ERROR("WriteInt32 fail");
-        return IPC_STUB_WRITE_PARCEL_ERR;
-    }
-    return ERR_NONE;
-}
-int32_t WallpaperServiceStub::OnSetWallpaperUriByFD(MessageParcel &data, MessageParcel &reply)
-{
-    HILOG_INFO("WallpaperServiceStub::SetWallpaperUri start.");
-
-    int fd = data.ReadFileDescriptor();
-    int wallpaperType = data.ReadInt32();
-    HILOG_INFO("wallpaperType= %{public}d", wallpaperType);
-    int length = data.ReadInt32();
-    HILOG_INFO("SetWallpaperByFD start");
-    int32_t wallpaperErrorCode = SetWallpaperByFD(fd, wallpaperType, length);
+    int32_t wallpaperErrorCode = SetWallpaper(fd, wallpaperType, length);
     close(fd);
     if (!reply.WriteInt32(wallpaperErrorCode)) {
         HILOG_ERROR("WriteInt32 fail");

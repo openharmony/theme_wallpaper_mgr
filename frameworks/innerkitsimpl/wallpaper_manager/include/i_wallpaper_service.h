@@ -34,8 +34,7 @@ class IWallpaperService : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.Wallpaper.IWallpaperService");
     enum {
-        SET_WALLPAPER_URI_FD,
-        SET_WALLPAPER_MAP,
+        SET_WALLPAPER,
         GET_PIXELMAP,
         GET_PIXELMAPFILE,
         GET_COLORS,
@@ -66,8 +65,7 @@ public:
     * WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    virtual int32_t SetWallpaperByFD(int fd, int wallpaperType, int length) = 0;
-    virtual int32_t SetWallpaperByMap(int fd, int wallpaperType, int length) = 0;
+    virtual int32_t SetWallpaper(int fd, int wallpaperType, int length) = 0;
     virtual int32_t GetPixelMap(int wallpaperType, FdInfo &fdInfo) = 0;
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.

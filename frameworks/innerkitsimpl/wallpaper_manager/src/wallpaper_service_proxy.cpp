@@ -83,7 +83,7 @@ std::string WallpaperServiceProxy::getUri()
     HILOG_INFO("return FWReadUri= %{public}s ", FWReadUri.c_str());
     return FWReadUri;
 }
-int32_t WallpaperServiceProxy::SetWallpaperByMap(int fd, int wallpaperType, int length)
+int32_t WallpaperServiceProxy::SetWallpaper(int fd, int wallpaperType, int length)
 {
     HILOG_INFO(" SetWallpaperByMap ");
     MessageParcel data, reply;
@@ -107,42 +107,12 @@ int32_t WallpaperServiceProxy::SetWallpaperByMap(int fd, int wallpaperType, int 
         return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
 
-    int32_t result = Remote()->SendRequest(SET_WALLPAPER_MAP, data, reply, option);
+    int32_t result = Remote()->SendRequest(SET_WALLPAPER, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperCallbackProxy::SetWallpaper fail, result = %{public}d ", result);
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
 
-    return reply.ReadInt32();
-}
-int32_t WallpaperServiceProxy::SetWallpaperByFD(int fd, int wallpaperType, int length)
-{
-    HILOG_INFO(" SetWallpaperByFD ");
-    MessageParcel data, reply;
-    MessageOption option;
-
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        HILOG_ERROR(" Failed to write parcelable ");
-        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
-    }
-    if (!data.WriteFileDescriptor(fd)) {
-        HILOG_ERROR(" Failed to WriteFileDescriptor ");
-        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
-    }
-    if (!data.WriteInt32(wallpaperType)) {
-        HILOG_ERROR(" Failed to WriteInt32 ");
-        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
-    }
-    if (!data.WriteInt32(length)) {
-        HILOG_ERROR(" Failed to WriteInt32 ");
-        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
-    }
-
-    int32_t result = Remote()->SendRequest(SET_WALLPAPER_URI_FD, data, reply, option);
-    if (result != ERR_NONE) {
-        HILOG_ERROR(" WallpaperCallbackProxy::SetWallpaperfail, result = %{public}d ", result);
-        return static_cast<int32_t>(E_DEAL_FAILED);
-    }
     return reply.ReadInt32();
 }
 

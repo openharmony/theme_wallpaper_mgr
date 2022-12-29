@@ -204,7 +204,7 @@ int32_t WallpaperManager::SetWallpaper(std::string uri, int wallpaperType)
         return static_cast<int32_t>(E_FILE_ERROR);
     }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
-    int32_t wallpaperErrorCode = wpServerProxy->SetWallpaperByFD(fd, wallpaperType, length);
+    int32_t wallpaperErrorCode = wpServerProxy->SetWallpaper(fd, wallpaperType, length);
     close(fd);
     if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
         CloseWallpaperFd(wallpaperType);
@@ -246,7 +246,7 @@ int32_t WallpaperManager::SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &p
         return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
     close(fd[1]);
-    int32_t wallpaperErrorCode = wpServerProxy->SetWallpaperByMap(fd[0], wallpaperType, mapSize);
+    int32_t wallpaperErrorCode = wpServerProxy->SetWallpaper(fd[0], wallpaperType, mapSize);
     close(fd[0]);
     if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
         CloseWallpaperFd(wallpaperType);

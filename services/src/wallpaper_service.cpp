@@ -503,12 +503,12 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     return ret;
 }
 
-int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
+int32_t WallpaperService::SetWallpaper(int fd, int wallpaperType, int length)
 {
-    StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByMap", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_MAP));
-    HILOG_INFO("SetWallpaperByMap");
+    StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
+    HILOG_INFO("SetWallpaper");
     if (!WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
-        HILOG_INFO("SetWallpaperByMap no set permission!");
+        HILOG_INFO("SetWallpaper no set permission!");
         return static_cast<int32_t>(E_NO_PERMISSION);
     }
     if (length == 0 || length > FOO_MAX_LEN) {
@@ -520,8 +520,8 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
         return static_cast<int32_t>(E_NO_MEMORY);
     }
     mtx.lock();
-    int32_t bufsize = read(fd, paperBuf, length);
-    if (bufsize <= 0) {
+    int32_t readSize = read(fd, paperBuf, length);
+    if (readSize <= 0) {
         HILOG_ERROR("read fd failed");
         delete[] paperBuf;
         mtx.unlock();
@@ -547,54 +547,7 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
     close(fdw);
     int32_t wallpaperErrorCode = SetWallpaperBackupData(uri, wallpaperType);
     SaveColor(wallpaperType);
-    FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByMap", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_MAP));
-    return wallpaperErrorCode;
-}
-
-int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length)
-{
-    StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByFD", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_FD));
-    HILOG_INFO("SetWallpaperByFD");
-    if (!WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
-        return static_cast<int32_t>(E_NO_PERMISSION);
-    }
-    std::string uri = wallpaperTmpFullPath_;
-    if (length == 0 || length > FOO_MAX_LEN) {
-        return static_cast<int32_t>(E_PARAMETERS_INVALID);
-    }
-    char *paperBuf = new (std::nothrow) char[length];
-    if (paperBuf == nullptr) {
-        return E_NO_MEMORY;
-    }
-    mtx.lock();
-    int readSize = read(fd, paperBuf, length);
-    if (readSize <= 0) {
-        HILOG_ERROR("read from fd fail");
-        delete[] paperBuf;
-        mtx.unlock();
-        return static_cast<int32_t>(E_DEAL_FAILED);
-    }
-    int fdw = open(uri.c_str(), O_WRONLY | O_CREAT, 0660);
-    if (fdw == -1) {
-        HILOG_ERROR("WallpaperService:: fdw fail");
-        delete[] paperBuf;
-        mtx.unlock();
-        return static_cast<int32_t>(E_DEAL_FAILED);
-    }
-    int writeSize = write(fdw, paperBuf, length);
-    mtx.unlock();
-    if (writeSize <= 0) {
-        HILOG_ERROR("write to fdw fail");
-        ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
-        close(fdw);
-        delete[] paperBuf;
-        return static_cast<int32_t>(E_DEAL_FAILED);
-    }
-    close(fdw);
-    delete[] paperBuf;
-    int32_t wallpaperErrorCode = SetWallpaperBackupData(uri, wallpaperType);
-    SaveColor(wallpaperType);
-    FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByFD", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_FD));
+    FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
     return wallpaperErrorCode;
 }
 
