@@ -25,7 +25,7 @@ namespace OHOS {
 namespace WallpaperMgrService {
 using namespace OHOS::HiviewDFX;
 constexpr const int32_t INVALID_FD = -1;
-std::vector<uint64_t> WallpaperServiceProxy::GetColors(int wallpaperType)
+std::vector<uint64_t> WallpaperServiceProxy::GetColors(int32_t wallpaperType)
 {
     std::vector<uint64_t> colors;
     MessageParcel data, reply;
@@ -78,12 +78,12 @@ int32_t WallpaperServiceProxy::GetFile(int32_t wallpaperType, int32_t &wallpaper
     return wallpaperErrorCode;
 }
 
-std::string WallpaperServiceProxy::getUri()
+std::string WallpaperServiceProxy::GetUri()
 {
-    HILOG_INFO("return FWReadUri= %{public}s ", FWReadUri.c_str());
-    return FWReadUri;
+    HILOG_INFO("return serviceReadUri = %{public}s ", serviceReadUri.c_str());
+    return serviceReadUri;
 }
-int32_t WallpaperServiceProxy::SetWallpaper(int fd, int wallpaperType, int length)
+int32_t WallpaperServiceProxy::SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length)
 {
     HILOG_INFO(" SetWallpaperByMap ");
     MessageParcel data, reply;
@@ -116,7 +116,7 @@ int32_t WallpaperServiceProxy::SetWallpaper(int fd, int wallpaperType, int lengt
     return reply.ReadInt32();
 }
 
-int32_t WallpaperServiceProxy::GetPixelMap(int wallpaperType, IWallpaperService::FdInfo &fdInfo)
+int32_t WallpaperServiceProxy::GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
     HILOG_INFO(" WallpaperServiceProxy::getPixelMap --> start ");
     MessageParcel data, reply;
@@ -144,9 +144,9 @@ int32_t WallpaperServiceProxy::GetPixelMap(int wallpaperType, IWallpaperService:
     return wallpaperErrorCode;
 }
 
-int WallpaperServiceProxy::GetWallpaperId(int wallpaperType)
+int32_t WallpaperServiceProxy::GetWallpaperId(int32_t wallpaperType)
 {
-    int iWallpaperId = 1;
+    int32_t iWallpaperId = 1;
     MessageParcel data, reply;
     MessageOption option;
 
@@ -166,9 +166,9 @@ int WallpaperServiceProxy::GetWallpaperId(int wallpaperType)
     HILOG_INFO(" End => iWallpaperId[%{public}d]", iWallpaperId);
     return iWallpaperId;
 }
-int WallpaperServiceProxy::GetWallpaperMinHeight()
+int32_t WallpaperServiceProxy::GetWallpaperMinHeight()
 {
-    int iWallpaperMinHeight = 0;
+    int32_t iWallpaperMinHeight = 0;
     MessageParcel data, reply;
     MessageOption option;
 
@@ -188,9 +188,9 @@ int WallpaperServiceProxy::GetWallpaperMinHeight()
     return iWallpaperMinHeight;
 }
 
-int WallpaperServiceProxy::GetWallpaperMinWidth()
+int32_t WallpaperServiceProxy::GetWallpaperMinWidth()
 {
-    int iWallpaperMinWidth = 0;
+    int32_t iWallpaperMinWidth = 0;
     MessageParcel data, reply;
     MessageOption option;
 
@@ -252,7 +252,7 @@ bool WallpaperServiceProxy::IsOperationAllowed()
     return bFlag;
 }
 
-int32_t WallpaperServiceProxy::ResetWallpaper(int wallpaperType)
+int32_t WallpaperServiceProxy::ResetWallpaper(int32_t wallpaperType)
 {
     MessageParcel data, reply;
     MessageOption option;

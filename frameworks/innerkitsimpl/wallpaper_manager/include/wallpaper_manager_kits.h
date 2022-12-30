@@ -47,7 +47,7 @@ public:
     * WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    virtual int32_t SetWallpaper(std::string uri, int wallpaperType) = 0;
+    virtual int32_t SetWallpaper(std::string uri, int32_t wallpaperType) = 0;
 
     /**
     * Wallpaper set.
@@ -55,7 +55,7 @@ public:
     * WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    virtual int32_t SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int wallpaperType) = 0;
+    virtual int32_t SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int32_t wallpaperType) = 0;
 
     /**
         *Obtains the default pixel map of a wallpaper of the specified type.
@@ -64,35 +64,35 @@ public:
         * @permission ohos.permission.GET_WALLPAPER
         * @systemapi Hide this for inner system use.
     */
-    virtual int32_t GetPixelMap(int wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap) = 0;
+    virtual int32_t GetPixelMap(int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap) = 0;
 
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of array callback function
      */
-    virtual std::vector<uint64_t> GetColors(int wallpaperType) = 0;
+    virtual std::vector<uint64_t> GetColors(int32_t wallpaperType) = 0;
 
     /**
      * Obtains the ID of the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of callback function
      */
-    virtual int GetWallpaperId(int wallpaperType) = 0;
+    virtual int32_t GetWallpaperId(int32_t wallpaperType) = 0;
 
-    virtual int32_t GetFile(int wallpaperType, int32_t &wallpaperFd) = 0;
+    virtual int32_t GetFile(int32_t wallpaperType, int32_t &wallpaperFd) = 0;
 
     /**
      * Obtains the minimum height of the wallpaper.
      * @return number type of callback function
      */
-    virtual int GetWallpaperMinHeight() = 0;
+    virtual int32_t GetWallpaperMinHeight() = 0;
 
     /**
      * Obtains the minimum width of the wallpaper.
      * @return number type of callback function
      */
-    virtual int GetWallpaperMinWidth() = 0;
+    virtual int32_t GetWallpaperMinWidth() = 0;
 
     /**
      * Checks whether to allow the application to change the wallpaper for the current user.
@@ -129,12 +129,12 @@ public:
      */
     virtual bool Off(const std::string &type, std::shared_ptr<WallpaperColorChangeListener> listener) = 0;
 
-    virtual bool RegisterWallpaperCallback(bool (*callback)(int)) = 0;
-    using JScallback = bool (*)(int);
+    virtual bool RegisterWallpaperCallback(bool (*callback)(int32_t)) = 0;
+    using JScallback = bool (*)(int32_t);
 
     virtual JScallback GetCallback() = 0;
 
-    virtual void SetCallback(bool (*cb)(int)) = 0;
+    virtual void SetCallback(bool (*cb)(int32_t)) = 0;
 
     virtual void CloseWallpaperFd(int32_t wallpaperType) = 0;
 

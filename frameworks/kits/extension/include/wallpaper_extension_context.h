@@ -69,9 +69,9 @@ public:
      *
      * @return errCode ERR_OK on success, others on failure.
      */
-    ErrCode StartAbilityWithAccount(const AAFwk::Want &want, int accountId) const;
+    ErrCode StartAbilityWithAccount(const AAFwk::Want &want, int32_t accountId) const;
 
-    ErrCode StartAbilityWithAccount(const AAFwk::Want &want, int accountId,
+    ErrCode StartAbilityWithAccount(const AAFwk::Want &want, int32_t accountId,
         const AAFwk::StartOptions &startOptions) const;
 
     /**
@@ -85,7 +85,7 @@ public:
      *
      * @return True means success and false means failure.
      */
-    bool ConnectAbilityWithAccount(const AAFwk::Want &want, int accountId,
+    bool ConnectAbilityWithAccount(const AAFwk::Want &want, int32_t accountId,
         const sptr<AbilityConnectCallback> &connectCallback) const;
 
     /**
@@ -115,7 +115,7 @@ protected:
     }
 
 private:
-    static int ILLEGAL_REQUEST_CODE;
+    static int32_t ILLEGAL_REQUEST_CODE;
 
     /**
      * @brief Get Current Ability Type

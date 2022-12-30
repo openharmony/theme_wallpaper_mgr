@@ -22,7 +22,7 @@
 namespace OHOS {
 namespace AbilityRuntime {
 const size_t WallpaperExtensionContext::CONTEXT_TYPE_ID(std::hash<const char *>{}("WallpaperExtensionContext"));
-int WallpaperExtensionContext::ILLEGAL_REQUEST_CODE(-1);
+int32_t WallpaperExtensionContext::ILLEGAL_REQUEST_CODE(-1);
 
 ErrCode WallpaperExtensionContext::StartAbility(const AAFwk::Want &want) const
 {
@@ -56,7 +56,7 @@ bool WallpaperExtensionContext::ConnectAbility(const AAFwk::Want &want,
     return ret == ERR_OK;
 }
 
-ErrCode WallpaperExtensionContext::StartAbilityWithAccount(const AAFwk::Want &want, int accountId) const
+ErrCode WallpaperExtensionContext::StartAbilityWithAccount(const AAFwk::Want &want, int32_t accountId) const
 {
     HILOG_DEBUG("%{public}s begin.", __func__);
     HILOG_INFO("%{public}d accountId:", accountId);
@@ -69,7 +69,7 @@ ErrCode WallpaperExtensionContext::StartAbilityWithAccount(const AAFwk::Want &wa
     return err;
 }
 
-ErrCode WallpaperExtensionContext::StartAbilityWithAccount(const AAFwk::Want &want, int accountId,
+ErrCode WallpaperExtensionContext::StartAbilityWithAccount(const AAFwk::Want &want, int32_t accountId,
     const AAFwk::StartOptions &startOptions) const
 {
     HILOG_DEBUG("%{public}s begin.", __func__);
@@ -82,7 +82,7 @@ ErrCode WallpaperExtensionContext::StartAbilityWithAccount(const AAFwk::Want &wa
     return err;
 }
 
-bool WallpaperExtensionContext::ConnectAbilityWithAccount(const AAFwk::Want &want, int accountId,
+bool WallpaperExtensionContext::ConnectAbilityWithAccount(const AAFwk::Want &want, int32_t accountId,
     const sptr<AbilityConnectCallback> &connectCallback) const
 {
     HILOG_INFO("%{public}s begin.", __func__);

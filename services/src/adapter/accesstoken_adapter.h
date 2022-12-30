@@ -26,14 +26,14 @@ namespace WallpaperMgrService {
 class AccessTokenAdapter {
 public:
     virtual ~AccessTokenAdapter() = default;
-    virtual int VerifyAccessToken(Security::AccessToken::AccessTokenID tokenID, const std::string &permissionName) = 0;
+    virtual int32_t VerifyAccessToken(Security::AccessToken::AccessTokenID tokenID, const std::string &permissionName) = 0;
 };
 
 class AccessTokenProxy {
 public:
     virtual ~AccessTokenProxy() = default;
     static void Set(std::shared_ptr<AccessTokenAdapter> accessTokenAdapter);
-    static int VerifyAccessToken(Security::AccessToken::AccessTokenID tokenID, const std::string &permissionName);
+    static int32_t VerifyAccessToken(Security::AccessToken::AccessTokenID tokenID, const std::string &permissionName);
 
 private:
     static std::shared_ptr<AccessTokenAdapter> accessToken_;
@@ -45,7 +45,7 @@ public:
     AccessTokenImpl() = default;
     ~AccessTokenImpl() override;
 
-    int VerifyAccessToken(Security::AccessToken::AccessTokenID tokenID, const std::string &permissionName) override;
+    int32_t VerifyAccessToken(Security::AccessToken::AccessTokenID tokenID, const std::string &permissionName) override;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

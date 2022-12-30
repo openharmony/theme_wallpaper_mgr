@@ -36,8 +36,8 @@ constexpr size_t ARGC_ONE = 1;
 }
 struct WorkData {
     NativeEngine *nativeEng_;
-    int wallpaperType_;
-    WorkData(NativeEngine *nativeEng, int wallpaperType) : nativeEng_(nativeEng), wallpaperType_(wallpaperType)
+    int32_t wallpaperType_;
+    WorkData(NativeEngine *nativeEng, int32_t wallpaperType) : nativeEng_(nativeEng), wallpaperType_(wallpaperType)
     {
     }
 };
@@ -137,12 +137,12 @@ void JsWallpaperExtension::OnStart(const AAFwk::Want &want)
     CallObjectMethod("onCreated", argv, ARGC_ONE);
     FinishAsyncTrace(HITRACE_TAG_MISC, "onCreated", static_cast<int32_t>(TraceTaskId::ONCREATE_EXTENSION));
     CallObjectMethod("createWallpaperWin");
-    WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterWallpaperCallback([](int wallpaperType) -> bool {
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterWallpaperCallback([](int32_t wallpaperType) -> bool {
         HILOG_INFO("jsWallpaperExtension->CallObjectMethod");
         HandleScope handleScope(jsWallpaperExtension->jsRuntime_);
         NativeEngine *nativeEng = &(jsWallpaperExtension->jsRuntime_).GetNativeEngine();
         WorkData *workData = new WorkData(nativeEng, wallpaperType);
-        uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
+        uv_after_work_cb afterCallback = [](uv_work_t *work, int32_t status) {
             WorkData *workData = reinterpret_cast<WorkData *>(work->data);
             napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_),
                 workData->wallpaperType_);
@@ -246,7 +246,7 @@ void JsWallpaperExtension::OnDisconnect(const AAFwk::Want &want)
     HILOG_INFO("%{public}s end.", __func__);
 }
 
-void JsWallpaperExtension::OnCommand(const AAFwk::Want &want, bool restart, int startId)
+void JsWallpaperExtension::OnCommand(const AAFwk::Want &want, bool restart, int32_t startId)
 {
     HILOG_INFO("jws JsWallpaperExtension OnCommand begin.");
     Extension::OnCommand(want, restart, startId);

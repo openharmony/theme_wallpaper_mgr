@@ -28,7 +28,7 @@ void AccessTokenProxy::Set(std::shared_ptr<AccessTokenAdapter> accessTokenAdapte
     accessToken_ = accessTokenAdapter;
 }
 
-int AccessTokenProxy::VerifyAccessToken(Security::AccessToken::AccessTokenID tokenID, const std::string &permissionName)
+int32_t AccessTokenProxy::VerifyAccessToken(Security::AccessToken::AccessTokenID tokenID, const std::string &permissionName)
 {
     std::lock_guard<std::mutex> lock(mtx);
     if (accessToken_ == nullptr) {
@@ -41,7 +41,7 @@ AccessTokenImpl::~AccessTokenImpl()
 {
 }
 
-int AccessTokenImpl::VerifyAccessToken(Security::AccessToken::AccessTokenID tokenID, const std::string &permissionName)
+int32_t AccessTokenImpl::VerifyAccessToken(Security::AccessToken::AccessTokenID tokenID, const std::string &permissionName)
 {
     HILOG_INFO("Enter VerifyAccessToken.");
     return Security::AccessToken::AccessTokenKit::VerifyAccessToken(tokenID, permissionName);

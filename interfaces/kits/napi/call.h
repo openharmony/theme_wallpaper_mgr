@@ -92,7 +92,7 @@ public:
     napi_value SyncCall(napi_env env);
 
 private:
-    enum Arg : int { ARG_ERROR, ARG_DATA, ARG_BUTT };
+    enum Arg : int32_t { ARG_ERROR, ARG_DATA, ARG_BUTT };
     struct CallContext {
         std::shared_ptr<Context> ctx = nullptr;
         napi_ref callback = nullptr;

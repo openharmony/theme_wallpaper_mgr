@@ -37,7 +37,7 @@ int32_t WallpaperColorChangeListenerStub::OnRemoteRequest(uint32_t code, Message
                 HILOG_ERROR("ONCOLORSCHANGE ReadUInt64Vector error");
                 return -1;
             }
-            int wallpaperType = data.ReadInt32();
+            int32_t wallpaperType = data.ReadInt32();
             OnColorsChange(color, wallpaperType);
             HILOG_DEBUG("WallpaperColorChangeListenerStub::OnRemoteRequest End");
             return 0;
