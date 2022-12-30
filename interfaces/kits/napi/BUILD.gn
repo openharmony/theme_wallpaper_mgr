@@ -29,7 +29,7 @@ ohos_shared_library("wallpaper") {
   ]
 
   sources = [
-    "async_call.cpp",
+    "call.cpp",
     "js_error.cpp",
     "napi_wallpaper_ability.cpp",
     "native_module.cpp",

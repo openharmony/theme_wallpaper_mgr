@@ -22,28 +22,28 @@ ComponentName::ComponentName()
 
 ComponentName::ComponentName(std::string pkg, std::string cls)
 {
-    mPackage = pkg;
-    mClass = cls;
+    package_ = std::move(pkg);
+    class_ = std::move(cls);
 }
 
 void ComponentName::SetComponentInfo(std::string pkg, std::string cls)
 {
-    mPackage = pkg;
-    mClass = cls;
+    package_ = std::move(pkg);
+    class_ = std::move(cls);
 }
 
 std::string ComponentName::GetPackageName() const
 {
-    return mPackage;
+    return package_;
 }
 std::string ComponentName::GetClassName() const
 {
-    return mClass;
+    return class_;
 }
 
-bool ComponentName::equals(const ComponentName &obj)
+bool ComponentName::equals(const ComponentName &obj) const
 {
-    return mPackage == obj.GetPackageName() && mClass == obj.GetClassName();
+    return package_ == obj.GetPackageName() && class_ == obj.GetClassName();
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

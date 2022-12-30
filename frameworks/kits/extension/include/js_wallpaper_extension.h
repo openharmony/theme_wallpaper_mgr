@@ -94,7 +94,7 @@ public:
      * by 1 every time the extension is started. For example, if the extension has been started for six times, the
      * value of startId is 6.
      */
-    virtual void OnCommand(const AAFwk::Want &want, bool restart, int startId) override;
+    virtual void OnCommand(const AAFwk::Want &want, bool restart, int32_t startId) override;
 
     /**
      * @brief Called when this extension enters the <b>STATE_STOP</b> state.

@@ -12,19 +12,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define LOG_TAG "AsyncCall"
-#include "async_call.h"
-
+#define LOG_TAG "Call"
+#include "call.h"
 #include "hilog_wrapper.h"
 #include "js_error.h"
 #include "wallpaper_js_util.h"
 
 namespace OHOS::WallpaperNAPI {
-AsyncCall::AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos,
+Call::Call(napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos,
     bool isNewInterfaces)
     : env_(env)
 {
-    context_ = new AsyncContext();
+    context_ = new CallContext();
     size_t argc = WallpaperJSUtil::MAX_ARGC;
     napi_value self = nullptr;
     napi_value argv[WallpaperJSUtil::MAX_ARGC] = { nullptr };
@@ -50,7 +49,7 @@ AsyncCall::AsyncCall(napi_env env, napi_callback_info info, std::shared_ptr<Cont
     napi_create_reference(env, self, 1, &context_->self);
 }
 
-AsyncCall::~AsyncCall()
+Call::~Call()
 {
     if (context_ == nullptr) {
         return;
@@ -59,7 +58,7 @@ AsyncCall::~AsyncCall()
     DeleteContext(env_, context_);
 }
 
-napi_value AsyncCall::Call(napi_env env)
+napi_value Call::AsyncCall(napi_env env)
 {
     if (context_ == nullptr) {
         HILOG_DEBUG("context_ is null");
@@ -79,7 +78,7 @@ napi_value AsyncCall::Call(napi_env env)
     napi_async_work work = context_->work;
     napi_value resource = nullptr;
     napi_create_string_utf8(env, "AsyncCall", NAPI_AUTO_LENGTH, &resource);
-    napi_create_async_work(env, nullptr, resource, AsyncCall::OnExecute, AsyncCall::OnComplete, context_, &work);
+    napi_create_async_work(env, nullptr, resource, Call::OnExecute, Call::OnComplete, context_, &work);
     context_->work = work;
     context_ = nullptr;
     napi_queue_async_work(env, work);
@@ -87,13 +86,13 @@ napi_value AsyncCall::Call(napi_env env)
     return promise;
 }
 
-napi_value AsyncCall::SyncCall(napi_env env)
+napi_value Call::SyncCall(napi_env env)
 {
     if ((context_ == nullptr) || (context_->ctx == nullptr)) {
         HILOG_DEBUG("context_ or context_->ctx is null");
         return nullptr;
     }
-    AsyncCall::OnExecute(env, context_);
+    Call::OnExecute(env, context_);
     napi_value output = nullptr;
     napi_status runStatus = (*context_->ctx)(env, &output);
     if (runStatus != napi_ok && context_->ctx->errCode_ != 0) {
@@ -103,17 +102,17 @@ napi_value AsyncCall::SyncCall(napi_env env)
     return output;
 }
 
-void AsyncCall::OnExecute(napi_env env, void *data)
+void Call::OnExecute(napi_env env, void *data)
 {
     HILOG_DEBUG("run the async runnable");
-    AsyncContext *context = reinterpret_cast<AsyncContext *>(data);
+    CallContext *context = reinterpret_cast<CallContext *>(data);
     context->ctx->Exec();
 }
 
-void AsyncCall::OnComplete(napi_env env, napi_status status, void *data)
+void Call::OnComplete(napi_env env, napi_status status, void *data)
 {
     HILOG_DEBUG("run the js callback function");
-    AsyncContext *context = reinterpret_cast<AsyncContext *>(data);
+    CallContext *context = reinterpret_cast<CallContext *>(data);
     napi_value output = nullptr;
     napi_status runStatus = (*context->ctx)(env, &output);
     napi_value result[ARG_BUTT] = { 0 };
@@ -161,7 +160,7 @@ void AsyncCall::OnComplete(napi_env env, napi_status status, void *data)
     }
     DeleteContext(env, context);
 }
-void AsyncCall::DeleteContext(napi_env env, AsyncContext *context)
+void Call::DeleteContext(napi_env env, CallContext *context)
 {
     if (env != nullptr) {
         napi_delete_reference(env, context->callback);

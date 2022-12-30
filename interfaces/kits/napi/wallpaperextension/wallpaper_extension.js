@@ -20,66 +20,56 @@ var windowsCreated = false;
 
 class WallpaperExtension {
     createWallpaperWin() {
-        console.log(WindowName + " createWallpaperWin");
-        console.log(this.context);
-        console.log(WindowName + JSON.stringify(this.context));
-        console.log(windowType);
-        console.log(WindowName + JSON.stringify(windowType));
+        console.log(`${WindowName} createWallpaperWin`);
 
         WindowManager.create(this.context, WindowName, windowType).then((win) => {
-            console.log(WindowName + "wallpaperWindow");
+            console.log(`${WindowName} wallpaperWindow`);
             this.wallpaperWindow = win;
-            console.log(WindowName + JSON.stringify(this.wallpaperWindow));
             console.log(this.wallpaperWindow);
-            console.log(WindowName + "moveTo");
             this.wallpaperWindow.moveTo(0, 0).then(() => {
-                console.log(WindowName + "resetSize");
                 this.wallpaperWindow.resetSize(480, 960).then(() => {
-                    console.log(WindowName + " resetSize" + JSON.stringify(this.wallpaperURL));
-                    this.loadUiContent(this.wallpaperURL);
-                    console.log(WindowName + " window created");
+                    console.log(`${WindowName} resetSize ${this.wallpaperURI}`);
+                    this.loadUiContent(this.wallpaperURI);
+                    console.log(`${WindowName} window created`);
                     windowsCreated = true;
                 })
             })
         }, (error) => {
-            console.log(WindowName + " window createFailed, error.code = " + error.code);
+            console.log(`${WindowName} window createFailed, error.code = ${error.code}`);
         })
     }
 
     onCreated(want) {
-        console.log(WindowName + "onWallpaperExtensionCreated");
+        console.log(`${WindowName} onWallpaperExtensionCreated`);
     }
 
-    setUiContent(url) {
-        console.log(WindowName + " setUiContent");
+    setUiContent(uri) {
+        console.log(`${WindowName} setUiContent`);
         if (windowsCreated) {
-            console.log(WindowName + " loadUiContent");
-            loadUiContent(url);
+            console.log(`${WindowName} loadUiContent`);
+            loadUiContent(uri);
         } else {
-            console.log(WindowName + " save wallpaperURL");
-            this.wallpaperURL = url;
+            console.log(`${WindowName} save wallpaperURI`);
+            this.wallpaperURI = uri;
         }
     }
 
-    loadUiContent(url) {
-        console.log(WindowName + "initUiContent" + url);
-        console.log(WindowName + JSON.stringify(this.wallpaperWindow));
-        console.log(WindowName + JSON.stringify(this.wallpaperWindow.loadContent));
-        console.log(WindowName + JSON.stringify(this.wallpaperWindow.loadContent(url)));
-        this.wallpaperWindow.loadContent(url).then(() => {
-            console.log(WindowName + " loadContent");
+    loadUiContent(uri) {
+        console.log(`${WindowName} initUiContent ${uri}`);
+        this.wallpaperWindow.loadContent(uri).then(() => {
+            console.log(`${WindowName} loadContent`);
             this.wallpaperWindow.show().then(() => {
-                console.log(WindowName + " window is show");
+                console.log(`${WindowName} window is show`);
             })
         })
     }
 
     onWallpaperChanged(wallpaperType) {
-        console.log(WindowName + "onWallpaperChanged" + JSON.stringify(wallpaperType));
+        console.log(`${WindowName} onWallpaperChanged ${wallpaperType}`);
     }
 
     onDestroy() {
-        console.log(WindowName + "onWallpaperExtensionDestroy");
+        console.log(`${WindowName} onWallpaperExtensionDestroy`);
     }
 }
 

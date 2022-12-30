@@ -32,27 +32,26 @@ public:
     {
     }
     DISALLOW_COPY_AND_MOVE(WallpaperServiceProxy);
-    int32_t SetWallpaperByFD(int fd, int wallpaperType, int length) override;
-    int32_t SetWallpaperByMap(int fd, int wallpaperType, int length) override;
-    int32_t GetPixelMap(int wallpaperType, IWallpaperService::FdInfo &fdInfo) override;
-    std::vector<uint64_t> GetColors(int wallpaperType) override;
-    int32_t GetFile(int wallpaperType, int32_t &wallpaperFd) override;
-    int GetWallpaperId(int wallpaperType) override;
-    int GetWallpaperMinHeight() override;
-    int GetWallpaperMinWidth() override;
+    int32_t SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
+    int32_t GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo) override;
+    std::vector<uint64_t> GetColors(int32_t wallpaperType) override;
+    int32_t GetFile(int32_t wallpaperType, int32_t &wallpaperFd) override;
+    int32_t GetWallpaperId(int32_t wallpaperType) override;
+    int32_t GetWallpaperMinHeight() override;
+    int32_t GetWallpaperMinWidth() override;
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
     int32_t ResetWallpaper(int wallpaperType) override;
     bool On(sptr<IWallpaperColorChangeListener> listener) override;
     bool Off(sptr<IWallpaperColorChangeListener> listener) override;
     bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) override;
-    std::string getUrl();
+    std::string GetUri();
 
 private:
-    bool StartSocket(std::string url, std::string name);
+    bool StartSocket(std::string uri, std::string name);
     static inline BrokerDelegator<WallpaperServiceProxy> delegator_;
-    sptr<OHOS::Media::PixelMap> Pmdata_;
-    std::string FWReadUrl = "";
+    sptr<OHOS::Media::PixelMap> pixelMapData_;
+    std::string serviceReadUri = "";
     int32_t mapSize = 0;
 };
 } // namespace WallpaperMgrService

@@ -449,7 +449,7 @@ NativeValue *CreateJsExtensionAbilityInfo(NativeEngine &engine, const AppExecFwk
     NativeValue *permissionArrayValue = engine.CreateArray(info.permissions.size());
     NativeArray *permissionArray = ConvertNativeValueTo<NativeArray>(permissionArrayValue);
     if (permissionArray != nullptr) {
-        int index = 0;
+        int32_t index = 0;
         for (auto permission : info.permissions) {
             permissionArray->SetElement(index++, CreateJsValue(engine, permission));
         }
@@ -515,7 +515,7 @@ JSWallpaperExtensionConnection::JSWallpaperExtensionConnection(NativeEngine &eng
 JSWallpaperExtensionConnection::~JSWallpaperExtensionConnection() = default;
 
 void JSWallpaperExtensionConnection::OnAbilityConnectDone(const AppExecFwk::ElementName &element,
-    const sptr<IRemoteObject> &remoteObject, int resultCode)
+    const sptr<IRemoteObject> &remoteObject, int32_t resultCode)
 {
     HILOG_INFO("OnAbilityConnectDone begin, resultCode:%{public}d", resultCode);
     if (handler_ == nullptr) {
@@ -535,7 +535,7 @@ void JSWallpaperExtensionConnection::OnAbilityConnectDone(const AppExecFwk::Elem
 }
 
 void JSWallpaperExtensionConnection::HandleOnAbilityConnectDone(const AppExecFwk::ElementName &element,
-    const sptr<IRemoteObject> &remoteObject, int resultCode)
+    const sptr<IRemoteObject> &remoteObject, int32_t resultCode)
 {
     HILOG_INFO("HandleOnAbilityConnectDone begin, resultCode:%{public}d", resultCode);
     // wrap ElementName
@@ -568,7 +568,7 @@ void JSWallpaperExtensionConnection::HandleOnAbilityConnectDone(const AppExecFwk
     HILOG_INFO("OnAbilityConnectDone end");
 }
 
-void JSWallpaperExtensionConnection::OnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int resultCode)
+void JSWallpaperExtensionConnection::OnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int32_t resultCode)
 {
     HILOG_INFO("OnAbilityDisconnectDone begin, resultCode:%{public}d", resultCode);
     if (handler_ == nullptr) {
@@ -588,7 +588,7 @@ void JSWallpaperExtensionConnection::OnAbilityDisconnectDone(const AppExecFwk::E
 }
 
 void JSWallpaperExtensionConnection::HandleOnAbilityDisconnectDone(const AppExecFwk::ElementName &element,
-    int resultCode)
+    int32_t resultCode)
 {
     HILOG_INFO("HandleOnAbilityDisconnectDone begin, resultCode:%{public}d", resultCode);
     napi_value napiElementName = OHOS::AppExecFwk::WrapElementName(reinterpret_cast<napi_env>(&engine_), element);

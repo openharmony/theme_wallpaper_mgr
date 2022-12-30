@@ -56,8 +56,6 @@ enum class ReportStatus {
 
 enum class TraceTaskId : int32_t {
     SET_WALLPAPER = 0,
-    SET_WALLPAPER_BY_FD,
-    SET_WALLPAPER_BY_MAP,
     ONSTART_EXTENSION,
     ONSTART_MIDDLE_EXTENSION,
     ONCREATE_EXTENSION,

@@ -42,7 +42,7 @@ int32_t WallpaperServiceCbStub::OnRemoteRequest(uint32_t code, MessageParcel &da
             return (this->*memberFunc)(data, reply);
         }
     }
-    int ret = IPCObjectStub::OnRemoteRequest(code, data, reply, option);
+    int32_t ret = IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     HILOG_INFO(" end##ret = %{public}d", ret);
     return ret;
 }
@@ -50,7 +50,7 @@ int32_t WallpaperServiceCbStub::OnRemoteRequest(uint32_t code, MessageParcel &da
 int32_t WallpaperServiceCbStub::HandleOnCall(MessageParcel &data, MessageParcel &reply)
 {
     HILOG_INFO("  WallpaperServiceCbStub::HandleOnCall");
-    int wallpaperType = data.ReadInt32();
+    int32_t wallpaperType = data.ReadInt32();
     OnCall(wallpaperType);
     HILOG_INFO("wallpaperType = %{public}d", wallpaperType);
     return 0;

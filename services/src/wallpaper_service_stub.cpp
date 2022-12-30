@@ -31,8 +31,7 @@ using namespace OHOS::Media;
 
 WallpaperServiceStub::WallpaperServiceStub()
 {
-    memberFuncMap_[SET_WALLPAPER_URI_FD] = &WallpaperServiceStub::OnSetWallpaperUriByFD;
-    memberFuncMap_[SET_WALLPAPER_MAP] = &WallpaperServiceStub::OnSetWallpaperByMap;
+    memberFuncMap_[SET_WALLPAPER] = &WallpaperServiceStub::OnSetWallpaper;
     memberFuncMap_[GET_PIXELMAP] = &WallpaperServiceStub::OnGetPixelMap;
     memberFuncMap_[GET_COLORS] = &WallpaperServiceStub::OnGetColors;
     memberFuncMap_[GET_WALLPAPER_ID] = &WallpaperServiceStub::OnGetWallpaperId;
@@ -55,11 +54,11 @@ WallpaperServiceStub::~WallpaperServiceStub()
 int32_t WallpaperServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
     MessageOption &option)
 {
-    HILOG_INFO(" start##ret = %{public}u", code);
+    HILOG_INFO("start##ret = %{public}u", code);
     std::u16string myDescriptor = WallpaperServiceStub::GetDescriptor();
     std::u16string remoteDescriptor = data.ReadInterfaceToken();
     if (myDescriptor != remoteDescriptor) {
-        HILOG_ERROR(" end##descriptor checked fail");
+        HILOG_ERROR("end##descriptor checked fail");
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
     pid_t p = IPCSkeleton::GetCallingPid();
@@ -72,35 +71,18 @@ int32_t WallpaperServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data
             return (this->*memberFunc)(data, reply);
         }
     }
-    int ret = IPCObjectStub::OnRemoteRequest(code, data, reply, option);
-    HILOG_INFO(" end##ret = %{public}d", ret);
+    int32_t ret = IPCObjectStub::OnRemoteRequest(code, data, reply, option);
+    HILOG_INFO("end##ret = %{public}d", ret);
     return ret;
 }
-int32_t WallpaperServiceStub::OnSetWallpaperByMap(MessageParcel &data, MessageParcel &reply)
+int32_t WallpaperServiceStub::OnSetWallpaper(MessageParcel &data, MessageParcel &reply)
 {
-    HILOG_INFO("WallpaperServiceStub::SetWallpaperMap start.");
+    HILOG_INFO("WallpaperServiceStub::SetWallpaper start.");
 
-    int fd = data.ReadFileDescriptor();
-    int wallpaperType = data.ReadInt32();
-    int length = data.ReadInt32();
-    int32_t wallpaperErrorCode = SetWallpaperByMap(fd, wallpaperType, length);
-    close(fd);
-    if (!reply.WriteInt32(wallpaperErrorCode)) {
-        HILOG_ERROR("WriteInt32 fail");
-        return IPC_STUB_WRITE_PARCEL_ERR;
-    }
-    return ERR_NONE;
-}
-int32_t WallpaperServiceStub::OnSetWallpaperUriByFD(MessageParcel &data, MessageParcel &reply)
-{
-    HILOG_INFO("WallpaperServiceStub::SetWallpaperUri start.");
-
-    int fd = data.ReadFileDescriptor();
-    int wallpaperType = data.ReadInt32();
-    HILOG_INFO("wallpaperType= %{public}d", wallpaperType);
-    int length = data.ReadInt32();
-    HILOG_INFO("SetWallpaperByFD start");
-    int32_t wallpaperErrorCode = SetWallpaperByFD(fd, wallpaperType, length);
+    int32_t fd = data.ReadFileDescriptor();
+    int32_t wallpaperType = data.ReadInt32();
+    int32_t length = data.ReadInt32();
+    int32_t wallpaperErrorCode = SetWallpaper(fd, wallpaperType, length);
     close(fd);
     if (!reply.WriteInt32(wallpaperErrorCode)) {
         HILOG_ERROR("WriteInt32 fail");
@@ -113,9 +95,9 @@ int32_t WallpaperServiceStub::OnGetPixelMap(MessageParcel &data, MessageParcel &
 {
     HILOG_INFO("WallpaperServiceStub::GetPixelMap start.");
 
-    int wallpaperType = data.ReadInt32();
+    int32_t wallpaperType = data.ReadInt32();
     IWallpaperService::FdInfo fdInfo;
-    int wallpaperErrorCode = GetPixelMap(wallpaperType, fdInfo);
+    int32_t wallpaperErrorCode = GetPixelMap(wallpaperType, fdInfo);
     HILOG_INFO(" OnGetPixelMap wallpaperErrorCode = %{public}d", wallpaperErrorCode);
     if (!reply.WriteInt32(wallpaperErrorCode)) {
         HILOG_ERROR("WriteInt32 fail");
@@ -139,7 +121,7 @@ int32_t WallpaperServiceStub::OnGetPixelMap(MessageParcel &data, MessageParcel &
 int32_t WallpaperServiceStub::OnGetColors(MessageParcel &data, MessageParcel &reply)
 {
     HILOG_INFO("WallpaperServiceStub::OnGetColors start.");
-    int wallpaperType = data.ReadInt32();
+    int32_t wallpaperType = data.ReadInt32();
     std::vector<uint64_t> vecWallpaperColors = GetColors(wallpaperType);
     auto size = vecWallpaperColors.size();
     if (!reply.WriteUInt64Vector(vecWallpaperColors)) {
@@ -178,20 +160,20 @@ int32_t WallpaperServiceStub::OnGetWallpaperId(MessageParcel &data, MessageParce
 {
     HILOG_INFO("WallpaperServiceStub::OnGetWallpaperId start.");
 
-    int wallpaperType = data.ReadInt32();
-    int wallpaperid = GetWallpaperId(wallpaperType);
-    if (!reply.WriteInt32(wallpaperid)) {
+    int32_t wallpaperType = data.ReadInt32();
+    int32_t wallpaperId = GetWallpaperId(wallpaperType);
+    if (!reply.WriteInt32(wallpaperId)) {
         HILOG_ERROR("Write result data failed");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
-    HILOG_INFO("End. Id[%{public}d]", wallpaperid);
+    HILOG_INFO("End. Id[%{public}d]", wallpaperId);
     return ERR_NONE;
 }
 
 int32_t WallpaperServiceStub::OnGetWallpaperMinHeight(MessageParcel &data, MessageParcel &reply)
 {
     HILOG_INFO("WallpaperServiceStub::OnGetWallpaperMinHeight start.");
-    int wallpaperMinHeight = GetWallpaperMinHeight();
+    int32_t wallpaperMinHeight = GetWallpaperMinHeight();
     if (!reply.WriteInt32(wallpaperMinHeight)) {
         HILOG_ERROR("Write result data failed");
         return IPC_STUB_WRITE_PARCEL_ERR;
@@ -204,7 +186,7 @@ int32_t WallpaperServiceStub::OnGetWallpaperMinWidth(MessageParcel &data, Messag
 {
     HILOG_INFO("WallpaperServiceStub::OnGetWallpaperMinWidth start.");
 
-    int wallpaperMinWidth = GetWallpaperMinWidth();
+    int32_t wallpaperMinWidth = GetWallpaperMinWidth();
     if (!reply.WriteInt32(wallpaperMinWidth)) {
         HILOG_ERROR("Write result data failed");
         return IPC_STUB_WRITE_PARCEL_ERR;
@@ -238,7 +220,7 @@ int32_t WallpaperServiceStub::OnIsOperationAllowed(MessageParcel &data, MessageP
 int32_t WallpaperServiceStub::OnResetWallpaper(MessageParcel &data, MessageParcel &reply)
 {
     HILOG_INFO("WallpaperServiceStub::OnResetWallpaper start.");
-    int wallpaperType = data.ReadInt32();
+    int32_t wallpaperType = data.ReadInt32();
     auto wallpaperErrorCode = ResetWallpaper(wallpaperType);
     if (!reply.WriteInt32(wallpaperErrorCode)) {
         HILOG_ERROR("Write result data failed");

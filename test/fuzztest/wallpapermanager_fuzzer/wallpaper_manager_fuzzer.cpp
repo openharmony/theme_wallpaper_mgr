@@ -114,16 +114,16 @@ void ResetWallpaperFuzzTest(const uint8_t *data, size_t size)
     WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType);
 }
 
-void SetWallpaperByUrlFuzzTest(const uint8_t *data, size_t size)
+void SetWallpaperByUriFuzzTest(const uint8_t *data, size_t size)
 {
     uint32_t wallpaperType = ConvertToUint32(data);
     data = data + OFFSET;
     size = size - OFFSET;
     GrantNativePermission();
-    std::string url(reinterpret_cast<const char *>(data), size);
+    std::string uri(reinterpret_cast<const char *>(data), size);
     auto listener = std::make_shared<WallpaperColorChangeListenerFuzzTestImpl>();
     WallpaperMgrService::WallpaperManagerkits::GetInstance().On("colorChange", listener);
-    WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(url, wallpaperType);
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(uri, wallpaperType);
     WallpaperMgrService::WallpaperManagerkits::GetInstance().Off("colorChange", listener);
 }
 
@@ -167,7 +167,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::GetColorsFuzzTest(data, size);
     OHOS::GetWallpaperIdFuzzTest(data, size);
     OHOS::ResetWallpaperFuzzTest(data, size);
-    OHOS::SetWallpaperByUrlFuzzTest(data, size);
+    OHOS::SetWallpaperByUriFuzzTest(data, size);
     OHOS::SetWallpaperByMapFuzzTest(data, size);
     OHOS::GetFileFuzzTest(data, size);
     OHOS::GetPixelMapFuzzTest(data, size);

@@ -20,7 +20,7 @@
 #include <string>
 #include <vector>
 
-#include "async_call.h"
+#include "call.h"
 #include "napi/native_api.h"
 #include "napi/native_common.h"
 #include "napi/native_node_api.h"
@@ -41,10 +41,10 @@
 namespace OHOS {
 namespace WallpaperNAPI {
 
-struct GetContextInfo : public AsyncCall::Context {
-    int wallpaperType = 0;
+struct GetContextInfo : public Call::Context {
+    int32_t wallpaperType = 0;
     std::vector<uint64_t> colors;
-    int wallpaperId = 0;
+    int32_t wallpaperId = 0;
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     napi_status status = napi_generic_failure;
     GetContextInfo() : Context(nullptr, nullptr){};
@@ -64,9 +64,9 @@ struct GetContextInfo : public AsyncCall::Context {
     }
 };
 
-struct GetMinContextInfo : public AsyncCall::Context {
-    int minHeight = 0;
-    int minWidth = 0;
+struct GetMinContextInfo : public Call::Context {
+    int32_t minHeight = 0;
+    int32_t minWidth = 0;
     napi_status status = napi_generic_failure;
     GetMinContextInfo() : Context(nullptr, nullptr){};
     GetMinContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)){};
@@ -85,7 +85,7 @@ struct GetMinContextInfo : public AsyncCall::Context {
     }
 };
 
-struct PermissionContextInfo : public AsyncCall::Context {
+struct PermissionContextInfo : public Call::Context {
     bool isChangePermitted = false;
     bool isOperationAllowed = false;
     napi_status status = napi_generic_failure;
@@ -106,9 +106,9 @@ struct PermissionContextInfo : public AsyncCall::Context {
     }
 };
 
-struct SetContextInfo : public AsyncCall::Context {
-    int wallpaperType = 0;
-    std::string url = "";
+struct SetContextInfo : public Call::Context {
+    int32_t wallpaperType = 0;
+    std::string uri = "";
     std::unique_ptr<OHOS::Media::PixelMap> pixelMap;
     napi_status status = napi_generic_failure;
     bool isPixelEmp = false;
@@ -129,7 +129,7 @@ struct SetContextInfo : public AsyncCall::Context {
     }
 };
 
-struct GetFileContextInfo : public AsyncCall::Context {
+struct GetFileContextInfo : public Call::Context {
     static constexpr int32_t INVALID_FD = -1;
     int32_t wallpaperType = 0;
     int32_t wallpaperFd = INVALID_FD;
@@ -155,12 +155,12 @@ class NapiWallpaperAbility : public WallpaperMgrService::WallpaperColorChangeLis
 public:
     NapiWallpaperAbility(napi_env env, napi_value callback);
     virtual ~NapiWallpaperAbility();
-    void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType) override;
+    void OnColorsChange(const std::vector<uint64_t> &color, int32_t wallpaperType) override;
     static bool IsValidArgCount(size_t argc, size_t expectationSize);
     static bool IsValidArgType(napi_env env, napi_value argValue, napi_valuetype expectationType);
     static bool IsValidArgRange(napi_env env, napi_value argValue);
     static bool CheckValidArgWallpaperType(napi_env env, size_t argc, napi_value argValue,
-        std::shared_ptr<AsyncCall::Context> ctx);
+        std::shared_ptr<Call::Context> ctx);
     static void GetColorsInner(std::shared_ptr<GetContextInfo> context);
     static void GetIdInner(std::shared_ptr<GetContextInfo> context);
     static void GetFileInner(std::shared_ptr<GetFileContextInfo> context);
@@ -177,9 +177,9 @@ private:
     struct EventDataWorker {
         const NapiWallpaperAbility *listener = nullptr;
         const std::vector<uint64_t> color;
-        const int wallpaperType;
+        const int32_t wallpaperType;
         EventDataWorker(const NapiWallpaperAbility *const &listenerIn, const std::vector<uint64_t> &colorIn,
-            const int wallpaperTypeIn)
+            const int32_t wallpaperTypeIn)
             : listener(listenerIn), color(colorIn), wallpaperType(wallpaperTypeIn)
         {
         }

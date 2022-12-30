@@ -65,27 +65,26 @@ public:
     ~WallpaperService();
 
     static sptr<WallpaperService> GetInstance();
-    int32_t SetWallpaperByFD(int fd, int wallpaperType, int length) override;
-    int32_t SetWallpaperByMap(int fd, int wallpaperType, int length) override;
-    int32_t GetPixelMap(int wallpaperType, FdInfo &fdInfo) override;
-    std::vector<uint64_t> GetColors(int wallpaperType) override;
+    int32_t SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
+    int32_t GetPixelMap(int32_t wallpaperType, FdInfo &fdInfo) override;
+    std::vector<uint64_t> GetColors(int32_t wallpaperType) override;
     int32_t GetFile(int32_t wallpaperType, int32_t &wallpaperFd) override;
-    int GetWallpaperId(int wallpaperType) override;
-    int GetWallpaperMinHeight() override;
-    int GetWallpaperMinWidth() override;
+    int32_t GetWallpaperId(int32_t wallpaperType) override;
+    int32_t GetWallpaperMinHeight() override;
+    int32_t GetWallpaperMinWidth() override;
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
-    int32_t ResetWallpaper(int wallpaperType) override;
+    int32_t ResetWallpaper(int32_t wallpaperType) override;
     bool On(sptr<IWallpaperColorChangeListener> listener) override;
     bool Off(sptr<IWallpaperColorChangeListener> listener) override;
     bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) override;
-    int Dump(int fd, const std::vector<std::u16string> &args) override;
+    int32_t Dump(int32_t fd, const std::vector<std::u16string> &args) override;
 
 public:
     static void OnBootPhase();
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
     void ReporterUsageTimeStatistic();
-    void RegisterSubscriber(int times);
+    void RegisterSubscriber(int32_t times);
     void StartWallpaperExtension();
 
 protected:
@@ -94,42 +93,25 @@ protected:
     void OnAddSystemAbility(int32_t systemAbilityId, const std::string &deviceId) override;
 
 private:
-    /**
-     * Get current user id.
-     * @param none
-     * @return  userid
-     */
-    int GetUserId();
-
-    /**
-     * Get current Display Id.
-     * @param none
-     * @return  displayid
-     */
-    int GetDisplayId();
-
-    /**
-    *  initData ,such as dir,filename,and so on.
-    * @param
-    * @return none
-    */
+    int32_t GetUserId();
+    int32_t GetDisplayId();
     void InitData();
     int64_t WritePixelMapToFile(const std::string &filePath, std::unique_ptr<OHOS::Media::PixelMap> pixelMap);
     bool CompareColor(const uint64_t &localColor, const ColorManager::Color &color);
-    bool SaveColor(int wallpaperType);
-    void LoadSettingsLocked(int userId, bool keepDimensionHints);
+    bool SaveColor(int32_t wallpaperType);
+    void LoadSettingsLocked(int32_t userId, bool keepDimensionHints);
     std::string GetWallpaperDir();
     void MigrateFromOld();
-    bool GetWallpaperSafeLocked(int userId, int wpType, WallpaperData paperdata);
-    void ClearWallpaperLocked(int userId, int wpType);
-    int32_t SetDefaultDateForWallpaper(int userId, int wpType);
-    int MakeWallpaperIdLocked();
+    bool GetWallpaperSafeLocked(int32_t userId, int32_t wpType, WallpaperData paperdata);
+    void ClearWallpaperLocked(int32_t userId, int32_t wpType);
+    int32_t SetDefaultDateForWallpaper(int32_t userId, int32_t wpType);
+    int32_t MakeWallpaperIdLocked();
     bool WPCheckCallingPermission(const std::string &permissionName);
     bool WPGetBundleNameByUid(std::int32_t uid, std::string &bname);
-    bool MakeCropWallpaper(int wallpaperType);
-    int32_t SetWallpaperBackupData(std::string uriOrPixelMap, int wallpaperType);
+    bool MakeCropWallpaper(int32_t wallpaperType);
+    int32_t SetWallpaperBackupData(std::string uriOrPixelMap, int32_t wallpaperType);
     int32_t ConnectExtensionAbility(const OHOS::AAFwk::Want &want);
-    int32_t GetFilePath(int wallpaperType, std::string &filePath);
+    int32_t GetFilePath(int32_t wallpaperType, std::string &filePath);
     bool IsSystemApp();
     int32_t GetImageFd(int32_t wallpaperType, int32_t &fd);
     int32_t GetImageSize(int32_t wallpaperType, int32_t &size);
@@ -151,27 +133,22 @@ private:
     std::string wallpaperSystemCropFileFullPath_;
     std::string wallpaperTmpFullPath_;
     std::string wallpaperCropPath;
-    typedef std::map<int, WallpaperColorChangeListener *> DISPLAYIDCOLORSLISTENERMAP;
-    typedef std::map<int, DISPLAYIDCOLORSLISTENERMAP> COLORSLISTENERMAP;
+    typedef std::map<int32_t, WallpaperColorChangeListener *> DISPLAYIDCOLORSLISTENERMAP;
+    typedef std::map<int32_t, DISPLAYIDCOLORSLISTENERMAP> COLORSLISTENERMAP;
     typedef std::list<WallpaperColorChangeListener *> LISTENERLIST;
     LISTENERLIST colorListeners_;
     COLORSLISTENERMAP colorsChangedListeners_;
-    ConcurrentMap<int, WallpaperData> wallpaperMap_;
-    ConcurrentMap<int, WallpaperData> lockWallpaperMap_;
+    ConcurrentMap<int32_t, WallpaperData> wallpaperMap_;
+    ConcurrentMap<int32_t, WallpaperData> lockWallpaperMap_;
     atomic<int32_t> wallpaperId_;
-    int userId_;
-    static const std::string WALLPAPER;
-    static const std::string WALLPAPER_CROP;
-    static const std::string WALLPAPER_LOCK_ORIG;
-    static const std::string WALLPAPER_LOCK_CROP;
-    static const std::string WALLPAPER_BUNDLE_NAME;
+    int32_t userId_;
     sptr<IWallpaperCallback> callbackProxy = nullptr;
 
     std::string name_;
     std::mutex mtx;
     uint64_t lockWallpaperColor_;
     uint64_t systemWallpaperColor_;
-    std::map<int, sptr<IWallpaperColorChangeListener>> colorChangeListenerMap_;
+    std::map<int32_t, sptr<IWallpaperColorChangeListener>> colorChangeListenerMap_;
     std::mutex listenerMapMutex_;
 };
 } // namespace WallpaperMgrService

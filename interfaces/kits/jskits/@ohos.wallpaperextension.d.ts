@@ -49,12 +49,12 @@ declare class WallpaperExtension {
      * @systemapi Hide this for inner system use.
      * @since 9
      * @param context extension's context
-     * @param url the url of the ui layout file
+     * @param uri the uri of the ui layout file
      * @sysCap SystemCapability.Miscservices.Wallpaper
      * @return -
      * @StageModelOnly
      */
-    setUiContent(url:string): void;
+    setUiContent(uri:string): void;
 
     /**
      * Called once to destroy the exten.

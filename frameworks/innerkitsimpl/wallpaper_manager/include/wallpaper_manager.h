@@ -29,7 +29,7 @@
 #include "wallpaper_common.h"
 #include "wallpaper_manager_kits.h"
 
-using JScallback = bool (*)(int);
+using JScallback = bool (*)(int32_t);
 namespace OHOS {
 using namespace MiscServices;
 namespace WallpaperMgrService {
@@ -45,7 +45,7 @@ public:
     * values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    int32_t SetWallpaper(std::string url, int wallpaperType) final;
+    int32_t SetWallpaper(std::string uri, int32_t wallpaperType) final;
 
     /**
     * Wallpaper set.
@@ -53,7 +53,7 @@ public:
     * values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    int32_t SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int wallpaperType) final;
+    int32_t SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int32_t wallpaperType) final;
 
     /**
         *Obtains the default pixel map of a wallpaper of the specified type.
@@ -62,35 +62,35 @@ public:
         * @permission ohos.permission.GET_WALLPAPER
         * @systemapi Hide this for inner system use.
     */
-    int32_t GetPixelMap(int wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &PixelMap) final;
+    int32_t GetPixelMap(int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &PixelMap) final;
 
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of array callback function
      */
-    std::vector<uint64_t> GetColors(int wallpaperType) final;
+    std::vector<uint64_t> GetColors(int32_t wallpaperType) final;
 
     /**
      * Obtains the ID of the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of callback function
      */
-    int GetWallpaperId(int wallpaperType) final;
+    int32_t GetWallpaperId(int32_t wallpaperType) final;
 
-    int32_t GetFile(int wallpaperType, int32_t &wallpaperFd) final;
+    int32_t GetFile(int32_t wallpaperType, int32_t &wallpaperFd) final;
 
     /**
      * Obtains the minimum height of the wallpaper.
      * @return number type of callback function
      */
-    int GetWallpaperMinHeight() final;
+    int32_t GetWallpaperMinHeight() final;
 
     /**
      * Obtains the minimum width of the wallpaper.
      * @return number type of callback function
      */
-    int GetWallpaperMinWidth() final;
+    int32_t GetWallpaperMinWidth() final;
 
     /**
      * Checks whether to allow the application to change the wallpaper for the current user.
@@ -127,11 +127,11 @@ public:
      */
     bool Off(const std::string &type, std::shared_ptr<WallpaperColorChangeListener> listener) final;
 
-    bool RegisterWallpaperCallback(bool (*callback)(int)) final;
+    bool RegisterWallpaperCallback(bool (*callback)(int32_t)) final;
 
     JScallback GetCallback() final;
 
-    void SetCallback(bool (*cb)(int)) final;
+    void SetCallback(bool (*cb)(int32_t)) final;
 
     void ReporterFault(FaultType faultType, FaultCode faultCode);
 
@@ -161,7 +161,7 @@ private:
     std::map<int32_t, int32_t> wallpaperFdMap_;
     std::mutex wpProxyLock_;
     std::mutex listenerMapMutex_;
-    bool (*callback)(int);
+    bool (*callback)(int32_t);
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

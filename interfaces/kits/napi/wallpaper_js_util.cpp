@@ -55,7 +55,7 @@ napi_value WallpaperJSUtil::Convert2JSRgbaArray(napi_env env, const std::vector<
         HILOG_DEBUG("Convert2JSRgbaArray failed");
         return nullptr;
     }
-    int index = 0;
+    int32_t index = 0;
     for (const auto it : color) {
         HILOG_DEBUG("Convert2JSRgbaArray for");
         ColorManager::Color colors(it);

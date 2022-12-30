@@ -26,10 +26,6 @@ namespace WallpaperMgrService {
 using CommonEventSubscriber = OHOS::EventFwk::CommonEventSubscriber;
 using CommonEventData = OHOS::EventFwk::CommonEventData;
 using CommonEventSubscribeInfo = OHOS::EventFwk::CommonEventSubscribeInfo;
-static const std::string WALLPAPER_LOCK_SETTING_SUCCESS_EVENT = "com.ohos.wallpaperlocksettingsuccess";
-static const std::string WALLPAPER_SYSTEM_SETTING_SUCCESS_EVENT = "com.ohos.wallpapersystemsettingsuccess";
-static const int WALLPAPER_LOCK_SETTING_SUCCESS_CODE = 11000;
-static const int WALLPAPER_SYSTEM_SETTING_SUCCESS_CODE = 21000;
 
 class WallpaperCommonEvent : public OHOS::EventFwk::CommonEventSubscriber {
 public:
@@ -38,13 +34,15 @@ public:
     {
     }
     ~WallpaperCommonEvent() = default;
+
     static std::shared_ptr<WallpaperCommonEvent> subscriber;
-    void OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data) override;
     static bool PublishEvent(const OHOS::AAFwk::Want &want, int eventCode, const std::string &eventData);
     static void UnregisterSubscriber(std::shared_ptr<OHOS::EventFwk::CommonEventSubscriber> subscriber);
     static bool RegisterSubscriber();
     static void SendWallpaperLockSettingMessage();
     static void SendWallpaperSystemSettingMessage();
+
+    void OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data) override;
 
 private:
     std::function<void(const EventFwk::CommonEventData &)> callback_;

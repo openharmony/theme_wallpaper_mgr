@@ -34,8 +34,7 @@ class IWallpaperService : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.Wallpaper.IWallpaperService");
     enum {
-        SET_WALLPAPER_URI_FD,
-        SET_WALLPAPER_MAP,
+        SET_WALLPAPER,
         GET_PIXELMAP,
         GET_PIXELMAPFILE,
         GET_COLORS,
@@ -66,9 +65,8 @@ public:
     * WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    virtual int32_t SetWallpaperByFD(int fd, int wallpaperType, int length) = 0;
-    virtual int32_t SetWallpaperByMap(int fd, int wallpaperType, int length) = 0;
-    virtual int32_t GetPixelMap(int wallpaperType, FdInfo &fdInfo) = 0;
+    virtual int32_t SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) = 0;
+    virtual int32_t GetPixelMap(int32_t wallpaperType, FdInfo &fdInfo) = 0;
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
@@ -76,14 +74,14 @@ public:
      */
     virtual std::vector<uint64_t> GetColors(int wallpaperType) = 0;
 
-    virtual int32_t GetFile(int wallpaperType, int32_t &wallpaperFd) = 0;
+    virtual int32_t GetFile(int32_t wallpaperType, int32_t &wallpaperFd) = 0;
 
     /**
      * Obtains the ID of the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of callback function
      */
-    virtual int GetWallpaperId(int wallpaperType) = 0;
+    virtual int GetWallpaperId(int32_t wallpaperType) = 0;
 
     /**
      * Obtains the minimum height of the wallpaper.
@@ -114,7 +112,7 @@ public:
      * @param wallpaperType  Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @permission ohos.permission.SET_WALLPAPER
      */
-    virtual int32_t ResetWallpaper(int wallpaperType) = 0;
+    virtual int32_t ResetWallpaper(int32_t wallpaperType) = 0;
 
     /**
      * Registers a listener for wallpaper color changes to receive notifications about the changes.

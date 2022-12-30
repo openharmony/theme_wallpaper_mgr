@@ -19,6 +19,10 @@
 #include "wallpaper_service.h"
 namespace OHOS {
 namespace WallpaperMgrService {
+constexpr const char* WALLPAPER_LOCK_SETTING_SUCCESS_EVENT = "com.ohos.wallpaperlocksettingsuccess";
+constexpr const char* WALLPAPER_SYSTEM_SETTING_SUCCESS_EVENT = "com.ohos.wallpapersystemsettingsuccess";
+constexpr int32_t WALLPAPER_LOCK_SETTING_SUCCESS_CODE = 11000;
+constexpr int32_t WALLPAPER_SYSTEM_SETTING_SUCCESS_CODE = 21000;
 std::shared_ptr<WallpaperCommonEvent> WallpaperCommonEvent::subscriber = nullptr;
 
 void WallpaperCommonEvent::OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data)
@@ -27,7 +31,7 @@ void WallpaperCommonEvent::OnReceiveEvent(const OHOS::EventFwk::CommonEventData 
     WallpaperService::OnBootPhase();
 }
 
-bool WallpaperCommonEvent::PublishEvent(const OHOS::AAFwk::Want &want, int eventCode, const std::string &eventData)
+bool WallpaperCommonEvent::PublishEvent(const OHOS::AAFwk::Want &want, int32_t eventCode, const std::string &eventData)
 {
     OHOS::EventFwk::CommonEventData data;
     data.SetWant(want);

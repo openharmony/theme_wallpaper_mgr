@@ -31,8 +31,7 @@ public:
     ~WallpaperServiceStub();
 
 private:
-    int32_t OnSetWallpaperUriByFD(MessageParcel &data, MessageParcel &reply);
-    int32_t OnSetWallpaperByMap(MessageParcel &data, MessageParcel &reply);
+    int32_t OnSetWallpaper(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetPixelMapFile(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetPixelMap(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetColors(MessageParcel &data, MessageParcel &reply);

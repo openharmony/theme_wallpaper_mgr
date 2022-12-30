@@ -36,11 +36,11 @@ public:
     explicit JSWallpaperExtensionConnection(NativeEngine &engine);
     ~JSWallpaperExtensionConnection();
     void OnAbilityConnectDone(const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject,
-        int resultCode) override;
-    void OnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int resultCode) override;
+        int32_t resultCode) override;
+    void OnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int32_t resultCode) override;
     void HandleOnAbilityConnectDone(const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject,
-        int resultCode);
-    void HandleOnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int resultCode);
+        int32_t resultCode);
+    void HandleOnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int32_t resultCode);
     void SetJsConnectionObject(NativeValue *jsConnectionObject);
     void CallJsFailed(int32_t errorCode);
 
