@@ -23,7 +23,7 @@ Call::Call(napi_env env, napi_callback_info info, std::shared_ptr<Context> conte
     bool isNewInterfaces)
     : env_(env)
 {
-    context_ = new AsyncContext();
+    context_ = new CallContext();
     size_t argc = WallpaperJSUtil::MAX_ARGC;
     napi_value self = nullptr;
     napi_value argv[WallpaperJSUtil::MAX_ARGC] = { nullptr };
@@ -105,14 +105,14 @@ napi_value Call::SyncCall(napi_env env)
 void Call::OnExecute(napi_env env, void *data)
 {
     HILOG_DEBUG("run the async runnable");
-    AsyncContext *context = reinterpret_cast<AsyncContext *>(data);
+    CallContext *context = reinterpret_cast<CallContext *>(data);
     context->ctx->Exec();
 }
 
 void Call::OnComplete(napi_env env, napi_status status, void *data)
 {
     HILOG_DEBUG("run the js callback function");
-    AsyncContext *context = reinterpret_cast<AsyncContext *>(data);
+    CallContext *context = reinterpret_cast<CallContext *>(data);
     napi_value output = nullptr;
     napi_status runStatus = (*context->ctx)(env, &output);
     napi_value result[ARG_BUTT] = { 0 };
@@ -160,7 +160,7 @@ void Call::OnComplete(napi_env env, napi_status status, void *data)
     }
     DeleteContext(env, context);
 }
-void Call::DeleteContext(napi_env env, AsyncContext *context)
+void Call::DeleteContext(napi_env env, CallContext *context)
 {
     if (env != nullptr) {
         napi_delete_reference(env, context->callback);

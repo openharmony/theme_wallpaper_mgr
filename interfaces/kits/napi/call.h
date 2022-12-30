@@ -92,19 +92,19 @@ public:
     napi_value SyncCall(napi_env env);
 
 private:
-    enum arg : int { ARG_ERROR, ARG_DATA, ARG_BUTT };
-    static void OnExecute(napi_env env, void *data);
-    static void OnComplete(napi_env env, napi_status status, void *data);
-    struct AsyncContext {
+    enum Arg : int { ARG_ERROR, ARG_DATA, ARG_BUTT };
+    struct CallContext {
         std::shared_ptr<Context> ctx = nullptr;
         napi_ref callback = nullptr;
         napi_ref self = nullptr;
         napi_deferred defer = nullptr;
         napi_async_work work = nullptr;
     };
-    static void DeleteContext(napi_env env, AsyncContext *context);
+    static void OnExecute(napi_env env, void *data);
+    static void OnComplete(napi_env env, napi_status status, void *data);
+    static void DeleteContext(napi_env env, CallContext *context);
 
-    AsyncContext *context_ = nullptr;
+    CallContext *context_ = nullptr;
     napi_env env_ = nullptr;
 };
 } // namespace OHOS::WallpaperNAPI
