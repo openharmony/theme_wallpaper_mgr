@@ -81,6 +81,7 @@ constexpr int TEN = 10;
 constexpr int HUNDRED = 100;
 constexpr int FOO_MAX_LEN = 52428800;
 constexpr int MAX_RETRY_TIMES = 20;
+constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
 std::mutex WallpaperService::instanceLock_;
 
 sptr<WallpaperService> WallpaperService::instance_;
@@ -122,7 +123,7 @@ int32_t WallpaperService::Init()
     }
     HILOG_INFO("Publish success.");
     state_ = ServiceRunningState::STATE_RUNNING;
-    return 0;
+    return E_OK;
 }
 
 void WallpaperService::OnStart()
@@ -132,14 +133,7 @@ void WallpaperService::OnStart()
         HILOG_ERROR("WallpaperService is already running.");
         return;
     }
-
     InitServiceHandler();
-    if (Init() != 0) {
-        auto callback = [=]() { Init(); };
-        serviceHandler_->PostTask(callback, INIT_INTERVAL);
-        HILOG_ERROR("Init failed. Try again 10s later");
-        return;
-    }
     AddSystemAbilityListener(COMMON_EVENT_SERVICE_ID);
     std::thread(&WallpaperService::StartWallpaperExtension, this).detach();
     int uid = static_cast<int>(IPCSkeleton::GetCallingUid());
@@ -156,6 +150,12 @@ void WallpaperService::OnStart()
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
     StatisticReporter::StartTimerThread();
+    if (Init() != 0) {
+        auto callback = [=]() { Init(); };
+        serviceHandler_->PostTask(callback, INIT_INTERVAL);
+        HILOG_ERROR("Init failed. Try again 10s later");
+        return;
+    }
     return;
 }
 
@@ -207,11 +207,11 @@ void WallpaperService::InitData()
 {
     HILOG_INFO("WallpaperService::initData --> start ");
     userId_ = 0;
-    wallpaperId_ = 0;
+    wallpaperId_ = DEFAULT_WALLPAPER_ID;
     wallpaperMap_.Clear();
     lockWallpaperMap_.Clear();
     userId_ = GetUserId();
-    std::string userIdPath = GetWallpaperDir(userId_);
+    std::string userIdPath = GetWallpaperDir();
     this->wallpaperLockScreenFilePath_ = userIdPath + "/" + WALLPAPER_LOCKSCREEN_DIRNAME;
     this->wallpaperSystemFilePath_ = userIdPath + "/" + WALLPAPER_SYSTEM_DIRNAME;
     wallpaperLockScreenFileFullPath_ = wallpaperLockScreenFilePath_ + "/" + WALLPAPER_LOCK_ORIG;
@@ -273,7 +273,7 @@ int WallpaperService::GetDisplayId()
     return displayid;
 }
 
-std::string WallpaperService::GetWallpaperDir(int userId)
+std::string WallpaperService::GetWallpaperDir()
 {
     std::string sWallpaperPath = WALLPAPER_USERID_PATH + std::to_string(userId_);
     return sWallpaperPath;
@@ -281,10 +281,10 @@ std::string WallpaperService::GetWallpaperDir(int userId)
 
 int WallpaperService::MakeWallpaperIdLocked()
 {
-    do {
-        ++wallpaperId_;
-    } while (wallpaperId_ == 0);
-    return wallpaperId_;
+    if (wallpaperId_ == INT32_MAX) {
+        wallpaperId_ = DEFAULT_WALLPAPER_ID;
+    }
+    return ++wallpaperId_;
 }
 
 void WallpaperService::LoadSettingsLocked(int userId, bool keepDimensionHints)
@@ -305,30 +305,6 @@ void WallpaperService::LoadSettingsLocked(int userId, bool keepDimensionHints)
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperLock);
     }
     HILOG_INFO("load Setting locked end.");
-}
-
-bool WallpaperService::ChangingToSame(ComponentName componentName, WallpaperData wallpaper)
-{
-    if (wallpaper.wallpaperComponent.equals(componentName)) {
-        return true;
-    }
-
-    return false;
-}
-bool WallpaperService::BindWallpaperComponentLocked(
-    ComponentName &componentName, bool force, bool fromUser, WallpaperData wallpaper)
-{
-    if (!force && ChangingToSame(componentName, wallpaper)) {
-        return true;
-    }
-    return true;
-}
-
-bool WallpaperService::SetLockWallpaperCallback(IWallpaperManagerCallback *cb)
-{
-    keyguardListener_ = cb;
-
-    return true;
 }
 
 void WallpaperService::MigrateFromOld()
@@ -547,7 +523,6 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
     if (bufsize <= 0) {
         HILOG_ERROR("read fd failed");
         delete[] paperBuf;
-        close(fd);
         mtx.unlock();
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
@@ -555,7 +530,6 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
     if (fdw == -1) {
         HILOG_ERROR("WallpaperService:: fdw fail");
         delete[] paperBuf;
-        close(fd);
         mtx.unlock();
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
@@ -565,12 +539,10 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
         HILOG_ERROR("WritefdToFile failed");
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
         delete[] paperBuf;
-        close(fd);
         close(fdw);
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
     delete[] paperBuf;
-    close(fd);
     close(fdw);
     int32_t wallpaperErrorCode = SetWallpaperBackupData(url, wallpaperType);
     SaveColor(wallpaperType);
@@ -587,7 +559,6 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
     }
     std::string url = wallpaperTmpFullPath_;
     if (length == 0 || length > FOO_MAX_LEN) {
-        close(fd);
         return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
     char *paperBuf = new (std::nothrow) char[length];
@@ -599,7 +570,6 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
     if (readSize <= 0) {
         HILOG_ERROR("read from fd fail");
         delete[] paperBuf;
-        close(fd);
         mtx.unlock();
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
@@ -607,7 +577,6 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
     if (fdw == -1) {
         HILOG_ERROR("WallpaperService:: fdw fail");
         delete[] paperBuf;
-        close(fd);
         mtx.unlock();
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
@@ -616,12 +585,10 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
     if (writeSize <= 0) {
         HILOG_ERROR("write to fdw fail");
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
-        close(fd);
         close(fdw);
         delete[] paperBuf;
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
-    close(fd);
     close(fdw);
     delete[] paperBuf;
     int32_t wallpaperErrorCode = SetWallpaperBackupData(url, wallpaperType);
@@ -893,7 +860,7 @@ int32_t WallpaperService::SetDefaultDateForWallpaper(int userId, int wpType)
         tmpCropPath = wallpaperSystemCropFileFullPath_;
     }
     WallpaperData wallpaperData(userId, tmpPath, tmpCropPath);
-    wallpaperData.wallpaperId_ = 0;
+    wallpaperData.wallpaperId_ = DEFAULT_WALLPAPER_ID;
     wallpaperData.allowBackup = true;
     if (wpType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
