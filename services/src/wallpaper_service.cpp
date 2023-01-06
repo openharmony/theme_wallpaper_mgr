@@ -225,7 +225,6 @@ void WallpaperService::InitData()
     SaveColor(WALLPAPER_LOCKSCREEN);
     systemWallpaperColor_ = 0;
     lockWallpaperColor_ = 0;
-    wallpaperId_ = DEFAULT_WALLPAPER_ID;
     colorChangeListenerMap_.clear();
     HILOG_INFO("WallpaperService::initData --> end ");
 }
@@ -295,14 +294,14 @@ void WallpaperService::LoadSettingsLocked(int userId, bool keepDimensionHints)
         MigrateFromOld();
         WallpaperData wallpaper(userId, wallpaperSystemFileFullPath_, wallpaperSystemCropFileFullPath_);
         wallpaper.allowBackup = true;
-        wallpaper.wallpaperId_ = MakeWallpaperIdLocked();
+        wallpaper.wallpaperId_ = DEFAULT_WALLPAPER_ID;
         wallpaperMap_.InsertOrAssign(userId, wallpaper);
     }
 
     if (!lockWallpaperMap_.Contains(userId)) {
         WallpaperData wallpaperLock(userId, wallpaperLockScreenFileFullPath_, wallpaperLockScreenCropFileFullPath_);
         wallpaperLock.allowBackup = true;
-        wallpaperLock.wallpaperId_ = MakeWallpaperIdLocked();
+        wallpaperLock.wallpaperId_ = DEFAULT_WALLPAPER_ID;
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperLock);
     }
     HILOG_INFO("load Setting locked end.");
