@@ -281,7 +281,7 @@ std::string WallpaperService::GetWallpaperDir()
 
 int32_t WallpaperService::MakeWallpaperIdLocked()
 {
-  HILOG_INFO("MakeWallpaperIdLocked start");
+    HILOG_INFO("MakeWallpaperIdLocked start");
     if (wallpaperId_ == INT32_MAX) {
         wallpaperId_ = DEFAULT_WALLPAPER_ID;
     }
@@ -292,7 +292,7 @@ void WallpaperService::LoadSettingsLocked(int32_t userId, bool keepDimensionHint
 {
     HILOG_INFO("load Setting locked start.");
     if (!wallpaperMap_.Contains(userId)) {
-      HILOG_INFO("wallpaperMap_ does not contains userId");
+        HILOG_INFO("wallpaperMap_ does not contains userId");
         MigrateFromOld();
         WallpaperData wallpaper(userId, wallpaperSystemFileFullPath_, wallpaperSystemCropFileFullPath_);
         wallpaper.allowBackup = true;
@@ -301,7 +301,7 @@ void WallpaperService::LoadSettingsLocked(int32_t userId, bool keepDimensionHint
     }
 
     if (!lockWallpaperMap_.Contains(userId)) {
-      HILOG_INFO("lockWallpaperMap_ does not Contains userId");
+        HILOG_INFO("lockWallpaperMap_ does not Contains userId");
         WallpaperData wallpaperLock(userId, wallpaperLockScreenFileFullPath_, wallpaperLockScreenCropFileFullPath_);
         wallpaperLock.allowBackup = true;
         wallpaperLock.wallpaperId_ = DEFAULT_WALLPAPER_ID;
