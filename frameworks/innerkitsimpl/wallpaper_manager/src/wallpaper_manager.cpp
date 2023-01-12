@@ -491,7 +491,6 @@ bool WallpaperManager::GetRealPath(const std::string &inOriPath, std::string &ou
         return false;
     }
     outRealPath = std::string(realPath);
-
     if (!OHOS::FileExists(outRealPath)) {
         HILOG_ERROR("real path file is not exist! %{public}s", outRealPath.c_str());
         return false;
