@@ -516,7 +516,7 @@ int32_t WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int32_
         HILOG_INFO("SetWallpaper no set permission!");
         return static_cast<int32_t>(E_NO_PERMISSION);
     }
-    if (length == 0 || length > FOO_MAX_LEN) {
+    if (length <= 0 || length > FOO_MAX_LEN) {
         return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
     std::string uri = wallpaperTmpFullPath_;

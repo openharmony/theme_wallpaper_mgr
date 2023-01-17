@@ -26,12 +26,14 @@
 #include "token_setproc.h"
 #include "wallpaper_manager.h"
 #include "wallpaper_manager_kits.h"
+#include "wallpaper_service.h"
 
 constexpr int SYSTYEM = 0;
 constexpr int LOCKSCREEN = 1;
 constexpr int INVALID_WALLPAPER_TYPE = 2;
 constexpr int HUNDRED = 100;
 constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
+constexpr int32_t FOO_MAX_LEN = 60000000;
 constexpr const char *URI = "/data/test/theme/wallpaper/wallpaper_test.JPG";
 
 using namespace testing::ext;
@@ -696,6 +698,22 @@ HWTEST_F(WallpaperTest, FILE_DEAL001, TestSize.Level0)
     EXPECT_EQ(isExist, true);
     isExist = fileOperation.FileIsExist("/data/test/theme/wallpaper/errorURI");
     EXPECT_EQ(isExist, false);
+}
+
+/**
+* @tc.name:    SetWallpaper001
+* @tc.desc:    SetWallpaper with error length
+* @tc.type:    FUNC
+* @tc.require: issueI6AW6M
+* @tc.author:  weishaoxiong
+*/
+HWTEST_F(WallpaperTest, SetWallpaper001, TestSize.Level0)
+{
+    HILOG_INFO("SetWallpaper001  begin");
+    int32_t wallpaperErrorCode = WallpaperService::GetInstance()->SetWallpaper(0, 0, -1);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to throw error";
+    wallpaperErrorCode = WallpaperService::GetInstance()->SetWallpaper(0, 0, FOO_MAX_LEN);
+    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to throw error";
 }
 /*********************   SetWallpaperByUri   *********************/
 } // namespace WallpaperMgrService
