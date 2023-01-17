@@ -699,9 +699,9 @@ HWTEST_F(WallpaperTest, FILE_DEAL001, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetWallpaper001, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaper001  begin");
-    int32_t wallpaperErrorCode = WallpaperService::GetInstance()->SetWallpaper(0, 0, -1);
+    int32_t wallpaperErrorCode = WallpaperService::GetInstance()->SetWallpaperByMap(0, 0, -1);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to throw error";
-    wallpaperErrorCode = WallpaperService::GetInstance()->SetWallpaper(0, 0, FOO_MAX_LEN);
+    wallpaperErrorCode = WallpaperService::GetInstance()->SetWallpaperByFD(0, 0, FOO_MAX_LEN);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to throw error";
 }
 /*********************   SetWallpaperByUrl   *********************/

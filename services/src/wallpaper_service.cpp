@@ -563,7 +563,7 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
         return static_cast<int32_t>(E_NO_PERMISSION);
     }
     std::string url = wallpaperTmpFullPath_;
-    if (length == 0 || length > FOO_MAX_LEN) {
+    if (length <= 0 || length > FOO_MAX_LEN) {
         return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
     char *paperBuf = new (std::nothrow) char[length];
