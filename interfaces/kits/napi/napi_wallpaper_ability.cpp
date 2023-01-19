@@ -609,15 +609,13 @@ NapiWallpaperAbility::NapiWallpaperAbility(napi_env env, napi_value callback) : 
 NapiWallpaperAbility::~NapiWallpaperAbility()
 {
     sptr<WorkData> workData = new (std::nothrow) WorkData(env_, callback_);
-    if (workData != nullptr) {
-        uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
-            WorkData *workData = reinterpret_cast<WorkData *>(work->data);
-            napi_delete_reference(workData->env_, workData->callback_);
-            delete work;
-            work = nullptr;
-        };
-        MiscServices::UvQueue::Call(env_, workData, afterCallback);
-    }
+    uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
+        WorkData *workData = reinterpret_cast<WorkData *>(work->data);
+        napi_delete_reference(workData->env_, workData->callback_);
+        delete work;
+        work = nullptr;
+    };
+    MiscServices::UvQueue::Call(env_, workData, afterCallback);
 }
 
 void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType)
