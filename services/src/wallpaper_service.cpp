@@ -71,7 +71,7 @@ const std::string WallpaperService::WALLPAPER = "wallpaper_orig";
 const std::string WallpaperService::WALLPAPER_CROP = "wallpaper";
 const std::string WallpaperService::WALLPAPER_LOCK_ORIG = "wallpaper_lock_orig";
 const std::string WallpaperService::WALLPAPER_LOCK_CROP = "wallpaper_lock";
-const std::string WallpaperService::WALLPAPER_BUNDLE_NAME = "com.ohos.wallpaper";
+const std::string WallpaperService::WALLPAPER_BUNDLE_NAME = "com.ohos.launcher";
 
 const std::int64_t INIT_INTERVAL = 10000L;
 const std::int64_t DELAY_TIME = 1000L;
