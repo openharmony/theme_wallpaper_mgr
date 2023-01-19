@@ -72,7 +72,7 @@ constexpr const char* WALLPAPER = "wallpaper_orig";
 constexpr const char* WALLPAPER_CROP = "wallpaper";
 constexpr const char* WALLPAPER_LOCK_ORIG = "wallpaper_lock_orig";
 constexpr const char* WALLPAPER_LOCK_CROP = "wallpaper_lock";
-constexpr const char* OHOS_WALLPAPER_BUNDLE_NAME = "com.ohos.wallpaper";
+constexpr const char* OHOS_WALLPAPER_BUNDLE_NAME = "com.ohos.launcher";
 
 const std::int64_t INIT_INTERVAL = 10000L;
 const std::int64_t DELAY_TIME = 1000L;
