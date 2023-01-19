@@ -54,7 +54,9 @@ public:
             if (input_ == nullptr) {
                 return napi_ok;
             }
-            return input_(env, argc, argv, self);
+            auto ret = input_(env, argc, argv, self);
+            input_ = nullptr;
+            return ret;
         }
 
         virtual napi_status operator()(napi_env env, napi_value *result)
@@ -63,7 +65,9 @@ public:
                 *result = nullptr;
                 return napi_ok;
             }
-            return output_(env, result);
+            auto ret = output_(env, result);
+            output_ = nullptr;
+            return ret;
         }
 
         virtual void Exec()
@@ -72,6 +76,7 @@ public:
                 return;
             }
             exec_(this);
+            exec_ = nullptr;
         };
 
     protected:
@@ -92,11 +97,7 @@ public:
     napi_value SyncCall(napi_env env);
 
 private:
-    enum arg : int {
-        ARG_ERROR,
-        ARG_DATA,
-        ARG_BUTT
-    };
+    enum arg : int { ARG_ERROR, ARG_DATA, ARG_BUTT };
     static void OnExecute(napi_env env, void *data);
     static void OnComplete(napi_env env, napi_status status, void *data);
     struct AsyncContext {
