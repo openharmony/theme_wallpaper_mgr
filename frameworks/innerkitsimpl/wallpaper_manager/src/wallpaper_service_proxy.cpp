@@ -174,13 +174,13 @@ int32_t WallpaperServiceProxy::GetWallpaperMinHeight()
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return 0;
+        return -1;
     }
 
     int32_t result = Remote()->SendRequest(GET_WALLPAPER_MIN_HEIGHT, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperServiceProxy::GetWallpaperMinHeight fail, result = %{public}d ", result);
-        return 0;
+        return -1;
     }
 
     iWallpaperMinHeight = reply.ReadInt32();
@@ -196,13 +196,13 @@ int32_t WallpaperServiceProxy::GetWallpaperMinWidth()
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return 0;
+        return -1;
     }
 
     int32_t result = Remote()->SendRequest(GET_WALLPAPER_MIN_WIDTH, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperServiceProxy::GetWallpaperMinWidth fail, result = %{public}d ", result);
-        return 0;
+        return -1;
     }
 
     iWallpaperMinWidth = reply.ReadInt32();
