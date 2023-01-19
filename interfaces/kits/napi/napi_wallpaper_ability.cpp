@@ -222,7 +222,7 @@ void NapiWallpaperAbility::GetMinHeightInner(std::shared_ptr<GetMinContextInfo> 
         HILOG_DEBUG("exec GetWallpaperMinHeight");
         context->minHeight = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperMinHeight();
         HILOG_DEBUG("exec GetWallpaperMinHeight minHeight : %{public}d", context->minHeight);
-        if (context->minHeight) {
+        if (context->minHeight >= 0) {
             context->status = napi_ok;
         }
     };
@@ -260,7 +260,7 @@ void NapiWallpaperAbility::GetMinWidthInner(std::shared_ptr<GetMinContextInfo> c
         HILOG_DEBUG("exec GetWallpaperMinWidth");
         context->minWidth = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperMinWidth();
         HILOG_DEBUG("exec GetWallpaperMinWidth minWidth : %{public}d", context->minWidth);
-        if (context->minWidth) {
+        if (context->minWidth >= 0) {
             context->status = napi_ok;
         }
     };

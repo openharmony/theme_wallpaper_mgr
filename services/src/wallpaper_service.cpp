@@ -670,6 +670,10 @@ int32_t WallpaperService::GetWallpaperMinHeight()
 {
     HILOG_INFO("WallpaperService::GetWallpaperMinHeight --> start ");
     auto display = Rosen::DisplayManager::GetInstance().GetDefaultDisplay();
+    if (display == nullptr) {
+        HILOG_ERROR("GetDefaultDisplay is nullptr");
+        return -1;
+    }
     int32_t iWallpaperMinHeight = display->GetHeight();
     HILOG_INFO("WallpaperService height: %{public}d", iWallpaperMinHeight);
     return iWallpaperMinHeight;
@@ -679,6 +683,10 @@ int32_t WallpaperService::GetWallpaperMinWidth()
 {
     HILOG_INFO("WallpaperService::GetWallpaperMinWidth --> start ");
     auto display = Rosen::DisplayManager::GetInstance().GetDefaultDisplay();
+    if (display == nullptr) {
+        HILOG_ERROR("GetDefaultDisplay is nullptr");
+        return -1;
+    }
     int32_t iWallpaperMinWidth = display->GetWidth();
     HILOG_INFO("WallpaperService width: %{public}d", iWallpaperMinWidth);
     return iWallpaperMinWidth;
