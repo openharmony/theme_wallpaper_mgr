@@ -621,13 +621,21 @@ NapiWallpaperAbility::~NapiWallpaperAbility()
 void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType)
 {
     WallpaperMgrService::WallpaperColorChangeListener::OnColorsChange(color, wallpaperType);
-    EventDataWorker *eventDataWorker = new EventDataWorker(this, color, wallpaperType);
-    uv_work_t *work = new uv_work_t;
+    EventDataWorker *eventDataWorker = new (std::nothrow) EventDataWorker(this, color, wallpaperType);
+    if (eventDataWorker == nullptr) {
+        return;
+    }
+    uv_work_t *work = new (std::nothrow) uv_work_t;
+    if (work == nullptr) {
+        return;
+    }
     work->data = eventDataWorker;
     uv_queue_work(
         loop_, work, [](uv_work_t *work) {},
         [](uv_work_t *work, int status) {
             EventDataWorker *eventDataInner = reinterpret_cast<EventDataWorker *>(work->data);
+            napi_handle_scope scope = nullptr;
+            napi_open_handle_scope(eventDataInner->listener->env_, &scope);
             napi_value jsWallpaperType = nullptr;
             napi_create_int32(eventDataInner->listener->env_, eventDataInner->wallpaperType, &jsWallpaperType);
             napi_value jsRgbaArray =
@@ -644,6 +652,7 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
                 HILOG_ERROR("notify data change failed callStatus:%{public}d callback:%{public}p", callStatus,
                     callback);
             }
+            napi_close_handle_scope(eventDataInner->listener->env_, scope);
             delete eventDataInner;
             eventDataInner = nullptr;
             delete work;
