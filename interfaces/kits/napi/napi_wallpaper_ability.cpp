@@ -608,7 +608,7 @@ NapiWallpaperAbility::NapiWallpaperAbility(napi_env env, napi_value callback) : 
 
 NapiWallpaperAbility::~NapiWallpaperAbility()
 {
-    WorkData *workData = new (std::nothrow) WorkData(env_, callback_);
+    sptr<WorkData> workData = new (std::nothrow) WorkData(env_, callback_);
     if (workData != nullptr) {
         uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
             WorkData *workData = reinterpret_cast<WorkData *>(work->data);
@@ -623,10 +623,7 @@ NapiWallpaperAbility::~NapiWallpaperAbility()
 void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType)
 {
     WallpaperMgrService::WallpaperColorChangeListener::OnColorsChange(color, wallpaperType);
-    EventDataWorker *eventDataWorker = new (std::nothrow) EventDataWorker(this, color, wallpaperType);
-    if (eventDataWorker == nullptr) {
-        return;
-    }
+    sptr<EventDataWorker> eventDataWorker = new (std::nothrow) EventDataWorker(this, color, wallpaperType);
     uv_work_t *work = new (std::nothrow) uv_work_t;
     if (work == nullptr) {
         return;
