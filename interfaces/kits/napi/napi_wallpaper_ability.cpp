@@ -619,7 +619,6 @@ NapiWallpaperAbility::~NapiWallpaperAbility()
             work = nullptr;
         };
         MiscServices::UvQueue::Call(env_, workData, afterCallback);
-        delete workData;
     }
 }
 
