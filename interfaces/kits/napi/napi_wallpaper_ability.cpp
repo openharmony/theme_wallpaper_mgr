@@ -607,22 +607,31 @@ NapiWallpaperAbility::NapiWallpaperAbility(napi_env env, napi_value callback) : 
 
 NapiWallpaperAbility::~NapiWallpaperAbility()
 {
-    sptr<WorkData> workData = new (std::nothrow) WorkData(env_, callback_);
-    uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
-        WorkData *workData = reinterpret_cast<WorkData *>(work->data);
-        napi_delete_reference(workData->env_, workData->callback_);
-        delete work;
-        work = nullptr;
-    };
-    MiscServices::UvQueue::Call(env_, workData, afterCallback);
+    WorkData *workData = new (std::nothrow) WorkData(env_, callback_);
+    if(workData!= nullptr){
+        uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
+            WorkData *workData = reinterpret_cast<WorkData *>(work->data);
+            napi_delete_reference(workData->env_, workData->callback_);
+            delete workData;
+            workData = nullptr;
+            delete work;
+            work = nullptr;
+        };
+        MiscServices::UvQueue::Call(env_, workData, afterCallback);
+    }
 }
 
 void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType)
 {
     WallpaperMgrService::WallpaperColorChangeListener::OnColorsChange(color, wallpaperType);
-    sptr<EventDataWorker> eventDataWorker = new (std::nothrow) EventDataWorker(this, color, wallpaperType);
+    EventDataWorker *eventDataWorker = new (std::nothrow) EventDataWorker(this, color, wallpaperType);
+    if (eventDataWorker == nullptr) {
+        return;
+    }
     uv_work_t *work = new (std::nothrow) uv_work_t;
     if (work == nullptr) {
+        delete eventDataWorker;
+        eventDataWorker = nullptr;
         return;
     }
     work->data = eventDataWorker;

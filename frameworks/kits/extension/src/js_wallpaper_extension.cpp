@@ -139,7 +139,7 @@ void JsWallpaperExtension::OnStart(const AAFwk::Want &want)
         HILOG_INFO("jsWallpaperExtension->CallObjectMethod");
         HandleScope handleScope(jsWallpaperExtension->jsRuntime_);
         NativeEngine *nativeEng = &(jsWallpaperExtension->jsRuntime_).GetNativeEngine();
-        sptr<WorkData> workData = new WorkData(nativeEng, wallpaperType);
+        WorkData *workData = new (std::nothrow) WorkData(nativeEng, wallpaperType);
         uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
             WorkData *workData = reinterpret_cast<WorkData *>(work->data);
             napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(
@@ -147,6 +147,10 @@ void JsWallpaperExtension::OnStart(const AAFwk::Want &want)
             NativeValue *nativeType = reinterpret_cast<NativeValue *>(type);
             NativeValue *arg[] = { nativeType };
             jsWallpaperExtension->CallObjectMethod("onWallpaperChanged", arg, ARGC_ONE);
+            delete workData;
+            workData = nullptr;
+            delete work;
+            work = nullptr;
         };
         UvQueue::Call(reinterpret_cast<napi_env>(nativeEng), workData, afterCallback);
         return true;
