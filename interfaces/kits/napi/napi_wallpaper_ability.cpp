@@ -609,7 +609,7 @@ NapiWallpaperAbility::NapiWallpaperAbility(napi_env env, napi_value callback) : 
 NapiWallpaperAbility::~NapiWallpaperAbility()
 {
     WorkData *workData = new (std::nothrow) WorkData(env_, callback_);
-    if(workData!= nullptr){
+    if (workData != nullptr) {
         uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
             WorkData *workData = reinterpret_cast<WorkData *>(work->data);
             napi_delete_reference(workData->env_, workData->callback_);
@@ -642,6 +642,9 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
             EventDataWorker *eventDataInner = reinterpret_cast<EventDataWorker *>(work->data);
             napi_handle_scope scope = nullptr;
             napi_open_handle_scope(eventDataInner->listener->env_, &scope);
+            if (scope == nullptr) {
+                return;
+            }
             napi_value jsWallpaperType = nullptr;
             napi_create_int32(eventDataInner->listener->env_, eventDataInner->wallpaperType, &jsWallpaperType);
             napi_value jsRgbaArray =
@@ -668,7 +671,7 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
 
 bool NapiWallpaperAbility::IsValidArgCount(size_t argc, size_t expectationSize)
 {
-    return (argc < expectationSize) ? false : true;
+    return argc >= expectationSize;
 }
 
 bool NapiWallpaperAbility::IsValidArgType(napi_env env, napi_value argValue, napi_valuetype expectationType)
