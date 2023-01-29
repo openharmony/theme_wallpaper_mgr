@@ -59,6 +59,7 @@
 #include "wallpaper_service_cb_proxy.h"
 #include "window.h"
 #include "tokenid_kit.h"
+#include "memory_guard.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -130,6 +131,7 @@ int32_t WallpaperService::Init()
 void WallpaperService::OnStart()
 {
     HILOG_INFO("Enter OnStart.");
+    MemoryGuard cacheGuard;
     if (state_ == ServiceRunningState::STATE_RUNNING) {
         HILOG_ERROR("WallpaperService is already running.");
         return;
@@ -170,6 +172,7 @@ void WallpaperService::OnAddSystemAbility(int32_t systemAbilityId, const std::st
 
 void WallpaperService::RegisterSubscriber(int32_t times)
 {
+    MemoryGuard cacheGuard;
     times++;
     bool subRes = WallpaperCommonEvent::RegisterSubscriber();
     if (!subRes && times <= MAX_RETRY_TIMES) {
@@ -230,6 +233,7 @@ void WallpaperService::InitData()
 }
 void WallpaperService::StartWallpaperExtension()
 {
+    MemoryGuard cacheGuard;
     HILOG_INFO("WallpaperService StartWallpaperExtension");
     int32_t time = 0;
     ErrCode ret = 0;
