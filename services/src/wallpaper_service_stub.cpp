@@ -23,6 +23,7 @@
 #include "parcel.h"
 #include "pixel_map.h"
 #include "wallpaper_common.h"
+#include "memory_guard.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -54,6 +55,7 @@ WallpaperServiceStub::~WallpaperServiceStub()
 int32_t WallpaperServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
     MessageOption &option)
 {
+    MemoryGuard cacheGuard;
     HILOG_INFO("start##ret = %{public}u", code);
     std::u16string myDescriptor = WallpaperServiceStub::GetDescriptor();
     std::u16string remoteDescriptor = data.ReadInterfaceToken();
