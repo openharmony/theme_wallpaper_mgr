@@ -615,7 +615,6 @@ NapiWallpaperAbility::~NapiWallpaperAbility()
             WorkData *workData = reinterpret_cast<WorkData *>(work->data);
             napi_delete_reference(workData->env_, workData->callback_);
             delete workData;
-            workData = nullptr;
             delete work;
             work = nullptr;
         };
@@ -643,7 +642,7 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
         loop_, work, [](uv_work_t *work) {},
         [](uv_work_t *work, int status) {
             EventDataWorker *eventDataInner = reinterpret_cast<EventDataWorker *>(work->data);
-            if (eventDataInner == nullptr || (eventDataInner != nullptr && eventDataInner->listener == nullptr)) {
+            if (eventDataInner == nullptr || eventDataInner->listener == nullptr) {
                 return;
             }
             napi_handle_scope scope = nullptr;
@@ -669,7 +668,6 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
             }
             napi_close_handle_scope(eventDataInner->listener->env_, scope);
             delete eventDataInner;
-            eventDataInner = nullptr;
             delete work;
             work = nullptr;
         });
