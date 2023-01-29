@@ -154,7 +154,6 @@ void JsWallpaperExtension::OnStart(const AAFwk::Want &want)
             jsWallpaperExtension->CallObjectMethod("onWallpaperChanged", arg, ARGC_ONE);
             delete workData;
             delete work;
-            work = nullptr;
         };
         UvQueue::Call(reinterpret_cast<napi_env>(nativeEng), workData, afterCallback);
         return true;

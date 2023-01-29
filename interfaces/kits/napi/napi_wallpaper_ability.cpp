@@ -616,7 +616,6 @@ NapiWallpaperAbility::~NapiWallpaperAbility()
             napi_delete_reference(workData->env_, workData->callback_);
             delete workData;
             delete work;
-            work = nullptr;
         };
         MiscServices::UvQueue::Call(env_, workData, afterCallback);
     }
@@ -634,7 +633,6 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
     uv_work_t *work = new (std::nothrow) uv_work_t;
     if (work == nullptr) {
         delete eventDataWorker;
-        eventDataWorker = nullptr;
         return;
     }
     work->data = eventDataWorker;
@@ -643,11 +641,14 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
         [](uv_work_t *work, int status) {
             EventDataWorker *eventDataInner = reinterpret_cast<EventDataWorker *>(work->data);
             if (eventDataInner == nullptr || eventDataInner->listener == nullptr) {
+                delete work;
                 return;
             }
             napi_handle_scope scope = nullptr;
             napi_open_handle_scope(eventDataInner->listener->env_, &scope);
             if (scope == nullptr) {
+                delete eventDataInner;
+                delete work;
                 return;
             }
             napi_value jsWallpaperType = nullptr;
@@ -669,7 +670,6 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
             napi_close_handle_scope(eventDataInner->listener->env_, scope);
             delete eventDataInner;
             delete work;
-            work = nullptr;
         });
 }
 
