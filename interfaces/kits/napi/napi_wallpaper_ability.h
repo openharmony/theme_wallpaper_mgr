@@ -151,7 +151,8 @@ struct GetFileContextInfo : public Call::Context {
     }
 };
 
-class NapiWallpaperAbility : public WallpaperMgrService::WallpaperColorChangeListener {
+class NapiWallpaperAbility : public WallpaperMgrService::WallpaperColorChangeListener,
+                             public std::enable_shared_from_this<NapiWallpaperAbility> {
 public:
     NapiWallpaperAbility(napi_env env, napi_value callback);
     virtual ~NapiWallpaperAbility();
@@ -175,10 +176,10 @@ public:
 
 private:
     struct EventDataWorker {
-        const NapiWallpaperAbility *listener = nullptr;
+        const std::shared_ptr<NapiWallpaperAbility> listener = nullptr;
         const std::vector<uint64_t> color;
         const int32_t wallpaperType;
-        EventDataWorker(const NapiWallpaperAbility *const &listenerIn, const std::vector<uint64_t> &colorIn,
+        EventDataWorker(const std::shared_ptr<NapiWallpaperAbility> &listenerIn, const std::vector<uint64_t> &colorIn,
             const int32_t wallpaperTypeIn)
             : listener(listenerIn), color(colorIn), wallpaperType(wallpaperTypeIn)
         {

@@ -608,6 +608,7 @@ NapiWallpaperAbility::NapiWallpaperAbility(napi_env env, napi_value callback) : 
 
 NapiWallpaperAbility::~NapiWallpaperAbility()
 {
+    HILOG_ERROR("NapiWallpaperAbility::~NapiWallpaperAbility start!");
     WorkData *workData = new (std::nothrow) WorkData(env_, callback_);
     if (workData != nullptr) {
         uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
@@ -624,8 +625,10 @@ NapiWallpaperAbility::~NapiWallpaperAbility()
 
 void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType)
 {
+    HILOG_ERROR("NapiWallpaperAbility::OnColorsChange start!");
     WallpaperMgrService::WallpaperColorChangeListener::OnColorsChange(color, wallpaperType);
-    EventDataWorker *eventDataWorker = new (std::nothrow) EventDataWorker(this, color, wallpaperType);
+    EventDataWorker *eventDataWorker = new (std::nothrow)
+        EventDataWorker(this->shared_from_this(), color, wallpaperType);
     if (eventDataWorker == nullptr) {
         return;
     }
@@ -640,6 +643,9 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
         loop_, work, [](uv_work_t *work) {},
         [](uv_work_t *work, int status) {
             EventDataWorker *eventDataInner = reinterpret_cast<EventDataWorker *>(work->data);
+            if (eventDataInner == nullptr || (eventDataInner != nullptr && eventDataInner->listener == nullptr)) {
+                return;
+            }
             napi_handle_scope scope = nullptr;
             napi_open_handle_scope(eventDataInner->listener->env_, &scope);
             if (scope == nullptr) {
@@ -655,8 +661,8 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
             napi_value global = nullptr;
             napi_get_global(eventDataInner->listener->env_, &global);
             napi_value result;
-            napi_status callStatus =
-                napi_call_function(eventDataInner->listener->env_, global, callback, 2, args, &result);
+            napi_status callStatus = napi_call_function(eventDataInner->listener->env_, global, callback,
+                sizeof(args) / sizeof(args[0]), args, &result);
             if (callStatus != napi_ok) {
                 HILOG_ERROR("notify data change failed callStatus:%{public}d callback:%{public}p", callStatus,
                     callback);
