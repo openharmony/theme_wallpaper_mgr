@@ -19,6 +19,7 @@ ohos_shared_library("wallpaper_utils") {
     "dfx/hisysevent_adapter/fault_reporter.cpp",
     "dfx/hisysevent_adapter/statistic_reporter.cpp",
     "src/file_deal.cpp",
+    "src/memory_guard.cpp",
   ]
   include_dirs = [
     "dfx/hidumper_adapter",
