@@ -20,15 +20,18 @@ namespace OHOS {
 namespace WallpaperMgrService {
 MemoryGuard::MemoryGuard()
 {
+#ifdef CONFIG_USE_JEMALLOC_DFX_INTF
     int ret1 = mallopt(M_SET_THREAD_CACHE, M_THREAD_CACHE_DISABLE); // 0 indicates success
     int ret2 = mallopt(M_DELAYED_FREE, M_DELAYED_FREE_DISABLE);
     HILOG_DEBUG("disable tcache and delay free, result[%{public}d, %{public}d]", ret1, ret2);
+#endif
 }
 MemoryGuard::~MemoryGuard()
 {
+#ifdef CONFIG_USE_JEMALLOC_DFX_INTF
     int err = mallopt(M_FLUSH_THREAD_CACHE, 0);
     HILOG_DEBUG("flush cache, result: %{public}d", err);
+#endif
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS
-#include "memory_guard.h"
