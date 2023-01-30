@@ -19,6 +19,7 @@
 #include <vector>
 #include "hilog_wrapper.h"
 #include "hisysevent.h"
+#include "memory_guard.h"
 
 using namespace OHOS::WallpaperMgrService;
 namespace OHOS {
@@ -61,6 +62,7 @@ void StatisticReporter::StartTimerThread()
         running_ = true;
     }
     auto fun = []() {
+        MemoryGuard cacheGuard;
         while (true) {
             time_t current = time(nullptr);
             if (current == -1) {
