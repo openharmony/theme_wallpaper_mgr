@@ -45,7 +45,6 @@ ohos_fuzztest("WallpaperServiceFuzzTest") {
 
   deps = [
     "${ability_runtime_path}/frameworks/native/ability/native:abilitykit_native",
-    "${ability_runtime_services_path}/abilitymgr:abilityms",
     "${utils_path}:wallpaper_utils",
     "//base/security/access_token/interfaces/innerkits/token_setproc:libtoken_setproc",
     "//base/theme/wallpaper_mgr/services:wallpaper_service",
