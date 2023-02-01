@@ -493,7 +493,7 @@ bool WallpaperService::MakeCropWallpaper(int32_t wallpaperType)
     }
     decodeOpts.CropRect.height = bHeightFlag ? pyScrHeight : pictureHeight;
     decodeOpts.desiredSize.height = decodeOpts.CropRect.height;
-    decodeOpts.CropRect.width = bWidthFlag ? pyScrWidth : pictureHeight;
+    decodeOpts.CropRect.width = bWidthFlag ? pyScrWidth : pictureWidth;
     decodeOpts.desiredSize.width = decodeOpts.CropRect.width;
     wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     if (errorCode != 0) {
