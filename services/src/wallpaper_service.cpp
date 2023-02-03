@@ -463,7 +463,6 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     bool ret = false;
     OHOS::Media::SourceOptions opts;
     opts.formatHint = "image/jpeg";
-
     std::unique_ptr<OHOS::Media::ImageSource> imageSource = OHOS::Media::ImageSource::CreateImageSource(
         (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_ : wallpaperLockScreenFileFullPath_), opts,
         errorCode);
@@ -479,7 +478,8 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     int32_t pictrueWidth = wallpaperPixelMap->GetWidth();
     int pyScrWidth = GetWallpaperMinWidth();
     int pyScrHeight = GetWallpaperMinHeight();
-    bool bHeightFlag = false, bWidthFlag = false;
+    bool bHeightFlag = false;
+    bool bWidthFlag = false;
     if (pictrueHeight > pyScrHeight) {
         decodeOpts.CropRect.top = (pictrueHeight - pyScrHeight) / HALF;
         bHeightFlag = true;
@@ -494,17 +494,15 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     decodeOpts.desiredSize.width = decodeOpts.CropRect.width;
     wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     if (errorCode != 0) {
-        ret = false;
-    } else {
-        std::string tmpPath = wallpaperCropPath;
-        int64_t packedSize = WritePixelMapToFile(tmpPath, std::move(wallpaperPixelMap));
-        if (packedSize != 0) {
-            ret = FileDeal::CopyFile(
-                tmpPath, (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemCropFileFullPath_
-                                                            : wallpaperLockScreenCropFileFullPath_));
-            if (remove(tmpPath.c_str()) < 0) {
-                return false;
-            }
+        return false;
+    }
+    std::string tmpPath = wallpaperCropPath;
+    int64_t packedSize = WritePixelMapToFile(tmpPath, std::move(wallpaperPixelMap));
+    if (packedSize != 0) {
+        ret = FileDeal::CopyFile(tmpPath, (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemCropFileFullPath_
+                                                                             : wallpaperLockScreenCropFileFullPath_));
+        if (remove(tmpPath.c_str()) < 0) {
+            return false;
         }
     }
     HILOG_INFO("End Crop wallpaper: ret= %{public}d", ret);
