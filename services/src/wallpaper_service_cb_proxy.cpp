@@ -21,7 +21,8 @@ namespace WallpaperMgrService {
 int32_t WallpaperServiceCbProxy::OnCall(const int32_t wallpaperType)
 {
     HILOG_INFO("WallpaperServiceCbProxy::OnCall start");
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
