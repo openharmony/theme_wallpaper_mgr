@@ -28,7 +28,8 @@ constexpr const int32_t INVALID_FD = -1;
 std::vector<uint64_t> WallpaperServiceProxy::GetColors(int wallpaperType)
 {
     std::vector<uint64_t> colors;
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -54,7 +55,8 @@ std::vector<uint64_t> WallpaperServiceProxy::GetColors(int wallpaperType)
 
 int32_t WallpaperServiceProxy::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
 {
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -86,7 +88,8 @@ std::string WallpaperServiceProxy::getUrl()
 int32_t WallpaperServiceProxy::SetWallpaperByMap(int fd, int wallpaperType, int length)
 {
     HILOG_INFO(" SetWallpaperByMap ");
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -118,7 +121,8 @@ int32_t WallpaperServiceProxy::SetWallpaperByMap(int fd, int wallpaperType, int 
 int32_t WallpaperServiceProxy::SetWallpaperByFD(int fd, int wallpaperType, int length)
 {
     HILOG_INFO(" SetWallpaperByFD ");
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -149,7 +153,8 @@ int32_t WallpaperServiceProxy::SetWallpaperByFD(int fd, int wallpaperType, int l
 int32_t WallpaperServiceProxy::GetPixelMap(int wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
     HILOG_INFO(" WallpaperServiceProxy::getPixelMap --> start ");
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -177,7 +182,8 @@ int32_t WallpaperServiceProxy::GetPixelMap(int wallpaperType, IWallpaperService:
 int WallpaperServiceProxy::GetWallpaperId(int wallpaperType)
 {
     int iWallpaperId = 1;
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -199,7 +205,8 @@ int WallpaperServiceProxy::GetWallpaperId(int wallpaperType)
 int WallpaperServiceProxy::GetWallpaperMinHeight()
 {
     int iWallpaperMinHeight = 0;
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -221,7 +228,8 @@ int WallpaperServiceProxy::GetWallpaperMinHeight()
 int WallpaperServiceProxy::GetWallpaperMinWidth()
 {
     int iWallpaperMinWidth = 0;
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -243,7 +251,8 @@ int WallpaperServiceProxy::GetWallpaperMinWidth()
 bool WallpaperServiceProxy::IsChangePermitted()
 {
     bool bFlag = false;
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -264,7 +273,8 @@ bool WallpaperServiceProxy::IsChangePermitted()
 bool WallpaperServiceProxy::IsOperationAllowed()
 {
     bool bFlag = false;
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -284,7 +294,8 @@ bool WallpaperServiceProxy::IsOperationAllowed()
 
 int32_t WallpaperServiceProxy::ResetWallpaper(int wallpaperType)
 {
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -304,7 +315,8 @@ int32_t WallpaperServiceProxy::ResetWallpaper(int wallpaperType)
 bool WallpaperServiceProxy::On(sptr<IWallpaperColorChangeListener> listener)
 {
     HILOG_DEBUG("WallpaperServiceProxy::On in");
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
@@ -333,7 +345,8 @@ bool WallpaperServiceProxy::On(sptr<IWallpaperColorChangeListener> listener)
 bool WallpaperServiceProxy::Off(sptr<IWallpaperColorChangeListener> listener)
 {
     HILOG_DEBUG("WallpaperServiceProxy::Off in");
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
@@ -361,7 +374,8 @@ bool WallpaperServiceProxy::Off(sptr<IWallpaperColorChangeListener> listener)
 bool WallpaperServiceProxy::RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback)
 {
     HILOG_DEBUG("WallpaperServiceProxy::RegisterWallpaperCallback in");
-    MessageParcel data, reply;
+    MessageParcel data;
+    MessageParcel reply;
     MessageOption option;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
