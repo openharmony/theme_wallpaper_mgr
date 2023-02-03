@@ -494,7 +494,7 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     decodeOpts.desiredSize.width = decodeOpts.CropRect.width;
     wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     if (errorCode != 0) {
-        ret = false;
+        return false;
     }
     std::string tmpPath = wallpaperCropPath;
     int64_t packedSize = WritePixelMapToFile(tmpPath, std::move(wallpaperPixelMap));
