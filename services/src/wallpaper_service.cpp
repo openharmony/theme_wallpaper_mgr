@@ -466,7 +466,6 @@ bool WallpaperService::MakeCropWallpaper(int32_t wallpaperType)
     bool ret = false;
     OHOS::Media::SourceOptions opts;
     opts.formatHint = "image/jpeg";
-
     std::unique_ptr<OHOS::Media::ImageSource> imageSource = OHOS::Media::ImageSource::CreateImageSource(
         (wallpaperType == WALLPAPER_SYSTEM ? wallpaperSystemFileFullPath_ : wallpaperLockScreenFileFullPath_),
         opts, errorCode);
@@ -482,7 +481,8 @@ bool WallpaperService::MakeCropWallpaper(int32_t wallpaperType)
     int32_t pictureWidth = wallpaperPixelMap->GetWidth();
     int32_t pyScrWidth = GetWallpaperMinWidth();
     int32_t pyScrHeight = GetWallpaperMinHeight();
-    bool bHeightFlag = false, bWidthFlag = false;
+    bool bHeightFlag = false;
+    bool bWidthFlag = false;
     if (pictureHeight > pyScrHeight) {
         decodeOpts.CropRect.top = (pictureHeight - pyScrHeight) / HALF;
         bHeightFlag = true;
