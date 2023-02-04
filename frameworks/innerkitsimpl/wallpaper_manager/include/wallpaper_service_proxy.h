@@ -32,20 +32,21 @@ public:
     {
     }
     DISALLOW_COPY_AND_MOVE(WallpaperServiceProxy);
-    int32_t SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
-    int32_t GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo) override;
+    ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
+    ErrorCode GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo) override;
     std::vector<uint64_t> GetColors(int32_t wallpaperType) override;
-    int32_t GetFile(int32_t wallpaperType, int32_t &wallpaperFd) override;
+    ErrorCode GetFile(int32_t wallpaperType, int32_t &wallpaperFd) override;
     int32_t GetWallpaperId(int32_t wallpaperType) override;
     int32_t GetWallpaperMinHeight() override;
     int32_t GetWallpaperMinWidth() override;
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
-    int32_t ResetWallpaper(int wallpaperType) override;
+    ErrorCode ResetWallpaper(int wallpaperType) override;
     bool On(sptr<IWallpaperColorChangeListener> listener) override;
     bool Off(sptr<IWallpaperColorChangeListener> listener) override;
     bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) override;
     std::string GetUri();
+    ErrorCode ConvertIntToErrorCode(int32_t errorCode);
 
 private:
     bool StartSocket(std::string uri, std::string name);

@@ -20,6 +20,7 @@
         </preparer>
         <cleaner>
             <option name="shell" value="rm -rf /data/test/theme/"/>
+            <option name="shell" value="rm -rf /data/service/el1/public/wallpaper/99/"/>
         </cleaner>
     </target>
     <target name="wallpaper_permission_test">

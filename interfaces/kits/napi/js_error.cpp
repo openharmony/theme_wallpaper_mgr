@@ -16,8 +16,6 @@
 
 namespace OHOS::WallpaperNAPI {
 
-using namespace OHOS::WallpaperMgrService;
-
 void JsError::ThrowError(napi_env env, int32_t errorCode, const std::string &errorMessage)
 {
     HILOG_DEBUG("ThrowError in");
@@ -31,11 +29,11 @@ void JsError::ThrowError(napi_env env, int32_t errorCode, const std::string &err
     NAPI_CALL_RETURN_VOID(env, napi_throw(env, error));
 }
 
-JsErrorInfo JsError::ConvertErrorCode(int32_t wallpaperErrorCode)
+JsErrorInfo JsError::ConvertErrorCode(ErrorCode wallpaperErrorCode)
 {
     HILOG_DEBUG("ConvertErrorCode in");
     JsErrorInfo errorObject;
-    switch (static_cast<ErrorCode>(wallpaperErrorCode)) {
+    switch (wallpaperErrorCode) {
         case E_PARAMETERS_INVALID:
             errorObject.code = static_cast<int32_t>(ErrorThrowType::PARAMETER_ERROR);
             errorObject.message = PARAMETERERRORMESSAGE;

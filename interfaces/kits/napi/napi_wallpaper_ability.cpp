@@ -25,6 +25,7 @@
 #include "hilog_wrapper.h"
 #include "js_error.h"
 #include "uv_queue.h"
+#include "wallpaper_common.h"
 #include "wallpaper_manager.h"
 #include "wallpaper_manager_common_info.h"
 
@@ -33,6 +34,8 @@ namespace OHOS {
 namespace WallpaperNAPI {
 const int32_t ONE = 1;
 const int32_t TWO = 2;
+
+using namespace WallpaperMgrService;
 
 struct WorkData {
     napi_env env_;
@@ -172,10 +175,10 @@ void NapiWallpaperAbility::GetFileInner(std::shared_ptr<GetFileContextInfo> cont
     };
     auto exec = [context](Call::Context *ctx) {
         HILOG_DEBUG("exec GetFile");
-        int32_t wallpaperErrorCode =
+        ErrorCode wallpaperErrorCode =
             WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(context->wallpaperType,
                 context->wallpaperFd);
-        if (wallpaperErrorCode == static_cast<int32_t>(WallpaperMgrService::E_OK)) {
+        if (wallpaperErrorCode == E_OK) {
             context->status = napi_ok;
         } else {
             JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(wallpaperErrorCode);
@@ -374,10 +377,10 @@ void NapiWallpaperAbility::RestoreInner(std::shared_ptr<SetContextInfo> context)
     };
     auto exec = [context](Call::Context *ctx) {
         HILOG_DEBUG("exec ResetWallpaper");
-        int32_t wallpaperErrorCode =
+        ErrorCode wallpaperErrorCode =
             WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(context->wallpaperType);
         HILOG_DEBUG("exec ResetWallpaper[%{public}d]", wallpaperErrorCode);
-        if (wallpaperErrorCode == static_cast<int32_t>(WallpaperMgrService::E_OK)) {
+        if (wallpaperErrorCode == E_OK) {
             context->status = napi_ok;
         } else {
             JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(wallpaperErrorCode);
@@ -447,7 +450,7 @@ void NapiWallpaperAbility::SetImageExec(std::shared_ptr<SetContextInfo> context)
 {
     HILOG_DEBUG("SetImageExec in");
     auto exec = [context](Call::Context *ctx) {
-        int32_t wallpaperErrorCode = 0;
+        ErrorCode wallpaperErrorCode = E_UNKNOWN;
         if (context->uri.length() == 0) {
             HILOG_DEBUG("exec setWallpaper by pixelMap");
             if (!context->isPixelEmp) {
@@ -460,7 +463,7 @@ void NapiWallpaperAbility::SetImageExec(std::shared_ptr<SetContextInfo> context)
             wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(context->uri,
                 context->wallpaperType);
         }
-        if (wallpaperErrorCode == static_cast<int32_t>(WallpaperMgrService::E_OK)) {
+        if (wallpaperErrorCode == E_OK) {
             context->status = napi_ok;
         } else {
             JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(wallpaperErrorCode);
@@ -514,10 +517,10 @@ void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context
     auto exec = [context](Call::Context *ctx) {
         HILOG_DEBUG("exec GetImageInner");
         std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
-        int32_t wallpaperErrorCode =
+        ErrorCode wallpaperErrorCode =
             WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(context->wallpaperType, pixelMap);
         HILOG_DEBUG("exec wallpaperErrorCode[%{public}d]", wallpaperErrorCode);
-        if (wallpaperErrorCode == static_cast<int32_t>(WallpaperMgrService::E_OK) && pixelMap != nullptr) {
+        if (wallpaperErrorCode == E_OK && pixelMap != nullptr) {
             context->status = napi_ok;
             context->pixelMap = std::move(pixelMap);
         } else {

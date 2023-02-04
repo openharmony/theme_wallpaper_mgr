@@ -22,6 +22,7 @@
 
 #include "pixel_map.h"
 #include "wallpaper_color_change_listener.h"
+#include "wallpaper_common.h"
 #include "wallpaper_manager_common_info.h"
 
 /**
@@ -45,26 +46,27 @@ public:
     * Wallpaper set.
     * @param  uriOrPixelMap Wallpaper picture; wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or
     * WALLPAPER_LOCKSCREEN
-    * @return  true or false
+    * @return  ErrorCode
     */
-    virtual int32_t SetWallpaper(std::string uri, int32_t wallpaperType) = 0;
+    virtual ErrorCode SetWallpaper(std::string uri, int32_t wallpaperType) = 0;
 
     /**
     * Wallpaper set.
     * @param  pixelMap:picture pixelMap struct; wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or
     * WALLPAPER_LOCKSCREEN
-    * @return  true or false
+    * @return  ErrorCode
     */
-    virtual int32_t SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int32_t wallpaperType) = 0;
+    virtual ErrorCode SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int32_t wallpaperType) = 0;
 
     /**
         *Obtains the default pixel map of a wallpaper of the specified type.
-        * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
-        * @return image.PixelMap png type The bitmap file of wallpaper
+        * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN ;
+        * Obtains image.PixelMap png type The bitmap file of wallpaper
+        * @return ErrorCode
         * @permission ohos.permission.GET_WALLPAPER
         * @systemapi Hide this for inner system use.
     */
-    virtual int32_t GetPixelMap(int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap) = 0;
+    virtual ErrorCode GetPixelMap(int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap) = 0;
 
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
@@ -80,7 +82,7 @@ public:
      */
     virtual int32_t GetWallpaperId(int32_t wallpaperType) = 0;
 
-    virtual int32_t GetFile(int32_t wallpaperType, int32_t &wallpaperFd) = 0;
+    virtual ErrorCode GetFile(int32_t wallpaperType, int32_t &wallpaperFd) = 0;
 
     /**
      * Obtains the minimum height of the wallpaper.
@@ -111,7 +113,7 @@ public:
      * @param wallpaperType  Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @permission ohos.permission.SET_WALLPAPER
      */
-    virtual int32_t ResetWallpaper(std::int32_t wallpaperType) = 0;
+    virtual ErrorCode ResetWallpaper(std::int32_t wallpaperType) = 0;
 
     /**
      * Registers a listener for wallpaper color changes to receive notifications about the changes.

@@ -53,7 +53,7 @@ class Color;
 }
 namespace WallpaperMgrService {
 enum class ServiceRunningState { STATE_NOT_START, STATE_RUNNING };
-
+enum class FileType { WALLPAPER_FILE, CROP_FILE };
 class WallpaperService : public SystemAbility, public WallpaperServiceStub {
     DECLARE_SYSTEM_ABILITY(WallpaperService);
 
@@ -65,16 +65,16 @@ public:
     ~WallpaperService();
 
     static sptr<WallpaperService> GetInstance();
-    int32_t SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
-    int32_t GetPixelMap(int32_t wallpaperType, FdInfo &fdInfo) override;
+    ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
+    ErrorCode GetPixelMap(int32_t wallpaperType, FdInfo &fdInfo) override;
     std::vector<uint64_t> GetColors(int32_t wallpaperType) override;
-    int32_t GetFile(int32_t wallpaperType, int32_t &wallpaperFd) override;
+    ErrorCode GetFile(int32_t wallpaperType, int32_t &wallpaperFd) override;
     int32_t GetWallpaperId(int32_t wallpaperType) override;
     int32_t GetWallpaperMinHeight() override;
     int32_t GetWallpaperMinWidth() override;
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
-    int32_t ResetWallpaper(int32_t wallpaperType) override;
+    ErrorCode ResetWallpaper(int32_t wallpaperType) override;
     bool On(sptr<IWallpaperColorChangeListener> listener) override;
     bool Off(sptr<IWallpaperColorChangeListener> listener) override;
     bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) override;
@@ -82,6 +82,7 @@ public:
 
 public:
     static void OnBootPhase();
+    void OnInitUser(int32_t newUserId);
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
     void ReporterUsageTimeStatistic();
     void RegisterSubscriber(int32_t times);
@@ -95,33 +96,35 @@ protected:
 private:
     int32_t GetUserId();
     int32_t GetDisplayId();
+    void InitQueryUserId(int32_t times);
     void InitData();
+    void InitResources(int32_t userId, WallpaperType wallpaperType);
+    bool InitUsersOnBoot();
     int64_t WritePixelMapToFile(const std::string &filePath, std::unique_ptr<OHOS::Media::PixelMap> pixelMap);
     bool CompareColor(const uint64_t &localColor, const ColorManager::Color &color);
-    bool SaveColor(int32_t wallpaperType);
+    bool SaveColor(int32_t userId, WallpaperType wallpaperType);
     void LoadSettingsLocked(int32_t userId, bool keepDimensionHints);
-    std::string GetWallpaperDir();
-    void MigrateFromOld();
-    bool GetWallpaperSafeLocked(int32_t userId, int32_t wpType, WallpaperData paperdata);
-    void ClearWallpaperLocked(int32_t userId, int32_t wpType);
-    int32_t SetDefaultDateForWallpaper(int32_t userId, int32_t wpType);
+    std::string GetWallpaperDir(int32_t userId, WallpaperType wallpaperType);
+    bool GetFileNameFromMap(int32_t userId, WallpaperType wallpaperType, FileType fileType, std::string &fileName);
+    bool GetWallpaperSafeLocked(int32_t userId, WallpaperType wallpaperType, WallpaperData &wallpaperData);
+    void ClearWallpaperLocked(int32_t userId, WallpaperType wallpaperType);
+    ErrorCode SetDefaultDataForWallpaper(int32_t userId, WallpaperType wallpaperType);
     int32_t MakeWallpaperIdLocked();
     bool WPCheckCallingPermission(const std::string &permissionName);
     bool WPGetBundleNameByUid(std::int32_t uid, std::string &bname);
-    bool MakeCropWallpaper(int32_t wallpaperType);
-    int32_t SetWallpaperBackupData(std::string uriOrPixelMap, int32_t wallpaperType);
+    bool MakeCropWallpaper(WallpaperType wallpaperType);
+    ErrorCode SetWallpaperBackupData(const std::string &uriOrPixelMap, WallpaperType wallpaperType);
     int32_t ConnectExtensionAbility(const OHOS::AAFwk::Want &want);
-    int32_t GetFilePath(int32_t wallpaperType, std::string &filePath);
     bool IsSystemApp();
-    int32_t GetImageFd(int32_t wallpaperType, int32_t &fd);
-    int32_t GetImageSize(int32_t wallpaperType, int32_t &size);
+    ErrorCode GetImageFd(WallpaperType wallpaperType, int32_t &fd);
+    ErrorCode GetImageSize(WallpaperType wallpaperType, int32_t &size);
+    bool RestoreUserResources(const WallpaperData &wallpaperData, WallpaperType wallpaperType);
+    bool InitUserDir(int32_t userId);
 
 private:
     int32_t Init();
     ServiceRunningState state_;
     void InitServiceHandler();
-    bool CopySystemWallpaper();
-    bool CopyScreenLockWallpaper();
     static std::mutex instanceLock_;
     static sptr<WallpaperService> instance_;
     static std::shared_ptr<AppExecFwk::EventHandler> serviceHandler_;
@@ -138,10 +141,10 @@ private:
     typedef std::list<WallpaperColorChangeListener *> LISTENERLIST;
     LISTENERLIST colorListeners_;
     COLORSLISTENERMAP colorsChangedListeners_;
-    ConcurrentMap<int32_t, WallpaperData> wallpaperMap_;
+    ConcurrentMap<int32_t, WallpaperData> systemWallpaperMap_;
     ConcurrentMap<int32_t, WallpaperData> lockWallpaperMap_;
     atomic<int32_t> wallpaperId_;
-    int32_t userId_;
+    atomic<int32_t> userId_ = 0;
     sptr<IWallpaperCallback> callbackProxy = nullptr;
 
     std::string name_;

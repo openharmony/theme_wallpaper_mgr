@@ -23,30 +23,31 @@
 
 namespace OHOS {
 namespace WallpaperMgrService {
+constexpr mode_t MODE = 0770;
 FileDeal::FileDeal(void)
 {
 }
 FileDeal::~FileDeal()
 {
 }
-bool FileDeal::DirIsExist(std::string path)
+bool FileDeal::IsDirExist(std::string path)
 {
     DIR *dp;
     if ((dp = opendir(path.c_str())) == NULL) {
-        HILOG_INFO("FileDeal : opendir  %{public}s is not exist", path.c_str());
+        HILOG_INFO("FileDeal : openDir  %{public}s is not exist", path.c_str());
         return false;
     }
     closedir(dp);
     return true;
 }
 
-bool FileDeal::Mkdir(std::string path)
+bool FileDeal::Mkdir(const std::string &path)
 {
-    if (!DirIsExist(path)) {
-        int isCreate = ::mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
-        HILOG_INFO("FileDeal : mkdir result= %{public}d,errinfo=%{public}s ,path =  %{public}s ", isCreate,
-            strerror(errno), path.c_str());
-        return isCreate == 0 ? true : false;
+    if (!IsDirExist(path)) {
+        if (mkdir(path.c_str(), MODE) != 0) {
+            HILOG_INFO("FileDeal : mkdir errInfo=%{public}s ,path = %{public}s ", strerror(errno), path.c_str());
+            return false;
+        }
     }
     return true;
 }
@@ -78,12 +79,22 @@ bool FileDeal::CopyFile(const std::string &sourceFile, const std::string &newFil
     return true;
 }
 
+bool FileDeal::DeleteFile(const std::string &sourceFile)
+{
+    if (remove(sourceFile.c_str()) < 0) {
+        HILOG_INFO("Failed to remove source file");
+        return false;
+    }
+    return true;
+}
+
 bool FileDeal::FileIsExist(const std::string &name)
 {
-    if (access(name.c_str(), F_OK) == 0) {
-        return true;
+    if (access(name.c_str(), F_OK) != 0) {
+        HILOG_INFO("FileDeal : access errInfo=%{public}s", strerror(errno));
+        return false;
     }
-    return false;
+    return true;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

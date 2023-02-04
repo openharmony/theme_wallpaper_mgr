@@ -25,11 +25,11 @@ class FileDeal {
 public:
     FileDeal();
     ~FileDeal();
-    bool DirIsExist(std::string path);
-    bool Mkdir(std::string path);
+    static bool IsDirExist(std::string path);
+    static bool Mkdir(const std::string &path);
     static bool CopyFile(const std::string &sourceFile, const std::string &newFile);
-    int DeleteFile(char *SourceFile);
-    bool FileIsExist(const std::string &name);
+    static bool DeleteFile(const std::string &sourceFile);
+    static bool FileIsExist(const std::string &name);
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
