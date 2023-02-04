@@ -333,15 +333,9 @@ bool WallpaperService::InitUserDir(int32_t userId)
 
 bool WallpaperService::RestoreUserResources(const WallpaperData &wallpaperData, WallpaperType wallpaperType)
 {
-<<<<<<< HEAD
     const std::string &wallpaperDefaultPath = wallpaperType == WallpaperType::WALLPAPER_SYSTEM
                                                   ? WALLPAPER_DEFAULT_FILEFULLPATH
                                                   : WALLPAPER_DEFAULT_LOCK_FILEFULLPATH;
-=======
-    std::string &wallpaperDefaultPath = wallpaperType == WallpaperType::WALLPAPER_SYSTEM
-                                           ? WALLPAPER_DEFAULT_FILEFULLPATH
-                                           : WALLPAPER_DEFAULT_LOCK_FILEFULLPATH;
->>>>>>> 09383e9 (Update services/src/wallpaper_service.cpp)
     if (!FileDeal::FileIsExist(wallpaperDefaultPath) ||
         !FileDeal::FileIsExist(GetWallpaperDir(wallpaperData.userId_, wallpaperType))) {
         HILOG_INFO("Copy file path is not exist");
