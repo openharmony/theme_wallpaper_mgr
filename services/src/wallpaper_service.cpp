@@ -1027,10 +1027,6 @@ ErrorCode WallpaperService::GetImageFd(WallpaperType wallpaperType, int32_t &fd)
 {
     HILOG_INFO("WallpaperService::GetImageFd start ");
     std::string filePathName;
-    int i = userId_;
-    HILOG_INFO("userId_ = %{public}d", i);
-    int ii = userId_.load();
-    HILOG_INFO("userId_ = %{public}d", ii);
     if (!GetFileNameFromMap(userId_, wallpaperType, FileType::CROP_FILE, filePathName)) {
         return E_DEAL_FAILED;
     }
