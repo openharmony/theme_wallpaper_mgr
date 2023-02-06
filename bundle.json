@@ -32,7 +32,6 @@
           "common_event_service",
           "hiview",
           "ipc",
-          "ipc_js",
           "hitrace_native",
           "hisysevent_native",
           "ability_runtime",
