@@ -293,7 +293,8 @@ void WallpaperService::OnInitUser(int32_t userId)
     InitResources(userId, WALLPAPER_LOCKSCREEN);
 }
 
-void WallpaperService::InitResources(int32_t userId, WallpaperType wallpaperType){
+void WallpaperService::InitResources(int32_t userId, WallpaperType wallpaperType)
+{
     HILOG_INFO("WallpaperService InitResources");
     std::string pathName;
     if (!GetFileNameFromMap(userId, wallpaperType, FileType::CROP_FILE, pathName)) {
