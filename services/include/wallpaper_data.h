@@ -41,14 +41,8 @@ public:
     WallpaperData();
     // Called during initialization of a given user's wallpaper bookkeeping
     bool cropExists();
-    /* {
-        return cropFile.exists();
-    } */
-
     bool sourceExists();
-    /* {
-        return wallpaperFile.exists();
-    } */
+
 private:
 };
 }
