@@ -120,7 +120,7 @@ sptr<WallpaperService> WallpaperService::GetInstance()
 int32_t WallpaperService::Init()
 {
     InitData();
-    InitUsersOnBoot();
+    InitQueryUserId(QUERY_USER_MAX_RETRY_TIMES);
     bool ret = Publish(this);
     if (!ret) {
         HILOG_ERROR("Publish failed.");
@@ -222,6 +222,7 @@ void WallpaperService::InitData()
     systemWallpaperColor_ = 0;
     lockWallpaperColor_ = 0;
     colorChangeListenerMap_.clear();
+    OnInitUser(userId_);
     HILOG_INFO("WallpaperService::initData --> end ");
 }
 
@@ -251,22 +252,32 @@ void WallpaperService::StartWallpaperExtension()
     }
 }
 
-void WallpaperService::InitUsersOnBoot()
+void WallpaperService::InitQueryUserId(int32_t times)
+{
+    times--;
+    bool ret = InitUsersOnBoot();
+    if (!ret && times > 0) {
+        HILOG_INFO("InitQueryUserId failed");
+        auto callback = [this, times]() { InitQueryUserId(times); };
+        serviceHandler_->PostTask(callback, QUERY_USER_ID_INTERVAL);
+    }
+}
+
+bool WallpaperService::InitUsersOnBoot()
 {
     HILOG_INFO("WallpaperService InitUsersOnBoot in");
     std::vector<int32_t> userIds;
-    bool ret = BlockRetry(QUERY_USER_ID_INTERVAL, QUERY_USER_MAX_RETRY_TIMES, [&userIds]() -> bool {
-        return (AccountSA::OsAccountManager::QueryActiveOsAccountIds(userIds) == ERR_OK) && (!userIds.empty());
-    });
-    HILOG_INFO("BlockRetry is success: %d", ret);
-    if (ret && !userIds.empty()) {
-        for (auto userId : userIds) {
-            OnInitUser(userId);
-        }
-        userId_ = userIds[0];
-        SaveColor(userId_, WALLPAPER_SYSTEM);
-        SaveColor(userId_, WALLPAPER_LOCKSCREEN);
+    if (AccountSA::OsAccountManager::QueryActiveOsAccountIds(userIds) != ERR_OK || userIds.empty()) {
+        HILOG_INFO("WallpaperService: failed to get current userIds");
+        return false;
     }
+    HILOG_INFO("WallpaperService::get current userIds success, Current userId: %{public}d", userIds[0]);
+    for (auto userId : userIds) {
+        OnInitUser(userId);
+    }
+    SaveColor(userId_, WALLPAPER_SYSTEM);
+    SaveColor(userId_, WALLPAPER_LOCKSCREEN);
+    return true;
 }
 
 void WallpaperService::OnInitUser(int32_t userId)
@@ -635,7 +646,6 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, const std::st
         HILOG_ERROR("GetWallpaperSafeLocked failed !");
         return E_DEAL_FAILED;
     }
-
     wallpaperData.wallpaperId = MakeWallpaperIdLocked();
     if (!FileDeal::CopyFile(uriOrPixelMap, wallpaperData.wallpaperFile)) {
         HILOG_ERROR("CopyFile failed !");
@@ -711,7 +721,6 @@ int32_t WallpaperService::GetWallpaperId(int32_t wallpaperType)
 {
     HILOG_INFO("WallpaperService::GetWallpaperId --> start ");
     int32_t iWallpaperId = -1;
-
     if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         auto iterator = lockWallpaperMap_.Find(userId_);
         if (iterator.first) {
