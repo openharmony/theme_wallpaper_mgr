@@ -56,7 +56,7 @@ public:
     * WALLPAPER_LOCKSCREEN
     * @return  ErrorCode
     */
-    virtual ErrorCode SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int32_t wallpaperType) = 0;
+    virtual ErrorCode SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType) = 0;
 
     /**
         *Obtains the default pixel map of a wallpaper of the specified type.

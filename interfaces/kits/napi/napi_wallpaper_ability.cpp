@@ -429,15 +429,15 @@ void NapiWallpaperAbility::SetImageInput(std::shared_ptr<SetContextInfo> context
         if (valueType == napi_string) {
             context->uri = WallpaperJSUtil::Convert2String(env, argv[0]);
         } else {
-            std::shared_ptr<PixelMap> tmpPixelMap = PixelMapNapi::GetPixelMap(env, argv[0]);
-            if (tmpPixelMap == nullptr) {
+            std::shared_ptr<PixelMap> pixelMap = PixelMapNapi::GetPixelMap(env, argv[0]);
+            if (pixelMap == nullptr) {
                 HILOG_ERROR("PixelMapNapi::GetPixelMap error");
                 context->isPixelEmp = true;
                 return napi_generic_failure;
             } else {
                 context->isPixelEmp = false;
             }
-            context->pixelMap = std::make_unique<PixelMap>(*tmpPixelMap);
+            context->pixelMap = pixelMap;
         }
         napi_get_value_int32(env, argv[1], &context->wallpaperType);
         HILOG_DEBUG("input wallpaperType : %{public}d", context->wallpaperType);
