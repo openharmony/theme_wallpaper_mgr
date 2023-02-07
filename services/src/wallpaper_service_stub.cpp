@@ -243,8 +243,9 @@ int32_t WallpaperServiceStub::OnWallpaperOn(MessageParcel &data, MessageParcel &
     sptr<IWallpaperColorChangeListener> WallpaperListenerProxy = iface_cast<IWallpaperColorChangeListener>(remote);
 
     bool status = On(std::move(WallpaperListenerProxy));
-    if (!reply.WriteBool(status)) {
-        HILOG_ERROR("WriteBool failed");
+    int32_t ret = status ? static_cast<int32_t>(E_OK) : static_cast<int32_t>(E_DEAL_FAILED);
+    if (!reply.WriteInt32(ret)) {
+        HILOG_ERROR("WriteInt32 failed");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     HILOG_DEBUG("WallpaperServiceStub::OnWallpaperOn out");
@@ -262,8 +263,9 @@ int32_t WallpaperServiceStub::OnWallpaperOff(MessageParcel &data, MessageParcel 
         sptr<IWallpaperColorChangeListener> WallpaperListenerProxy = iface_cast<IWallpaperColorChangeListener>(remote);
         status = Off(std::move(WallpaperListenerProxy));
     }
-    if (!reply.WriteBool(status)) {
-        HILOG_ERROR("WriteBool failed");
+    int32_t ret = status ? static_cast<int32_t>(E_OK) : static_cast<int32_t>(E_DEAL_FAILED);
+    if (!reply.WriteInt32(ret)) {
+        HILOG_ERROR("WriteInt32 failed");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     HILOG_DEBUG("WallpaperServiceStub::OnWallpaperOff out");
@@ -282,7 +284,8 @@ int32_t WallpaperServiceStub::OnRegisterWallpaperCallback(MessageParcel &data, M
     sptr<IWallpaperCallback> callbackProxy = iface_cast<IWallpaperCallback>(object);
 
     status = RegisterWallpaperCallback(callbackProxy);
-    if (!reply.WriteInt32(status)) {
+    int32_t ret = status ? static_cast<int32_t>(E_OK) : static_cast<int32_t>(E_DEAL_FAILED);
+    if (!reply.WriteInt32(ret)) {
         HILOG_ERROR("WriteInt32 failed");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }

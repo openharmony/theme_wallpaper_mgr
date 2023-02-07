@@ -304,8 +304,10 @@ bool WallpaperServiceProxy::On(sptr<IWallpaperColorChangeListener> listener)
         return false;
     }
 
+    int32_t status = reply.ReadInt32();
+    bool ret = status == static_cast<int32_t>(E_OK);
     HILOG_DEBUG("WallpaperServiceProxy::On out");
-    return reply.ReadBool();
+    return ret;
 }
 
 bool WallpaperServiceProxy::Off(sptr<IWallpaperColorChangeListener> listener)
@@ -331,8 +333,10 @@ bool WallpaperServiceProxy::Off(sptr<IWallpaperColorChangeListener> listener)
         return false;
     }
 
+    int32_t status = reply.ReadInt32();
+    bool ret = status == static_cast<int32_t>(E_OK);
     HILOG_DEBUG("WallpaperServiceProxy::Off out");
-    return reply.ReadBool();
+    return ret;
 }
 
 bool WallpaperServiceProxy::RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback)
@@ -359,9 +363,10 @@ bool WallpaperServiceProxy::RegisterWallpaperCallback(const sptr<IWallpaperCallb
         HILOG_ERROR(" WallpaperServiceProxy::REGISTER_CALLBACK fail, result = %{public}d ", result);
         return false;
     }
-
+    int32_t status = reply.ReadInt32();
+    bool ret = status == static_cast<int32_t>(E_OK);
     HILOG_DEBUG("WallpaperServiceProxy::REGISTER_CALLBACK out");
-    return reply.ReadBool();
+    return ret;
 }
 
 ErrorCode WallpaperServiceProxy::ConvertIntToErrorCode(int32_t errorCode)

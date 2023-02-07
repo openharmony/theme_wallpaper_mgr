@@ -29,7 +29,7 @@ public:
     static bool Mkdir(const std::string &path);
     static bool CopyFile(const std::string &sourceFile, const std::string &newFile);
     static bool DeleteFile(const std::string &sourceFile);
-    static bool FileIsExist(const std::string &name);
+    static bool IsFileExist(const std::string &name);
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

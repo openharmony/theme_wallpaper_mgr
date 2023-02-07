@@ -94,12 +94,10 @@ protected:
     void OnAddSystemAbility(int32_t systemAbilityId, const std::string &deviceId) override;
 
 private:
-    int32_t GetUserId();
     int32_t GetDisplayId();
-    void InitQueryUserId(int32_t times);
     void InitData();
     void InitResources(int32_t userId, WallpaperType wallpaperType);
-    bool InitUsersOnBoot();
+    void InitUsersOnBoot();
     int64_t WritePixelMapToFile(const std::string &filePath, std::unique_ptr<OHOS::Media::PixelMap> pixelMap);
     bool CompareColor(const uint64_t &localColor, const ColorManager::Color &color);
     bool SaveColor(int32_t userId, WallpaperType wallpaperType);
@@ -112,14 +110,15 @@ private:
     int32_t MakeWallpaperIdLocked();
     bool WPCheckCallingPermission(const std::string &permissionName);
     bool WPGetBundleNameByUid(std::int32_t uid, std::string &bname);
-    bool MakeCropWallpaper(WallpaperType wallpaperType);
-    ErrorCode SetWallpaperBackupData(const std::string &uriOrPixelMap, WallpaperType wallpaperType);
+    bool MakeCropWallpaper(int32_t userId, WallpaperType wallpaperType);
+    ErrorCode SetWallpaperBackupData(int32_t userId, const std::string &uriOrPixelMap, WallpaperType wallpaperType);
     int32_t ConnectExtensionAbility(const OHOS::AAFwk::Want &want);
     bool IsSystemApp();
-    ErrorCode GetImageFd(WallpaperType wallpaperType, int32_t &fd);
-    ErrorCode GetImageSize(WallpaperType wallpaperType, int32_t &size);
+    ErrorCode GetImageFd(int32_t userId, WallpaperType wallpaperType, int32_t &fd);
+    ErrorCode GetImageSize(int32_t userId, WallpaperType wallpaperType, int32_t &size);
     bool RestoreUserResources(const WallpaperData &wallpaperData, WallpaperType wallpaperType);
     bool InitUserDir(int32_t userId);
+    bool BlockRetry(int64_t interval, uint32_t maxRetryTimes, std::function<bool()> function);
 
 private:
     int32_t Init();

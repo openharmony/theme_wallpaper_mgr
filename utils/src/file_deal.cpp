@@ -23,7 +23,7 @@
 
 namespace OHOS {
 namespace WallpaperMgrService {
-constexpr mode_t MODE = 0770;
+constexpr mode_t MODE = 0740;
 FileDeal::FileDeal(void)
 {
 }
@@ -88,7 +88,7 @@ bool FileDeal::DeleteFile(const std::string &sourceFile)
     return true;
 }
 
-bool FileDeal::FileIsExist(const std::string &name)
+bool FileDeal::IsFileExist(const std::string &name)
 {
     if (access(name.c_str(), F_OK) != 0) {
         HILOG_INFO("FileDeal : access errInfo=%{public}s", strerror(errno));

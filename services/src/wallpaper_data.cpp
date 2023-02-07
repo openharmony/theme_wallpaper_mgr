@@ -20,21 +20,11 @@
 namespace OHOS {
 namespace WallpaperMgrService {
 WallpaperData::WallpaperData(int32_t userId, std::string wallpaperFileName, std::string cropFileName)
-    : userId_(userId), wallpaperFile_(wallpaperFileName), cropFile_(cropFileName), wallpaperId_(-1), allowBackup(false)
+    : userId(userId), wallpaperFile(wallpaperFileName), cropFile(cropFileName), wallpaperId(-1), allowBackup(false)
 {
 }
-WallpaperData::WallpaperData() : userId_(0), wallpaperId_(-1), allowBackup(false)
+WallpaperData::WallpaperData() : userId(0), wallpaperId(-1), allowBackup(false)
 {
-}
-// Called during initialization of a given user's wallpaper bookkeeping
-bool WallpaperData::cropExists()
-{
-    return OHOS::FileExists(cropFile_);
-}
-
-bool WallpaperData::sourceExists()
-{
-    return OHOS::FileExists(wallpaperFile_);
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

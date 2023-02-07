@@ -703,9 +703,9 @@ HWTEST_F(WallpaperTest, FILE_DEAL001, TestSize.Level0)
     EXPECT_EQ(isExist, true);
     isExist = fileOperation.Mkdir("/data/test/theme/errorURI/");
     EXPECT_EQ(isExist, true);
-    isExist = fileOperation.FileIsExist(URI);
+    isExist = fileOperation.IsFileExist(URI);
     EXPECT_EQ(isExist, true);
-    isExist = fileOperation.FileIsExist("/data/test/theme/wallpaper/errorURI");
+    isExist = fileOperation.IsFileExist("/data/test/theme/wallpaper/errorURI");
     EXPECT_EQ(isExist, false);
 }
 /*********************   FILE_DEAL   *********************/
@@ -757,13 +757,13 @@ HWTEST_F(WallpaperTest, AddUsersDEAL001, TestSize.Level0)
     std::string data(EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED);
     EventFwk::CommonEventData eventData(want, code, data);
     subscriber->OnReceiveEvent(eventData);
-    ret = FileDeal::FileIsExist(USER_SYSTEM_FILE);
+    ret = FileDeal::IsFileExist(USER_SYSTEM_FILE);
     EXPECT_EQ(ret, true);
-    ret = FileDeal::FileIsExist(USER_SYSTEM_CROP_FILE);
+    ret = FileDeal::IsFileExist(USER_SYSTEM_CROP_FILE);
     EXPECT_EQ(ret, true);
-    ret = FileDeal::FileIsExist(USER_LOCKSCREEN_FILE);
+    ret = FileDeal::IsFileExist(USER_LOCKSCREEN_FILE);
     EXPECT_EQ(ret, true);
-    ret = FileDeal::FileIsExist(USER_LOCKSCREEN_CROP_FILE);
+    ret = FileDeal::IsFileExist(USER_LOCKSCREEN_CROP_FILE);
     EXPECT_EQ(ret, true);
 }
 /*********************   USER_DEAL   *********************/
