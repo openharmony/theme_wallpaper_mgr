@@ -24,7 +24,6 @@
 namespace OHOS {
 namespace WallpaperMgrService {
 using namespace OHOS::HiviewDFX;
-constexpr const int32_t INVALID_FD = -1;
 std::vector<uint64_t> WallpaperServiceProxy::GetColors(int32_t wallpaperType)
 {
     std::vector<uint64_t> colors;
@@ -53,7 +52,7 @@ std::vector<uint64_t> WallpaperServiceProxy::GetColors(int32_t wallpaperType)
     return colors;
 }
 
-int32_t WallpaperServiceProxy::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
+ErrorCode WallpaperServiceProxy::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
 {
     MessageParcel data;
     MessageParcel reply;
@@ -61,20 +60,20 @@ int32_t WallpaperServiceProxy::GetFile(int32_t wallpaperType, int32_t &wallpaper
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return INVALID_FD;
+        return E_WRITE_PARCEL_ERROR;
     }
     if (!data.WriteInt32(wallpaperType)) {
         HILOG_ERROR(" Failed to WriteInt32 ");
-        return INVALID_FD;
+        return E_WRITE_PARCEL_ERROR;
     }
 
     int32_t result = Remote()->SendRequest(GET_FILE, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" get file result = %{public}d ", result);
-        return INVALID_FD;
+        return E_DEAL_FAILED;
     }
-    int32_t wallpaperErrorCode = reply.ReadInt32();
-    if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
+    ErrorCode wallpaperErrorCode = ConvertIntToErrorCode(reply.ReadInt32());
+    if (wallpaperErrorCode == E_OK) {
         wallpaperFd = reply.ReadFileDescriptor();
     }
     return wallpaperErrorCode;
@@ -85,7 +84,7 @@ std::string WallpaperServiceProxy::GetUri()
     HILOG_INFO("return serviceReadUri = %{public}s ", serviceReadUri.c_str());
     return serviceReadUri;
 }
-int32_t WallpaperServiceProxy::SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length)
+ErrorCode WallpaperServiceProxy::SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length)
 {
     HILOG_INFO(" SetWallpaperByMap ");
     MessageParcel data;
@@ -94,32 +93,32 @@ int32_t WallpaperServiceProxy::SetWallpaper(int32_t fd, int32_t wallpaperType, i
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
+        return E_WRITE_PARCEL_ERROR;
     }
     if (!data.WriteFileDescriptor(fd)) {
         HILOG_ERROR(" Failed to WriteFileDescriptor ");
-        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
+        return E_WRITE_PARCEL_ERROR;
     }
 
     if (!data.WriteInt32(wallpaperType)) {
         HILOG_ERROR(" Failed to WriteInt32 ");
-        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
+        return E_WRITE_PARCEL_ERROR;
     }
     if (!data.WriteInt32(length)) {
         HILOG_ERROR(" Failed to WriteInt32 ");
-        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
+        return E_WRITE_PARCEL_ERROR;
     }
 
     int32_t result = Remote()->SendRequest(SET_WALLPAPER, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperCallbackProxy::SetWallpaper fail, result = %{public}d ", result);
-        return static_cast<int32_t>(E_DEAL_FAILED);
+        return E_DEAL_FAILED;
     }
 
-    return reply.ReadInt32();
+    return ConvertIntToErrorCode(reply.ReadInt32());
 }
 
-int32_t WallpaperServiceProxy::GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
+ErrorCode WallpaperServiceProxy::GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
     HILOG_INFO(" WallpaperServiceProxy::getPixelMap --> start ");
     MessageParcel data;
@@ -128,20 +127,20 @@ int32_t WallpaperServiceProxy::GetPixelMap(int32_t wallpaperType, IWallpaperServ
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
+        return E_WRITE_PARCEL_ERROR;
     }
 
     if (!data.WriteInt32(wallpaperType)) {
         HILOG_ERROR(" Failed to WriteInt32 ");
-        return static_cast<int32_t>(E_DEAL_FAILED);
+        return E_DEAL_FAILED;
     }
     int32_t result = Remote()->SendRequest(GET_PIXELMAP, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperServiceProxy::GetPixelMap fail, result = %{public}d ", result);
-        return static_cast<int32_t>(E_DEAL_FAILED);
+        return E_DEAL_FAILED;
     }
-    int32_t wallpaperErrorCode = reply.ReadInt32();
-    if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
+    ErrorCode wallpaperErrorCode = ConvertIntToErrorCode(reply.ReadInt32());
+    if (wallpaperErrorCode == E_OK) {
         fdInfo.size = reply.ReadInt32();
         fdInfo.fd = reply.ReadFileDescriptor();
     }
@@ -261,7 +260,7 @@ bool WallpaperServiceProxy::IsOperationAllowed()
     return bFlag;
 }
 
-int32_t WallpaperServiceProxy::ResetWallpaper(int32_t wallpaperType)
+ErrorCode WallpaperServiceProxy::ResetWallpaper(int32_t wallpaperType)
 {
     MessageParcel data;
     MessageParcel reply;
@@ -269,16 +268,16 @@ int32_t WallpaperServiceProxy::ResetWallpaper(int32_t wallpaperType)
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
+        return E_WRITE_PARCEL_ERROR;
     }
 
     data.WriteInt32(wallpaperType);
     int32_t result = Remote()->SendRequest(RESET_WALLPAPER, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperServiceProxy::ResetWallpaper fail, result = %{public}d ", result);
-        return static_cast<int32_t>(E_DEAL_FAILED);
+        return E_DEAL_FAILED;
     }
-    return reply.ReadInt32();
+    return ConvertIntToErrorCode(reply.ReadInt32());
 }
 
 bool WallpaperServiceProxy::On(sptr<IWallpaperColorChangeListener> listener)
@@ -306,7 +305,7 @@ bool WallpaperServiceProxy::On(sptr<IWallpaperColorChangeListener> listener)
     }
 
     int32_t status = reply.ReadInt32();
-    bool ret = (status == static_cast<int32_t>(E_OK)) ? true : false;
+    bool ret = status == static_cast<int32_t>(E_OK);
     HILOG_DEBUG("WallpaperServiceProxy::On out");
     return ret;
 }
@@ -335,7 +334,7 @@ bool WallpaperServiceProxy::Off(sptr<IWallpaperColorChangeListener> listener)
     }
 
     int32_t status = reply.ReadInt32();
-    bool ret = (status == static_cast<int32_t>(E_OK)) ? true : false;
+    bool ret = status == static_cast<int32_t>(E_OK);
     HILOG_DEBUG("WallpaperServiceProxy::Off out");
     return ret;
 }
@@ -364,11 +363,37 @@ bool WallpaperServiceProxy::RegisterWallpaperCallback(const sptr<IWallpaperCallb
         HILOG_ERROR(" WallpaperServiceProxy::REGISTER_CALLBACK fail, result = %{public}d ", result);
         return false;
     }
-
     int32_t status = reply.ReadInt32();
-    bool ret = (status == static_cast<int32_t>(E_OK)) ? true : false;
+    bool ret = status == static_cast<int32_t>(E_OK);
     HILOG_DEBUG("WallpaperServiceProxy::REGISTER_CALLBACK out");
     return ret;
+}
+
+ErrorCode WallpaperServiceProxy::ConvertIntToErrorCode(int32_t errorCode)
+{
+    ErrorCode wallpaperErrorCode = E_UNKNOWN;
+    switch (errorCode) {
+        case static_cast<int32_t>(E_OK):
+        case static_cast<int32_t>(E_SA_DIED):
+        case static_cast<int32_t>(E_READ_PARCEL_ERROR):
+        case static_cast<int32_t>(E_WRITE_PARCEL_ERROR):
+        case static_cast<int32_t>(E_PUBLISH_FAIL):
+        case static_cast<int32_t>(E_TRANSACT_ERROR):
+        case static_cast<int32_t>(E_DEAL_FAILED):
+        case static_cast<int32_t>(E_PARAMETERS_INVALID):
+        case static_cast<int32_t>(E_SET_RTC_FAILED):
+        case static_cast<int32_t>(E_NOT_FOUND):
+        case static_cast<int32_t>(E_NO_PERMISSION):
+        case static_cast<int32_t>(E_FILE_ERROR):
+        case static_cast<int32_t>(E_IMAGE_ERRCODE):
+        case static_cast<int32_t>(E_NO_MEMORY):
+        case static_cast<int32_t>(E_NOT_SYSTEM_APP):
+            wallpaperErrorCode = static_cast<ErrorCode>(errorCode);
+            break;
+        default:
+            break;
+    }
+    return wallpaperErrorCode;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

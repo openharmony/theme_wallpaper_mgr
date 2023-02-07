@@ -24,27 +24,19 @@
 
 namespace OHOS {
 namespace WallpaperMgrService {
-class WallpaperData {
-public:
-    int32_t userId_;
-    std::string wallpaperFile_; // source image
-    std::string cropFile_;      // eventual destination
-    std::string name_;
-    int32_t wallpaperId_;
+struct WallpaperData {
+    int32_t userId;
+    std::string wallpaperFile; // source image
+    std::string cropFile;      // eventual destination
+    std::string name;
+    int32_t wallpaperId;
     bool allowBackup;
     /**
      * The component name of the currently set live wallpaper.
      */
     ComponentName wallpaperComponent;
-
-public:
     WallpaperData(int32_t userId, std::string wallpaperFileName, std::string cropFileName);
     WallpaperData();
-    // Called during initialization of a given user's wallpaper bookkeeping
-    bool cropExists();
-    bool sourceExists();
-
-private:
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

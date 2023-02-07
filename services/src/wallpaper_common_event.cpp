@@ -19,8 +19,8 @@
 #include "wallpaper_service.h"
 namespace OHOS {
 namespace WallpaperMgrService {
-constexpr const char* WALLPAPER_LOCK_SETTING_SUCCESS_EVENT = "com.ohos.wallpaperlocksettingsuccess";
-constexpr const char* WALLPAPER_SYSTEM_SETTING_SUCCESS_EVENT = "com.ohos.wallpapersystemsettingsuccess";
+constexpr const char *WALLPAPER_LOCK_SETTING_SUCCESS_EVENT = "com.ohos.wallpaperlocksettingsuccess";
+constexpr const char *WALLPAPER_SYSTEM_SETTING_SUCCESS_EVENT = "com.ohos.wallpapersystemsettingsuccess";
 constexpr int32_t WALLPAPER_LOCK_SETTING_SUCCESS_CODE = 11000;
 constexpr int32_t WALLPAPER_SYSTEM_SETTING_SUCCESS_CODE = 21000;
 std::shared_ptr<WallpaperCommonEvent> WallpaperCommonEvent::subscriber = nullptr;
@@ -28,7 +28,14 @@ std::shared_ptr<WallpaperCommonEvent> WallpaperCommonEvent::subscriber = nullptr
 void WallpaperCommonEvent::OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data)
 {
     HILOG_INFO("WallpaperCommonEvent::OnReceiveEvent");
-    WallpaperService::OnBootPhase();
+    auto want = data.GetWant();
+    std::string action = want.GetAction();
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED) {
+        WallpaperService::OnBootPhase();
+    } else if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED) {
+        HILOG_INFO("OnInitUser userId = %{public}d", data.GetCode());
+        WallpaperService::GetInstance()->OnInitUser(data.GetCode());
+    }
 }
 
 bool WallpaperCommonEvent::PublishEvent(const OHOS::AAFwk::Want &want, int32_t eventCode, const std::string &eventData)
@@ -58,6 +65,7 @@ bool WallpaperCommonEvent::RegisterSubscriber()
     HILOG_INFO("WallpaperCommonEvent::RegisterSubscriber");
     OHOS::EventFwk::MatchingSkills matchingSkills;
     matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
+    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED);
     OHOS::EventFwk::CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     subscriber = std::make_shared<WallpaperCommonEvent>(subscriberInfo);
     return OHOS::EventFwk::CommonEventManager::SubscribeCommonEvent(subscriber);

@@ -24,6 +24,8 @@
 #include "wallpaper_manager_common_info.h"
 
 namespace OHOS::WallpaperNAPI {
+using namespace WallpaperMgrService;
+
 constexpr const char *PARAMETERERRORMESSAGE = "BusinessError 401: Parameter error.";
 constexpr const char *PERMISSIONDENIEDMESSAGE = "BusinessError 201: Permission Denied.";
 constexpr const char *EQUIPMENTERRORMESSAGE = "BusinessError 801: Equipment error.";
@@ -45,7 +47,7 @@ struct JsErrorInfo {
 class JsError {
 public:
     static void ThrowError(napi_env env, int32_t errorCode, const std::string &errorMessage);
-    static JsErrorInfo ConvertErrorCode(int32_t wallpaperErrorCode);
+    static JsErrorInfo ConvertErrorCode(ErrorCode wallpaperErrorCode);
 };
 } // namespace OHOS::WallpaperNAPI
 

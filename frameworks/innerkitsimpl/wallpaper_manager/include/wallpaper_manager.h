@@ -43,26 +43,27 @@ public:
     * Wallpaper set.
     * @param  uriOrPixelMap Wallpaper picture; wallpaperType Wallpaper type,
     * values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
-    * @return  true or false
+    * @return  ErrorCode
     */
-    int32_t SetWallpaper(std::string uri, int32_t wallpaperType) final;
+    ErrorCode SetWallpaper(std::string uri, int32_t wallpaperType) final;
 
     /**
     * Wallpaper set.
     * @param  pixelMap:picture pixelMap struct; wallpaperType Wallpaper type,
     * values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
-    * @return  true or false
+    * @return  ErrorCode
     */
-    int32_t SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int32_t wallpaperType) final;
+    ErrorCode SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int32_t wallpaperType) final;
 
     /**
         *Obtains the default pixel map of a wallpaper of the specified type.
-        * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
-        * @return image.PixelMap png type The bitmap file of wallpaper
+        * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN;
+        * Obtains image.PixelMap png type The bitmap file of wallpaper
+        * @return ErrorCode
         * @permission ohos.permission.GET_WALLPAPER
         * @systemapi Hide this for inner system use.
     */
-    int32_t GetPixelMap(int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &PixelMap) final;
+    ErrorCode GetPixelMap(int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &PixelMap) final;
 
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
@@ -78,7 +79,7 @@ public:
      */
     int32_t GetWallpaperId(int32_t wallpaperType) final;
 
-    int32_t GetFile(int32_t wallpaperType, int32_t &wallpaperFd) final;
+    ErrorCode GetFile(int32_t wallpaperType, int32_t &wallpaperFd) final;
 
     /**
      * Obtains the minimum height of the wallpaper.
@@ -109,7 +110,7 @@ public:
      * @param wallpaperType  Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @permission ohos.permission.SET_WALLPAPER
      */
-    int32_t ResetWallpaper(std::int32_t wallpaperType) final;
+    ErrorCode ResetWallpaper(std::int32_t wallpaperType) final;
 
     /**
      * Registers a listener for wallpaper color changes to receive notifications about the changes.

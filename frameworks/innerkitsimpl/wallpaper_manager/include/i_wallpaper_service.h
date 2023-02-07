@@ -26,6 +26,7 @@
 #include "pixel_map_parcel.h"
 #include "wallpaper_color_change_listener.h"
 #include "wallpaper_color_change_listener_client.h"
+#include "wallpaper_common.h"
 #include "wallpaper_manager_common_info.h"
 
 namespace OHOS {
@@ -65,8 +66,8 @@ public:
     * WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    virtual int32_t SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) = 0;
-    virtual int32_t GetPixelMap(int32_t wallpaperType, FdInfo &fdInfo) = 0;
+    virtual ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) = 0;
+    virtual ErrorCode GetPixelMap(int32_t wallpaperType, FdInfo &fdInfo) = 0;
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
@@ -74,7 +75,7 @@ public:
      */
     virtual std::vector<uint64_t> GetColors(int wallpaperType) = 0;
 
-    virtual int32_t GetFile(int32_t wallpaperType, int32_t &wallpaperFd) = 0;
+    virtual ErrorCode GetFile(int32_t wallpaperType, int32_t &wallpaperFd) = 0;
 
     /**
      * Obtains the ID of the wallpaper of the specified type.
@@ -112,7 +113,7 @@ public:
      * @param wallpaperType  Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @permission ohos.permission.SET_WALLPAPER
      */
-    virtual int32_t ResetWallpaper(int32_t wallpaperType) = 0;
+    virtual ErrorCode ResetWallpaper(int32_t wallpaperType) = 0;
 
     /**
      * Registers a listener for wallpaper color changes to receive notifications about the changes.
