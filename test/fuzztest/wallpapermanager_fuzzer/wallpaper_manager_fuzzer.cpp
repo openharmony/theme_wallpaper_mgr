@@ -133,7 +133,8 @@ void SetWallpaperByMapFuzzTest(const uint8_t *data, size_t size)
     GrantNativePermission();
     uint32_t color[100] = { 3, 7, 9, 9, 7, 6 };
     InitializationOptions opts = { { 5, 7 }, OHOS::Media::PixelFormat::ARGB_8888 };
-    std::shared_ptr<PixelMap> pixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    std::unique_ptr<PixelMap> uniquePixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    std::shared_ptr<PixelMap> pixelMap = std::move(uniquePixelMap);
     auto listener = std::make_shared<WallpaperColorChangeListenerFuzzTestImpl>();
     WallpaperMgrService::WallpaperManagerkits::GetInstance().On("colorChange", listener);
     WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, wallpaperType);
