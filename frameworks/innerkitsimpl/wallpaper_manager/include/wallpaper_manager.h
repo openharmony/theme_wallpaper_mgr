@@ -51,7 +51,7 @@ public:
     * values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    int32_t SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int wallpaperType) final;
+    int32_t SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int wallpaperType) final;
 
     /**
         *Obtains the default pixel map of a wallpaper of the specified type.
@@ -149,7 +149,7 @@ private:
 
     void ResetService(const wptr<IRemoteObject>& remote);
     sptr<IWallpaperService> GetService();
-    int64_t WritePixelMapToStream(std::ostream &outputStream, std::unique_ptr< OHOS::Media::PixelMap> pixelMap);
+    int64_t WritePixelMapToStream(std::ostream &outputStream, std::shared_ptr<OHOS::Media::PixelMap> pixelMap);
     bool GetRealPath(const std::string &inOriPath, std::string &outRealPath);
 
     sptr<IWallpaperService> wpProxy_ {};
