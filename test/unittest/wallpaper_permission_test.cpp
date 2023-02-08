@@ -46,7 +46,7 @@ public:
     void SetUp();
     void TearDown();
     static void CreateTempImage();
-    static std::unique_ptr<PixelMap> CreateTempPixelMap();
+    static std::shared_ptr<PixelMap> CreateTempPixelMap();
 };
 const std::string VALID_SCHEMA_STRICT_DEFINE = "{\"SCHEMA_VERSION\":\"1.0\","
                                                "\"SCHEMA_MODE\":\"STRICT\","
@@ -77,7 +77,7 @@ void WallpaperPermissionTest::TearDown(void)
 
 void WallpaperPermissionTest::CreateTempImage()
 {
-    std::unique_ptr<PixelMap> pixelMap = CreateTempPixelMap();
+    std::shared_ptr<PixelMap> pixelMap = CreateTempPixelMap();
     ImagePacker imagePacker;
     PackOption option;
     option.format = "image/jpeg";
@@ -96,11 +96,12 @@ void WallpaperPermissionTest::CreateTempImage()
     }
 }
 
-std::unique_ptr<PixelMap> WallpaperPermissionTest::CreateTempPixelMap()
+std::shared_ptr<PixelMap> WallpaperPermissionTest::CreateTempPixelMap()
 {
     uint32_t color[100] = { 3, 7, 9, 9, 7, 6 };
     InitializationOptions opts = { { 5, 7 }, OHOS::Media::PixelFormat::ARGB_8888 };
-    std::unique_ptr<PixelMap> pixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    std::unique_ptr<PixelMap> uniquePixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    std::shared_ptr<PixelMap> pixelMap = std::move(uniquePixelMap);
     return pixelMap;
 }
 
@@ -168,7 +169,7 @@ HWTEST_F(WallpaperPermissionTest, GetPixelMapPermission001, TestSize.Level0)
 HWTEST_F(WallpaperPermissionTest, SetWallpaperByMapPermission001, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByMapPermission001  begin");
-    std::unique_ptr<PixelMap> pixelMap = WallpaperPermissionTest::CreateTempPixelMap();
+    std::shared_ptr<PixelMap> pixelMap = WallpaperPermissionTest::CreateTempPixelMap();
     ErrorCode wallpaperErrorCode =
         OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, 2);
     EXPECT_EQ(wallpaperErrorCode, E_NO_PERMISSION) << "throw permission error successfully";

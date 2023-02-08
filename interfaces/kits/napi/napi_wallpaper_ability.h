@@ -109,7 +109,7 @@ struct PermissionContextInfo : public Call::Context {
 struct SetContextInfo : public Call::Context {
     int32_t wallpaperType = 0;
     std::string uri = "";
-    std::unique_ptr<OHOS::Media::PixelMap> pixelMap;
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     napi_status status = napi_generic_failure;
     bool isPixelEmp = false;
     SetContextInfo() : Context(nullptr, nullptr){};
