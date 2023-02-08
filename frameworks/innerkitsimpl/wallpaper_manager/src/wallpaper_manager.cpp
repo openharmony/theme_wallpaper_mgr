@@ -213,7 +213,7 @@ ErrorCode WallpaperManager::SetWallpaper(std::string uri, int32_t wallpaperType)
     return wallpaperErrorCode;
 }
 
-ErrorCode WallpaperManager::SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int32_t wallpaperType)
+ErrorCode WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType)
 {
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
@@ -223,7 +223,7 @@ ErrorCode WallpaperManager::SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> 
 
     std::stringbuf *stringBuf = new std::stringbuf();
     std::ostream ostream(stringBuf);
-    int32_t mapSize = WritePixelMapToStream(ostream, std::move(pixelMap));
+    int32_t mapSize = WritePixelMapToStream(ostream, pixelMap);
     if (mapSize <= 0) {
         HILOG_ERROR("WritePixelMapToStream failed");
         return E_WRITE_PARCEL_ERROR;
@@ -256,7 +256,7 @@ ErrorCode WallpaperManager::SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> 
 }
 
 int64_t WallpaperManager::WritePixelMapToStream(std::ostream &outputStream,
-    std::unique_ptr<OHOS::Media::PixelMap> pixelMap)
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap)
 {
     OHOS::Media::ImagePacker imagePacker;
     OHOS::Media::PackOption option;

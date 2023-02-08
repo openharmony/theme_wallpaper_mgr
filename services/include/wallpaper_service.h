@@ -97,7 +97,8 @@ private:
     int32_t GetDisplayId();
     void InitData();
     void InitResources(int32_t userId, WallpaperType wallpaperType);
-    void InitUsersOnBoot();
+    void InitQueryUserId(int32_t times);
+    bool InitUsersOnBoot();
     int64_t WritePixelMapToFile(const std::string &filePath, std::unique_ptr<OHOS::Media::PixelMap> pixelMap);
     bool CompareColor(const uint64_t &localColor, const ColorManager::Color &color);
     bool SaveColor(int32_t userId, WallpaperType wallpaperType);
