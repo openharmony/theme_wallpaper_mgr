@@ -75,7 +75,7 @@ public:
     void SetUp();
     void TearDown();
     static void CreateTempImage();
-    static std::unique_ptr<PixelMap> CreateTempPixelMap();
+    static std::shared_ptr<PixelMap> CreateTempPixelMap();
 };
 const std::string VALID_SCHEMA_STRICT_DEFINE = "{\"SCHEMA_VERSION\":\"1.0\","
                                                "\"SCHEMA_MODE\":\"STRICT\","
@@ -161,7 +161,7 @@ unsigned long WallpaperColorChangeListenerTestImpl::GetCallCount() const
 
 void WallpaperTest::CreateTempImage()
 {
-    std::unique_ptr<PixelMap> pixelMap = CreateTempPixelMap();
+    std::shared_ptr<PixelMap> pixelMap = CreateTempPixelMap();
     ImagePacker imagePacker;
     PackOption option;
     option.format = "image/jpeg";
@@ -180,11 +180,12 @@ void WallpaperTest::CreateTempImage()
     }
 }
 
-std::unique_ptr<PixelMap> WallpaperTest::CreateTempPixelMap()
+std::shared_ptr<PixelMap> WallpaperTest::CreateTempPixelMap()
 {
     uint32_t color[100] = { 3, 7, 9, 9, 7, 6 };
     InitializationOptions opts = { { 5, 7 }, OHOS::Media::PixelFormat::ARGB_8888 };
-    std::unique_ptr<PixelMap> pixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    std::unique_ptr<PixelMap> uniquePixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    std::shared_ptr<PixelMap> pixelMap = std::move(uniquePixelMap);
     return pixelMap;
 }
 
@@ -568,7 +569,7 @@ HWTEST_F(WallpaperTest, GetPiexlMap003, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetWallpaperByMap001, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByMap001  begin");
-    std::unique_ptr<PixelMap> pixelMap = WallpaperTest::CreateTempPixelMap();
+    std::shared_ptr<PixelMap> pixelMap = WallpaperTest::CreateTempPixelMap();
     int32_t wallpaperErrorCode =
         OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, SYSTYEM);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to set SYSTYEM PiexlMap.";
@@ -584,7 +585,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap001, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetWallpaperByMap002, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByMap002  begin");
-    std::unique_ptr<PixelMap> pixelMap = WallpaperTest::CreateTempPixelMap();
+    std::shared_ptr<PixelMap> pixelMap = WallpaperTest::CreateTempPixelMap();
     int32_t wallpaperErrorCode =
         OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, LOCKSCREEN);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to set LOCKSCREEN PiexlMap.";
@@ -600,7 +601,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap002, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetWallpaperByMap003, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByMap003  begin");
-    std::unique_ptr<PixelMap> pixelMap = WallpaperTest::CreateTempPixelMap();
+    std::shared_ptr<PixelMap> pixelMap = WallpaperTest::CreateTempPixelMap();
     int32_t wallpaperErrorCode =
         OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, 2);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to throw parameters error";

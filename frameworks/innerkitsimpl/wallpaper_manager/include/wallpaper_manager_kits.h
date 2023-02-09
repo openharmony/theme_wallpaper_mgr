@@ -55,7 +55,7 @@ public:
     * WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    virtual int32_t SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixelMap, int wallpaperType) = 0;
+    virtual int32_t SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int wallpaperType) = 0;
 
     /**
         *Obtains the default pixel map of a wallpaper of the specified type.
