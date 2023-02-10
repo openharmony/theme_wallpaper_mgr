@@ -132,13 +132,14 @@ void AsyncCall::OnComplete(napi_env env, napi_status status, void *data)
         napi_value message = nullptr;
         std::string errMsg("async call failed");
         if (context->ctx->errCode_ != 0) {
-            napi_create_string_utf8(env, std::to_string(context->ctx->errCode_).c_str(), NAPI_AUTO_LENGTH, &errCode);
+            napi_create_int32(env, context->ctx->errCode_, &errCode);
         }
         if (!context->ctx->errMsg_.empty()) {
             errMsg = context->ctx->errMsg_;
         }
         napi_create_string_utf8(env, errMsg.c_str(), NAPI_AUTO_LENGTH, &message);
-        napi_create_error(env, errCode, message, &result[ARG_ERROR]);
+        napi_create_error(env, nullptr, message, &result[ARG_ERROR]);
+        napi_set_named_property(env, result[ARG_ERROR], "code", errCode);
         napi_get_undefined(env, &result[ARG_DATA]);
     }
     HILOG_DEBUG("run the js callback function:(context->defer != nullptr)?[%{public}d]", context->defer != nullptr);
