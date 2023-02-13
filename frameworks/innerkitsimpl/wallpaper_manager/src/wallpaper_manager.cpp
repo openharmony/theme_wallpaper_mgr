@@ -221,8 +221,8 @@ ErrorCode WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> 
         return E_DEAL_FAILED;
     }
 
-    std::stringbuf *stringBuf = new std::stringbuf();
-    std::ostream ostream(stringBuf);
+    std::stringbuf stringBuf;
+    std::ostream ostream(&stringBuf);
     int32_t mapSize = WritePixelMapToStream(ostream, pixelMap);
     if (mapSize <= 0) {
         HILOG_ERROR("WritePixelMapToStream failed");
@@ -232,7 +232,7 @@ ErrorCode WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> 
     if (buffer == nullptr) {
         return E_NO_MEMORY;
     }
-    stringBuf->sgetn(buffer, mapSize);
+    stringBuf.sgetn(buffer, mapSize);
 
     int32_t fd[2];
     pipe(fd);
