@@ -599,7 +599,7 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
         return E_PARAMETERS_INVALID;
     }
     std::string uri = wallpaperTmpFullPath_;
-    char *paperBuf = new (std::nothrow) char[length];
+    char *paperBuf = new (std::nothrow) char[length]();
     if (paperBuf == nullptr) {
         return E_NO_MEMORY;
     }

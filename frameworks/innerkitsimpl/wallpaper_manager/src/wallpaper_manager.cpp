@@ -228,7 +228,7 @@ ErrorCode WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> 
         HILOG_ERROR("WritePixelMapToStream failed");
         return E_WRITE_PARCEL_ERROR;
     }
-    char *buffer = new (std::nothrow) char[mapSize];
+    char *buffer = new (std::nothrow) char[mapSize]();
     if (buffer == nullptr) {
         return E_NO_MEMORY;
     }
