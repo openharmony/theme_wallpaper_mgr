@@ -83,6 +83,7 @@ public:
 public:
     static void OnBootPhase();
     void OnInitUser(int32_t newUserId);
+    void OnRemovedUser(int32_t userId);
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
     void ReporterUsageTimeStatistic();
     void RegisterSubscriber(int32_t times);

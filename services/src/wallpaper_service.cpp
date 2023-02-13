@@ -282,7 +282,7 @@ bool WallpaperService::InitUsersOnBoot()
 
 void WallpaperService::OnInitUser(int32_t userId)
 {
-    HILOG_INFO("WallpaperService OnInitUser");
+    HILOG_INFO("WallpaperService OnInitUser start");
     std::lock_guard<std::mutex> lock(mtx);
     if (!InitUserDir(userId)) {
         return;
@@ -294,7 +294,7 @@ void WallpaperService::OnInitUser(int32_t userId)
 
 void WallpaperService::InitResources(int32_t userId, WallpaperType wallpaperType)
 {
-    HILOG_INFO("WallpaperService InitResources");
+    HILOG_INFO("WallpaperService InitResources start");
     std::string pathName;
     if (!GetFileNameFromMap(userId, wallpaperType, FileType::CROP_FILE, pathName)) {
         return;
@@ -350,6 +350,18 @@ bool WallpaperService::RestoreUserResources(const WallpaperData &wallpaperData, 
         return false;
     }
     return true;
+}
+
+void WallpaperService::OnRemovedUser(int32_t userId)
+{
+    HILOG_INFO("WallpaperService OnRemovedUser start");
+    std::lock_guard<std::mutex> lock(mtx);
+    ClearWallpaperLocked(userId, WALLPAPER_SYSTEM);
+    ClearWallpaperLocked(userId, WALLPAPER_LOCKSCREEN);
+    std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
+    if (!OHOS::ForceRemoveDirectory(userDir)) {
+        HILOG_ERROR("Force remove directory failed destination path :%{public}s ", userDir.c_str());
+    }
 }
 
 void WallpaperService::OnBootPhase()
