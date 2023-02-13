@@ -223,18 +223,18 @@ int32_t WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pi
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
 
-    std::stringbuf *stringBuf = new std::stringbuf();
-    std::ostream ostream(stringBuf);
+    std::stringbuf stringBuf;
+    std::ostream ostream(&stringBuf);
     int mapSize = WritePixelMapToStream(ostream, pixelMap);
     if (mapSize <= 0) {
         HILOG_ERROR("WritePixelMapToStream faild");
         return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
-    char *buffer = new (std::nothrow) char[mapSize];
+    char *buffer = new (std::nothrow) char[mapSize]();
     if (buffer == nullptr) {
         return static_cast<int32_t>(E_NO_MEMORY);
     }
-    stringBuf->sgetn(buffer, mapSize);
+    stringBuf.sgetn(buffer, mapSize);
 
     int fd[2];
     pipe(fd);

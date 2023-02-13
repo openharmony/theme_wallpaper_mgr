@@ -521,7 +521,7 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
         return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
     std::string url = wallpaperTmpFullPath_;
-    char *paperBuf = new (std::nothrow) char[length];
+    char *paperBuf = new (std::nothrow) char[length]();
     if (paperBuf == nullptr) {
         return static_cast<int32_t>(E_NO_MEMORY);
     }
