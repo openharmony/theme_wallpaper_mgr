@@ -77,8 +77,8 @@ const std::string WallpaperService::WALLPAPER_BUNDLE_NAME = "com.ohos.launcher";
 const std::int64_t INIT_INTERVAL = 10000L;
 const std::int64_t DELAY_TIME = 1000L;
 constexpr int HALF = 2;
-constexpr int SIX = 6;
-constexpr int TEN = 10;
+constexpr int32_t CONNECT_EXTENSION_INTERVAL = 500000;
+constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 120;
 constexpr int HUNDRED = 100;
 constexpr int FOO_MAX_LEN = 52428800;
 constexpr int MAX_RETRY_TIMES = 20;
@@ -245,10 +245,10 @@ void WallpaperService::StartWallpaperExtension()
         HILOG_INFO("WallpaperService::StartAbility");
         time++;
         ret = WallpaperService::GetInstance()->ConnectExtensionAbility(want);
-        if (ret == 0 || time == TEN) {
+        if (ret == 0 || time == CONNECT_EXTENSION_MAX_RETRY_TIMES) {
             break;
         }
-        sleep(SIX);
+        usleep(CONNECT_EXTENSION_INTERVAL);
         HILOG_INFO("WallpaperService::StartAbility %{public}d", time);
     }
     if (ret != 0) {
