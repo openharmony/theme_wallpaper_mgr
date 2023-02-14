@@ -79,8 +79,8 @@ constexpr int64_t INIT_INTERVAL = 10000L;
 constexpr int64_t DELAY_TIME = 1000L;
 constexpr int64_t QUERY_USER_ID_INTERVAL = 300L;
 constexpr int32_t HALF = 2;
-constexpr int32_t SIX = 6;
-constexpr int32_t TEN = 10;
+constexpr int32_t CONNECT_EXTENSION_INTERVAL = 500000;
+constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 120;
 constexpr int32_t HUNDRED = 100;
 constexpr int32_t FOO_MAX_LEN = 52428800;
 constexpr int32_t MAX_RETRY_TIMES = 20;
@@ -240,10 +240,10 @@ void WallpaperService::StartWallpaperExtension()
         HILOG_INFO("WallpaperService::StartAbility");
         time++;
         ret = ConnectExtensionAbility(want);
-        if (ret == 0 || time == TEN) {
+        if (ret == 0 || time >= CONNECT_EXTENSION_MAX_RETRY_TIMES) {
             break;
         }
-        sleep(SIX);
+        usleep(CONNECT_EXTENSION_INTERVAL);
         HILOG_INFO("WallpaperService::StartAbility %{public}d", time);
     }
     if (ret != 0) {
