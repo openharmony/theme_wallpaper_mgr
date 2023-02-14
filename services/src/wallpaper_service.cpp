@@ -240,7 +240,7 @@ void WallpaperService::StartWallpaperExtension()
         HILOG_INFO("WallpaperService::StartAbility");
         time++;
         ret = ConnectExtensionAbility(want);
-        if (ret == 0 || time == CONNECT_EXTENSION_MAX_RETRY_TIMES) {
+        if (ret == 0 || time >= CONNECT_EXTENSION_MAX_RETRY_TIMES) {
             break;
         }
         usleep(CONNECT_EXTENSION_INTERVAL);
