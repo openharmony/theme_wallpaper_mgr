@@ -31,7 +31,7 @@ std::string WallpaperJSUtil::Convert2String(napi_env env, napi_value jsString)
     if (maxLen == 0) {
         return std::string();
     }
-    char *buf = new (std::nothrow) char[maxLen + 1];
+    char *buf = new (std::nothrow) char[maxLen + 1]();
     if (buf == nullptr) {
         return std::string();
     }
