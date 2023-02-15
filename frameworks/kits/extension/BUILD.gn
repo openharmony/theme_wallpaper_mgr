@@ -51,7 +51,7 @@ ohos_shared_library("wallpaperextension") {
 
   configs = [ ":ability_config" ]
 
-  deps = [ "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager" ]
+  deps = [ "${wallpaper_path}/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager" ]
 
   external_deps = [
     "ability_base:want",
