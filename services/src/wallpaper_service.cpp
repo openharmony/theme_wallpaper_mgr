@@ -115,7 +115,6 @@ sptr<WallpaperService> WallpaperService::GetInstance()
 
 int32_t WallpaperService::Init()
 {
-    InitData();
     InitQueryUserId(QUERY_USER_MAX_RETRY_TIMES);
     bool ret = Publish(this);
     if (!ret) {
@@ -136,6 +135,7 @@ void WallpaperService::OnStart()
         HILOG_ERROR("WallpaperService is already running.");
         return;
     }
+    InitData();
     InitServiceHandler();
     AddSystemAbilityListener(COMMON_EVENT_SERVICE_ID);
     std::thread(&WallpaperService::StartWallpaperExtension, this).detach();
