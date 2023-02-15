@@ -43,6 +43,7 @@ constexpr const char *USER_SYSTEM_FILE = "/data/service/el1/public/wallpaper/99/
 constexpr const char *USER_SYSTEM_CROP_FILE = "/data/service/el1/public/wallpaper/99/system/wallpaper_system";
 constexpr const char *USER_LOCKSCREEN_FILE = "/data/service/el1/public/wallpaper/99/lockscreen/wallpaper_lock_orig";
 constexpr const char *USER_LOCKSCREEN_CROP_FILE = "/data/service/el1/public/wallpaper/99/lockscreen/wallpaper_lock";
+constexpr const char *USER_FILE_DIR = "/data/service/el1/public/wallpaper/99";
 std::shared_ptr<WallpaperCommonEvent> subscriber = nullptr;
 
 using namespace testing::ext;
@@ -86,6 +87,8 @@ public:
     void TearDown();
     static void CreateTempImage();
     static std::shared_ptr<PixelMap> CreateTempPixelMap();
+    static void SubscribeCommonEvent();
+    static void TriggerEvent(const std::string &CommonEventSupport);
 };
 const std::string VALID_SCHEMA_STRICT_DEFINE = "{\"SCHEMA_VERSION\":\"1.0\","
                                                "\"SCHEMA_MODE\":\"STRICT\","
@@ -100,6 +103,7 @@ void WallpaperTest::SetUpTestCase(void)
     HILOG_INFO("SetUpTestCase");
     GrantNativePermission();
     CreateTempImage();
+    SubscribeCommonEvent();
     HILOG_INFO("SetUpTestCase end");
 }
 
@@ -197,6 +201,31 @@ std::shared_ptr<PixelMap> WallpaperTest::CreateTempPixelMap()
     std::unique_ptr<PixelMap> uniquePixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
     std::shared_ptr<PixelMap> pixelMap = std::move(uniquePixelMap);
     return pixelMap;
+}
+
+void WallpaperTest::SubscribeCommonEvent()
+{
+    EventFwk::MatchingSkills matchingSkills;
+    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED);
+    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED);
+    EventFwk::CommonEventSubscribeInfo subscriberInfo(matchingSkills);
+    subscriber = std::make_shared<WallpaperCommonEvent>(subscriberInfo);
+    if (subscriber == nullptr) {
+        HILOG_INFO("subscriber is nullptr");
+    }
+    if (!EventFwk::CommonEventManager::SubscribeCommonEvent(subscriber)) {
+        HILOG_INFO("SubscribeCommonEvent  failed");
+    }
+}
+
+void WallpaperTest::TriggerEvent(const std::string &CommonEventSupport)
+{
+    EventFwk::Want want;
+    want.SetAction(CommonEventSupport);
+    int32_t code = USERID;
+    std::string data(CommonEventSupport);
+    EventFwk::CommonEventData eventData(want, code, data);
+    subscriber->OnReceiveEvent(eventData);
 }
 
 /*********************   ResetWallpaper   *********************/
@@ -729,36 +758,19 @@ HWTEST_F(WallpaperTest, SetWallpaper001, TestSize.Level0)
 
 /*********************   USER_DEAL   *********************/
 /**
-* @tc.name:    AddUsersDEAL001
+* @tc.name:    AddUsersDeal001
 * @tc.desc:    Create a user directory after the user is added
 * @tc.type:    FUNC
 * @tc.require:
 * @tc.author:  lvbai
 */
-HWTEST_F(WallpaperTest, AddUsersDEAL001, TestSize.Level0)
+HWTEST_F(WallpaperTest, AddUsersDeal001, TestSize.Level0)
 {
-    HILOG_INFO("AddUsersDEAL001  begin");
-    bool ret = true;
-    EventFwk::MatchingSkills matchingSkills;
-    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED);
-    EventFwk::CommonEventSubscribeInfo subscriberInfo(matchingSkills);
-    subscriber = std::make_shared<WallpaperCommonEvent>(subscriberInfo);
-    if (subscriber == nullptr) {
-        HILOG_INFO("subscriber is nullptr");
-        ret = false;
-    }
-    if (!EventFwk::CommonEventManager::SubscribeCommonEvent(subscriber)) {
-        HILOG_INFO("SubscribeCommonEvent  failed");
-        ret = false;
-    }
-    ASSERT_EQ(ret, true);
-    EventFwk::Want want;
-    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED);
-    int32_t code = USERID;
-    std::string data(EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED);
-    EventFwk::CommonEventData eventData(want, code, data);
-    subscriber->OnReceiveEvent(eventData);
-    ret = FileDeal::IsFileExist(USER_SYSTEM_FILE);
+    HILOG_INFO("AddUsersDeal001  begin");
+    std::string commonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED;
+    WallpaperTest::TriggerEvent(commonEvent);
+
+    bool ret = FileDeal::IsFileExist(USER_SYSTEM_FILE);
     EXPECT_EQ(ret, true);
     ret = FileDeal::IsFileExist(USER_SYSTEM_CROP_FILE);
     EXPECT_EQ(ret, true);
@@ -766,6 +778,26 @@ HWTEST_F(WallpaperTest, AddUsersDEAL001, TestSize.Level0)
     EXPECT_EQ(ret, true);
     ret = FileDeal::IsFileExist(USER_LOCKSCREEN_CROP_FILE);
     EXPECT_EQ(ret, true);
+}
+
+/*********************   USER_DEAL   *********************/
+/**
+* @tc.name:    RemovedUserDeal001
+* @tc.desc:    delete a user directory after the user is removed
+* @tc.type:    FUNC
+* @tc.require:
+* @tc.author:  lvbai
+*/
+HWTEST_F(WallpaperTest, RemovedUserDeal001, TestSize.Level0)
+{
+    HILOG_INFO("RemovedUserDeal001  begin");
+    std::string commonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED;
+    WallpaperTest::TriggerEvent(commonEvent);
+    EXPECT_EQ(FileDeal::IsDirExist(USER_FILE_DIR), true);
+
+    commonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED;
+    WallpaperTest::TriggerEvent(commonEvent);
+    EXPECT_EQ(FileDeal::IsDirExist(USER_FILE_DIR), false);
 }
 /*********************   USER_DEAL   *********************/
 } // namespace WallpaperMgrService
