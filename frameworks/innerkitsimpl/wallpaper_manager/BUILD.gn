@@ -26,6 +26,13 @@ config("wallpaper_manager_config") {
 }
 
 ohos_shared_library("wallpapermanager") {
+  cflags = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-fvisibility=hidden",
+    "-Os",
+  ]
+
   sources = [
     "src/uv_queue.cpp",
     "src/wallpaper_color_change_listener_client.cpp",
@@ -36,7 +43,6 @@ ohos_shared_library("wallpapermanager") {
     "src/wallpaper_service_proxy.cpp",
   ]
   public_configs = [ ":wallpaper_manager_config" ]
-  version_script = "libwallpaper_manager.map"
   include_dirs = [ "//third_party/libuv/include" ]
   deps = [ "${utils_path}:wallpaper_utils" ]
   external_deps = [

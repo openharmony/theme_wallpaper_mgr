@@ -17,6 +17,7 @@
 #define FOUNDATION_ABILITYRUNTIME_OHOS_WALLPAPER_EXTENSION_H
 
 #include "extension_base.h"
+#include "visibility.h"
 
 namespace OHOS {
 namespace AbilityRuntime {
@@ -63,7 +64,7 @@ public:
      * @param runtime The runtime.
      * @return The WallpaperExtension instance.
      */
-    static WallpaperExtension *Create(const std::unique_ptr<Runtime> &runtime);
+    WALLPAPER_API static WallpaperExtension *Create(const std::unique_ptr<Runtime> &runtime);
 };
 } // namespace AbilityRuntime
 } // namespace OHOS

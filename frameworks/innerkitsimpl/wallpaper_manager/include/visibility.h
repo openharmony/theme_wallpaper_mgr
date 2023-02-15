@@ -13,12 +13,11 @@
  * limitations under the License.
  */
 
-{
-    global:
-        extern "C++" {
-            "OHOS::MiscServices::UvQueue::Call(napi_env__*, void*, void (*)(uv_work_s*, int))";
-            "OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance()";
-        };
-    local:
-        *;
-};
+#ifndef OH_WALLPAPER_MANAGER_VISIBILITY_H
+#define OH_WALLPAPER_MANAGER_VISIBILITY_H
+
+#ifndef WALLPAPER_API
+#define WALLPAPER_API __attribute__((visibility("default")))
+#endif
+
+#endif // OH_WALLPAPER_MANAGER_VISIBILITY_H

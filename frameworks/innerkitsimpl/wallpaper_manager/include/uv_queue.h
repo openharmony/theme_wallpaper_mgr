@@ -19,10 +19,12 @@
 #include <uv.h>
 
 #include "napi/native_api.h"
+#include "visibility.h"
+
 namespace OHOS::MiscServices {
 class UvQueue {
 public:
-    static bool Call(napi_env env, void *data, uv_after_work_cb afterCallback);
+    WALLPAPER_API static bool Call(napi_env env, void *data, uv_after_work_cb afterCallback);
 };
 } // namespace OHOS::MiscServices
 #endif // FRAMEWORKS_UV_QUEUE_H

@@ -34,6 +34,13 @@ config("ability_config") {
 }
 
 ohos_shared_library("wallpaperextension") {
+  cflags = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-fvisibility=hidden",
+    "-Os",
+  ]
+
   include_dirs = [
     "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/theme/wallpaper_mgr/frameworks/kits/extension/include",
@@ -46,8 +53,6 @@ ohos_shared_library("wallpaperextension") {
     "//base/theme/wallpaper_mgr/frameworks/kits/extension/src/wallpaper_extension.cpp",
     "//base/theme/wallpaper_mgr/frameworks/kits/extension/src/wallpaper_extension_context.cpp",
   ]
-
-  version_script = "libwallpaper_extension.map"
 
   configs = [ ":ability_config" ]
 
