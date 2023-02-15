@@ -21,7 +21,6 @@
 #include <display_type.h>
 #include <fcntl.h>
 #include <iostream>
-#include <rs_surface_node.h>
 #include <sys/sendfile.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -33,7 +32,6 @@
 #include "accesstoken_adapter.h"
 #include "bundle_mgr_interface.h"
 #include "bundle_mgr_proxy.h"
-#include "canvas.h"
 #include "color_picker.h"
 #include "command.h"
 #include "directory_ex.h"
@@ -44,22 +42,20 @@
 #include "file_ex.h"
 #include "hilog_wrapper.h"
 #include "hitrace_meter.h"
-#include "image/bitmap.h"
 #include "image_packer.h"
 #include "image_source.h"
 #include "image_type.h"
 #include "image_utils.h"
 #include "iservice_registry.h"
-#include "pen.h"
+#include "memory_guard.h"
 #include "pixel_map.h"
 #include "surface.h"
 #include "system_ability_definition.h"
+#include "tokenid_kit.h"
 #include "wallpaper_common.h"
 #include "wallpaper_common_event.h"
 #include "wallpaper_service_cb_proxy.h"
 #include "window.h"
-#include "tokenid_kit.h"
-#include "memory_guard.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {

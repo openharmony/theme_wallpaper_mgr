@@ -15,6 +15,7 @@
 #include "statistic_reporter.h"
 
 #include <ctime>
+#include <sys/prctl.h>
 #include <thread>
 #include <unistd.h>
 #include <vector>
@@ -65,13 +66,13 @@ void StatisticReporter::StartTimerThread()
     }
     auto fun = []() {
         MemoryGuard cacheGuard;
+        prctl(PR_SET_NAME, "WallpaperThread");
         while (true) {
             time_t current = time(nullptr);
             if (current == -1) {
                 sleep(ONE_HOUR_IN_SECONDS);
                 continue;
             }
-
             tm localTime = { 0 };
             tm *result = localtime_r(&current, &localTime);
             if (result == nullptr) {
@@ -84,8 +85,7 @@ void StatisticReporter::StartTimerThread()
                 int nHours = EXEC_HOUR_TIME - currentHour;
                 int nMin = EXEC_MIN_TIME - currentMin;
                 int nTime = (nMin)*ONE_MINUTE_IN_SECONDS + (nHours)*ONE_HOUR_IN_SECONDS;
-                HILOG_INFO("StartTimerThread if nHours=%{public}d,nMin=%{public}d,nTime=%{public}d", nHours, nMin,
-                    nTime);
+                HILOG_INFO("sleep nHours=%{public}d,nMin=%{public}d,nTime=%{public}d", nHours, nMin, nTime);
                 sleep(nTime);
                 current = time(nullptr);
                 if (current == -1) {
@@ -133,8 +133,8 @@ ReportStatus StatisticReporter::InvokeUsageTime(time_t curTime)
         return ReportStatus::ERROR;
     }
 
-    HiSysEventWrite(HiSysEvent::Domain::THEME, USAGETIME_STATISTIC, HiSysEvent::EventType::STATISTIC,
-        WALLPAPER_INFO, statisticMsg);
+    HiSysEventWrite(HiSysEvent::Domain::THEME, USAGETIME_STATISTIC, HiSysEvent::EventType::STATISTIC, WALLPAPER_INFO,
+        statisticMsg);
     HILOG_INFO(" InvokeUsageTime end.");
     return ReportStatus::SUCCESS;
 }
