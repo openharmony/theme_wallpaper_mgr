@@ -14,7 +14,6 @@
 import("//base/theme/wallpaper_mgr/wallpaper.gni")
 import("//build/ohos.gni")
 
-
 config("ability_config") {
   visibility = [ ":*" ]
   include_dirs = [
@@ -52,9 +51,7 @@ ohos_shared_library("wallpaperextension") {
 
   configs = [ ":ability_config" ]
 
-  deps = [
-    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
-  ]
+  deps = [ "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager" ]
 
   external_deps = [
     "ability_base:want",
@@ -87,9 +84,7 @@ ohos_shared_library("wallpaper_extension_module") {
 
   configs = [ ":ability_config" ]
 
-  deps = [
-    ":wallpaperextension",
-  ]
+  deps = [ ":wallpaperextension" ]
 
   external_deps = [
     "ability_runtime:abilitykit_native",

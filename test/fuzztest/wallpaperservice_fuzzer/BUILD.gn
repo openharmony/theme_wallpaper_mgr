@@ -55,7 +55,7 @@ ohos_fuzztest("WallpaperServiceFuzzTest") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_single",
     "os_account:os_account_innerkits",
-    "window_manager:libwm"
+    "window_manager:libwm",
   ]
 }
 

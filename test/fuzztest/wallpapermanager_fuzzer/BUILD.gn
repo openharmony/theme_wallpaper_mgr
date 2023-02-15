@@ -45,8 +45,8 @@ ohos_fuzztest("WallpaperManagerFuzzTest") {
 
   deps = [
     "${utils_path}:wallpaper_utils",
-    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager_static",
-    "//base/theme/wallpaper_mgr/services:wallpaper_service",
+    "${wallpaper_path}/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager_static",
+    "${wallpaper_path}/services:wallpaper_service",
   ]
 
   external_deps = [
