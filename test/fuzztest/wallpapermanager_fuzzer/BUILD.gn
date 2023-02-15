@@ -44,22 +44,21 @@ ohos_fuzztest("WallpaperManagerFuzzTest") {
   sources = [ "wallpaper_manager_fuzzer.cpp" ]
 
   deps = [
-    "${ability_runtime_path}/frameworks/native/ability/native:abilitykit_native",
     "${utils_path}:wallpaper_utils",
-    "//base/security/access_token/interfaces/innerkits/token_setproc:libtoken_setproc",
-    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
+    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager_static",
     "//base/theme/wallpaper_mgr/services:wallpaper_service",
-    "//foundation/window/window_manager/utils:libwmutil",
-    "//foundation/window/window_manager/wm:libwm",
   ]
 
   external_deps = [
+    "ability_runtime:abilitykit_native",
     "access_token:libaccesstoken_sdk",
     "access_token:libnativetoken",
+    "access_token:libtoken_setproc",
     "graphic_standard:surface",
     "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_core",
+    "ipc:ipc_single",
     "os_account:os_account_innerkits",
+    "window_manager:libwm",
   ]
 }
 

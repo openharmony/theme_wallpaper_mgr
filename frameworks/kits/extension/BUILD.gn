@@ -14,37 +14,13 @@
 import("//base/theme/wallpaper_mgr/wallpaper.gni")
 import("//build/ohos.gni")
 
-ABILITY_RUNTIME_INNERKITS_PATH = "${ability_runtime_inner_api_path}"
 
 config("ability_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
     "//base/theme/wallpaper_mgr/frameworks/kits/extension/include",
-    "//commonlibrary/c_utils/base/include",
-    "${ability_runtime_path}/interfaces/kits/native/ability/native",
-    "${ability_runtime_path}/interfaces/kits/native/appkit/app",
-    "${ABILITY_RUNTIME_INNERKITS_PATH}/app_manager/include/appmgr",
-    "${ABILITY_RUNTIME_INNERKITS_PATH}/ability_manager/include",
-    "${ability_runtime_services_path}/abilitymgr/include",
-    "${ability_runtime_path}/interfaces/kits/native/appkit/ability_runtime/app",
-    "${ability_runtime_path}/interfaces/kits/native/appkit/app",
-    "${ability_runtime_kits_path}/fmskit/native/include",
-    "${ability_runtime_path}/interfaces/kits/native/appkit/app",
     "${ability_runtime_services_path}/common/include",
-
-    #"//foundation/systemabilitymgr/dmsfwk/services/dtbschedmgr/include",
-    "//base/global/resource_management/interfaces/inner_api/include",
-    "${ability_runtime_napi_path}/featureAbility",
-    "//foundation/arkui/napi/interfaces/kits",
-    "//third_party/node/src",
-    "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
-    "${ability_runtime_path}/interfaces/kits/native/ability/native/continuation/remote_register_service",
-    "${ability_runtime_path}/interfaces/kits/native/ability/native/continuation/distributed",
-    "${ability_runtime_path}/interfaces/kits/native/ability/native/distributed_ability_runtime",
-    "${ABILITY_RUNTIME_INNERKITS_PATH}/ability_manager/include/continuation",
-    "${ability_runtime_path}/interfaces/kits/native/ability/native/continuation/kits",
-    "${ability_runtime_path}/interfaces/kits/native/appkit/app/task",
     "${ability_runtime_napi_path}/inner/napi_common",
   ]
 
@@ -55,33 +31,6 @@ config("ability_config") {
   defines = [
     "APP_LOG_TAG = \"Ability\"",
     "LOG_DOMAIN = 0xD002200",
-  ]
-}
-
-config("ability_public_config") {
-  visibility = [ ":*" ]
-  include_dirs = [
-    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
-    "//base/theme/wallpaper_mgr/frameworks/kits/extension/include",
-    "${ABILITY_RUNTIME_INNERKITS_PATH}/base/include",
-    "${ability_runtime_path}/interfaces/kits/native",
-    "${ability_runtime_path}/interfaces/kits/native/appkit/ability_runtime/app",
-    "${ability_runtime_path}/interfaces/kits/native/appkit/app",
-    "${ability_runtime_path}/interfaces/kits/native/ability_runtime",
-    "${ability_runtime_path}/interfaces/kits/native/ability/native",
-    "//third_party/libuv/include",
-    "${ability_runtime_path}/interfaces/kits/native/ability_runtime/context",
-    "${ability_runtime_path}/interfaces/kits/native/ability/native/continuation/remote_register_service",
-    "${ability_runtime_path}/interfaces/kits/native/ability/native/continuation/distributed",
-    "${ability_runtime_path}/interfaces/kits/native/ability/native/distributed_ability_runtime",
-    "${ABILITY_RUNTIME_INNERKITS_PATH}/ability_manager/include/continuation",
-    "//base/global/resource_management/interfaces/inner_api/include",
-    "${ability_runtime_path}/interfaces/kits/native/ability/native/continuation/kits",
-    "${ability_runtime_kits_path}/fmskit/native/include",
-    "//foundation/window/window_manager/interfaces/innerkits/wm",
-    "//foundation/window/window_manager/interfaces/kits/napi/window_runtime/window_stage_napi",
-    "//third_party/jsoncpp/include",
-    "//third_party/json/include",
   ]
 }
 
@@ -98,14 +47,12 @@ ohos_shared_library("wallpaperextension") {
     "//base/theme/wallpaper_mgr/frameworks/kits/extension/src/wallpaper_extension.cpp",
     "//base/theme/wallpaper_mgr/frameworks/kits/extension/src/wallpaper_extension_context.cpp",
   ]
+
+  version_script = "libwallpaper_extension.map"
+
   configs = [ ":ability_config" ]
-  public_configs = [
-    ":ability_public_config",
-    "${ability_runtime_path}/frameworks/native/ability:ability_context_public_config",
-  ]
 
   deps = [
-    "${ability_runtime_path}/frameworks/native/appkit:app_context",
     "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
   ]
 
@@ -114,20 +61,14 @@ ohos_shared_library("wallpaperextension") {
     "ability_runtime:ability_context_native",
     "ability_runtime:ability_manager",
     "ability_runtime:abilitykit_native",
+    "ability_runtime:app_context",
     "ability_runtime:runtime",
     "c_utils:utils",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_napi_common",
-  ]
-
-  public_deps = [
-    "//base/global/i18n/frameworks/intl:intl_util",
-    "//base/global/resource_management/frameworks/resmgr:global_resmgr",
-    "//base/hiviewdfx/hilog/interfaces/native/innerkits:libhilog",
-    "//foundation/arkui/napi:ace_napi",
-    "//foundation/window/window_manager/interfaces/kits/napi/window_runtime:windowstage_kit",
-    "//foundation/window/window_manager/wm:libwm",
+    "napi:ace_napi",
+    "window_manager:libwm",
   ]
 
   subsystem_name = "theme"
@@ -135,22 +76,23 @@ ohos_shared_library("wallpaperextension") {
 }
 
 ohos_shared_library("wallpaper_extension_module") {
-  include_dirs = [
-    "${ability_runtime_path}/interfaces/kits/native/ability/native",
-    "${ability_runtime_path}/interfaces/kits/native/ability/native/ability_runtime",
+  cflags = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-fvisibility=hidden",
+    "-Os",
   ]
 
   sources = [ "//base/theme/wallpaper_mgr/frameworks/kits/extension/src/wallpaper_extension_module_loader.cpp" ]
 
   configs = [ ":ability_config" ]
-  public_configs = [ ":ability_public_config" ]
 
   deps = [
     ":wallpaperextension",
-    "${ability_runtime_path}/frameworks/native/ability/native:abilitykit_native",
   ]
 
   external_deps = [
+    "ability_runtime:abilitykit_native",
     "ability_runtime:runtime",
     "hiviewdfx_hilog_native:libhilog",
   ]

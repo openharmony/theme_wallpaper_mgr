@@ -21,7 +21,6 @@ config("wallpaper_manager_config") {
     "//base/theme/wallpaper_mgr/utils/dfx/hisysevent_adapter",
     "//base/theme/wallpaper_mgr/services/include",
     "//base/theme/wallpaper_mgr/utils/include",
-    "//third_party/libuv/include",
   ]
   cflags_cc = []
 }
@@ -37,13 +36,41 @@ ohos_shared_library("wallpapermanager") {
     "src/wallpaper_service_proxy.cpp",
   ]
   public_configs = [ ":wallpaper_manager_config" ]
-  include_dirs = []
+  version_script = "libwallpaper_manager.map"
+  include_dirs = [ "//third_party/libuv/include" ]
   deps = [ "${utils_path}:wallpaper_utils" ]
   external_deps = [
     "c_utils:utils",
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_core",
+    "ipc:ipc_single",
+    "multimedia_image_framework:image_native",
+    "napi:ace_napi",
+    "samgr:samgr_proxy",
+  ]
+  subsystem_name = "theme"
+  part_name = "wallpaper_mgr"
+}
+
+ohos_static_library("wallpapermanager_static") {
+  testonly = true
+  sources = [
+    "src/uv_queue.cpp",
+    "src/wallpaper_color_change_listener_client.cpp",
+    "src/wallpaper_color_change_listener_stub.cpp",
+    "src/wallpaper_manager.cpp",
+    "src/wallpaper_manager_kits.cpp",
+    "src/wallpaper_service_cb_stub.cpp",
+    "src/wallpaper_service_proxy.cpp",
+  ]
+  public_configs = [ ":wallpaper_manager_config" ]
+  include_dirs = [ "//third_party/libuv/include" ]
+  deps = [ "${utils_path}:wallpaper_utils" ]
+  external_deps = [
+    "c_utils:utils",
+    "hitrace_native:hitrace_meter",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_single",
     "multimedia_image_framework:image_native",
     "napi:ace_napi",
     "samgr:samgr_proxy",
