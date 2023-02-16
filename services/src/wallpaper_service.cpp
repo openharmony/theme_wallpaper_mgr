@@ -607,7 +607,7 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
         return E_DEAL_FAILED;
     }
     int32_t fdw = open(uri.c_str(), O_WRONLY | O_CREAT, 0660);
-    if (fdw == -1) {
+    if (fdw < 0) {
         HILOG_ERROR("WallpaperService:: fdw fail");
         delete[] paperBuf;
         return E_DEAL_FAILED;

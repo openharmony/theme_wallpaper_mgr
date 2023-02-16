@@ -182,21 +182,21 @@ ErrorCode WallpaperManager::SetWallpaper(std::string uri, int32_t wallpaperType)
     }
     if (fseek(pixMap, 0, SEEK_END) != 0) {
         HILOG_ERROR("fseek failed");
+        fclose(pixMap);
         return E_FILE_ERROR;
     }
     int32_t length = ftell(pixMap);
     if (length <= 0) {
         HILOG_ERROR("ftell failed");
+        fclose(pixMap);
         return E_FILE_ERROR;
     }
     if (fseek(pixMap, 0, SEEK_SET) != 0) {
         HILOG_ERROR("fseek failed");
+        fclose(pixMap);
         return E_FILE_ERROR;
     }
-    if (fclose(pixMap) != 0) {
-        HILOG_ERROR("fclose failed");
-        return E_FILE_ERROR;
-    }
+    fclose(pixMap);
     int32_t fd = open(fileRealPath.c_str(), O_RDONLY, 0660);
     if (fd < 0) {
         HILOG_ERROR("open file failed");
