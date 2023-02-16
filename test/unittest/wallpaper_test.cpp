@@ -87,7 +87,7 @@ public:
     void TearDown();
     static void CreateTempImage();
     static std::shared_ptr<PixelMap> CreateTempPixelMap();
-    static void SubscribeCommonEvent();
+    static bool SubscribeCommonEvent();
     static void TriggerEvent(int32_t userId, const std::string &CommonEventSupport);
     static std::string GetUserFilePath(int32_t userId, const char *filePath);
 };
@@ -203,7 +203,7 @@ std::shared_ptr<PixelMap> WallpaperTest::CreateTempPixelMap()
     return pixelMap;
 }
 
-void WallpaperTest::SubscribeCommonEvent()
+bool WallpaperTest::SubscribeCommonEvent()
 {
     EventFwk::MatchingSkills matchingSkills;
     matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED);
@@ -212,10 +212,13 @@ void WallpaperTest::SubscribeCommonEvent()
     subscriber = std::make_shared<WallpaperCommonEvent>(subscriberInfo);
     if (subscriber == nullptr) {
         HILOG_INFO("subscriber is nullptr");
+        return false;
     }
     if (!EventFwk::CommonEventManager::SubscribeCommonEvent(subscriber)) {
         HILOG_INFO("SubscribeCommonEvent  failed");
+        return false;
     }
+    return true;
 }
 
 void WallpaperTest::TriggerEvent(int32_t userId, const std::string &CommonEventSupport)
@@ -772,11 +775,12 @@ HWTEST_F(WallpaperTest, SetWallpaper001, TestSize.Level0)
 HWTEST_F(WallpaperTest, AddUsersDeal001, TestSize.Level0)
 {
     HILOG_INFO("AddUsersDeal001  begin");
-    WallpaperTest::SubscribeCommonEvent();
+    bool ret = WallpaperTest::SubscribeCommonEvent();
+    ASSERT_EQ(ret, true);
     std::string commonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED;
     WallpaperTest::TriggerEvent(TEST_USERID, commonEvent);
 
-    bool ret = FileDeal::IsFileExist(WallpaperTest::GetUserFilePath(TEST_USERID, SYSTEM_FILE));
+    ret = FileDeal::IsFileExist(WallpaperTest::GetUserFilePath(TEST_USERID, SYSTEM_FILE));
     EXPECT_EQ(ret, true);
     ret = FileDeal::IsFileExist(WallpaperTest::GetUserFilePath(TEST_USERID, SYSTEM_CROP_FILE));
     EXPECT_EQ(ret, true);
@@ -796,11 +800,11 @@ HWTEST_F(WallpaperTest, AddUsersDeal001, TestSize.Level0)
 HWTEST_F(WallpaperTest, RemovedUserDeal001, TestSize.Level0)
 {
     HILOG_INFO("RemovedUserDeal001  begin");
-    WallpaperTest::SubscribeCommonEvent();
+    ASSERT_EQ(WallpaperTest::SubscribeCommonEvent(), true);
     std::string commonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED;
     WallpaperTest::TriggerEvent(TEST_USERID, commonEvent);
     std::string userDir = WALLPAPER_DEFAULT_PATH + std::string("/") + std::to_string(TEST_USERID);
-    EXPECT_EQ(FileDeal::IsDirExist(userDir), true);
+    ASSERT_EQ(FileDeal::IsDirExist(userDir), true);
 
     commonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED;
     WallpaperTest::TriggerEvent(TEST_USERID, commonEvent);

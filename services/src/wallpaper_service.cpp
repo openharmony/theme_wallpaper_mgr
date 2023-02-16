@@ -285,6 +285,7 @@ void WallpaperService::OnInitUser(int32_t userId)
     HILOG_INFO("WallpaperService OnInitUser start");
     std::lock_guard<std::mutex> lock(mtx);
     if (!InitUserDir(userId)) {
+        HILOG_ERROR("Init user dir failed, userId = %{public}d", userId);
         return;
     }
     LoadSettingsLocked(userId, true);
@@ -297,11 +298,13 @@ void WallpaperService::InitResources(int32_t userId, WallpaperType wallpaperType
     HILOG_INFO("WallpaperService InitResources start");
     std::string pathName;
     if (!GetFileNameFromMap(userId, wallpaperType, FileType::CROP_FILE, pathName)) {
+        HILOG_ERROR("Get user file name from map failed, userId = %{public}d", userId);
         return;
     }
     if (!FileDeal::IsFileExist(pathName)) {
         WallpaperData wallpaperData;
         if (!GetWallpaperSafeLocked(userId, wallpaperType, wallpaperData)) {
+            HILOG_ERROR("Get wallpaper data failed, userId = %{public}d", userId);
             return;
         }
         if (!RestoreUserResources(wallpaperData, wallpaperType)) {
@@ -360,7 +363,7 @@ void WallpaperService::OnRemovedUser(int32_t userId)
     ClearWallpaperLocked(userId, WALLPAPER_LOCKSCREEN);
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     if (!OHOS::ForceRemoveDirectory(userDir)) {
-        HILOG_ERROR("Force remove user directory path failed");
+        HILOG_ERROR("Force remove user directory path failed, errno %{public}d.", errno);
     }
 }
 
