@@ -315,17 +315,17 @@ bool WallpaperService::InitUserDir(int32_t userId)
 {
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     if (!FileDeal::Mkdir(userDir)) {
-        HILOG_ERROR("Failed to create destination path :%{public}s ", userDir.c_str());
+        HILOG_ERROR("Failed to create destination path");
         return false;
     }
     std::string wallpaperSystemFilePath = userDir + "/" + WALLPAPER_SYSTEM_DIRNAME;
     if (!FileDeal::Mkdir(wallpaperSystemFilePath)) {
-        HILOG_ERROR("Failed to create destination path :%{public}s ", wallpaperSystemFilePath.c_str());
+        HILOG_ERROR("Failed to create destination wallpaper system path");
         return false;
     }
     std::string wallpaperLockScreenFilePath = userDir + "/" + WALLPAPER_LOCKSCREEN_DIRNAME;
     if (!FileDeal::Mkdir(wallpaperLockScreenFilePath)) {
-        HILOG_ERROR("Failed to create destination path :%{public}s ", wallpaperLockScreenFilePath.c_str());
+        HILOG_ERROR("Failed to create destination wallpaper lockscreen path");
         return false;
     }
     return true;
@@ -360,7 +360,7 @@ void WallpaperService::OnRemovedUser(int32_t userId)
     ClearWallpaperLocked(userId, WALLPAPER_LOCKSCREEN);
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     if (!OHOS::ForceRemoveDirectory(userDir)) {
-        HILOG_ERROR("Force remove directory failed destination path :%{public}s ", userDir.c_str());
+        HILOG_ERROR("Force remove user directory path failed");
     }
 }
 
