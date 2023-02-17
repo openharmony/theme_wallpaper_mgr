@@ -38,6 +38,7 @@ constexpr int32_t HUNDRED = 100;
 constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
 constexpr int32_t FOO_MAX_LEN = 60000000;
 constexpr int32_t TEST_USERID = 99;
+constexpr int32_t INVALID_USERID = -1;
 constexpr const char *URI = "/data/test/theme/wallpaper/wallpaper_test.JPG";
 constexpr const char *WALLPAPER_DEFAULT_PATH = "/data/service/el1/public/wallpaper";
 constexpr const char *SYSTEM_FILE = "/system/wallpaper_system_orig";
@@ -88,7 +89,7 @@ public:
     static void CreateTempImage();
     static std::shared_ptr<PixelMap> CreateTempPixelMap();
     static bool SubscribeCommonEvent();
-    static void TriggerEvent(int32_t userId, const std::string &CommonEventSupport);
+    static void TriggerEvent(int32_t userId, const std::string &commonEventSupport);
     static std::string GetUserFilePath(int32_t userId, const char *filePath);
 };
 const std::string VALID_SCHEMA_STRICT_DEFINE = "{\"SCHEMA_VERSION\":\"1.0\","
@@ -221,12 +222,12 @@ bool WallpaperTest::SubscribeCommonEvent()
     return true;
 }
 
-void WallpaperTest::TriggerEvent(int32_t userId, const std::string &CommonEventSupport)
+void WallpaperTest::TriggerEvent(int32_t userId, const std::string &commonEventSupport)
 {
     EventFwk::Want want;
-    want.SetAction(CommonEventSupport);
+    want.SetAction(commonEventSupport);
     int32_t code = userId;
-    std::string data(CommonEventSupport);
+    std::string data(commonEventSupport);
     EventFwk::CommonEventData eventData(want, code, data);
     subscriber->OnReceiveEvent(eventData);
 }
@@ -769,7 +770,7 @@ HWTEST_F(WallpaperTest, SetWallpaper001, TestSize.Level0)
 * @tc.name:    AddUsersDeal001
 * @tc.desc:    Create a user directory after the user is added
 * @tc.type:    FUNC
-* @tc.require:
+* @tc.require: issueI6DWHR
 * @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, AddUsersDeal001, TestSize.Level0)
@@ -788,13 +789,17 @@ HWTEST_F(WallpaperTest, AddUsersDeal001, TestSize.Level0)
     EXPECT_EQ(ret, true);
     ret = FileDeal::IsFileExist(WallpaperTest::GetUserFilePath(TEST_USERID, LOCKSCREEN_CROP_FILE));
     EXPECT_EQ(ret, true);
+    std::string userDir = WALLPAPER_DEFAULT_PATH + std::string("/") + std::to_string(TEST_USERID);
+    if (!OHOS::ForceRemoveDirectory(userDir)) {
+        HILOG_ERROR("Force remove user directory path failed, errno %{public}d.", errno);
+    }
 }
 
 /**
 * @tc.name:    RemovedUserDeal001
 * @tc.desc:    delete a user directory after the user is removed
 * @tc.type:    FUNC
-* @tc.require:
+* @tc.require: issueI6DWHR
 * @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, RemovedUserDeal001, TestSize.Level0)
@@ -809,6 +814,33 @@ HWTEST_F(WallpaperTest, RemovedUserDeal001, TestSize.Level0)
     commonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED;
     WallpaperTest::TriggerEvent(TEST_USERID, commonEvent);
     EXPECT_EQ(FileDeal::IsDirExist(userDir), false);
+    if (!OHOS::ForceRemoveDirectory(userDir)) {
+        HILOG_ERROR("Force remove user directory path failed, errno %{public}d.", errno);
+    }
+}
+
+/**
+* @tc.name:    InvalidUserIdDeal001
+* @tc.desc:    Invalid user id deal
+* @tc.type:    FUNC
+* @tc.require: issueI6DWHR
+* @tc.author:  lvbai
+*/
+HWTEST_F(WallpaperTest, InvalidUserIdDeal001, TestSize.Level0)
+{
+    HILOG_INFO("InvalidUserIdDeal001  begin");
+    ASSERT_EQ(WallpaperTest::SubscribeCommonEvent(), true);
+    std::string commonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED;
+    WallpaperTest::TriggerEvent(INVALID_USERID, commonEvent);
+    std::string userDir = WALLPAPER_DEFAULT_PATH + std::string("/") + std::to_string(INVALID_USERID);
+    EXPECT_EQ(FileDeal::IsDirExist(userDir), false);
+    FileDeal::Mkdir(userDir);
+    commonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED;
+    WallpaperTest::TriggerEvent(INVALID_USERID, commonEvent);
+    EXPECT_EQ(FileDeal::IsDirExist(userDir), true);
+    if (!OHOS::ForceRemoveDirectory(userDir)) {
+        HILOG_ERROR("Force remove user directory path failed, errno %{public}d.", errno);
+    }
 }
 /*********************   USER_DEAL   *********************/
 } // namespace WallpaperMgrService

@@ -136,7 +136,7 @@ private:
     std::string wallpaperLockScreenCropFileFullPath_;
     std::string wallpaperSystemCropFileFullPath_;
     std::string wallpaperTmpFullPath_;
-    std::string wallpaperCropPath;
+    std::string wallpaperCropPath_;
     typedef std::map<int32_t, WallpaperColorChangeListener *> DISPLAYIDCOLORSLISTENERMAP;
     typedef std::map<int32_t, DISPLAYIDCOLORSLISTENERMAP> COLORSLISTENERMAP;
     typedef std::list<WallpaperColorChangeListener *> LISTENERLIST;
@@ -149,7 +149,7 @@ private:
     sptr<IWallpaperCallback> callbackProxy = nullptr;
 
     std::string name_;
-    std::mutex mtx;
+    std::mutex mtx_;
     uint64_t lockWallpaperColor_;
     uint64_t systemWallpaperColor_;
     std::map<int32_t, sptr<IWallpaperColorChangeListener>> colorChangeListenerMap_;
