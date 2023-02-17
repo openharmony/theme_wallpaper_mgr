@@ -18,9 +18,9 @@ config("wallpaper_manager_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "include",
-    "//base/theme/wallpaper_mgr/utils/dfx/hisysevent_adapter",
-    "//base/theme/wallpaper_mgr/services/include",
-    "//base/theme/wallpaper_mgr/utils/include",
+    "${wallpaper_path}/utils/dfx/hisysevent_adapter",
+    "${wallpaper_path}/services/include",
+    "${wallpaper_path}/utils/include",
   ]
   cflags_cc = []
 }

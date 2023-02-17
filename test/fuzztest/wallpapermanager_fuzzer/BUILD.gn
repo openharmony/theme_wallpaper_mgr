@@ -22,14 +22,13 @@ import("//build/test.gni")
 ohos_fuzztest("WallpaperManagerFuzzTest") {
   module_out_path = "theme/wallpaper"
 
-  fuzz_config_file =
-      "//base/theme/wallpaper_mgr/test/fuzztest/wallpapermanager_fuzzer"
+  fuzz_config_file = "${wallpaper_path}/test/fuzztest/wallpapermanager_fuzzer"
 
   include_dirs = [
-    "//base/theme/wallpaper_mgr/services/include",
+    "${wallpaper_path}/services/include",
     "//base/security/access_token/interfaces/innerkits/accesstoken/include",
-    "//base/theme/wallpaper_mgr/frameworks/native/include",
-    "//base/theme/wallpaper_mgr/utils/include",
+    "${wallpaper_path}/frameworks/native/include",
+    "${wallpaper_path}/utils/include",
     "//foundation/window/window_manager/interfaces/innerkits/dm",
     "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk",
   ]
