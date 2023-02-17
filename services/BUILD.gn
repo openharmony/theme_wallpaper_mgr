@@ -40,7 +40,7 @@ ohos_shared_library("wallpaper_service") {
   ]
   public_configs = [ ":wallpaper_service_config" ]
   include_dirs = [
-    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
+    "//base/theme/wallpaper_mgr/frameworks/native/include",
     "//base/theme/wallpaper_mgr/utils/include",
     "//foundation/graphic/graphic_2d/rosen/modules/effect/color_picker/include",
     "//foundation/graphic/graphic_2d/utils/color_manager",

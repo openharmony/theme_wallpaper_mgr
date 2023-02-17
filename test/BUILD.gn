@@ -24,7 +24,7 @@ ohos_unittest("wallpaper_test") {
   include_dirs = []
   deps = [
     "${utils_path}:wallpaper_utils",
-    "${wallpaper_path}/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager_static",
+    "${wallpaper_path}/frameworks/native:wallpapermanager_static",
     "${wallpaper_path}/services:wallpaper_service",
   ]
   external_deps = [
@@ -58,7 +58,7 @@ ohos_unittest("wallpaper_permission_test") {
   sources = [ "unittest/wallpaper_permission_test.cpp" ]
 
   include_dirs = []
-  deps = [ "${wallpaper_path}/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager_static" ]
+  deps = [ "${wallpaper_path}/frameworks/native:wallpapermanager_static" ]
   external_deps = [
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
@@ -81,7 +81,7 @@ ohos_unittest("wallpaper_dfx_test") {
   include_dirs = []
   deps = [
     "${utils_path}:wallpaper_utils",
-    "${wallpaper_path}/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager_static",
+    "${wallpaper_path}/frameworks/native:wallpapermanager_static",
     "${wallpaper_path}/services:wallpaper_service",
   ]
   external_deps = [

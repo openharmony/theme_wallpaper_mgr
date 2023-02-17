@@ -28,7 +28,7 @@ ohos_fuzztest("WallpaperManagerFuzzTest") {
   include_dirs = [
     "//base/theme/wallpaper_mgr/services/include",
     "//base/security/access_token/interfaces/innerkits/accesstoken/include",
-    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
+    "//base/theme/wallpaper_mgr/frameworks/native/include",
     "//base/theme/wallpaper_mgr/utils/include",
     "//foundation/window/window_manager/interfaces/innerkits/dm",
     "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk",
@@ -45,7 +45,7 @@ ohos_fuzztest("WallpaperManagerFuzzTest") {
 
   deps = [
     "${utils_path}:wallpaper_utils",
-    "${wallpaper_path}/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager_static",
+    "${wallpaper_path}/frameworks/native:wallpapermanager_static",
     "${wallpaper_path}/services:wallpaper_service",
   ]
 
