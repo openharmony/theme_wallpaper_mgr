@@ -15,7 +15,6 @@
 
 #include "wallpaper_extension.h"
 
-#include "ability_loader.h"
 #include "connection_manager.h"
 #include "hilog_wrapper.h"
 #include "js_wallpaper_extension.h"
