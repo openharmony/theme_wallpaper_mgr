@@ -21,6 +21,7 @@
 #include <display_type.h>
 #include <fcntl.h>
 #include <iostream>
+#include <sys/prctl.h>
 #include <sys/sendfile.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -226,6 +227,7 @@ void WallpaperService::StartWallpaperExtension()
 {
     MemoryGuard cacheGuard;
     HILOG_INFO("WallpaperService StartWallpaperExtension");
+    prctl(PR_SET_NAME, "WallpaperExtensionThread");
     int32_t time = 0;
     ErrCode ret = 0;
     AAFwk::Want want;

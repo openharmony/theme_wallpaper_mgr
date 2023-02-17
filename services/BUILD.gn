@@ -19,8 +19,8 @@ config("wallpaper_service_config") {
   include_dirs = [
     "include",
     "src/adapter",
-    "//base/theme/wallpaper_mgr/utils/dfx/hisysevent_adapter",
-    "//base/theme/wallpaper_mgr/utils/dfx/hidumper_adapter",
+    "${wallpaper_path}/utils/dfx/hisysevent_adapter",
+    "${wallpaper_path}/utils/dfx/hidumper_adapter",
   ]
 
   cflags_cc = []
@@ -40,8 +40,8 @@ ohos_shared_library("wallpaper_service") {
   ]
   public_configs = [ ":wallpaper_service_config" ]
   include_dirs = [
-    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
-    "//base/theme/wallpaper_mgr/utils/include",
+    "${wallpaper_path}/frameworks/native/include",
+    "${wallpaper_path}/utils/include",
     "//foundation/graphic/graphic_2d/rosen/modules/effect/color_picker/include",
     "//foundation/graphic/graphic_2d/utils/color_manager",
   ]
