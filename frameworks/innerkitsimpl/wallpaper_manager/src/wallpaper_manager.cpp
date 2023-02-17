@@ -181,24 +181,22 @@ int32_t WallpaperManager::SetWallpaper(std::string url, int wallpaperType)
     int fend = fseek(pixMap, 0, SEEK_END);
     if (fend != 0) {
         HILOG_ERROR("fseek faild");
+        fclose(pixMap);
         return static_cast<int32_t>(E_FILE_ERROR);
     }
     int length = ftell(pixMap);
     if (length <= 0) {
         HILOG_ERROR("ftell faild");
+        fclose(pixMap);
         return static_cast<int32_t>(E_FILE_ERROR);
     }
     int fset = fseek(pixMap, 0, SEEK_SET);
     if (fset != 0) {
         HILOG_ERROR("fseek faild");
+        fclose(pixMap);
         return static_cast<int32_t>(E_FILE_ERROR);
     }
-    int closeRes = fclose(pixMap);
-    if (closeRes != 0) {
-        HILOG_ERROR("fclose faild");
-        return static_cast<int32_t>(E_FILE_ERROR);
-    }
-
+    fclose(pixMap);
     int fd = open(fileRealPath.c_str(), O_RDONLY, 0660);
     if (fd < 0) {
         HILOG_ERROR("open file failed");

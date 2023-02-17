@@ -534,7 +534,7 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
     int fdw = open(url.c_str(), O_WRONLY | O_CREAT, 0660);
-    if (fdw == -1) {
+    if (fdw < 0) {
         HILOG_ERROR("WallpaperService:: fdw fail");
         delete[] paperBuf;
         mtx.unlock();
@@ -581,7 +581,7 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
     int fdw = open(url.c_str(), O_WRONLY | O_CREAT, 0660);
-    if (fdw == -1) {
+    if (fdw < 0) {
         HILOG_ERROR("WallpaperService:: fdw fail");
         delete[] paperBuf;
         mtx.unlock();
@@ -705,10 +705,10 @@ int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdIn
     }
 
     fdInfo.size = length;
-    int closeRes = fclose(pixmap);
+    fclose(pixmap);
     int fd = open(filePath.c_str(), O_RDONLY, 0440);
     mtx.unlock();
-    if (closeRes != 0 || fd < 0) {
+    if (fd < 0) {
         HILOG_ERROR("open failed");
         ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         return static_cast<int32_t>(E_DEAL_FAILED);
