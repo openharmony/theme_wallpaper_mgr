@@ -276,7 +276,7 @@ private:
         } else {
             serialNumber_ = 0;
         }
-        HILOG_INFO("%{public}s not find connection, make new one:%{public}p.", __func__, connection.GetRefPtr());
+        HILOG_INFO("%{public}s not find connection, make new one.", __func__);
         AsyncTask::CompleteCallback complete =
             [weak = context_, want, connection, connectId](NativeEngine& engine, AsyncTask& task, int32_t status) {
                 HILOG_INFO("OnConnectAbility begin");
@@ -336,7 +336,7 @@ private:
         } else {
             serialNumber_ = 0;
         }
-        HILOG_INFO("%{public}s not find connection, make new one:%{public}p.", __func__, connection.GetRefPtr());
+        HILOG_INFO("%{public}s not find connection, make new one.", __func__);
         AsyncTask::CompleteCallback complete =
             [weak = context_, want, accountId, connection, connectId](
                 NativeEngine& engine, AsyncTask& task, int32_t status) {
@@ -385,7 +385,7 @@ private:
             // match id
             want = item->first.want;
             connection = item->second;
-            HILOG_INFO("%{public}s find conn ability:%{public}p exist", __func__, item->second.GetRefPtr());
+            HILOG_INFO("%{public}s find conn ability exist", __func__);
         } else {
             HILOG_INFO("%{public}s not find conn exist.", __func__);
         }
