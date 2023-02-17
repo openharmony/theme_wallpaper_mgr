@@ -16,7 +16,8 @@ import("//build/test.gni")
 
 ohos_unittest("wallpaper_test") {
   testonly = true
-  resource_config_file = "${wallpaper_path}/test/unittest/resource/ohos_test.xml"
+  resource_config_file =
+      "${wallpaper_path}/test/unittest/resource/ohos_test.xml"
   module_out_path = "wallpaper_mgr/wallpaper_test"
   sources = [ "unittest/wallpaper_test.cpp" ]
 
@@ -51,7 +52,8 @@ ohos_unittest("wallpaper_test") {
 
 ohos_unittest("wallpaper_permission_test") {
   testonly = true
-  resource_config_file = "${wallpaper_path}/test/unittest/resource/ohos_test.xml"
+  resource_config_file =
+      "${wallpaper_path}/test/unittest/resource/ohos_test.xml"
   module_out_path = "wallpaper_mgr/wallpaper_permission_test"
   sources = [ "unittest/wallpaper_permission_test.cpp" ]
 

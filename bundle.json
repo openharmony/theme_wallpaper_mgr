@@ -50,15 +50,15 @@
         "group_type": {
           "base_group": [],
           "fwk_group": [
-            "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
+            "//base/theme/wallpaper_mgr/frameworks/native/wallpaper_manager:wallpapermanager",
             "//base/theme/wallpaper_mgr/frameworks/kits/extension:wallpaperextension",
             "//base/theme/wallpaper_mgr/frameworks/kits/extension:wallpaper_extension_module",
-            "//base/theme/wallpaper_mgr/interfaces/kits/napi/wallpaperextension:wallpaperextension_napi",
-            "//base/theme/wallpaper_mgr/interfaces/kits/napi/wallpaper_extension_context:wallpaperextensioncontext_napi",
-            "//base/theme/wallpaper_mgr/interfaces/kits/napi:wallpaper",
+            "//base/theme/wallpaper_mgr/frameworks/js/napi/wallpaperextension:wallpaperextension_napi",
+            "//base/theme/wallpaper_mgr/frameworks/js/napi/wallpaper_extension_context:wallpaperextensioncontext_napi",
+            "//base/theme/wallpaper_mgr/frameworks/js/napi:wallpaper",
             "//base/theme/wallpaper_mgr/utils:wallpaper_utils",
-            "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpaperdefault.jpeg",
-            "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpaperlockdefault.jpeg"
+            "//base/theme/wallpaper_mgr/frameworks/native/wallpaper_manager:wallpaperdefault.jpeg",
+            "//base/theme/wallpaper_mgr/frameworks/native/wallpaper_manager:wallpaperlockdefault.jpeg"
           ],
           "service_group": [
             "//base/theme/wallpaper_mgr:wallpaper_mgr_packages"
@@ -67,7 +67,7 @@
         "test": [
           "//base/theme/wallpaper_mgr/test:unittest",
           "//base/theme/wallpaper_mgr/test/fuzztest:fuzztest",
-          "//base/theme/wallpaper_mgr/interfaces/kits/napi/test:unittest"
+          "//base/theme/wallpaper_mgr/frameworks/js/napi/test:unittest"
         ]
       },
       "hisysevent_config": [
