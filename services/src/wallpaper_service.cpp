@@ -607,14 +607,14 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
         return E_DEAL_FAILED;
     }
     int32_t fdw = open(uri.c_str(), O_WRONLY | O_CREAT, 0660);
-    if (fdw == -1) {
-        HILOG_ERROR("WallpaperService:: fdw fail");
+    if (fdw < 0) {
+        HILOG_ERROR("Open wallpaper tmpFullPath failed, errno %{public}d", errno);
         delete[] paperBuf;
         return E_DEAL_FAILED;
     }
     int32_t writeSize = write(fdw, paperBuf, length);
     if (writeSize <= 0) {
-        HILOG_ERROR("WritefdToFile failed");
+        HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
         delete[] paperBuf;
         close(fdw);
@@ -1023,7 +1023,7 @@ ErrorCode WallpaperService::GetImageFd(int32_t userId, WallpaperType wallpaperTy
     std::lock_guard<std::mutex> lock(mtx);
     fd = open(filePathName.c_str(), O_RDONLY, S_IREAD);
     if (fd < 0) {
-        HILOG_ERROR("open failed");
+        HILOG_ERROR("Open file failed, errno %{public}d", errno);
         ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         return E_DEAL_FAILED;
     }
@@ -1047,14 +1047,14 @@ ErrorCode WallpaperService::GetImageSize(int32_t userId, WallpaperType wallpaper
     std::lock_guard<std::mutex> lock(mtx);
     FILE *fd = fopen(filePathName.c_str(), "rb");
     if (fd == nullptr) {
-        HILOG_ERROR("fopen failed");
+        HILOG_ERROR("fopen file failed, errno %{public}d", errno);
         return E_FILE_ERROR;
     }
     int32_t fend = fseek(fd, 0, SEEK_END);
     size = ftell(fd);
     int32_t fset = fseek(fd, 0, SEEK_SET);
     if (size <= 0 || fend != 0 || fset != 0) {
-        HILOG_ERROR("ftell failed or fseek failed");
+        HILOG_ERROR("ftell file failed or fseek file failed, errno %{public}d", errno);
         fclose(fd);
         return E_FILE_ERROR;
     }
