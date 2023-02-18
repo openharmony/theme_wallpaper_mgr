@@ -87,7 +87,6 @@ constexpr int32_t MAX_RETRY_TIMES = 20;
 constexpr int32_t QUERY_USER_MAX_RETRY_TIMES = 100;
 constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
 constexpr int32_t DEFAULT_USER_ID = 0;
-constexpr int32_t INTERCEPT_PATH_POS = 35;
 std::mutex WallpaperService::instanceLock_;
 
 sptr<WallpaperService> WallpaperService::instance_;
@@ -296,8 +295,7 @@ void WallpaperService::OnInitUser(int32_t userId)
     if (FileDeal::IsFileExist(userDir)) {
         std::lock_guard<std::mutex> lock(mtx_);
         if (!OHOS::ForceRemoveDirectory(userDir)) {
-            HILOG_ERROR("Force remove user directory path failed, errno %{public}d, path :%{public}s", errno,
-                userDir.substr(INTERCEPT_PATH_POS).c_str());
+            HILOG_ERROR("Force remove user directory path failed, errno %{public}d, userId:%{public}d", errno, userId);
             return;
         }
     }
@@ -333,19 +331,19 @@ bool WallpaperService::InitUserDir(int32_t userId)
 {
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     if (!FileDeal::Mkdir(userDir)) {
-        HILOG_ERROR("Failed to create destination path :%{public}s ", userDir.substr(INTERCEPT_PATH_POS).c_str());
+        HILOG_ERROR("Failed to create destination path, userId:%{public}d ", userId);
         return false;
     }
     std::string wallpaperSystemFilePath = userDir + "/" + WALLPAPER_SYSTEM_DIRNAME;
     if (!FileDeal::Mkdir(wallpaperSystemFilePath)) {
-        HILOG_ERROR("Failed to create destination wallpaper system path :%{public}s ",
-            userDir.substr(INTERCEPT_PATH_POS).c_str());
+        HILOG_ERROR("Failed to create destination wallpaper system path, userId:%{public}d, type:%{public}s", userId,
+            WALLPAPER_SYSTEM_DIRNAME.c_str());
         return false;
     }
     std::string wallpaperLockScreenFilePath = userDir + "/" + WALLPAPER_LOCKSCREEN_DIRNAME;
     if (!FileDeal::Mkdir(wallpaperLockScreenFilePath)) {
-        HILOG_ERROR("Failed to create destination wallpaper lockscreen path :%{public}s ",
-            userDir.substr(INTERCEPT_PATH_POS).c_str());
+        HILOG_ERROR("Failed to create destination wallpaper lockscreen path, userId:%{public}d, type:%{public}s",
+            userId, WALLPAPER_LOCKSCREEN_DIRNAME.c_str());
         return false;
     }
     return true;
@@ -609,7 +607,7 @@ bool WallpaperService::MakeCropWallpaper(int32_t userId, WallpaperType wallpaper
     if (errorCode != 0) {
         return false;
     }
-    std::string tmpPath = wallpaperCropPath_;
+    std::string &tmpPath = wallpaperCropPath_;
     int64_t packedSize = WritePixelMapToFile(tmpPath, std::move(wallpaperPixelMap));
     std::string cropFile;
     if (packedSize <= 0 || !GetFileNameFromMap(userId, wallpaperType, FileType::CROP_FILE, cropFile)) {
