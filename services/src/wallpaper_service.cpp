@@ -534,8 +534,8 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
     int fdw = open(url.c_str(), O_WRONLY | O_CREAT, 0660);
-    if (fdw == -1) {
-        HILOG_ERROR("WallpaperService:: fdw fail");
+    if (fdw < 0) {
+        HILOG_ERROR("Open wallpaper tmpFullPath failed, errno %{public}d", errno);
         delete[] paperBuf;
         mtx.unlock();
         return static_cast<int32_t>(E_DEAL_FAILED);
@@ -581,8 +581,8 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
     int fdw = open(url.c_str(), O_WRONLY | O_CREAT, 0660);
-    if (fdw == -1) {
-        HILOG_ERROR("WallpaperService:: fdw fail");
+    if (fdw < 0) {
+        HILOG_ERROR("Open wallpaper tmpFullPath failed, errno %{public}d", errno);
         delete[] paperBuf;
         mtx.unlock();
         return static_cast<int32_t>(E_DEAL_FAILED);
@@ -590,7 +590,7 @@ int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length
     int writeSize = write(fdw, paperBuf, length);
     mtx.unlock();
     if (writeSize <= 0) {
-        HILOG_ERROR("write to fdw fail");
+        HILOG_ERROR("Write to fdw fail, errno %{public}d", errno);
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
         close(fdw);
         delete[] paperBuf;
@@ -690,7 +690,7 @@ int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdIn
     mtx.lock();
     FILE *pixmap = fopen(filePath.c_str(), "rb");
     if (pixmap == nullptr) {
-        HILOG_ERROR("fopen failed");
+        HILOG_ERROR("fopen file Path failed, errno %{public}d.", errno);
         mtx.unlock();
         return static_cast<int32_t>(E_FILE_ERROR);
     }
@@ -698,18 +698,18 @@ int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdIn
     int length = ftell(pixmap);
     int fset = fseek(pixmap, 0, SEEK_SET);
     if (length <= 0 || fend != 0 || fset != 0) {
-        HILOG_ERROR("ftell failed or fseek failed");
+        HILOG_ERROR("ftell file failed or fseek file failed, errno %{public}d", errno);
         fclose(pixmap);
         mtx.unlock();
         return static_cast<int32_t>(E_FILE_ERROR);
     }
 
     fdInfo.size = length;
-    int closeRes = fclose(pixmap);
+    fclose(pixmap);
     int fd = open(filePath.c_str(), O_RDONLY, 0440);
     mtx.unlock();
-    if (closeRes != 0 || fd < 0) {
-        HILOG_ERROR("open failed");
+    if (fd < 0) {
+        HILOG_ERROR("Open file Path failed, errno %{public}d.", errno);
         ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         return static_cast<int32_t>(E_DEAL_FAILED);
     }

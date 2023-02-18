@@ -180,28 +180,26 @@ int32_t WallpaperManager::SetWallpaper(std::string url, int wallpaperType)
     }
     int fend = fseek(pixMap, 0, SEEK_END);
     if (fend != 0) {
-        HILOG_ERROR("fseek faild");
+        HILOG_ERROR("fseek file failed, errno %{public}d", errno);
+        fclose(pixMap);
         return static_cast<int32_t>(E_FILE_ERROR);
     }
     int length = ftell(pixMap);
     if (length <= 0) {
-        HILOG_ERROR("ftell faild");
+        HILOG_ERROR("ftell file failed, errno %{public}d", errno);
+        fclose(pixMap);
         return static_cast<int32_t>(E_FILE_ERROR);
     }
     int fset = fseek(pixMap, 0, SEEK_SET);
     if (fset != 0) {
-        HILOG_ERROR("fseek faild");
+        HILOG_ERROR("fseek file failed, errno %{public}d", errno);
+        fclose(pixMap);
         return static_cast<int32_t>(E_FILE_ERROR);
     }
-    int closeRes = fclose(pixMap);
-    if (closeRes != 0) {
-        HILOG_ERROR("fclose faild");
-        return static_cast<int32_t>(E_FILE_ERROR);
-    }
-
+    fclose(pixMap);
     int fd = open(fileRealPath.c_str(), O_RDONLY, 0660);
     if (fd < 0) {
-        HILOG_ERROR("open file failed");
+        HILOG_ERROR("open file failed, errno %{public}d", errno);
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         return static_cast<int32_t>(E_FILE_ERROR);
     }
@@ -242,7 +240,7 @@ int32_t WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pi
     fcntl(fd[0], F_SETPIPE_SZ, mapSize);
     int32_t writeSize = write(fd[1], buffer, mapSize);
     if (writeSize != mapSize) {
-        HILOG_ERROR("write to fd faild");
+        HILOG_ERROR("Write file failed, errno %{public}d", errno);
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         delete[] buffer;
         return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
