@@ -77,7 +77,7 @@ constexpr int64_t DELAY_TIME = 1000L;
 constexpr int64_t QUERY_USER_ID_INTERVAL = 300L;
 constexpr int32_t HALF = 2;
 constexpr int32_t CONNECT_EXTENSION_INTERVAL = 500000;
-constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 120;
+constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 360;
 constexpr int32_t HUNDRED = 100;
 constexpr int32_t FOO_MAX_LEN = 52428800;
 constexpr int32_t MAX_RETRY_TIMES = 20;
@@ -215,11 +215,14 @@ void WallpaperService::InitData()
     systemWallpaperMap_.Clear();
     lockWallpaperMap_.Clear();
     wallpaperTmpFullPath_ = WALLPAPER_USERID_PATH + "/" + WALLPAPER_TMP_DIRNAME;
-    wallpaperCropPath = WALLPAPER_USERID_PATH + "/" + WALLPAPER_CROP_PICTURE;
+    wallpaperCropPath_ = WALLPAPER_USERID_PATH + "/" + WALLPAPER_CROP_PICTURE;
     systemWallpaperColor_ = 0;
     lockWallpaperColor_ = 0;
     colorChangeListenerMap_.clear();
-    OnInitUser(userId_);
+    InitUserDir(userId_);
+    LoadSettingsLocked(userId_, true);
+    InitResources(userId_, WALLPAPER_SYSTEM);
+    InitResources(userId_, WALLPAPER_LOCKSCREEN);
     HILOG_INFO("WallpaperService::initData --> end ");
 }
 
@@ -263,7 +266,6 @@ void WallpaperService::InitQueryUserId(int32_t times)
 
 bool WallpaperService::InitUsersOnBoot()
 {
-    HILOG_INFO("WallpaperService InitUsersOnBoot in");
     std::vector<int32_t> userIds;
     if (AccountSA::OsAccountManager::QueryActiveOsAccountIds(userIds) != ERR_OK || userIds.empty()) {
         HILOG_INFO("WallpaperService: failed to get current userIds");
@@ -271,7 +273,10 @@ bool WallpaperService::InitUsersOnBoot()
     }
     HILOG_INFO("WallpaperService::get current userIds success, Current userId: %{public}d", userIds[0]);
     for (auto userId : userIds) {
-        OnInitUser(userId);
+        InitUserDir(userId);
+        LoadSettingsLocked(userId, true);
+        InitResources(userId, WALLPAPER_SYSTEM);
+        InitResources(userId, WALLPAPER_LOCKSCREEN);
     }
     SaveColor(userId_, WALLPAPER_SYSTEM);
     SaveColor(userId_, WALLPAPER_LOCKSCREEN);
@@ -280,8 +285,18 @@ bool WallpaperService::InitUsersOnBoot()
 
 void WallpaperService::OnInitUser(int32_t userId)
 {
-    HILOG_INFO("WallpaperService OnInitUser");
-    std::lock_guard<std::mutex> lock(mtx);
+    if (userId < 0) {
+        HILOG_ERROR("userId error, userId = %{public}d", userId);
+        return;
+    }
+    std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
+    if (FileDeal::IsFileExist(userDir)) {
+        std::lock_guard<std::mutex> lock(mtx_);
+        if (!OHOS::ForceRemoveDirectory(userDir)) {
+            HILOG_ERROR("Force remove user directory path failed, errno %{public}d, userId:%{public}d", errno, userId);
+            return;
+        }
+    }
     if (!InitUserDir(userId)) {
         return;
     }
@@ -292,14 +307,15 @@ void WallpaperService::OnInitUser(int32_t userId)
 
 void WallpaperService::InitResources(int32_t userId, WallpaperType wallpaperType)
 {
-    HILOG_INFO("WallpaperService InitResources");
     std::string pathName;
     if (!GetFileNameFromMap(userId, wallpaperType, FileType::CROP_FILE, pathName)) {
+        HILOG_ERROR("Get user file name from map failed, userId = %{public}d", userId);
         return;
     }
     if (!FileDeal::IsFileExist(pathName)) {
         WallpaperData wallpaperData;
         if (!GetWallpaperSafeLocked(userId, wallpaperType, wallpaperData)) {
+            HILOG_ERROR("Get wallpaper data failed, userId = %{public}d", userId);
             return;
         }
         if (!RestoreUserResources(wallpaperData, wallpaperType)) {
@@ -313,17 +329,19 @@ bool WallpaperService::InitUserDir(int32_t userId)
 {
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     if (!FileDeal::Mkdir(userDir)) {
-        HILOG_ERROR("Failed to create destination path :%{public}s ", userDir.c_str());
+        HILOG_ERROR("Failed to create destination path, userId:%{public}d ", userId);
         return false;
     }
     std::string wallpaperSystemFilePath = userDir + "/" + WALLPAPER_SYSTEM_DIRNAME;
     if (!FileDeal::Mkdir(wallpaperSystemFilePath)) {
-        HILOG_ERROR("Failed to create destination path :%{public}s ", wallpaperSystemFilePath.c_str());
+        HILOG_ERROR("Failed to create destination wallpaper system path, userId:%{public}d, type:%{public}s", userId,
+            WALLPAPER_SYSTEM_DIRNAME.c_str());
         return false;
     }
     std::string wallpaperLockScreenFilePath = userDir + "/" + WALLPAPER_LOCKSCREEN_DIRNAME;
     if (!FileDeal::Mkdir(wallpaperLockScreenFilePath)) {
-        HILOG_ERROR("Failed to create destination path :%{public}s ", wallpaperLockScreenFilePath.c_str());
+        HILOG_ERROR("Failed to create destination wallpaper lockscreen path, userId:%{public}d, type:%{public}s",
+            userId, WALLPAPER_LOCKSCREEN_DIRNAME.c_str());
         return false;
     }
     return true;
@@ -339,6 +357,7 @@ bool WallpaperService::RestoreUserResources(const WallpaperData &wallpaperData, 
         HILOG_INFO("Copy file path is not exist");
         return false;
     }
+    std::lock_guard<std::mutex> lock(mtx_);
     if (!FileDeal::CopyFile(wallpaperDefaultPath, wallpaperData.wallpaperFile)) {
         HILOG_INFO("CopyFile WALLPAPER_DEFAULT_FILEFULLPATH failed");
         return false;
@@ -347,7 +366,24 @@ bool WallpaperService::RestoreUserResources(const WallpaperData &wallpaperData, 
         HILOG_INFO("CopyFile WALLPAPER_DEFAULT_FILEFULLPATH failed");
         return false;
     }
+    HILOG_INFO("Restore user resources end ");
     return true;
+}
+
+void WallpaperService::OnRemovedUser(int32_t userId)
+{
+    if (userId < 0) {
+        HILOG_ERROR("userId error, userId = %{public}d", userId);
+        return;
+    }
+    ClearWallpaperLocked(userId, WALLPAPER_SYSTEM);
+    ClearWallpaperLocked(userId, WALLPAPER_LOCKSCREEN);
+    std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
+    std::lock_guard<std::mutex> lock(mtx_);
+    if (!OHOS::ForceRemoveDirectory(userDir)) {
+        HILOG_ERROR("Force remove user directory path failed, errno %{public}d.", errno);
+    }
+    HILOG_INFO("Restore user resources end ");
 }
 
 void WallpaperService::OnBootPhase()
@@ -569,7 +605,7 @@ bool WallpaperService::MakeCropWallpaper(int32_t userId, WallpaperType wallpaper
     if (errorCode != 0) {
         return false;
     }
-    std::string tmpPath = wallpaperCropPath;
+    std::string &tmpPath = wallpaperCropPath_;
     int64_t packedSize = WritePixelMapToFile(tmpPath, std::move(wallpaperPixelMap));
     std::string cropFile;
     if (packedSize <= 0 || !GetFileNameFromMap(userId, wallpaperType, FileType::CROP_FILE, cropFile)) {
@@ -601,7 +637,7 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
     if (paperBuf == nullptr) {
         return E_NO_MEMORY;
     }
-    std::lock_guard<std::mutex> lock(mtx);
+    std::lock_guard<std::mutex> lock(mtx_);
     int32_t readSize = read(fd, paperBuf, length);
     if (readSize <= 0) {
         HILOG_ERROR("read fd failed");
@@ -796,7 +832,6 @@ ErrorCode WallpaperService::ResetWallpaper(int32_t wallpaperType)
 ErrorCode WallpaperService::SetDefaultDataForWallpaper(int32_t userId, WallpaperType wallpaperType)
 {
     WallpaperData wallpaperData;
-    std::lock_guard<std::mutex> lock(mtx);
     if (!GetWallpaperSafeLocked(userId, wallpaperType, wallpaperData)) {
         return E_DEAL_FAILED;
     }
@@ -1022,7 +1057,7 @@ ErrorCode WallpaperService::GetImageFd(int32_t userId, WallpaperType wallpaperTy
     if (!GetFileNameFromMap(userId, wallpaperType, FileType::CROP_FILE, filePathName)) {
         return E_DEAL_FAILED;
     }
-    std::lock_guard<std::mutex> lock(mtx);
+    std::lock_guard<std::mutex> lock(mtx_);
     fd = open(filePathName.c_str(), O_RDONLY, S_IREAD);
     if (fd < 0) {
         HILOG_ERROR("Open file failed, errno %{public}d", errno);
@@ -1046,7 +1081,7 @@ ErrorCode WallpaperService::GetImageSize(int32_t userId, WallpaperType wallpaper
         HILOG_ERROR("file is not exist!");
         return E_NOT_FOUND;
     }
-    std::lock_guard<std::mutex> lock(mtx);
+    std::lock_guard<std::mutex> lock(mtx_);
     FILE *fd = fopen(filePathName.c_str(), "rb");
     if (fd == nullptr) {
         HILOG_ERROR("fopen file failed, errno %{public}d", errno);

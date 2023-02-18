@@ -35,6 +35,9 @@ void WallpaperCommonEvent::OnReceiveEvent(const OHOS::EventFwk::CommonEventData 
     } else if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED) {
         HILOG_INFO("OnInitUser userId = %{public}d", data.GetCode());
         WallpaperService::GetInstance()->OnInitUser(data.GetCode());
+    } else if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED) {
+        HILOG_INFO("OnInitUser userId = %{public}d", data.GetCode());
+        WallpaperService::GetInstance()->OnRemovedUser(data.GetCode());
     }
 }
 
@@ -66,6 +69,7 @@ bool WallpaperCommonEvent::RegisterSubscriber()
     OHOS::EventFwk::MatchingSkills matchingSkills;
     matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
     matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED);
+    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED);
     OHOS::EventFwk::CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     subscriber = std::make_shared<WallpaperCommonEvent>(subscriberInfo);
     return OHOS::EventFwk::CommonEventManager::SubscribeCommonEvent(subscriber);

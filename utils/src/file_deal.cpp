@@ -34,7 +34,7 @@ bool FileDeal::IsDirExist(std::string path)
 {
     DIR *dp;
     if ((dp = opendir(path.c_str())) == NULL) {
-        HILOG_INFO("FileDeal : openDir  %{public}s is not exist", path.c_str());
+        HILOG_INFO("FileDeal : openDir  is not exist, errInfo=%{public}s", strerror(errno));
         return false;
     }
     closedir(dp);
@@ -45,7 +45,7 @@ bool FileDeal::Mkdir(const std::string &path)
 {
     if (!IsDirExist(path)) {
         if (mkdir(path.c_str(), MODE) != 0) {
-            HILOG_INFO("FileDeal : mkdir errInfo=%{public}s ,path = %{public}s ", strerror(errno), path.c_str());
+            HILOG_INFO("FileDeal : mkdir errInfo=%{public}s", strerror(errno));
             return false;
         }
     }
@@ -54,20 +54,19 @@ bool FileDeal::Mkdir(const std::string &path)
 
 bool FileDeal::CopyFile(const std::string &sourceFile, const std::string &newFile)
 {
-    HILOG_INFO("Copy file Star:from [%{public}s] to [%{public}s]", sourceFile.c_str(), newFile.c_str());
     std::ifstream in;
     std::ofstream out;
 
     in.open(sourceFile.c_str(), std::ios::binary);
     if (in.fail()) {
-        HILOG_INFO("open file  %{public}s failed", sourceFile.c_str());
+        HILOG_INFO("open file failed, errInfo=%{public}s", strerror(errno));
         in.close();
         out.close();
         return false;
     }
     out.open(newFile.c_str(), std::ios::binary);
     if (out.fail()) {
-        HILOG_INFO("open file  %{public}s failed", newFile.c_str());
+        HILOG_INFO("open file failed, errInfo=%{public}s", strerror(errno));
         out.close();
         in.close();
         return false;
@@ -75,14 +74,14 @@ bool FileDeal::CopyFile(const std::string &sourceFile, const std::string &newFil
     out << in.rdbuf();
     out.close();
     in.close();
-    HILOG_INFO("copy file is %{public}s, new file is %{public}s,success", sourceFile.c_str(), newFile.c_str());
+    HILOG_INFO("copy file success");
     return true;
 }
 
 bool FileDeal::DeleteFile(const std::string &sourceFile)
 {
     if (remove(sourceFile.c_str()) < 0) {
-        HILOG_INFO("Failed to remove source file");
+        HILOG_INFO("Failed to remove source file, errInfo=%{public}s.", strerror(errno));
         return false;
     }
     return true;
