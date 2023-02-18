@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (C) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,17 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef FRAMEWORKS_UV_QUEUE_H
-#define FRAMEWORKS_UV_QUEUE_H
 
-#include <iostream>
-#include <uv.h>
+#ifndef OH_WALLPAPER_MANAGER_VISIBILITY_H
+#define OH_WALLPAPER_MANAGER_VISIBILITY_H
 
-#include "napi/native_api.h"
-namespace OHOS::MiscServices {
-class UvQueue {
-public:
-    static bool Call(napi_env env, void *data, uv_after_work_cb afterCallback);
-};
-} // namespace OHOS::MiscServices
-#endif // FRAMEWORKS_UV_QUEUE_H
+#ifndef WALLPAPER_API
+#define WALLPAPER_API __attribute__((visibility("default")))
+#endif
+
+#endif // OH_WALLPAPER_MANAGER_VISIBILITY_H

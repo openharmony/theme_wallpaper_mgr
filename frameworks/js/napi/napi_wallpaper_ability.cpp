@@ -667,8 +667,7 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
             napi_status callStatus = napi_call_function(eventDataInner->listener->env_, global, callback,
                 sizeof(args) / sizeof(args[0]), args, &result);
             if (callStatus != napi_ok) {
-                HILOG_ERROR("notify data change failed callStatus:%{public}d callback:%{public}p", callStatus,
-                    callback);
+                HILOG_ERROR("notify data change failed callStatus:%{public}d", callStatus);
             }
             napi_close_handle_scope(eventDataInner->listener->env_, scope);
             delete eventDataInner;

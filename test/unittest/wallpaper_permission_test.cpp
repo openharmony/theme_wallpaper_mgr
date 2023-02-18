@@ -16,13 +16,10 @@
 #include <ctime>
 #include <gtest/gtest.h>
 
-#include "accesstoken_kit.h"
 #include "directory_ex.h"
 #include "hilog_wrapper.h"
 #include "image_packer.h"
-#include "nativetoken_kit.h"
 #include "pixel_map.h"
-#include "token_setproc.h"
 #include "wallpaper_manager.h"
 #include "wallpaper_manager_kits.h"
 
@@ -33,7 +30,6 @@ using namespace testing;
 using namespace OHOS::Media;
 using namespace OHOS::HiviewDFX;
 using namespace OHOS::MiscServices;
-using namespace OHOS::Security::AccessToken;
 
 namespace OHOS {
 namespace WallpaperMgrService {

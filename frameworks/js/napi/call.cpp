@@ -43,10 +43,12 @@ Call::Call(napi_env env, napi_callback_info info, std::shared_ptr<Context> conte
     auto status = (*context)(env, argc, argv, self);
     if (status != napi_ok && context->errCode_ != 0 && isNewInterfaces) {
         JsError::ThrowError(env, context->errCode_, context->errMsg_);
-        return;
+        context->output_ = nullptr;
+        context->exec_ = nullptr;
+    } else {
+        context_->ctx = std::move(context);
+        napi_create_reference(env, self, 1, &context_->self);
     }
-    context_->ctx = std::move(context);
-    napi_create_reference(env, self, 1, &context_->self);
 }
 
 Call::~Call()
@@ -97,8 +99,10 @@ napi_value Call::SyncCall(napi_env env)
     napi_status runStatus = (*context_->ctx)(env, &output);
     if (runStatus != napi_ok && context_->ctx->errCode_ != 0) {
         JsError::ThrowError(env, context_->ctx->errCode_, context_->ctx->errMsg_);
-        return nullptr;
+        output = nullptr;
     }
+    DeleteContext(env, context_);
+    context_ = nullptr;
     return output;
 }
 

@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "pixel_map.h"
+#include "visibility.h"
 #include "wallpaper_color_change_listener.h"
 #include "wallpaper_common.h"
 #include "wallpaper_manager_common_info.h"
@@ -40,7 +41,7 @@ public:
      *
      * @return Instance of ohos Wallpaper manager.
      */
-    static WallpaperManagerkits &GetInstance();
+    WALLPAPER_API static WallpaperManagerkits &GetInstance();
 
     /**
     * Wallpaper set.

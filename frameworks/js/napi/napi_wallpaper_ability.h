@@ -58,6 +58,7 @@ struct GetContextInfo : public Call::Context {
     napi_status operator()(napi_env env, napi_value *result) override
     {
         if (status != napi_ok) {
+            output_ = nullptr;
             return status;
         }
         return Context::operator()(env, result);
@@ -79,6 +80,7 @@ struct GetMinContextInfo : public Call::Context {
     napi_status operator()(napi_env env, napi_value *result) override
     {
         if (status != napi_ok) {
+            output_ = nullptr;
             return status;
         }
         return Context::operator()(env, result);
@@ -100,6 +102,7 @@ struct PermissionContextInfo : public Call::Context {
     napi_status operator()(napi_env env, napi_value *result) override
     {
         if (status != napi_ok) {
+            output_ = nullptr;
             return status;
         }
         return Context::operator()(env, result);
@@ -123,6 +126,7 @@ struct SetContextInfo : public Call::Context {
     napi_status operator()(napi_env env, napi_value *result) override
     {
         if (status != napi_ok) {
+            output_ = nullptr;
             return status;
         }
         return Context::operator()(env, result);
@@ -145,6 +149,7 @@ struct GetFileContextInfo : public Call::Context {
     napi_status operator()(napi_env env, napi_value *result) override
     {
         if (status != napi_ok) {
+            output_ = nullptr;
             return status;
         }
         return Context::operator()(env, result);
