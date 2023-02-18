@@ -20,9 +20,9 @@ ohos_shared_library("wallpaper") {
     "//third_party/node/src",
     "${ability_runtime_services_path}/common/include",
     "//utils/system/safwk/native/include",
-    "//base/theme/wallpaper_mgr/interfaces/kits/napi",
-    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager/include",
-    "//base/theme/wallpaper_mgr/utils/include",
+    "${wallpaper_path}/frameworks/js/napi",
+    "${wallpaper_path}/frameworks/native/include",
+    "${wallpaper_path}/utils/include",
     "//third_party/libuv/include",
     "//commonlibrary/c_utils/base/include",
     "//foundation/graphic/graphic_2d/utils/color_manager",
@@ -36,7 +36,7 @@ ohos_shared_library("wallpaper") {
     "wallpaper_js_util.cpp",
   ]
   deps = [
-    "//base/theme/wallpaper_mgr/frameworks/innerkitsimpl/wallpaper_manager:wallpapermanager",
+    "${wallpaper_path}/frameworks/native:wallpapermanager",
     "//foundation/graphic/graphic_2d/utils/color_manager:color_manager",
   ]
 

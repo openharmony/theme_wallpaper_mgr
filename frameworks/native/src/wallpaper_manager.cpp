@@ -181,25 +181,25 @@ ErrorCode WallpaperManager::SetWallpaper(std::string uri, int32_t wallpaperType)
         return E_FILE_ERROR;
     }
     if (fseek(pixMap, 0, SEEK_END) != 0) {
-        HILOG_ERROR("fseek failed");
+        HILOG_ERROR("fseek file failed, errno %{public}d", errno);
+        fclose(pixMap);
         return E_FILE_ERROR;
     }
     int32_t length = ftell(pixMap);
     if (length <= 0) {
-        HILOG_ERROR("ftell failed");
+        HILOG_ERROR("ftell file failed, errno %{public}d", errno);
+        fclose(pixMap);
         return E_FILE_ERROR;
     }
     if (fseek(pixMap, 0, SEEK_SET) != 0) {
-        HILOG_ERROR("fseek failed");
+        HILOG_ERROR("fseek file failed, errno %{public}d", errno);
+        fclose(pixMap);
         return E_FILE_ERROR;
     }
-    if (fclose(pixMap) != 0) {
-        HILOG_ERROR("fclose failed");
-        return E_FILE_ERROR;
-    }
+    fclose(pixMap);
     int32_t fd = open(fileRealPath.c_str(), O_RDONLY, 0660);
     if (fd < 0) {
-        HILOG_ERROR("open file failed");
+        HILOG_ERROR("open file failed, errno %{public}d", errno);
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         return E_FILE_ERROR;
     }
@@ -221,18 +221,18 @@ ErrorCode WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> 
         return E_DEAL_FAILED;
     }
 
-    std::stringbuf *stringBuf = new std::stringbuf();
-    std::ostream ostream(stringBuf);
+    std::stringbuf stringBuf;
+    std::ostream ostream(&stringBuf);
     int32_t mapSize = WritePixelMapToStream(ostream, pixelMap);
     if (mapSize <= 0) {
         HILOG_ERROR("WritePixelMapToStream failed");
         return E_WRITE_PARCEL_ERROR;
     }
-    char *buffer = new (std::nothrow) char[mapSize];
+    char *buffer = new (std::nothrow) char[mapSize]();
     if (buffer == nullptr) {
         return E_NO_MEMORY;
     }
-    stringBuf->sgetn(buffer, mapSize);
+    stringBuf.sgetn(buffer, mapSize);
 
     int32_t fd[2];
     pipe(fd);
@@ -240,7 +240,7 @@ ErrorCode WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> 
     fcntl(fd[0], F_SETPIPE_SZ, mapSize);
     int32_t writeSize = write(fd[1], buffer, mapSize);
     if (writeSize != mapSize) {
-        HILOG_ERROR("write to fd failed");
+        HILOG_ERROR("Write file failed, errno %{public}d", errno);
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         delete[] buffer;
         return E_WRITE_PARCEL_ERROR;

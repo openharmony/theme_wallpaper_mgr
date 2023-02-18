@@ -108,7 +108,7 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
         return;
     }
 
-    HILOG_INFO("Set wallpaper extension context pointer: %{public}p", context.get());
+    HILOG_INFO("Set wallpaper extension");
 
     nativeObj->SetNativePointer(
         new std::weak_ptr<AbilityRuntime::Context>(context), [](NativeEngine *, void *data, void *) {

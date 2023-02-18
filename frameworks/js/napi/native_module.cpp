@@ -74,9 +74,6 @@ static napi_value Init(napi_env env, napi_value exports)
 
     NAPI_CALL(env, napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc));
     HILOG_INFO("napi_module Init end...");
-    HILOG_INFO("OHOS::Media::PixelMapNapi::Init start...");
-    OHOS::Media::PixelMapNapi::Init(env, exports);
-    HILOG_INFO("OHOS::Media::PixelMapNapi::Init end...");
     return exports;
 }
 

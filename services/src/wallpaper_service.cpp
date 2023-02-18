@@ -21,7 +21,7 @@
 #include <display_type.h>
 #include <fcntl.h>
 #include <iostream>
-#include <rs_surface_node.h>
+#include <sys/prctl.h>
 #include <sys/sendfile.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -33,7 +33,6 @@
 #include "accesstoken_adapter.h"
 #include "bundle_mgr_interface.h"
 #include "bundle_mgr_proxy.h"
-#include "canvas.h"
 #include "color_picker.h"
 #include "command.h"
 #include "directory_ex.h"
@@ -44,22 +43,20 @@
 #include "file_ex.h"
 #include "hilog_wrapper.h"
 #include "hitrace_meter.h"
-#include "image/bitmap.h"
 #include "image_packer.h"
 #include "image_source.h"
 #include "image_type.h"
 #include "image_utils.h"
 #include "iservice_registry.h"
-#include "pen.h"
+#include "memory_guard.h"
 #include "pixel_map.h"
 #include "surface.h"
 #include "system_ability_definition.h"
+#include "tokenid_kit.h"
 #include "wallpaper_common.h"
 #include "wallpaper_common_event.h"
 #include "wallpaper_service_cb_proxy.h"
 #include "window.h"
-#include "tokenid_kit.h"
-#include "memory_guard.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -119,7 +116,6 @@ sptr<WallpaperService> WallpaperService::GetInstance()
 
 int32_t WallpaperService::Init()
 {
-    InitData();
     InitQueryUserId(QUERY_USER_MAX_RETRY_TIMES);
     bool ret = Publish(this);
     if (!ret) {
@@ -140,6 +136,7 @@ void WallpaperService::OnStart()
         HILOG_ERROR("WallpaperService is already running.");
         return;
     }
+    InitData();
     InitServiceHandler();
     AddSystemAbilityListener(COMMON_EVENT_SERVICE_ID);
     std::thread(&WallpaperService::StartWallpaperExtension, this).detach();
@@ -233,6 +230,7 @@ void WallpaperService::StartWallpaperExtension()
 {
     MemoryGuard cacheGuard;
     HILOG_INFO("WallpaperService StartWallpaperExtension");
+    prctl(PR_SET_NAME, "WallpaperExtensionThread");
     int32_t time = 0;
     ErrCode ret = 0;
     AAFwk::Want want;
@@ -635,7 +633,7 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
         return E_PARAMETERS_INVALID;
     }
     std::string uri = wallpaperTmpFullPath_;
-    char *paperBuf = new (std::nothrow) char[length];
+    char *paperBuf = new (std::nothrow) char[length]();
     if (paperBuf == nullptr) {
         return E_NO_MEMORY;
     }
@@ -647,14 +645,14 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
         return E_DEAL_FAILED;
     }
     int32_t fdw = open(uri.c_str(), O_WRONLY | O_CREAT, 0660);
-    if (fdw == -1) {
-        HILOG_ERROR("WallpaperService:: fdw fail");
+    if (fdw < 0) {
+        HILOG_ERROR("Open wallpaper tmpFullPath failed, errno %{public}d", errno);
         delete[] paperBuf;
         return E_DEAL_FAILED;
     }
     int32_t writeSize = write(fdw, paperBuf, length);
     if (writeSize <= 0) {
-        HILOG_ERROR("WritefdToFile failed");
+        HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
         delete[] paperBuf;
         close(fdw);
@@ -1062,7 +1060,7 @@ ErrorCode WallpaperService::GetImageFd(int32_t userId, WallpaperType wallpaperTy
     std::lock_guard<std::mutex> lock(mtx_);
     fd = open(filePathName.c_str(), O_RDONLY, S_IREAD);
     if (fd < 0) {
-        HILOG_ERROR("open failed");
+        HILOG_ERROR("Open file failed, errno %{public}d", errno);
         ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         return E_DEAL_FAILED;
     }
@@ -1086,14 +1084,14 @@ ErrorCode WallpaperService::GetImageSize(int32_t userId, WallpaperType wallpaper
     std::lock_guard<std::mutex> lock(mtx_);
     FILE *fd = fopen(filePathName.c_str(), "rb");
     if (fd == nullptr) {
-        HILOG_ERROR("fopen failed");
+        HILOG_ERROR("fopen file failed, errno %{public}d", errno);
         return E_FILE_ERROR;
     }
     int32_t fend = fseek(fd, 0, SEEK_END);
     size = ftell(fd);
     int32_t fset = fseek(fd, 0, SEEK_SET);
     if (size <= 0 || fend != 0 || fset != 0) {
-        HILOG_ERROR("ftell failed or fseek failed");
+        HILOG_ERROR("ftell file failed or fseek file failed, errno %{public}d", errno);
         fclose(fd);
         return E_FILE_ERROR;
     }
