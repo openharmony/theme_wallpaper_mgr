@@ -14,12 +14,13 @@
 #### Introduction to framework code
 /base/theme/wallpaper_mgr
 ├── figures                  # architecture diagram
-├── frameworks/innerkitsimpl # interface provided for app 
-├── interfaces               # interface code provided by module
-│   ├── innerkits            # inter service interface
-│   └── kits                 # napi interface
-├── sa_profile               # module contains the config files of system services and processes
+├── frameworks
+│   ├── js/napi              # the js interface resolves to the napi interface
+│   ├── kits/extension       # extension
+│   └── native               # interface provided for app
 ├── services                 # implementation of wallpaper manager service
+│   ├── profile              # module contains the config files of system services
+│   └── etc                  # module contains the config files of processes
 ├── test                     # unit test of interface
 └── utils                    # module contains log printing and constants for ordered commonEvent
 

@@ -17,9 +17,9 @@ import("//build/ohos.gni")
 group("wallpaper_mgr_packages") {
   if (is_standard_system) {
     deps = [
-      "etc/init:wallpaperservice.rc",
-      "profile:wallpaper_sa_profiles",
       "services:wallpaper_service",
+      "services/etc/init:wallpaperservice.rc",
+      "services/profile:wallpaper_sa_profiles",
     ]
   }
 }
