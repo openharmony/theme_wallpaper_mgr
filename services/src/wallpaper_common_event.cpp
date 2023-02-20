@@ -16,6 +16,8 @@
 #include "wallpaper_common_event.h"
 
 #include "hilog_wrapper.h"
+#include "if_system_ability_manager.h"
+#include "iservice_registry.h"
 #include "wallpaper_service.h"
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -36,8 +38,11 @@ void WallpaperCommonEvent::OnReceiveEvent(const OHOS::EventFwk::CommonEventData 
         HILOG_INFO("OnInitUser userId = %{public}d", data.GetCode());
         WallpaperService::GetInstance()->OnInitUser(data.GetCode());
     } else if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED) {
-        HILOG_INFO("OnInitUser userId = %{public}d", data.GetCode());
+        HILOG_INFO("OnRemovedUser userId = %{public}d", data.GetCode());
         WallpaperService::GetInstance()->OnRemovedUser(data.GetCode());
+    } else if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USER_SWITCHED) {
+        HILOG_INFO("OnSwitchedUser userId = %{public}d", data.GetCode());
+        WallpaperService::GetInstance()->OnSwitchedUser(data.GetCode());
     }
 }
 
@@ -70,6 +75,7 @@ bool WallpaperCommonEvent::RegisterSubscriber()
     matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
     matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED);
     matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED);
+    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_SWITCHED);
     OHOS::EventFwk::CommonEventSubscribeInfo subscriberInfo(matchingSkills);
     subscriber = std::make_shared<WallpaperCommonEvent>(subscriberInfo);
     return OHOS::EventFwk::CommonEventManager::SubscribeCommonEvent(subscriber);

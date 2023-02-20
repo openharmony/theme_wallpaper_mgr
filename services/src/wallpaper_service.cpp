@@ -386,6 +386,24 @@ void WallpaperService::OnRemovedUser(int32_t userId)
     HILOG_INFO("Restore user resources end ");
 }
 
+void WallpaperService::OnSwitchedUser(int32_t userId)
+{
+    HILOG_INFO("OnSwitchedUser start userId = %{public}d", userId);
+    if (userId < 0) {
+        HILOG_ERROR("userId error, userId = %{public}d", userId);
+        return;
+    }
+    std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
+    if (!FileDeal::IsFileExist(userDir)) {
+        InitUserDir(userId);
+        InitResources(userId, WALLPAPER_SYSTEM);
+        InitResources(userId, WALLPAPER_LOCKSCREEN);
+    }
+    LoadSettingsLocked(userId, true);
+    SaveColor(userId, WALLPAPER_SYSTEM);
+    SaveColor(userId, WALLPAPER_LOCKSCREEN);
+}
+
 void WallpaperService::OnBootPhase()
 {
     HILOG_INFO("WallpaperService OnBootPhase");
@@ -738,12 +756,19 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
         return E_PARAMETERS_INVALID;
     }
     auto type = static_cast<WallpaperType>(wallpaperType);
-    ErrorCode ret = GetImageSize(userId_, type, fdInfo.size);
+    int32_t uid = static_cast<int32_t>(IPCSkeleton::GetCallingUid());
+    int32_t userId = DEFAULT_USER_ID;
+    AccountSA::OsAccountManager::GetOsAccountLocalIdFromUid(uid, userId);
+//    AccountSA::OsAccountInfo osAccountInfo;
+//    AccountSA::OsAccountManager::QueryCurrentOsAccount(osAccountInfo);
+//    int32_t userId = osAccountInfo.GetLocalId();
+    HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
+    ErrorCode ret = GetImageSize(userId, type, fdInfo.size);
     if (ret != E_OK) {
         HILOG_ERROR("GetImageSize failed");
         return ret;
     }
-    ret = GetImageFd(userId_, type, fdInfo.fd);
+    ret = GetImageFd(userId, type, fdInfo.fd);
     if (ret != E_OK) {
         HILOG_ERROR("GetImageFd failed");
         return ret;

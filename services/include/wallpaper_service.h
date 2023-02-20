@@ -53,7 +53,7 @@ class Color;
 }
 namespace WallpaperMgrService {
 enum class ServiceRunningState { STATE_NOT_START, STATE_RUNNING };
-enum class FileType { WALLPAPER_FILE, CROP_FILE };
+enum class FileType : uint8_t { WALLPAPER_FILE, CROP_FILE };
 class WallpaperService : public SystemAbility, public WallpaperServiceStub {
     DECLARE_SYSTEM_ABILITY(WallpaperService);
 
@@ -84,6 +84,7 @@ public:
     static void OnBootPhase();
     void OnInitUser(int32_t newUserId);
     void OnRemovedUser(int32_t userId);
+    void OnSwitchedUser(int32_t userId);
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
     void ReporterUsageTimeStatistic();
     void RegisterSubscriber(int32_t times);
