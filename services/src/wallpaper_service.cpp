@@ -30,7 +30,6 @@
 #include <window_manager.h>
 
 #include "ability_manager_client.h"
-#include "accesstoken_adapter.h"
 #include "bundle_mgr_interface.h"
 #include "bundle_mgr_proxy.h"
 #include "color_picker.h"
@@ -214,8 +213,8 @@ void WallpaperService::InitData()
     userId_ = DEFAULT_USER_ID;
     systemWallpaperMap_.Clear();
     lockWallpaperMap_.Clear();
-    wallpaperTmpFullPath_ = WALLPAPER_USERID_PATH + "/" + WALLPAPER_TMP_DIRNAME;
-    wallpaperCropPath_ = WALLPAPER_USERID_PATH + "/" + WALLPAPER_CROP_PICTURE;
+    wallpaperTmpFullPath_ = WALLPAPER_USERID_PATH + WALLPAPER_TMP_DIRNAME;
+    wallpaperCropPath_ = WALLPAPER_USERID_PATH + WALLPAPER_CROP_PICTURE;
     systemWallpaperColor_ = 0;
     lockWallpaperColor_ = 0;
     colorChangeListenerMap_.clear();

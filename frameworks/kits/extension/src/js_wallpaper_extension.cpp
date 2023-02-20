@@ -137,27 +137,28 @@ void JsWallpaperExtension::OnStart(const AAFwk::Want &want)
     CallObjectMethod("onCreated", argv, ARGC_ONE);
     FinishAsyncTrace(HITRACE_TAG_MISC, "onCreated", static_cast<int32_t>(TraceTaskId::ONCREATE_EXTENSION));
     CallObjectMethod("createWallpaperWin");
-    WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterWallpaperCallback([](int32_t wallpaperType) -> bool {
-        HILOG_INFO("jsWallpaperExtension->CallObjectMethod");
-        HandleScope handleScope(jsWallpaperExtension->jsRuntime_);
-        NativeEngine *nativeEng = &(jsWallpaperExtension->jsRuntime_).GetNativeEngine();
-        WorkData *workData = new (std::nothrow) WorkData(nativeEng, wallpaperType);
-        if (workData == nullptr) {
-            return false;
-        }
-        uv_after_work_cb afterCallback = [](uv_work_t *work, int32_t status) {
-            WorkData *workData = reinterpret_cast<WorkData *>(work->data);
-            napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_),
-                workData->wallpaperType_);
-            NativeValue *nativeType = reinterpret_cast<NativeValue *>(type);
-            NativeValue *arg[] = { nativeType };
-            jsWallpaperExtension->CallObjectMethod("onWallpaperChanged", arg, ARGC_ONE);
-            delete workData;
-            delete work;
-        };
-        UvQueue::Call(reinterpret_cast<napi_env>(nativeEng), workData, afterCallback);
-        return true;
-    });
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterWallpaperCallback(
+        [](int32_t wallpaperType) -> bool {
+            HILOG_INFO("jsWallpaperExtension->CallObjectMethod");
+            HandleScope handleScope(jsWallpaperExtension->jsRuntime_);
+            NativeEngine *nativeEng = &(jsWallpaperExtension->jsRuntime_).GetNativeEngine();
+            WorkData *workData = new (std::nothrow) WorkData(nativeEng, wallpaperType);
+            if (workData == nullptr) {
+                return false;
+            }
+            uv_after_work_cb afterCallback = [](uv_work_t *work, int32_t status) {
+                WorkData *workData = reinterpret_cast<WorkData *>(work->data);
+                napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_),
+                    workData->wallpaperType_);
+                NativeValue *nativeType = reinterpret_cast<NativeValue *>(type);
+                NativeValue *arg[] = { nativeType };
+                jsWallpaperExtension->CallObjectMethod("onWallpaperChanged", arg, ARGC_ONE);
+                delete workData;
+                delete work;
+            };
+            UvQueue::Call(reinterpret_cast<napi_env>(nativeEng), workData, afterCallback);
+            return true;
+        });
     HILOG_INFO("%{public}s end.", __func__);
     FinishAsyncTrace(HITRACE_TAG_MISC, "onCreated", static_cast<int32_t>(TraceTaskId::ONSTART_EXTENSION));
 }
