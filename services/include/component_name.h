@@ -35,4 +35,4 @@ private:
 } // namespace WallpaperMgrService
 } // namespace OHOS
 
-#endif //SERVICES_INCLUDE_WALLPAPER_COMPONENT_NAME_H
+#endif // SERVICES_INCLUDE_WALLPAPER_COMPONENT_NAME_H
