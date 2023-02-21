@@ -30,7 +30,7 @@ void WallpaperExtensionAbilityConnection::OnAbilityDisconnectDone(const AppExecF
     int32_t resultCode)
 {
     HILOG_INFO("on ability disconnected");
-    WallpaperService::GetInstance()->StartWallpaperExtension();
+    wallpaperService_.StartWallpaperExtension();
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

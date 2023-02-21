@@ -20,6 +20,7 @@
 #include "common_event_manager.h"
 #include "common_event_subscriber.h"
 #include "common_event_support.h"
+#include "wallpaper_service.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -29,8 +30,9 @@ using CommonEventSubscribeInfo = OHOS::EventFwk::CommonEventSubscribeInfo;
 
 class WallpaperCommonEvent : public OHOS::EventFwk::CommonEventSubscriber {
 public:
-    WallpaperCommonEvent(const OHOS::EventFwk::CommonEventSubscribeInfo &subscriberInfo)
-        : CommonEventSubscriber(subscriberInfo)
+    WallpaperCommonEvent(const OHOS::EventFwk::CommonEventSubscribeInfo &subscriberInfo,
+        WallpaperService &wallpaperService)
+        : CommonEventSubscriber(subscriberInfo), wallpaperService_(wallpaperService)
     {
     }
     ~WallpaperCommonEvent() = default;
@@ -38,7 +40,7 @@ public:
     static std::shared_ptr<WallpaperCommonEvent> subscriber;
     static bool PublishEvent(const OHOS::AAFwk::Want &want, int eventCode, const std::string &eventData);
     static void UnregisterSubscriber(std::shared_ptr<OHOS::EventFwk::CommonEventSubscriber> subscriber);
-    static bool RegisterSubscriber();
+    static bool RegisterSubscriber(WallpaperService &wallpaperService);
     static void SendWallpaperLockSettingMessage();
     static void SendWallpaperSystemSettingMessage();
 
@@ -46,6 +48,7 @@ public:
 
 private:
     std::function<void(const EventFwk::CommonEventData &)> callback_;
+    WallpaperService &wallpaperService_;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

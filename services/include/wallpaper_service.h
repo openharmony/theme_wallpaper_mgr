@@ -40,7 +40,6 @@
 #include "wallpaper_color_change_listener.h"
 #include "wallpaper_common.h"
 #include "wallpaper_data.h"
-#include "wallpaper_extension_ability_connection.h"
 #include "wallpaper_manager_common_info.h"
 #include "wallpaper_service_stub.h"
 #include "want.h"
@@ -122,6 +121,7 @@ private:
     bool RestoreUserResources(const WallpaperData &wallpaperData, WallpaperType wallpaperType);
     bool InitUserDir(int32_t userId);
     bool BlockRetry(int64_t interval, uint32_t maxRetryTimes, std::function<bool()> function);
+    int32_t QueryActiveUserId();
 
 private:
     int32_t Init();
@@ -146,7 +146,6 @@ private:
     ConcurrentMap<int32_t, WallpaperData> systemWallpaperMap_;
     ConcurrentMap<int32_t, WallpaperData> lockWallpaperMap_;
     atomic<int32_t> wallpaperId_;
-    atomic<int32_t> userId_ = 0;
     sptr<IWallpaperCallback> callbackProxy = nullptr;
 
     std::string name_;
