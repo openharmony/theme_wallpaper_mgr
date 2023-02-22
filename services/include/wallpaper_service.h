@@ -63,7 +63,6 @@ public:
     WallpaperService();
     ~WallpaperService();
 
-    static sptr<WallpaperService> GetInstance();
     ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode GetPixelMap(int32_t wallpaperType, FdInfo &fdInfo) override;
     std::vector<uint64_t> GetColors(int32_t wallpaperType) override;

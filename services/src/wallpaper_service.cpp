@@ -104,17 +104,6 @@ WallpaperService::~WallpaperService()
 {
 }
 
-sptr<WallpaperService> WallpaperService::GetInstance()
-{
-    if (instance_ == nullptr) {
-        std::lock_guard<std::mutex> autoLock(instanceLock_);
-        if (instance_ == nullptr) {
-            instance_ = new WallpaperService();
-        }
-    }
-    return instance_;
-}
-
 int32_t WallpaperService::Init()
 {
     InitQueryUserId(QUERY_USER_MAX_RETRY_TIMES);
@@ -176,7 +165,7 @@ void WallpaperService::RegisterSubscriber(int32_t times)
 {
     MemoryGuard cacheGuard;
     times++;
-    shared_ptr<WallpaperCommonEvent> wallpaperCommonEvent = make_shared<WallpaperCommonEvent>(*this);
+    std::shared_ptr<WallpaperCommonEvent> wallpaperCommonEvent = std::make_shared<WallpaperCommonEvent>(*this);
     bool subRes = wallpaperCommonEvent->RegisterSubscriber();
     if (!subRes && times <= MAX_RETRY_TIMES) {
         HILOG_INFO("RegisterSubscriber failed");
