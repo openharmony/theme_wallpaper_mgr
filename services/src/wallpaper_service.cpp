@@ -78,7 +78,7 @@ const std::int64_t INIT_INTERVAL = 10000L;
 const std::int64_t DELAY_TIME = 1000L;
 constexpr int HALF = 2;
 constexpr int32_t CONNECT_EXTENSION_INTERVAL = 500000;
-constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 120;
+constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 360;
 constexpr int HUNDRED = 100;
 constexpr int FOO_MAX_LEN = 52428800;
 constexpr int MAX_RETRY_TIMES = 20;
@@ -96,7 +96,6 @@ WallpaperService::WallpaperService(int32_t systemAbilityId, bool runOnCreate)
 
 WallpaperService::WallpaperService() : state_(ServiceRunningState::STATE_NOT_START)
 {
-    InitData();
 }
 
 WallpaperService::~WallpaperService()
@@ -116,7 +115,7 @@ sptr<WallpaperService> WallpaperService::GetInstance()
 
 int32_t WallpaperService::Init()
 {
-    bool ret = Publish(WallpaperService::GetInstance());
+    bool ret = Publish(this);
     if (!ret) {
         HILOG_ERROR("Publish failed.");
         ReporterFault(FaultType::SERVICE_FAULT, FaultCode::SF_SERVICE_UNAVAIABLE);
@@ -135,6 +134,7 @@ void WallpaperService::OnStart()
         HILOG_ERROR("WallpaperService is already running.");
         return;
     }
+    InitData();
     InitServiceHandler();
     AddSystemAbilityListener(COMMON_EVENT_SERVICE_ID);
     std::thread(&WallpaperService::StartWallpaperExtension, this).detach();
@@ -244,7 +244,7 @@ void WallpaperService::StartWallpaperExtension()
     while (1) {
         HILOG_INFO("WallpaperService::StartAbility");
         time++;
-        ret = WallpaperService::GetInstance()->ConnectExtensionAbility(want);
+        ret = ConnectExtensionAbility(want);
         if (ret == 0 || time == CONNECT_EXTENSION_MAX_RETRY_TIMES) {
             break;
         }
