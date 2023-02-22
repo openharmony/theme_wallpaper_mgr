@@ -396,16 +396,16 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
         return;
     }
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
+    LoadSettingsLocked(userId, true);
     if (!FileDeal::IsFileExist(userDir)) {
         InitUserDir(userId);
         InitResources(userId, WALLPAPER_SYSTEM);
         InitResources(userId, WALLPAPER_LOCKSCREEN);
     }
-    LoadSettingsLocked(userId, true);
     SaveColor(userId, WALLPAPER_SYSTEM);
     SaveColor(userId, WALLPAPER_LOCKSCREEN);
     shared_ptr<WallpaperCommonEvent> wallpaperCommonEvent = make_shared<WallpaperCommonEvent>(*this);
-    if(wallpaperCommonEvent != nullptr){
+    if (wallpaperCommonEvent != nullptr) {
         HILOG_INFO("Send wallpaper setting message");
         wallpaperCommonEvent->SendWallpaperSystemSettingMessage();
         wallpaperCommonEvent->SendWallpaperLockSettingMessage();
@@ -724,14 +724,14 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, const std::st
     shared_ptr<WallpaperCommonEvent> wallpaperCommonEvent = make_shared<WallpaperCommonEvent>(*this);
     if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-        if(wallpaperCommonEvent != nullptr){
+        if (wallpaperCommonEvent != nullptr) {
             HILOG_INFO("Send wallpaper system setting message");
             wallpaperCommonEvent->SendWallpaperSystemSettingMessage();
         }
         ReporterUsageTimeStatistic();
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-        if(wallpaperCommonEvent != nullptr){
+        if (wallpaperCommonEvent != nullptr) {
             HILOG_INFO("Send wallpaper lock setting message");
             wallpaperCommonEvent->SendWallpaperLockSettingMessage();
         }
@@ -887,13 +887,13 @@ ErrorCode WallpaperService::SetDefaultDataForWallpaper(int32_t userId, Wallpaper
     shared_ptr<WallpaperCommonEvent> wallpaperCommonEvent = make_shared<WallpaperCommonEvent>(*this);
     if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-        if(wallpaperCommonEvent != nullptr){
+        if (wallpaperCommonEvent != nullptr) {
             HILOG_INFO("Send wallpaper lock setting message");
             wallpaperCommonEvent->SendWallpaperLockSettingMessage();
         }
     } else if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-        if(wallpaperCommonEvent != nullptr){
+        if (wallpaperCommonEvent != nullptr) {
             HILOG_INFO("Send wallpaper system setting message");
             wallpaperCommonEvent->SendWallpaperSystemSettingMessage();
         }
@@ -1168,7 +1168,7 @@ int32_t WallpaperService::QueryActiveUserId()
 {
     std::vector<int32_t> ids;
     ErrCode errCode = AccountSA::OsAccountManager::QueryActiveOsAccountIds(ids);
-    if(errCode != ERR_OK){
+    if (errCode != ERR_OK) {
         HILOG_INFO("Query active userid failed, errCode: %{public}d, ", errCode);
         return DEFAULT_USER_ID;
     }

@@ -31,7 +31,8 @@ using CommonEventSubscribeInfo = OHOS::EventFwk::CommonEventSubscribeInfo;
 class WallpaperCommonEvent : public OHOS::EventFwk::CommonEventSubscriber,
                              public std::enable_shared_from_this<WallpaperCommonEvent> {
 public:
-    WallpaperCommonEvent(WallpaperService &wallpaperService) : CommonEventSubscriber(CreateSubscriberInfo()),wallpaperService_(wallpaperService)
+    WallpaperCommonEvent(WallpaperService &wallpaperService)
+        : CommonEventSubscriber(CreateSubscriberInfo()), wallpaperService_(wallpaperService)
     {
     }
     ~WallpaperCommonEvent() = default;
@@ -43,6 +44,7 @@ public:
     void SendWallpaperLockSettingMessage();
     void SendWallpaperSystemSettingMessage();
     void OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data) override;
+
 private:
     std::function<void(const EventFwk::CommonEventData &)> callback_;
     WallpaperService &wallpaperService_;

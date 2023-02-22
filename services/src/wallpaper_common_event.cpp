@@ -90,7 +90,8 @@ void WallpaperCommonEvent::SendWallpaperSystemSettingMessage()
     PublishEvent(want, eventCode, eventData);
 }
 
-CommonEventSubscribeInfo WallpaperCommonEvent::CreateSubscriberInfo() {
+CommonEventSubscribeInfo WallpaperCommonEvent::CreateSubscriberInfo()
+{
     OHOS::EventFwk::MatchingSkills matchingSkills;
     matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
     matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED);
