@@ -176,7 +176,8 @@ void WallpaperService::RegisterSubscriber(int32_t times)
 {
     MemoryGuard cacheGuard;
     times++;
-    bool subRes = WallpaperCommonEvent::RegisterSubscriber(*this);
+    shared_ptr<WallpaperCommonEvent> wallpaperCommonEvent = make_shared<WallpaperCommonEvent>(*this);
+    bool subRes = wallpaperCommonEvent->RegisterSubscriber();
     if (!subRes && times <= MAX_RETRY_TIMES) {
         HILOG_INFO("RegisterSubscriber failed");
         auto callback = [this, times]() { RegisterSubscriber(times); };
@@ -403,6 +404,12 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
     LoadSettingsLocked(userId, true);
     SaveColor(userId, WALLPAPER_SYSTEM);
     SaveColor(userId, WALLPAPER_LOCKSCREEN);
+    shared_ptr<WallpaperCommonEvent> wallpaperCommonEvent = make_shared<WallpaperCommonEvent>(*this);
+    if(wallpaperCommonEvent != nullptr){
+        HILOG_INFO("Send wallpaper setting message");
+        wallpaperCommonEvent->SendWallpaperSystemSettingMessage();
+        wallpaperCommonEvent->SendWallpaperLockSettingMessage();
+    }
 }
 
 void WallpaperService::OnBootPhase()
@@ -714,13 +721,20 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, const std::st
         HILOG_ERROR("Make crop wallpaper failed !");
         return E_DEAL_FAILED;
     }
+    shared_ptr<WallpaperCommonEvent> wallpaperCommonEvent = make_shared<WallpaperCommonEvent>(*this);
     if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-        WallpaperCommonEvent::SendWallpaperSystemSettingMessage();
+        if(wallpaperCommonEvent != nullptr){
+            HILOG_INFO("Send wallpaper system setting message");
+            wallpaperCommonEvent->SendWallpaperSystemSettingMessage();
+        }
         ReporterUsageTimeStatistic();
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-        WallpaperCommonEvent::SendWallpaperLockSettingMessage();
+        if(wallpaperCommonEvent != nullptr){
+            HILOG_INFO("Send wallpaper lock setting message");
+            wallpaperCommonEvent->SendWallpaperLockSettingMessage();
+        }
         ReporterUsageTimeStatistic();
     }
     HILOG_INFO("SetWallpaperBackupData callbackProxy->OnCall start");
@@ -870,13 +884,19 @@ ErrorCode WallpaperService::SetDefaultDataForWallpaper(int32_t userId, Wallpaper
     }
     wallpaperData.wallpaperId = DEFAULT_WALLPAPER_ID;
     wallpaperData.allowBackup = true;
-
+    shared_ptr<WallpaperCommonEvent> wallpaperCommonEvent = make_shared<WallpaperCommonEvent>(*this);
     if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-        WallpaperCommonEvent::SendWallpaperLockSettingMessage();
+        if(wallpaperCommonEvent != nullptr){
+            HILOG_INFO("Send wallpaper lock setting message");
+            wallpaperCommonEvent->SendWallpaperLockSettingMessage();
+        }
     } else if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-        WallpaperCommonEvent::SendWallpaperSystemSettingMessage();
+        if(wallpaperCommonEvent != nullptr){
+            HILOG_INFO("Send wallpaper system setting message");
+            wallpaperCommonEvent->SendWallpaperSystemSettingMessage();
+        }
     }
     if (callbackProxy != nullptr) {
         HILOG_INFO("CopyScreenLockWallpaper callbackProxy OnCall start");
@@ -1147,7 +1167,11 @@ bool WallpaperService::BlockRetry(int64_t interval, uint32_t maxRetryTimes, std:
 int32_t WallpaperService::QueryActiveUserId()
 {
     std::vector<int32_t> ids;
-    AccountSA::OsAccountManager::QueryActiveOsAccountIds(ids);
+    ErrCode errCode = AccountSA::OsAccountManager::QueryActiveOsAccountIds(ids);
+    if(errCode != ERR_OK){
+        HILOG_INFO("Query active userid failed, errCode: %{public}d, ", errCode);
+        return DEFAULT_USER_ID;
+    }
     return ids[0];
 }
 } // namespace WallpaperMgrService

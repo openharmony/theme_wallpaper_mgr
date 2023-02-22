@@ -28,24 +28,21 @@ using CommonEventSubscriber = OHOS::EventFwk::CommonEventSubscriber;
 using CommonEventData = OHOS::EventFwk::CommonEventData;
 using CommonEventSubscribeInfo = OHOS::EventFwk::CommonEventSubscribeInfo;
 
-class WallpaperCommonEvent : public OHOS::EventFwk::CommonEventSubscriber {
+class WallpaperCommonEvent : public OHOS::EventFwk::CommonEventSubscriber,
+                             public std::enable_shared_from_this<WallpaperCommonEvent> {
 public:
-    WallpaperCommonEvent(const OHOS::EventFwk::CommonEventSubscribeInfo &subscriberInfo,
-        WallpaperService &wallpaperService)
-        : CommonEventSubscriber(subscriberInfo), wallpaperService_(wallpaperService)
+    WallpaperCommonEvent(WallpaperService &wallpaperService) : CommonEventSubscriber(CreateSubscriberInfo()),wallpaperService_(wallpaperService)
     {
     }
     ~WallpaperCommonEvent() = default;
+    static OHOS::EventFwk::CommonEventSubscribeInfo CreateSubscriberInfo();
 
-    static std::shared_ptr<WallpaperCommonEvent> subscriber;
-    static bool PublishEvent(const OHOS::AAFwk::Want &want, int eventCode, const std::string &eventData);
-    static void UnregisterSubscriber(std::shared_ptr<OHOS::EventFwk::CommonEventSubscriber> subscriber);
-    static bool RegisterSubscriber(WallpaperService &wallpaperService);
-    static void SendWallpaperLockSettingMessage();
-    static void SendWallpaperSystemSettingMessage();
-
+    bool PublishEvent(const OHOS::AAFwk::Want &want, int eventCode, const std::string &eventData);
+    void UnregisterSubscriber(std::shared_ptr<OHOS::EventFwk::CommonEventSubscriber> subscriber);
+    bool RegisterSubscriber();
+    void SendWallpaperLockSettingMessage();
+    void SendWallpaperSystemSettingMessage();
     void OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data) override;
-
 private:
     std::function<void(const EventFwk::CommonEventData &)> callback_;
     WallpaperService &wallpaperService_;

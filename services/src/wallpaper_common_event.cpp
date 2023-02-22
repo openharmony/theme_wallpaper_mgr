@@ -22,7 +22,6 @@ constexpr const char *WALLPAPER_LOCK_SETTING_SUCCESS_EVENT = "com.ohos.wallpaper
 constexpr const char *WALLPAPER_SYSTEM_SETTING_SUCCESS_EVENT = "com.ohos.wallpapersystemsettingsuccess";
 constexpr int32_t WALLPAPER_LOCK_SETTING_SUCCESS_CODE = 11000;
 constexpr int32_t WALLPAPER_SYSTEM_SETTING_SUCCESS_CODE = 21000;
-std::shared_ptr<WallpaperCommonEvent> WallpaperCommonEvent::subscriber = nullptr;
 
 void WallpaperCommonEvent::OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data)
 {
@@ -65,17 +64,10 @@ void WallpaperCommonEvent::UnregisterSubscriber(std::shared_ptr<OHOS::EventFwk::
     }
 }
 
-bool WallpaperCommonEvent::RegisterSubscriber(WallpaperService &wallpaperService)
+bool WallpaperCommonEvent::RegisterSubscriber()
 {
     HILOG_INFO("WallpaperCommonEvent::RegisterSubscriber");
-    OHOS::EventFwk::MatchingSkills matchingSkills;
-    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
-    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED);
-    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED);
-    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_SWITCHED);
-    OHOS::EventFwk::CommonEventSubscribeInfo subscriberInfo(matchingSkills);
-    subscriber = std::make_shared<WallpaperCommonEvent>(subscriberInfo, wallpaperService);
-    return OHOS::EventFwk::CommonEventManager::SubscribeCommonEvent(subscriber);
+    return OHOS::EventFwk::CommonEventManager::SubscribeCommonEvent(shared_from_this());
 }
 
 void WallpaperCommonEvent::SendWallpaperLockSettingMessage()
@@ -96,6 +88,15 @@ void WallpaperCommonEvent::SendWallpaperSystemSettingMessage()
     want.SetAction(WALLPAPER_SYSTEM_SETTING_SUCCESS_EVENT);
     std::string eventData("WallpaperSystemSettingMessage");
     PublishEvent(want, eventCode, eventData);
+}
+
+CommonEventSubscribeInfo WallpaperCommonEvent::CreateSubscriberInfo() {
+    OHOS::EventFwk::MatchingSkills matchingSkills;
+    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
+    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED);
+    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED);
+    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_SWITCHED);
+    return CommonEventSubscribeInfo(matchingSkills);
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

@@ -45,7 +45,8 @@ constexpr const char *SYSTEM_FILE = "/system/wallpaper_system_orig";
 constexpr const char *SYSTEM_CROP_FILE = "/system/wallpaper_system";
 constexpr const char *LOCKSCREEN_FILE = "/lockscreen/wallpaper_lock_orig";
 constexpr const char *LOCKSCREEN_CROP_FILE = "/lockscreen/wallpaper_lock";
-std::shared_ptr<WallpaperCommonEvent> subscriber = nullptr;
+const std::vector<uint64_t> TARGET_COLOR{ 0, 0, 0, 255 };
+std::shared_ptr<WallpaperCommonEvent> wallpaperCommonEvent = nullptr;
 
 using namespace testing::ext;
 using namespace testing;
@@ -206,16 +207,13 @@ std::shared_ptr<PixelMap> WallpaperTest::CreateTempPixelMap()
 
 bool WallpaperTest::SubscribeCommonEvent()
 {
-    EventFwk::MatchingSkills matchingSkills;
-    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED);
-    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED);
-    EventFwk::CommonEventSubscribeInfo subscriberInfo(matchingSkills);
-    subscriber = std::make_shared<WallpaperCommonEvent>(subscriberInfo);
-    if (subscriber == nullptr) {
-        HILOG_INFO("subscriber is nullptr");
+    shared_ptr<WallpaperService> wallpaperService = make_shared<WallpaperService>();
+    wallpaperCommonEvent = std::make_shared<WallpaperCommonEvent>(*wallpaperService);
+    if (wallpaperCommonEvent == nullptr) {
+        HILOG_INFO("wallpaperCommonEvent is nullptr");
         return false;
     }
-    if (!EventFwk::CommonEventManager::SubscribeCommonEvent(subscriber)) {
+    if (!EventFwk::CommonEventManager::SubscribeCommonEvent(wallpaperCommonEvent)) {
         HILOG_INFO("SubscribeCommonEvent  failed");
         return false;
     }
@@ -229,7 +227,7 @@ void WallpaperTest::TriggerEvent(int32_t userId, const std::string &commonEventS
     int32_t code = userId;
     std::string data(commonEventSupport);
     EventFwk::CommonEventData eventData(want, code, data);
-    subscriber->OnReceiveEvent(eventData);
+    wallpaperCommonEvent->OnReceiveEvent(eventData);
 }
 
 std::string WallpaperTest::GetUserFilePath(int32_t userId, const char *filePath)
@@ -884,6 +882,7 @@ HWTEST_F(WallpaperTest, SwitchedUserIdDeal002, TestSize.Level0)
     wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, SYSTYEM);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set wallpaper";
     std::vector<uint64_t> newColor = WallpaperManagerkits::GetInstance().GetColors(SYSTYEM);
+    EXPECT_EQ(newColor, TARGET_COLOR);
     EXPECT_NE(oldColor, newColor);
 
     WallpaperTest::TriggerEvent(beforeUserId, switchCommonEvent);
