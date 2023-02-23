@@ -394,11 +394,9 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
     SaveColor(userId, WALLPAPER_SYSTEM);
     SaveColor(userId, WALLPAPER_LOCKSCREEN);
     shared_ptr<WallpaperCommonEvent> wallpaperCommonEvent = make_shared<WallpaperCommonEvent>(*this);
-    if (wallpaperCommonEvent != nullptr) {
-        HILOG_INFO("Send wallpaper setting message");
-        wallpaperCommonEvent->SendWallpaperSystemSettingMessage();
-        wallpaperCommonEvent->SendWallpaperLockSettingMessage();
-    }
+    HILOG_INFO("Send wallpaper setting message");
+    wallpaperCommonEvent->SendWallpaperSystemSettingMessage();
+    wallpaperCommonEvent->SendWallpaperLockSettingMessage();
 }
 
 void WallpaperService::OnBootPhase()
@@ -713,17 +711,13 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, const std::st
     shared_ptr<WallpaperCommonEvent> wallpaperCommonEvent = make_shared<WallpaperCommonEvent>(*this);
     if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-        if (wallpaperCommonEvent != nullptr) {
-            HILOG_INFO("Send wallpaper system setting message");
-            wallpaperCommonEvent->SendWallpaperSystemSettingMessage();
-        }
+        HILOG_INFO("Send wallpaper system setting message");
+        wallpaperCommonEvent->SendWallpaperSystemSettingMessage();
         ReporterUsageTimeStatistic();
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-        if (wallpaperCommonEvent != nullptr) {
-            HILOG_INFO("Send wallpaper lock setting message");
-            wallpaperCommonEvent->SendWallpaperLockSettingMessage();
-        }
+        HILOG_INFO("Send wallpaper lock setting message");
+        wallpaperCommonEvent->SendWallpaperLockSettingMessage();
         ReporterUsageTimeStatistic();
     }
     HILOG_INFO("SetWallpaperBackupData callbackProxy->OnCall start");
@@ -876,16 +870,12 @@ ErrorCode WallpaperService::SetDefaultDataForWallpaper(int32_t userId, Wallpaper
     shared_ptr<WallpaperCommonEvent> wallpaperCommonEvent = make_shared<WallpaperCommonEvent>(*this);
     if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-        if (wallpaperCommonEvent != nullptr) {
-            HILOG_INFO("Send wallpaper lock setting message");
-            wallpaperCommonEvent->SendWallpaperLockSettingMessage();
-        }
+        HILOG_INFO("Send wallpaper lock setting message");
+        wallpaperCommonEvent->SendWallpaperLockSettingMessage();
     } else if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-        if (wallpaperCommonEvent != nullptr) {
-            HILOG_INFO("Send wallpaper system setting message");
-            wallpaperCommonEvent->SendWallpaperSystemSettingMessage();
-        }
+        HILOG_INFO("Send wallpaper system setting message");
+        wallpaperCommonEvent->SendWallpaperSystemSettingMessage();
     }
     if (callbackProxy != nullptr) {
         HILOG_INFO("CopyScreenLockWallpaper callbackProxy OnCall start");
