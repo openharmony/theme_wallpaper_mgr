@@ -37,7 +37,7 @@ void WallpaperCommonEvent::OnReceiveEvent(const OHOS::EventFwk::CommonEventData 
         HILOG_INFO("OnRemovedUser userId = %{public}d", data.GetCode());
         wallpaperService_.OnRemovedUser(data.GetCode());
     } else if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USER_SWITCHED) {
-        HILOG_INFO("OnSwitchedUser userId = %{public}d", data.GetCode());
+        HILOG_INFO("OnSwitchedUser newUserId = %{public}d", data.GetCode());
         wallpaperService_.OnSwitchedUser(data.GetCode());
     }
 }
@@ -53,21 +53,6 @@ bool WallpaperCommonEvent::PublishEvent(const OHOS::AAFwk::Want &want, int32_t e
     bool publishResult = OHOS::EventFwk::CommonEventManager::PublishCommonEvent(data, publishInfo, nullptr);
     HILOG_INFO("PublishEvent end publishResult = %{public}d", publishResult);
     return publishResult;
-}
-
-void WallpaperCommonEvent::UnregisterSubscriber(std::shared_ptr<OHOS::EventFwk::CommonEventSubscriber> subscriber)
-{
-    if (subscriber != nullptr) {
-        bool subscribeResult = OHOS::EventFwk::CommonEventManager::UnSubscribeCommonEvent(subscriber);
-        subscriber = nullptr;
-        HILOG_INFO("WallpaperCommonEvent::UnregisterSubscriber end###subscribeResult = %{public}d", subscribeResult);
-    }
-}
-
-bool WallpaperCommonEvent::RegisterSubscriber()
-{
-    HILOG_INFO("WallpaperCommonEvent::RegisterSubscriber");
-    return OHOS::EventFwk::CommonEventManager::SubscribeCommonEvent(shared_from_this());
 }
 
 void WallpaperCommonEvent::SendWallpaperLockSettingMessage()

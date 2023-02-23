@@ -165,8 +165,8 @@ void WallpaperService::RegisterSubscriber(int32_t times)
 {
     MemoryGuard cacheGuard;
     times++;
-    std::shared_ptr<WallpaperCommonEvent> wallpaperCommonEvent = std::make_shared<WallpaperCommonEvent>(*this);
-    bool subRes = wallpaperCommonEvent->RegisterSubscriber();
+    bool subRes =
+        OHOS::EventFwk::CommonEventManager::SubscribeCommonEvent(std::make_shared<WallpaperCommonEvent>(*this));
     if (!subRes && times <= MAX_RETRY_TIMES) {
         HILOG_INFO("RegisterSubscriber failed");
         auto callback = [this, times]() { RegisterSubscriber(times); };
@@ -1147,7 +1147,7 @@ int32_t WallpaperService::QueryActiveUserId()
 {
     std::vector<int32_t> ids;
     ErrCode errCode = AccountSA::OsAccountManager::QueryActiveOsAccountIds(ids);
-    if (errCode != ERR_OK) {
+    if (errCode != ERR_OK || ids.empty()) {
         HILOG_INFO("Query active userid failed, errCode: %{public}d, ", errCode);
         return DEFAULT_USER_ID;
     }
