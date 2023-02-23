@@ -379,7 +379,6 @@ void WallpaperService::OnRemovedUser(int32_t userId)
 
 void WallpaperService::OnSwitchedUser(int32_t userId)
 {
-    HILOG_INFO("OnSwitchedUser start userId = %{public}d", userId);
     if (userId < 0) {
         HILOG_ERROR("userId error, userId = %{public}d", userId);
         return;
@@ -387,6 +386,7 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     LoadSettingsLocked(userId, true);
     if (!FileDeal::IsFileExist(userDir)) {
+        HILOG_INFO("User file is not exist, userId = %{public}d", userId);
         InitUserDir(userId);
         InitResources(userId, WALLPAPER_SYSTEM);
         InitResources(userId, WALLPAPER_LOCKSCREEN);
