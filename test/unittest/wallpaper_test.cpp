@@ -773,7 +773,6 @@ HWTEST_F(WallpaperTest, SetWallpaper001, TestSize.Level0)
 */
 HWTEST_F(WallpaperTest, AddUsersDeal001, TestSize.Level0)
 {
-    HILOG_INFO("AddUsersDeal001  begin");
     std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
     bool ret = WallpaperTest::SubscribeCommonEvent(wallpaperService);
     ASSERT_EQ(ret, true);
@@ -802,7 +801,6 @@ HWTEST_F(WallpaperTest, AddUsersDeal001, TestSize.Level0)
 */
 HWTEST_F(WallpaperTest, RemovedUserDeal001, TestSize.Level0)
 {
-    HILOG_INFO("RemovedUserDeal001  begin");
     std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
     ASSERT_EQ(WallpaperTest::SubscribeCommonEvent(wallpaperService), true);
     std::string commonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED;
@@ -827,7 +825,6 @@ HWTEST_F(WallpaperTest, RemovedUserDeal001, TestSize.Level0)
 */
 HWTEST_F(WallpaperTest, SwitchedUserIdDeal001, TestSize.Level0)
 {
-    HILOG_INFO("SwitchedUserIdDeal001  begin");
     std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
     ASSERT_EQ(WallpaperTest::SubscribeCommonEvent(wallpaperService), true);
     std::vector<int32_t> ids;
@@ -866,7 +863,6 @@ HWTEST_F(WallpaperTest, SwitchedUserIdDeal001, TestSize.Level0)
 */
 HWTEST_F(WallpaperTest, SwitchedUserIdDeal002, TestSize.Level0)
 {
-    HILOG_INFO("SwitchedUserIdDeal002  begin");
     std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
     ASSERT_EQ(WallpaperTest::SubscribeCommonEvent(wallpaperService), true);
     std::vector<int32_t> ids;
@@ -905,7 +901,6 @@ HWTEST_F(WallpaperTest, SwitchedUserIdDeal002, TestSize.Level0)
 */
 HWTEST_F(WallpaperTest, InvalidUserIdDeal001, TestSize.Level0)
 {
-    HILOG_INFO("InvalidUserIdDeal001  begin");
     std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
     ASSERT_EQ(WallpaperTest::SubscribeCommonEvent(wallpaperService), true);
     std::string commonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED;
