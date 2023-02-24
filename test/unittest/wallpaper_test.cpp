@@ -814,52 +814,22 @@ HWTEST_F(WallpaperTest, SwitchedUserIdDeal001, TestSize.Level0)
     std::string userDir = WALLPAPER_DEFAULT_PATH + std::string("/") + std::to_string(TEST_USERID);
     ASSERT_EQ(FileDeal::IsDirExist(userDir), true);
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN);
-    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset wallpaper";
-    std::vector<uint64_t> oldColor = WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset lockscreen wallpaper";
+    std::vector<uint64_t> oldLockscreenColor = WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN);
+    wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset system wallpaper";
+    std::vector<uint64_t> oldSystemColor = WallpaperManagerkits::GetInstance().GetColors(SYSTYEM);
 
     std::string switchCommonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_SWITCHED;
     WallpaperTest::TriggerEvent(TEST_USERID, switchCommonEvent);
     wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN);
-    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set wallpaper";
-    std::vector<uint64_t> newColor = WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN);
-    EXPECT_NE(oldColor, newColor);
-
-    WallpaperTest::TriggerEvent(beforeUserId, switchCommonEvent);
-    std::string removeCommonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED;
-    WallpaperTest::TriggerEvent(TEST_USERID, removeCommonEvent);
-    EXPECT_EQ(FileDeal::IsDirExist(userDir), false);
-    if (!OHOS::ForceRemoveDirectory(userDir)) {
-        HILOG_ERROR("Force remove user directory path failed, errno %{public}d.", errno);
-    }
-}
-
-/**
-* @tc.name:    SwitchedUserIdDeal002
-* @tc.desc:    The wallpaper has changed after switched user
-* @tc.type:    FUNC
-* @tc.require: issueI6DWHR
-*/
-HWTEST_F(WallpaperTest, SwitchedUserIdDeal002, TestSize.Level0)
-{
-    std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
-    ASSERT_EQ(WallpaperTest::SubscribeCommonEvent(wallpaperService), true);
-    std::vector<int32_t> ids;
-    AccountSA::OsAccountManager::QueryActiveOsAccountIds(ids);
-    int32_t beforeUserId = ids[0];
-    std::string addCommonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED;
-    WallpaperTest::TriggerEvent(TEST_USERID, addCommonEvent);
-    std::string userDir = WALLPAPER_DEFAULT_PATH + std::string("/") + std::to_string(TEST_USERID);
-    ASSERT_EQ(FileDeal::IsDirExist(userDir), true);
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM);
-    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset wallpaper";
-    std::vector<uint64_t> oldColor = WallpaperManagerkits::GetInstance().GetColors(SYSTYEM);
-
-    std::string switchCommonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_SWITCHED;
-    WallpaperTest::TriggerEvent(TEST_USERID, switchCommonEvent);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set lockscreen wallpaper";
+    std::vector<uint64_t> newLockscreenColor = WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN);
     wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, SYSTYEM);
-    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set wallpaper";
-    std::vector<uint64_t> newColor = WallpaperManagerkits::GetInstance().GetColors(SYSTYEM);
-    EXPECT_NE(oldColor, newColor);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set system wallpaper";
+    std::vector<uint64_t> newSystemColor = WallpaperManagerkits::GetInstance().GetColors(SYSTYEM);
+    EXPECT_NE(oldLockscreenColor, newLockscreenColor);
+    EXPECT_NE(oldSystemColor, newSystemColor);
 
     WallpaperTest::TriggerEvent(beforeUserId, switchCommonEvent);
     std::string removeCommonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED;

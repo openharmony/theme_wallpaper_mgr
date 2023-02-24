@@ -196,9 +196,9 @@ void WallpaperService::OnStop()
     serviceHandler_ = nullptr;
     connection_ = nullptr;
     if (subscriber_ != nullptr) {
-        bool subscribeResult = OHOS::EventFwk::CommonEventManager::UnSubscribeCommonEvent(subscriber_);
+        bool unSubscribeResult = OHOS::EventFwk::CommonEventManager::UnSubscribeCommonEvent(subscriber_);
         subscriber_ = nullptr;
-        HILOG_INFO("WallpaperCommonEvent::UnregisterSubscriber end, subscribeResult = %{public}d", subscribeResult);
+        HILOG_INFO("UnregisterSubscriber end, unSubscribeResult = %{public}d", unSubscribeResult);
     }
     state_ = ServiceRunningState::STATE_NOT_START;
     HILOG_INFO("OnStop end.");
