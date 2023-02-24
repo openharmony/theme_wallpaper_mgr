@@ -24,7 +24,7 @@
 #include "nativetoken_kit.h"
 #include "pixel_map.h"
 #include "token_setproc.h"
-#include "wallpaper_common_event.h"
+#include "wallpaper_common_event_subscriber.h"
 #include "wallpaper_manager.h"
 #include "wallpaper_manager_kits.h"
 #include "wallpaper_service.h"
@@ -45,7 +45,7 @@ constexpr const char *SYSTEM_FILE = "/system/wallpaper_system_orig";
 constexpr const char *SYSTEM_CROP_FILE = "/system/wallpaper_system";
 constexpr const char *LOCKSCREEN_FILE = "/lockscreen/wallpaper_lock_orig";
 constexpr const char *LOCKSCREEN_CROP_FILE = "/lockscreen/wallpaper_lock";
-std::shared_ptr<WallpaperCommonEvent> wallpaperCommonEvent = nullptr;
+std::shared_ptr<WallpaperCommonEventSubscriber> subscriber = nullptr;
 
 using namespace testing::ext;
 using namespace testing;
@@ -206,12 +206,12 @@ std::shared_ptr<PixelMap> WallpaperTest::CreateTempPixelMap()
 
 bool WallpaperTest::SubscribeCommonEvent(shared_ptr<WallpaperService> wallpaperService)
 {
-    wallpaperCommonEvent = std::make_shared<WallpaperCommonEvent>(*wallpaperService);
-    if (wallpaperCommonEvent == nullptr) {
+    subscriber = std::make_shared<WallpaperCommonEventSubscriber>(*wallpaperService);
+    if (subscriber == nullptr) {
         HILOG_INFO("wallpaperCommonEvent is nullptr");
         return false;
     }
-    if (!EventFwk::CommonEventManager::SubscribeCommonEvent(wallpaperCommonEvent)) {
+    if (!EventFwk::CommonEventManager::SubscribeCommonEvent(subscriber)) {
         HILOG_INFO("SubscribeCommonEvent  failed");
         return false;
     }
@@ -225,7 +225,7 @@ void WallpaperTest::TriggerEvent(int32_t userId, const std::string &commonEventS
     int32_t code = userId;
     std::string data(commonEventSupport);
     EventFwk::CommonEventData eventData(want, code, data);
-    wallpaperCommonEvent->OnReceiveEvent(eventData);
+    subscriber->OnReceiveEvent(eventData);
 }
 
 std::string WallpaperTest::GetUserFilePath(int32_t userId, const char *filePath)
@@ -239,7 +239,6 @@ std::string WallpaperTest::GetUserFilePath(int32_t userId, const char *filePath)
 * @tc.desc:    Reset wallpaper with wallpaperType[0].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, Reset001, TestSize.Level1)
 {
@@ -253,7 +252,6 @@ HWTEST_F(WallpaperTest, Reset001, TestSize.Level1)
 * @tc.desc:    Reset wallpaper with wallpaperType[1].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, Reset002, TestSize.Level1)
 {
@@ -267,7 +265,6 @@ HWTEST_F(WallpaperTest, Reset002, TestSize.Level1)
 * @tc.desc:    Reset wallpaper with wallpaperType[2] throw parameters error.
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, Reset003, TestSize.Level1)
 {
@@ -281,7 +278,6 @@ HWTEST_F(WallpaperTest, Reset003, TestSize.Level1)
 * @tc.desc:    Reset wallpaper with wallpaperType[0] after resetting wallpaper[0].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, Reset004, TestSize.Level1)
 {
@@ -299,7 +295,6 @@ HWTEST_F(WallpaperTest, Reset004, TestSize.Level1)
 * @tc.desc:    Reset wallpaper with wallpaperType[1] after resetting wallpaper[1] and check whether Id is same one.
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, Reset005, TestSize.Level1)
 {
@@ -471,7 +466,6 @@ HWTEST_F(WallpaperTest, GetId004, TestSize.Level0)
 * @tc.desc:    GetFile with wallpaperType[0].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, GetFile001, TestSize.Level0)
 {
@@ -486,7 +480,6 @@ HWTEST_F(WallpaperTest, GetFile001, TestSize.Level0)
 * @tc.desc:    GetFile with wallpaperType[1].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, GetFile002, TestSize.Level0)
 {
@@ -501,7 +494,6 @@ HWTEST_F(WallpaperTest, GetFile002, TestSize.Level0)
 * @tc.desc:    GetFile with wallpaperType[2] throw parameters error.
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, GetFile003, TestSize.Level0)
 {
@@ -575,7 +567,6 @@ HWTEST_F(WallpaperTest, getMinWidth001, TestSize.Level0)
 * @tc.desc:    GetPixelMap with wallpaperType[0].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, GetPixelMap001, TestSize.Level0)
 {
@@ -590,7 +581,6 @@ HWTEST_F(WallpaperTest, GetPixelMap001, TestSize.Level0)
 * @tc.desc:    GetPixelMap with wallpaperType[1].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, GetPixelMap002, TestSize.Level0)
 {
@@ -607,7 +597,6 @@ HWTEST_F(WallpaperTest, GetPixelMap002, TestSize.Level0)
 * @tc.desc:    SetWallpaperByMap with wallpaperType[0].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByMap001, TestSize.Level0)
 {
@@ -622,7 +611,6 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap001, TestSize.Level0)
 * @tc.desc:    SetWallpaperByMap with wallpaperType[1].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByMap002, TestSize.Level0)
 {
@@ -637,7 +625,6 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap002, TestSize.Level0)
 * @tc.desc:    SetWallpaperByMap with wallpaperType[2] throw parameters error.
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByMap003, TestSize.Level0)
 {
@@ -654,7 +641,6 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap003, TestSize.Level0)
 * @tc.desc:    SetWallpaperByUri with wallpaperType[0] .
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByUri001, TestSize.Level0)
 {
@@ -668,7 +654,6 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri001, TestSize.Level0)
 * @tc.desc:    SetWallpaperByUri with wallpaperType[1].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByUri002, TestSize.Level0)
 {
@@ -682,7 +667,6 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri002, TestSize.Level0)
 * @tc.desc:    SetWallpaperByUri with wallpaperType[2] throw parameters error.
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByUri003, TestSize.Level0)
 {
@@ -696,7 +680,6 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri003, TestSize.Level0)
 * @tc.desc:    SetWallpaperByUri with error uri.
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByUri004, TestSize.Level0)
 {
@@ -711,7 +694,6 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri004, TestSize.Level0)
 * @tc.desc:    SetWallpaperByUri with unsafe uri.
 * @tc.type:    FUNC
 * @tc.require: issueI647HI
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByUri005, TestSize.Level0)
 {
@@ -769,7 +751,6 @@ HWTEST_F(WallpaperTest, SetWallpaper001, TestSize.Level0)
 * @tc.desc:    Create a user directory after the user is added
 * @tc.type:    FUNC
 * @tc.require: issueI6DWHR
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, AddUsersDeal001, TestSize.Level0)
 {
@@ -797,7 +778,6 @@ HWTEST_F(WallpaperTest, AddUsersDeal001, TestSize.Level0)
 * @tc.desc:    delete a user directory after the user is removed
 * @tc.type:    FUNC
 * @tc.require: issueI6DWHR
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, RemovedUserDeal001, TestSize.Level0)
 {
@@ -821,7 +801,6 @@ HWTEST_F(WallpaperTest, RemovedUserDeal001, TestSize.Level0)
 * @tc.desc:    The wallpaper has changed after switched user
 * @tc.type:    FUNC
 * @tc.require: issueI6DWHR
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SwitchedUserIdDeal001, TestSize.Level0)
 {
@@ -859,7 +838,6 @@ HWTEST_F(WallpaperTest, SwitchedUserIdDeal001, TestSize.Level0)
 * @tc.desc:    The wallpaper has changed after switched user
 * @tc.type:    FUNC
 * @tc.require: issueI6DWHR
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SwitchedUserIdDeal002, TestSize.Level0)
 {
@@ -897,7 +875,6 @@ HWTEST_F(WallpaperTest, SwitchedUserIdDeal002, TestSize.Level0)
 * @tc.desc:    Invalid user id deal
 * @tc.type:    FUNC
 * @tc.require: issueI6DWHR
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, InvalidUserIdDeal001, TestSize.Level0)
 {

@@ -20,10 +20,10 @@
 #include "iremote_object.h"
 #include "iremote_stub.h"
 #include "nocopyable.h"
-#include "wallpaper_service.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
+class WallpaperService;
 class WallpaperExtensionAbilityConnection : public AAFwk::AbilityConnectionStub {
 public:
     WallpaperExtensionAbilityConnection(WallpaperService &wallpaperService) : wallpaperService_(wallpaperService)

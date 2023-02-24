@@ -15,6 +15,7 @@
 #include "wallpaper_extension_ability_connection.h"
 
 #include "hilog_wrapper.h"
+#include "wallpaper_service.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {

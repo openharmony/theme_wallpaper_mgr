@@ -39,7 +39,9 @@
 #include "system_ability.h"
 #include "wallpaper_color_change_listener.h"
 #include "wallpaper_common.h"
+#include "wallpaper_common_event_subscriber.h"
 #include "wallpaper_data.h"
+#include "wallpaper_extension_ability_connection.h"
 #include "wallpaper_manager_common_info.h"
 #include "wallpaper_service_stub.h"
 #include "want.h"
@@ -51,10 +53,10 @@ namespace ColorManager {
 class Color;
 }
 namespace WallpaperMgrService {
-enum class ServiceRunningState { STATE_NOT_START, STATE_RUNNING };
-enum class FileType : uint8_t { WALLPAPER_FILE, CROP_FILE };
 class WallpaperService : public SystemAbility, public WallpaperServiceStub {
     DECLARE_SYSTEM_ABILITY(WallpaperService);
+    enum class ServiceRunningState { STATE_NOT_START, STATE_RUNNING };
+    enum class FileType : uint8_t { WALLPAPER_FILE, CROP_FILE };
 
 public:
     DISALLOW_COPY_AND_MOVE(WallpaperService);
@@ -146,6 +148,8 @@ private:
     ConcurrentMap<int32_t, WallpaperData> lockWallpaperMap_;
     atomic<int32_t> wallpaperId_;
     sptr<IWallpaperCallback> callbackProxy = nullptr;
+    std::shared_ptr<WallpaperCommonEventSubscriber> subscriber_;
+    sptr<WallpaperExtensionAbilityConnection> connection_;
 
     std::string name_;
     std::mutex mtx_;
