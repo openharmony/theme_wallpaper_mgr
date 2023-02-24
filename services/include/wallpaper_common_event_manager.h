@@ -34,4 +34,4 @@ private:
 } // namespace WallpaperMgrService
 } // namespace OHOS
 
-#endif //WALLPAPER_WALLPAPEREVENTMANAGER_H
+#endif
