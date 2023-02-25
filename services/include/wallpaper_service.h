@@ -39,6 +39,7 @@
 #include "system_ability.h"
 #include "wallpaper_color_change_listener.h"
 #include "wallpaper_common.h"
+#include "wallpaper_common_event_subscriber.h"
 #include "wallpaper_data.h"
 #include "wallpaper_extension_ability_connection.h"
 #include "wallpaper_manager_common_info.h"
@@ -52,10 +53,10 @@ namespace ColorManager {
 class Color;
 }
 namespace WallpaperMgrService {
-enum class ServiceRunningState { STATE_NOT_START, STATE_RUNNING };
-enum class FileType { WALLPAPER_FILE, CROP_FILE };
 class WallpaperService : public SystemAbility, public WallpaperServiceStub {
     DECLARE_SYSTEM_ABILITY(WallpaperService);
+    enum class ServiceRunningState { STATE_NOT_START, STATE_RUNNING };
+    enum class FileType : uint8_t { WALLPAPER_FILE, CROP_FILE };
 
 public:
     DISALLOW_COPY_AND_MOVE(WallpaperService);
@@ -64,7 +65,6 @@ public:
     WallpaperService();
     ~WallpaperService();
 
-    static sptr<WallpaperService> GetInstance();
     ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode GetPixelMap(int32_t wallpaperType, FdInfo &fdInfo) override;
     std::vector<uint64_t> GetColors(int32_t wallpaperType) override;
@@ -84,6 +84,7 @@ public:
     static void OnBootPhase();
     void OnInitUser(int32_t newUserId);
     void OnRemovedUser(int32_t userId);
+    void OnSwitchedUser(int32_t userId);
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
     void ReporterUsageTimeStatistic();
     void RegisterSubscriber(int32_t times);
@@ -121,6 +122,7 @@ private:
     bool RestoreUserResources(const WallpaperData &wallpaperData, WallpaperType wallpaperType);
     bool InitUserDir(int32_t userId);
     bool BlockRetry(int64_t interval, uint32_t maxRetryTimes, std::function<bool()> function);
+    int32_t QueryActiveUserId();
 
 private:
     int32_t Init();
@@ -145,8 +147,9 @@ private:
     ConcurrentMap<int32_t, WallpaperData> systemWallpaperMap_;
     ConcurrentMap<int32_t, WallpaperData> lockWallpaperMap_;
     atomic<int32_t> wallpaperId_;
-    atomic<int32_t> userId_ = 0;
     sptr<IWallpaperCallback> callbackProxy = nullptr;
+    std::shared_ptr<WallpaperCommonEventSubscriber> subscriber_;
+    sptr<WallpaperExtensionAbilityConnection> connection_;
 
     std::string name_;
     std::mutex mtx_;

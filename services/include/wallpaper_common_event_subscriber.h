@@ -26,26 +26,22 @@ namespace WallpaperMgrService {
 using CommonEventSubscriber = OHOS::EventFwk::CommonEventSubscriber;
 using CommonEventData = OHOS::EventFwk::CommonEventData;
 using CommonEventSubscribeInfo = OHOS::EventFwk::CommonEventSubscribeInfo;
+class WallpaperService;
 
-class WallpaperCommonEvent : public OHOS::EventFwk::CommonEventSubscriber {
+class WallpaperCommonEventSubscriber : public OHOS::EventFwk::CommonEventSubscriber {
 public:
-    WallpaperCommonEvent(const OHOS::EventFwk::CommonEventSubscribeInfo &subscriberInfo)
-        : CommonEventSubscriber(subscriberInfo)
+    WallpaperCommonEventSubscriber(WallpaperService &wallpaperService)
+        : CommonEventSubscriber(CreateSubscriberInfo()), wallpaperService_(wallpaperService)
     {
     }
-    ~WallpaperCommonEvent() = default;
-
-    static std::shared_ptr<WallpaperCommonEvent> subscriber;
-    static bool PublishEvent(const OHOS::AAFwk::Want &want, int eventCode, const std::string &eventData);
-    static void UnregisterSubscriber(std::shared_ptr<OHOS::EventFwk::CommonEventSubscriber> subscriber);
-    static bool RegisterSubscriber();
-    static void SendWallpaperLockSettingMessage();
-    static void SendWallpaperSystemSettingMessage();
+    ~WallpaperCommonEventSubscriber() = default;
 
     void OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data) override;
 
 private:
-    std::function<void(const EventFwk::CommonEventData &)> callback_;
+    OHOS::EventFwk::CommonEventSubscribeInfo CreateSubscriberInfo();
+
+    WallpaperService &wallpaperService_;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

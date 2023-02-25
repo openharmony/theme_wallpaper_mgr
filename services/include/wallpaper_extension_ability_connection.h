@@ -20,13 +20,15 @@
 #include "iremote_object.h"
 #include "iremote_stub.h"
 #include "nocopyable.h"
-#include "wallpaper_service.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
+class WallpaperService;
 class WallpaperExtensionAbilityConnection : public AAFwk::AbilityConnectionStub {
 public:
-    explicit WallpaperExtensionAbilityConnection() = default;
+    WallpaperExtensionAbilityConnection(WallpaperService &wallpaperService) : wallpaperService_(wallpaperService)
+    {
+    }
     virtual ~WallpaperExtensionAbilityConnection() = default;
 
     void OnAbilityConnectDone(const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject,
@@ -35,6 +37,7 @@ public:
 
 private:
     DISALLOW_COPY_AND_MOVE(WallpaperExtensionAbilityConnection);
+    WallpaperService &wallpaperService_;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

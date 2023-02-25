@@ -15,6 +15,7 @@
 #include "wallpaper_extension_ability_connection.h"
 
 #include "hilog_wrapper.h"
+#include "wallpaper_service.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -30,7 +31,7 @@ void WallpaperExtensionAbilityConnection::OnAbilityDisconnectDone(const AppExecF
     int32_t resultCode)
 {
     HILOG_INFO("on ability disconnected");
-    WallpaperService::GetInstance()->StartWallpaperExtension();
+    wallpaperService_.StartWallpaperExtension();
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

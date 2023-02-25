@@ -107,7 +107,6 @@ std::shared_ptr<PixelMap> WallpaperPermissionTest::CreateTempPixelMap()
 * @tc.desc:    Reset wallpaper throw permission error.
 * @tc.type:    FUNC
 * @tc.require: issueI60MT1
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperPermissionTest, ResetPermission001, TestSize.Level1)
 {
@@ -124,7 +123,6 @@ HWTEST_F(WallpaperPermissionTest, ResetPermission001, TestSize.Level1)
 * @tc.desc:    GetFile with wallpaperType[1] throw permission error.
 * @tc.type:    FUNC
 * @tc.require: issueI60MT1
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperPermissionTest, GetFilePermission001, TestSize.Level0)
 {
@@ -142,7 +140,6 @@ HWTEST_F(WallpaperPermissionTest, GetFilePermission001, TestSize.Level0)
 * @tc.desc:    GetPixelMap with wallpaperType[1] throw permission error.
 * @tc.type:    FUNC
 * @tc.require: issueI60MT1
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperPermissionTest, GetPixelMapPermission001, TestSize.Level0)
 {
@@ -160,7 +157,6 @@ HWTEST_F(WallpaperPermissionTest, GetPixelMapPermission001, TestSize.Level0)
 * @tc.desc:    SetWallpaperByMap with wallpaperType[1] throw permission error.
 * @tc.type:    FUNC
 * @tc.require: issueI60MT1
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperPermissionTest, SetWallpaperByMapPermission001, TestSize.Level0)
 {
@@ -178,7 +174,6 @@ HWTEST_F(WallpaperPermissionTest, SetWallpaperByMapPermission001, TestSize.Level
 * @tc.desc:    SetWallpaperByUri with wallpaperType[1] throw permission error.
 * @tc.type:    FUNC
 * @tc.require: issueI60MT1
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperPermissionTest, SetWallpaperByUriPermission001, TestSize.Level0)
 {

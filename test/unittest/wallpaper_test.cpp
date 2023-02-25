@@ -24,7 +24,7 @@
 #include "nativetoken_kit.h"
 #include "pixel_map.h"
 #include "token_setproc.h"
-#include "wallpaper_common_event.h"
+#include "wallpaper_common_event_subscriber.h"
 #include "wallpaper_manager.h"
 #include "wallpaper_manager_kits.h"
 #include "wallpaper_service.h"
@@ -45,7 +45,7 @@ constexpr const char *SYSTEM_FILE = "/system/wallpaper_system_orig";
 constexpr const char *SYSTEM_CROP_FILE = "/system/wallpaper_system";
 constexpr const char *LOCKSCREEN_FILE = "/lockscreen/wallpaper_lock_orig";
 constexpr const char *LOCKSCREEN_CROP_FILE = "/lockscreen/wallpaper_lock";
-std::shared_ptr<WallpaperCommonEvent> subscriber = nullptr;
+std::shared_ptr<WallpaperCommonEventSubscriber> subscriber = nullptr;
 
 using namespace testing::ext;
 using namespace testing;
@@ -88,7 +88,7 @@ public:
     void TearDown();
     static void CreateTempImage();
     static std::shared_ptr<PixelMap> CreateTempPixelMap();
-    static bool SubscribeCommonEvent();
+    static bool SubscribeCommonEvent(shared_ptr<WallpaperService> wallpaperService);
     static void TriggerEvent(int32_t userId, const std::string &commonEventSupport);
     static std::string GetUserFilePath(int32_t userId, const char *filePath);
 };
@@ -204,15 +204,11 @@ std::shared_ptr<PixelMap> WallpaperTest::CreateTempPixelMap()
     return pixelMap;
 }
 
-bool WallpaperTest::SubscribeCommonEvent()
+bool WallpaperTest::SubscribeCommonEvent(shared_ptr<WallpaperService> wallpaperService)
 {
-    EventFwk::MatchingSkills matchingSkills;
-    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED);
-    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED);
-    EventFwk::CommonEventSubscribeInfo subscriberInfo(matchingSkills);
-    subscriber = std::make_shared<WallpaperCommonEvent>(subscriberInfo);
+    subscriber = std::make_shared<WallpaperCommonEventSubscriber>(*wallpaperService);
     if (subscriber == nullptr) {
-        HILOG_INFO("subscriber is nullptr");
+        HILOG_INFO("wallpaperCommonEvent is nullptr");
         return false;
     }
     if (!EventFwk::CommonEventManager::SubscribeCommonEvent(subscriber)) {
@@ -243,7 +239,6 @@ std::string WallpaperTest::GetUserFilePath(int32_t userId, const char *filePath)
 * @tc.desc:    Reset wallpaper with wallpaperType[0].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, Reset001, TestSize.Level1)
 {
@@ -257,7 +252,6 @@ HWTEST_F(WallpaperTest, Reset001, TestSize.Level1)
 * @tc.desc:    Reset wallpaper with wallpaperType[1].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, Reset002, TestSize.Level1)
 {
@@ -271,7 +265,6 @@ HWTEST_F(WallpaperTest, Reset002, TestSize.Level1)
 * @tc.desc:    Reset wallpaper with wallpaperType[2] throw parameters error.
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, Reset003, TestSize.Level1)
 {
@@ -285,7 +278,6 @@ HWTEST_F(WallpaperTest, Reset003, TestSize.Level1)
 * @tc.desc:    Reset wallpaper with wallpaperType[0] after resetting wallpaper[0].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, Reset004, TestSize.Level1)
 {
@@ -303,7 +295,6 @@ HWTEST_F(WallpaperTest, Reset004, TestSize.Level1)
 * @tc.desc:    Reset wallpaper with wallpaperType[1] after resetting wallpaper[1] and check whether Id is same one.
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, Reset005, TestSize.Level1)
 {
@@ -475,7 +466,6 @@ HWTEST_F(WallpaperTest, GetId004, TestSize.Level0)
 * @tc.desc:    GetFile with wallpaperType[0].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, GetFile001, TestSize.Level0)
 {
@@ -490,7 +480,6 @@ HWTEST_F(WallpaperTest, GetFile001, TestSize.Level0)
 * @tc.desc:    GetFile with wallpaperType[1].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, GetFile002, TestSize.Level0)
 {
@@ -505,7 +494,6 @@ HWTEST_F(WallpaperTest, GetFile002, TestSize.Level0)
 * @tc.desc:    GetFile with wallpaperType[2] throw parameters error.
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, GetFile003, TestSize.Level0)
 {
@@ -579,7 +567,6 @@ HWTEST_F(WallpaperTest, getMinWidth001, TestSize.Level0)
 * @tc.desc:    GetPixelMap with wallpaperType[0].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, GetPixelMap001, TestSize.Level0)
 {
@@ -594,7 +581,6 @@ HWTEST_F(WallpaperTest, GetPixelMap001, TestSize.Level0)
 * @tc.desc:    GetPixelMap with wallpaperType[1].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, GetPixelMap002, TestSize.Level0)
 {
@@ -611,7 +597,6 @@ HWTEST_F(WallpaperTest, GetPixelMap002, TestSize.Level0)
 * @tc.desc:    SetWallpaperByMap with wallpaperType[0].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByMap001, TestSize.Level0)
 {
@@ -626,7 +611,6 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap001, TestSize.Level0)
 * @tc.desc:    SetWallpaperByMap with wallpaperType[1].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByMap002, TestSize.Level0)
 {
@@ -641,7 +625,6 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap002, TestSize.Level0)
 * @tc.desc:    SetWallpaperByMap with wallpaperType[2] throw parameters error.
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByMap003, TestSize.Level0)
 {
@@ -658,7 +641,6 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap003, TestSize.Level0)
 * @tc.desc:    SetWallpaperByUri with wallpaperType[0] .
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByUri001, TestSize.Level0)
 {
@@ -672,7 +654,6 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri001, TestSize.Level0)
 * @tc.desc:    SetWallpaperByUri with wallpaperType[1].
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByUri002, TestSize.Level0)
 {
@@ -686,7 +667,6 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri002, TestSize.Level0)
 * @tc.desc:    SetWallpaperByUri with wallpaperType[2] throw parameters error.
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByUri003, TestSize.Level0)
 {
@@ -700,7 +680,6 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri003, TestSize.Level0)
 * @tc.desc:    SetWallpaperByUri with error uri.
 * @tc.type:    FUNC
 * @tc.require: issueI5UHRG
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByUri004, TestSize.Level0)
 {
@@ -715,7 +694,6 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri004, TestSize.Level0)
 * @tc.desc:    SetWallpaperByUri with unsafe uri.
 * @tc.type:    FUNC
 * @tc.require: issueI647HI
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, SetWallpaperByUri005, TestSize.Level0)
 {
@@ -759,9 +737,11 @@ HWTEST_F(WallpaperTest, FILE_DEAL001, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetWallpaper001, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaper001  begin");
-    ErrorCode wallpaperErrorCode = WallpaperService::GetInstance()->SetWallpaper(0, 0, -1);
+    std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
+    ErrorCode wallpaperErrorCode = wallpaperService->SetWallpaper(0, 0, -1);
     EXPECT_EQ(wallpaperErrorCode, E_PARAMETERS_INVALID) << "Failed to throw error";
-    wallpaperErrorCode = WallpaperService::GetInstance()->SetWallpaper(0, 0, FOO_MAX_LEN);
+    wallpaperErrorCode = wallpaperService->SetWallpaper(0, 0, FOO_MAX_LEN);
+
     EXPECT_EQ(wallpaperErrorCode, E_PARAMETERS_INVALID) << "Failed to throw error";
 }
 
@@ -771,16 +751,14 @@ HWTEST_F(WallpaperTest, SetWallpaper001, TestSize.Level0)
 * @tc.desc:    Create a user directory after the user is added
 * @tc.type:    FUNC
 * @tc.require: issueI6DWHR
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, AddUsersDeal001, TestSize.Level0)
 {
-    HILOG_INFO("AddUsersDeal001  begin");
-    bool ret = WallpaperTest::SubscribeCommonEvent();
+    std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
+    bool ret = WallpaperTest::SubscribeCommonEvent(wallpaperService);
     ASSERT_EQ(ret, true);
     std::string commonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED;
     WallpaperTest::TriggerEvent(TEST_USERID, commonEvent);
-
     ret = FileDeal::IsFileExist(WallpaperTest::GetUserFilePath(TEST_USERID, SYSTEM_FILE));
     EXPECT_EQ(ret, true);
     ret = FileDeal::IsFileExist(WallpaperTest::GetUserFilePath(TEST_USERID, SYSTEM_CROP_FILE));
@@ -800,12 +778,11 @@ HWTEST_F(WallpaperTest, AddUsersDeal001, TestSize.Level0)
 * @tc.desc:    delete a user directory after the user is removed
 * @tc.type:    FUNC
 * @tc.require: issueI6DWHR
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, RemovedUserDeal001, TestSize.Level0)
 {
-    HILOG_INFO("RemovedUserDeal001  begin");
-    ASSERT_EQ(WallpaperTest::SubscribeCommonEvent(), true);
+    std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
+    ASSERT_EQ(WallpaperTest::SubscribeCommonEvent(wallpaperService), true);
     std::string commonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED;
     WallpaperTest::TriggerEvent(TEST_USERID, commonEvent);
     std::string userDir = WALLPAPER_DEFAULT_PATH + std::string("/") + std::to_string(TEST_USERID);
@@ -820,16 +797,59 @@ HWTEST_F(WallpaperTest, RemovedUserDeal001, TestSize.Level0)
 }
 
 /**
+* @tc.name:    SwitchedUserIdDeal001
+* @tc.desc:    The wallpaper has changed after switched user
+* @tc.type:    FUNC
+* @tc.require: issueI6DWHR
+*/
+HWTEST_F(WallpaperTest, SwitchedUserIdDeal001, TestSize.Level0)
+{
+    std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
+    ASSERT_EQ(WallpaperTest::SubscribeCommonEvent(wallpaperService), true);
+    std::vector<int32_t> ids;
+    AccountSA::OsAccountManager::QueryActiveOsAccountIds(ids);
+    int32_t beforeUserId = ids[0];
+    std::string addCommonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED;
+    WallpaperTest::TriggerEvent(TEST_USERID, addCommonEvent);
+    std::string userDir = WALLPAPER_DEFAULT_PATH + std::string("/") + std::to_string(TEST_USERID);
+    ASSERT_EQ(FileDeal::IsDirExist(userDir), true);
+    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset lockscreen wallpaper";
+    std::vector<uint64_t> oldLockscreenColor = WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN);
+    wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset system wallpaper";
+    std::vector<uint64_t> oldSystemColor = WallpaperManagerkits::GetInstance().GetColors(SYSTYEM);
+
+    std::string switchCommonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_SWITCHED;
+    WallpaperTest::TriggerEvent(TEST_USERID, switchCommonEvent);
+    wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set lockscreen wallpaper";
+    std::vector<uint64_t> newLockscreenColor = WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN);
+    wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, SYSTYEM);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set system wallpaper";
+    std::vector<uint64_t> newSystemColor = WallpaperManagerkits::GetInstance().GetColors(SYSTYEM);
+    EXPECT_NE(oldLockscreenColor, newLockscreenColor);
+    EXPECT_NE(oldSystemColor, newSystemColor);
+
+    WallpaperTest::TriggerEvent(beforeUserId, switchCommonEvent);
+    std::string removeCommonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED;
+    WallpaperTest::TriggerEvent(TEST_USERID, removeCommonEvent);
+    EXPECT_EQ(FileDeal::IsDirExist(userDir), false);
+    if (!OHOS::ForceRemoveDirectory(userDir)) {
+        HILOG_ERROR("Force remove user directory path failed, errno %{public}d.", errno);
+    }
+}
+
+/**
 * @tc.name:    InvalidUserIdDeal001
 * @tc.desc:    Invalid user id deal
 * @tc.type:    FUNC
 * @tc.require: issueI6DWHR
-* @tc.author:  lvbai
 */
 HWTEST_F(WallpaperTest, InvalidUserIdDeal001, TestSize.Level0)
 {
-    HILOG_INFO("InvalidUserIdDeal001  begin");
-    ASSERT_EQ(WallpaperTest::SubscribeCommonEvent(), true);
+    std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
+    ASSERT_EQ(WallpaperTest::SubscribeCommonEvent(wallpaperService), true);
     std::string commonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED;
     WallpaperTest::TriggerEvent(INVALID_USERID, commonEvent);
     std::string userDir = WALLPAPER_DEFAULT_PATH + std::string("/") + std::to_string(INVALID_USERID);

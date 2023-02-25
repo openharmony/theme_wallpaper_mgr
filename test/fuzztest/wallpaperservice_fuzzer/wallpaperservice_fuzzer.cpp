@@ -51,8 +51,8 @@ bool FuzzWallpaperService(const uint8_t *rawData, size_t size)
     data.RewindRead(0);
     MessageParcel reply;
     MessageOption option;
-
-    WallpaperService::GetInstance()->OnRemoteRequest(code, data, reply, option);
+    std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
+    wallpaperService->OnRemoteRequest(code, data, reply, option);
 
     return true;
 }

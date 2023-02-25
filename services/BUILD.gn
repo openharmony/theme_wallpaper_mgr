@@ -29,7 +29,8 @@ ohos_shared_library("wallpaper_service") {
   sources = [
     "src/component_name.cpp",
     "src/wallpaper_color_change_listener_proxy.cpp",
-    "src/wallpaper_common_event.cpp",
+    "src/wallpaper_common_event_manager.cpp",
+    "src/wallpaper_common_event_subscriber.cpp",
     "src/wallpaper_data.cpp",
     "src/wallpaper_extension_ability_connection.cpp",
     "src/wallpaper_service.cpp",
