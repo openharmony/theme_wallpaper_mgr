@@ -77,45 +77,6 @@ describe('WallpaperJSTest', function () {
     }
 
     /**
-     * @tc.name:      onCallbackTest001
-     * @tc.desc:      Test on_colorChange to registers a listener for wallpaper color changes to
-     *                    receive notifications about the changes.
-     * @tc.type:      FUNC test
-     * @tc.require:   issueI5UHRG
-     */
-    it('onCallbackTest001', 0, function () {
-        try {
-            wallpaper.on('colorChange', function (colors, wallpaperType) {
-                console.info(`onCallbackTest001 colors : ${colors}`);
-                if ((colors !== undefined) && (colors.size() !== 0) && (wallpaperType !== undefined)) {
-                    expect(true).assertTrue();
-                } else {
-                    expect(null).assertFail();
-                }
-            })
-        } catch (error) {
-            expect(null).assertFail();
-        }
-    })
-
-    /**
-     * @tc.name:      onCallbackThrowErrorTest002
-     * @tc.desc:      Test on_colorChange throw error.
-     * @tc.type:      FUNC test
-     * @tc.require:   issueI5UHRG
-     */
-    it('onCallbackThrowErrorTest002', 0, function () {
-        try {
-            wallpaper.on(function (colors, wallpaperType) {
-                console.info(`onCallbackThrowErrorTest002 colors : ${colors}`);
-                expect(null).assertFail();
-            })
-        } catch (error) {
-            expect(error.code === PARAMETER_ERROR).assertEqual(true)
-        }
-    })
-
-    /**
      * @tc.name:      getColorsSyncTest001
      * @tc.desc:      Test getColorsSync() to gets WALLPAPER_SYSTEM Colors by syncing.
      * @tc.type:      FUNC
@@ -1900,25 +1861,77 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:      offCallbackTest001
-     * @tc.desc:      Test off_colorChange to registers a listener for wallpaper color changes to
+     * @tc.name:      onCallbackTest001
+     * @tc.desc:      Test on_colorChange to registers a listener for wallpaper color changes to
      *                    receive notifications about the changes.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
      */
-    it('offCallbackTest001', 0, function () {
+    it('onCallbackTest001', 0, async function (done) {
+        await wallpaper.restore(WALLPAPER_LOCKSCREEN);
         try {
-            wallpaper.off('colorChange', function (colors, wallpaperType) {
-                console.info(`offCallbackTest001 colors : ${colors}`);
-                if ((colors !== undefined) && (colors.size() !== 0) && (wallpaperType !== undefined)) {
-                    expect(true).assertTrue();
-                } else {
-                    expect(null).assertFail();
-                }
+            wallpaper.on('colorChange', async (colors, wallpaperType) => {
+                console.info(`onCallbackTest001 colors : ${colors}`);
+                expect(colors != null).assertTrue();
+                expect(wallpaperType != null).assertTrue();
+                wallpaper.off('colorChange');
+                done();
             })
         } catch (error) {
+            console.info(`onCallbackTest001 error : ${error}`);
             expect(null).assertFail();
+            done();
         }
+        await wallpaper.setImage(URI, WALLPAPER_LOCKSCREEN);
+    })
+
+    /**
+     * @tc.name:      onCallbackThrowErrorTest002
+     * @tc.desc:      Test on_colorChange throw error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('onCallbackThrowErrorTest002', 0, function () {
+        try {
+            wallpaper.on(function (colors, wallpaperType) {
+                console.info(`onCallbackThrowErrorTest002 colors : ${colors}`);
+                expect(null).assertFail();
+            })
+        } catch (error) {
+            expect(error.code === PARAMETER_ERROR).assertEqual(true)
+        }
+    })
+
+    /**
+     * @tc.name:      offCallbackTest001
+     * @tc.desc:      Test off_colorChange to logoff a listener for wallpaper color changes to
+     *                    receive notifications about the changes.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('offCallbackTest001', 0, async function (done) {
+        let callbackTimes = 0;
+        await wallpaper.restore(WALLPAPER_SYSTEM);
+        try {
+            wallpaper.on('colorChange', async (colors, wallpaperType) => {
+                console.info(`offCallbackTest001 colors : ${colors}`);
+                callbackTimes = callbackTimes + 1;
+                expect(callbackTimes === 1).assertTrue();
+                wallpaper.off('colorChange');
+                setTimeout(() => {
+                    clearTimeout();
+                    done();
+                }, 3000)
+
+            })
+        } catch (error) {
+            console.info(`offCallbackTest001 error : ${error}`);
+            expect(null).assertFail();
+            done();
+        }
+        await wallpaper.setImage(URI, WALLPAPER_SYSTEM);
+        await wallpaper.restore(WALLPAPER_SYSTEM);
+        await wallpaper.setImage(URI, WALLPAPER_SYSTEM);
     })
 
     /**
