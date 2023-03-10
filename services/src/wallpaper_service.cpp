@@ -32,7 +32,6 @@
 
 #include "ability_manager_client.h"
 #include "accesstoken_adapter.h"
-#include "bundle_mgr_interface.h"
 #include "bundle_mgr_proxy.h"
 #include "canvas.h"
 #include "color_picker.h"
@@ -141,8 +140,10 @@ void WallpaperService::OnStart()
     int uid = static_cast<int>(IPCSkeleton::GetCallingUid());
     auto cmd = std::make_shared<Command>(std::vector<std::string>({ "-all" }), "Show all",
         [this, uid](const std::vector<std::string> &input, std::string &output) -> bool {
-            int32_t height = GetWallpaperMinHeight();
-            int32_t width = GetWallpaperMinWidth();
+            int32_t height = 0;
+            int32_t width = 0;
+            GetWallpaperMinHeight(height);
+            GetWallpaperMinWidth(width);
             std::string bundleName(WALLPAPER_BUNDLE_NAME);
             WPGetBundleNameByUid(uid, bundleName);
             output.append("height\t\t\t: " + std::to_string(height) + "\n")
@@ -362,16 +363,24 @@ void WallpaperService::MigrateFromOld()
     }
 }
 
-std::vector<uint64_t> WallpaperService::GetColors(int wallpaperType)
+int32_t WallpaperService::GetColors(int32_t wallpaperType, std::vector<uint64_t> &colors)
 {
-    std::vector<uint64_t> colors;
     if (wallpaperType == WALLPAPER_SYSTEM) {
         colors.emplace_back(systemWallpaperColor_);
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         colors.emplace_back(lockWallpaperColor_);
     }
     HILOG_INFO(" Service End!");
-    return colors;
+    return E_OK;
+}
+
+int32_t WallpaperService::GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors)
+{
+    if (!IsSystemApp()) {
+        HILOG_INFO("CallingApp is not SystemApp");
+        return static_cast<int32_t>(E_NOT_SYSTEM_APP);
+    }
+    return GetColors(wallpaperType, colors);
 }
 
 int32_t WallpaperService::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
@@ -474,24 +483,7 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     if (wallpaperPixelMap == nullptr || errorCode != 0) {
         return ret;
     }
-    int32_t pictrueHeight = wallpaperPixelMap->GetHeight();
-    int32_t pictrueWidth = wallpaperPixelMap->GetWidth();
-    int pyScrWidth = GetWallpaperMinWidth();
-    int pyScrHeight = GetWallpaperMinHeight();
-    bool bHeightFlag = false;
-    bool bWidthFlag = false;
-    if (pictrueHeight > pyScrHeight) {
-        decodeOpts.CropRect.top = (pictrueHeight - pyScrHeight) / HALF;
-        bHeightFlag = true;
-    }
-    if (pictrueWidth > pyScrWidth) {
-        decodeOpts.CropRect.left = (pictrueWidth - pyScrWidth) / HALF;
-        bWidthFlag = true;
-    }
-    decodeOpts.CropRect.height = bHeightFlag ? pyScrHeight : pictrueHeight;
-    decodeOpts.desiredSize.height = decodeOpts.CropRect.height;
-    decodeOpts.CropRect.width = bWidthFlag ? pyScrWidth : pictrueWidth;
-    decodeOpts.desiredSize.width = decodeOpts.CropRect.width;
+    SetPixelMapCropParameters(std::move(wallpaperPixelMap), decodeOpts);
     wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     if (errorCode != 0) {
         return false;
@@ -507,6 +499,39 @@ bool WallpaperService::MakeCropWallpaper(int wallpaperType)
     }
     HILOG_INFO("End Crop wallpaper: ret= %{public}d", ret);
     return ret;
+}
+
+void WallpaperService::SetPixelMapCropParameters(std::unique_ptr<PixelMap> wallpaperPixelMap, DecodeOptions &decodeOpts)
+{
+    int32_t pictureHeight = wallpaperPixelMap->GetHeight();
+    int32_t pictureWidth = wallpaperPixelMap->GetWidth();
+    int32_t pyScrWidth = 0;
+    int32_t pyScrHeight = 0;
+    GetWallpaperMinWidth(pyScrWidth);
+    GetWallpaperMinHeight(pyScrHeight);
+    bool bHeightFlag = false;
+    bool bWidthFlag = false;
+    if (pictureHeight > pyScrHeight) {
+        decodeOpts.CropRect.top = (pictureHeight - pyScrHeight) / HALF;
+        bHeightFlag = true;
+    }
+    if (pictureWidth > pyScrWidth) {
+        decodeOpts.CropRect.left = (pictureWidth - pyScrWidth) / HALF;
+        bWidthFlag = true;
+    }
+    decodeOpts.CropRect.height = bHeightFlag ? pyScrHeight : pictureHeight;
+    decodeOpts.desiredSize.height = decodeOpts.CropRect.height;
+    decodeOpts.CropRect.width = bWidthFlag ? pyScrWidth : pictureWidth;
+    decodeOpts.desiredSize.width = decodeOpts.CropRect.width;
+}
+
+int32_t WallpaperService::SetWallpaperByMapV9(int32_t fd, int32_t wallpaperType, int32_t length)
+{
+    if (!IsSystemApp()) {
+        HILOG_INFO("CallingApp is not SystemApp");
+        return static_cast<int32_t>(E_NOT_SYSTEM_APP);
+    }
+    return SetWallpaperByMap(fd, wallpaperType, length);
 }
 
 int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int length)
@@ -555,6 +580,15 @@ int32_t WallpaperService::SetWallpaperByMap(int fd, int wallpaperType, int lengt
     SaveColor(wallpaperType);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaperByMap", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER_BY_MAP));
     return wallpaperErrorCode;
+}
+
+int32_t WallpaperService::SetWallpaperByFDV9(int32_t fd, int32_t wallpaperType, int32_t length)
+{
+    if (!IsSystemApp()) {
+        HILOG_INFO("CallingApp is not SystemApp");
+        return static_cast<int32_t>(E_NOT_SYSTEM_APP);
+    }
+    return SetWallpaperByFD(fd, wallpaperType, length);
 }
 
 int32_t WallpaperService::SetWallpaperByFD(int fd, int wallpaperType, int length)
@@ -669,11 +703,19 @@ void WallpaperService::ReporterUsageTimeStatisic()
     StatisticReporter::ReportUsageTimeStatistic(userId, timeStat);
 }
 
+int32_t WallpaperService::GetPixelMapV9(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
+{
+    if (!IsSystemApp()) {
+        HILOG_INFO("CallingApp is not SystemApp");
+        return static_cast<int32_t>(E_NOT_SYSTEM_APP);
+    }
+    return GetPixelMap(wallpaperType, fdInfo);
+}
+
 int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
     HILOG_INFO("WallpaperService::getPixelMap start ");
-    bool permissionGet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER);
-    if (!permissionGet) {
+    if (!WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER)) {
         HILOG_INFO("GetPixelMap no get permission!");
         return static_cast<int32_t>(E_NO_PERMISSION);
     }
@@ -736,30 +778,47 @@ int WallpaperService::GetWallpaperId(int wallpaperType)
     HILOG_INFO("WallpaperService::GetWallpaperId --> end ID[%{public}d]", iWallpaperId);
     return iWallpaperId;
 }
-int WallpaperService::GetWallpaperMinHeight()
+
+int32_t WallpaperService::GetWallpaperMinHeightV9(int32_t &minHeight)
+{
+    if (!IsSystemApp()) {
+        HILOG_INFO("CallingApp is not SystemApp");
+        return static_cast<int32_t>(E_NOT_SYSTEM_APP);
+    }
+    return GetWallpaperMinHeight(minHeight);
+}
+
+int32_t WallpaperService::GetWallpaperMinHeight(int32_t &minHeight)
 {
     HILOG_INFO("WallpaperService::GetWallpaperMinHeight --> start ");
     auto display = Rosen::DisplayManager::GetInstance().GetDefaultDisplay();
     if (display == nullptr) {
         HILOG_ERROR("GetDefaultDisplay is nullptr");
-        return -1;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
-    int iWallpaperMinHeight = display->GetHeight();
-    HILOG_INFO("WallpaperService height: %{public}d", iWallpaperMinHeight);
-    return iWallpaperMinHeight;
+    minHeight = display->GetHeight();
+    return static_cast<int32_t>(E_OK);
 }
 
-int WallpaperService::GetWallpaperMinWidth()
+int32_t WallpaperService::GetWallpaperMinWidthV9(int32_t &minWidth)
+{
+    if (!IsSystemApp()) {
+        HILOG_INFO("CallingApp is not SystemApp");
+        return static_cast<int32_t>(E_NOT_SYSTEM_APP);
+    }
+    return GetWallpaperMinWidth(minWidth);
+}
+
+int32_t WallpaperService::GetWallpaperMinWidth(int32_t &minWidth)
 {
     HILOG_INFO("WallpaperService::GetWallpaperMinWidth --> start ");
     auto display = Rosen::DisplayManager::GetInstance().GetDefaultDisplay();
     if (display == nullptr) {
         HILOG_ERROR("GetDefaultDisplay is nullptr");
-        return -1;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
-    int iWallpaperMinWidth = display->GetWidth();
-    HILOG_INFO("WallpaperService width: %{public}d", iWallpaperMinWidth);
-    return iWallpaperMinWidth;
+    minWidth = display->GetWidth();
+    return static_cast<int32_t>(E_OK);
 }
 
 bool WallpaperService::IsChangePermitted()
@@ -774,6 +833,15 @@ bool WallpaperService::IsOperationAllowed()
     HILOG_INFO("IsOperationAllowed wallpaper Start!");
     bool bFlag = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     return bFlag;
+}
+
+int32_t WallpaperService::ResetWallpaperV9(int32_t wallpaperType)
+{
+    if (!IsSystemApp()) {
+        HILOG_INFO("CallingApp is not SystemApp");
+        return static_cast<int32_t>(E_NOT_SYSTEM_APP);
+    }
+    return ResetWallpaper(wallpaperType);
 }
 
 int32_t WallpaperService::ResetWallpaper(int wallpaperType)
@@ -1128,6 +1196,34 @@ int32_t WallpaperService::GetFilePath(int wallpaperType, std::string &filePath)
         }
     }
     return static_cast<int32_t>(E_PARAMETERS_INVALID);
+}
+
+bool WallpaperService::IsSystemApp()
+{
+    int32_t uid = IPCSkeleton::GetCallingUid();
+    auto bundleMgr = GetBundleMgr();
+    bool isSystemApplication = false;
+    if (bundleMgr != nullptr) {
+        isSystemApplication = bundleMgr->CheckIsSystemAppByUid(uid);
+    }
+    return isSystemApplication;
+}
+
+OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> WallpaperService::GetBundleMgr()
+{
+    auto systemAbilityManager = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (systemAbilityManager == nullptr) {
+        return nullptr;
+    }
+    auto bundleMgrSa = systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+    if (bundleMgrSa == nullptr) {
+        return nullptr;
+    }
+    auto bundleMgr = OHOS::iface_cast<AppExecFwk::IBundleMgr>(bundleMgrSa);
+    if (bundleMgr == nullptr) {
+        HILOG_INFO("GetBundleMgr is null");
+    }
+    return bundleMgr;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

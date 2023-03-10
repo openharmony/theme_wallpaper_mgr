@@ -21,7 +21,7 @@
 
 namespace OHOS::WallpaperNAPI {
 AsyncCall::AsyncCall(
-    napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos, bool isNewInterfaces)
+    napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos, bool needException)
     : env_(env)
 {
     context_ = new AsyncContext();
@@ -42,7 +42,7 @@ AsyncCall::AsyncCall(
         }
     }
     auto status = (*context)(env, argc, argv, self);
-    if (status != napi_ok && context->errCode_ != 0 && isNewInterfaces) {
+    if (status != napi_ok && context->errCode_ != 0 && needException) {
         JsError::ThrowError(env, context->errCode_, context->errMsg_);
         context->output_ = nullptr;
         context->exec_ = nullptr;

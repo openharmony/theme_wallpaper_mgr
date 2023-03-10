@@ -47,7 +47,14 @@ public:
         OFF,
         IS_CHANGE_PERMITTED,
         IS_OPERATION_ALLOWED,
-        REGISTER_CALLBACK
+        REGISTER_CALLBACK,
+        SET_WALLPAPER_URI_FD_V9,
+        SET_WALLPAPER_MAP_V9,
+        GET_PIXELMAP_V9,
+        GET_COLORS_V9,
+        GET_WALLPAPER_MIN_HEIGHT_V9,
+        GET_WALLPAPER_MIN_WIDTH_V9,
+        RESET_WALLPAPER_V9,
     };
     struct getPixelMap {
         std::string result;
@@ -73,7 +80,7 @@ public:
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of array callback function
      */
-    virtual std::vector<uint64_t> GetColors(int wallpaperType) = 0;
+    virtual int32_t GetColors(int wallpaperType, std::vector<uint64_t> &colors) = 0;
 
     virtual int32_t GetFile(int wallpaperType, int32_t &wallpaperFd) = 0;
 
@@ -88,13 +95,13 @@ public:
      * Obtains the minimum height of the wallpaper.
      * @return number type of callback function
      */
-    virtual int GetWallpaperMinHeight() = 0;
+    virtual int32_t GetWallpaperMinHeight(int32_t &minHeight) = 0;
 
     /**
      * Obtains the minimum width of the wallpaper.
      * @return number type of callback function
      */
-    virtual int GetWallpaperMinWidth() = 0;
+    virtual int32_t GetWallpaperMinWidth(int32_t &minWidth) = 0;
 
     /**
      * Checks whether to allow the application to change the wallpaper for the current user.
@@ -132,6 +139,14 @@ public:
     virtual bool Off(sptr<IWallpaperColorChangeListener> listener) = 0;
 
     virtual bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) = 0;
+
+    virtual int32_t SetWallpaperByFDV9(int32_t fd, int32_t wallpaperType, int32_t length) = 0;
+    virtual int32_t SetWallpaperByMapV9(int32_t fd, int32_t wallpaperType, int32_t length) = 0;
+    virtual int32_t GetPixelMapV9(int32_t wallpaperType, FdInfo &fdInfo) = 0;
+    virtual int32_t GetColorsV9(int wallpaperType, std::vector<uint64_t> &colors) = 0;
+    virtual int32_t GetWallpaperMinHeightV9(int32_t &minHeight) = 0;
+    virtual int32_t GetWallpaperMinWidthV9(int32_t &minWidth) = 0;
+    virtual int32_t ResetWallpaperV9(int32_t wallpaperType) = 0;
 };
 }
 } // namespace OHOS

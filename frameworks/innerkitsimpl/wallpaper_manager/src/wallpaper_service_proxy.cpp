@@ -25,32 +25,43 @@ namespace OHOS {
 namespace WallpaperMgrService {
 using namespace OHOS::HiviewDFX;
 constexpr const int32_t INVALID_FD = -1;
-std::vector<uint64_t> WallpaperServiceProxy::GetColors(int wallpaperType)
+int32_t WallpaperServiceProxy::GetColors(int32_t wallpaperType, std::vector<uint64_t> &colors)
 {
-    std::vector<uint64_t> colors;
+    return GetColorsInner(wallpaperType, GET_COLORS, colors);
+}
+
+int32_t WallpaperServiceProxy::GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors)
+{
+    return GetColorsInner(wallpaperType, GET_COLORS_V9, colors);
+}
+
+int32_t WallpaperServiceProxy::GetColorsInner(int32_t wallpaperType, uint32_t code, std::vector<uint64_t> &colors)
+{
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return colors;
+        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
     if (!data.WriteInt32(wallpaperType)) {
         HILOG_ERROR(" Failed to WriteInt32 ");
-        return colors;
+        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
 
-    int32_t result = Remote()->SendRequest(GET_COLORS, data, reply, option);
+    int32_t result = Remote()->SendRequest(code, data, reply, option);
     if (result != ERR_NONE) {
-        HILOG_ERROR(" get colors result = %{public}d ", result);
-        return colors;
+        HILOG_ERROR("Get color failed, result = %{public}d ", result);
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
-
-    if (!reply.ReadUInt64Vector(&colors)) {
-        HILOG_ERROR(" Failed to ReadUInt64Vector ");
+    int32_t wallpaperErrorCode = reply.ReadInt32();
+    if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
+        if (!reply.ReadUInt64Vector(&colors)) {
+            HILOG_ERROR(" Failed to ReadUInt64Vector ");
+        }
     }
-    return colors;
+    return wallpaperErrorCode;
 }
 
 int32_t WallpaperServiceProxy::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
@@ -85,9 +96,20 @@ std::string WallpaperServiceProxy::getUrl()
     HILOG_INFO("return FWReadUrl= %{public}s ", FWReadUrl.c_str());
     return FWReadUrl;
 }
+
 int32_t WallpaperServiceProxy::SetWallpaperByMap(int fd, int wallpaperType, int length)
 {
-    HILOG_INFO(" SetWallpaperByMap ");
+    return SetWallpaperByMapInner(fd, wallpaperType, length, SET_WALLPAPER_MAP);
+}
+
+int32_t WallpaperServiceProxy::SetWallpaperByMapV9(int32_t fd, int32_t wallpaperType, int32_t length)
+{
+    return SetWallpaperByMapInner(fd, wallpaperType, length, SET_WALLPAPER_MAP_V9);
+}
+
+int32_t WallpaperServiceProxy::SetWallpaperByMapInner(int32_t fd, int32_t wallpaperType, int32_t length, uint32_t code)
+{
+    HILOG_INFO(" WallpaperServiceProxy::SetWallpaper --> start ");
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -110,7 +132,7 @@ int32_t WallpaperServiceProxy::SetWallpaperByMap(int fd, int wallpaperType, int 
         return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
 
-    int32_t result = Remote()->SendRequest(SET_WALLPAPER_MAP, data, reply, option);
+    int32_t result = Remote()->SendRequest(code, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperCalbackProxy::SetWallpaperfail, result = %{public}d ", result);
         return static_cast<int32_t>(E_DEAL_FAILED);
@@ -118,7 +140,18 @@ int32_t WallpaperServiceProxy::SetWallpaperByMap(int fd, int wallpaperType, int 
 
     return reply.ReadInt32();
 }
+
 int32_t WallpaperServiceProxy::SetWallpaperByFD(int fd, int wallpaperType, int length)
+{
+    return SetWallpaperByFDInner(fd, wallpaperType, length, SET_WALLPAPER_URI_FD);
+}
+
+int32_t WallpaperServiceProxy::SetWallpaperByFDV9(int32_t fd, int32_t wallpaperType, int32_t length)
+{
+    return SetWallpaperByFDInner(fd, wallpaperType, length, SET_WALLPAPER_URI_FD_V9);
+}
+
+int32_t WallpaperServiceProxy::SetWallpaperByFDInner(int32_t fd, int32_t wallpaperType, int32_t length, uint32_t code)
 {
     HILOG_INFO(" SetWallpaperByFD ");
     MessageParcel data;
@@ -142,7 +175,7 @@ int32_t WallpaperServiceProxy::SetWallpaperByFD(int fd, int wallpaperType, int l
         return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
 
-    int32_t result = Remote()->SendRequest(SET_WALLPAPER_URI_FD, data, reply, option);
+    int32_t result = Remote()->SendRequest(code, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperCalbackProxy::SetWallpaperfail, result = %{public}d ", result);
         return static_cast<int32_t>(E_DEAL_FAILED);
@@ -151,6 +184,16 @@ int32_t WallpaperServiceProxy::SetWallpaperByFD(int fd, int wallpaperType, int l
 }
 
 int32_t WallpaperServiceProxy::GetPixelMap(int wallpaperType, IWallpaperService::FdInfo &fdInfo)
+{
+    return GetPixelMapInner(wallpaperType, GET_PIXELMAP, fdInfo);
+}
+
+int32_t WallpaperServiceProxy::GetPixelMapV9(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
+{
+    return GetPixelMapInner(wallpaperType, GET_PIXELMAP_V9, fdInfo);
+}
+
+int32_t WallpaperServiceProxy::GetPixelMapInner(int32_t wallpaperType, uint32_t code, IWallpaperService::FdInfo &fdInfo)
 {
     HILOG_INFO(" WallpaperServiceProxy::getPixelMap --> start ");
     MessageParcel data;
@@ -166,7 +209,7 @@ int32_t WallpaperServiceProxy::GetPixelMap(int wallpaperType, IWallpaperService:
         HILOG_ERROR(" Failed to WriteInt32 ");
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
-    int32_t result = Remote()->SendRequest(GET_PIXELMAP, data, reply, option);
+    int32_t result = Remote()->SendRequest(code, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperServiceProxy::GetPixelMap fail, result = %{public}d ", result);
         return static_cast<int32_t>(E_DEAL_FAILED);
@@ -202,50 +245,72 @@ int WallpaperServiceProxy::GetWallpaperId(int wallpaperType)
     HILOG_INFO(" End => iWallpaperId[%{public}d]", iWallpaperId);
     return iWallpaperId;
 }
-int WallpaperServiceProxy::GetWallpaperMinHeight()
+
+int32_t WallpaperServiceProxy::GetWallpaperMinHeight(int32_t &minHeight)
 {
-    int iWallpaperMinHeight = 0;
-    MessageParcel data;
-    MessageParcel reply;
-    MessageOption option;
-
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        HILOG_ERROR(" Failed to write parcelable ");
-        return -1;
-    }
-
-    int32_t result = Remote()->SendRequest(GET_WALLPAPER_MIN_HEIGHT, data, reply, option);
-    if (result != ERR_NONE) {
-        HILOG_ERROR(" WallpaperServiceProxy::GetWallpaperMinHeight fail, result = %{public}d ", result);
-        return -1;
-    }
-
-    iWallpaperMinHeight = reply.ReadInt32();
-    HILOG_INFO(" End => iWallpaperMinHeight[%{public}d]", iWallpaperMinHeight);
-    return iWallpaperMinHeight;
+    return GetWallpaperMinHeightInner(GET_WALLPAPER_MIN_HEIGHT, minHeight);
 }
 
-int WallpaperServiceProxy::GetWallpaperMinWidth()
+int32_t WallpaperServiceProxy::GetWallpaperMinHeightV9(int32_t &minHeight)
 {
-    int iWallpaperMinWidth = 0;
+    return GetWallpaperMinHeightInner(GET_WALLPAPER_MIN_HEIGHT_V9, minHeight);
+}
+
+int32_t WallpaperServiceProxy::GetWallpaperMinHeightInner(uint32_t code, int32_t &minHeight)
+{
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return -1;
+        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
 
-    int32_t result = Remote()->SendRequest(GET_WALLPAPER_MIN_WIDTH, data, reply, option);
+    int32_t result = Remote()->SendRequest(code, data, reply, option);
+    if (result != ERR_NONE) {
+        HILOG_ERROR(" WallpaperServiceProxy::GetWallpaperMinHeight fail, result = %{public}d ", result);
+        return static_cast<int32_t>(E_DEAL_FAILED);
+    }
+
+    int32_t wallpaperErrorCode = reply.ReadInt32();
+    if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
+        minHeight = reply.ReadInt32();
+    }
+    return wallpaperErrorCode;
+}
+
+int32_t WallpaperServiceProxy::GetWallpaperMinWidth(int32_t &minWidth)
+{
+    return GetWallpaperMinWidthInner(GET_WALLPAPER_MIN_WIDTH, minWidth);
+}
+
+int32_t WallpaperServiceProxy::GetWallpaperMinWidthV9(int32_t &minWidth)
+{
+    return GetWallpaperMinWidthInner(GET_WALLPAPER_MIN_WIDTH_V9, minWidth);
+}
+
+int32_t WallpaperServiceProxy::GetWallpaperMinWidthInner(uint32_t code, int32_t &minWidth)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        HILOG_ERROR(" Failed to write parcelable ");
+        return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
+    }
+
+    int32_t result = Remote()->SendRequest(code, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperServiceProxy::GetWallpaperMinWidth fail, result = %{public}d ", result);
-        return -1;
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
-
-    iWallpaperMinWidth = reply.ReadInt32();
-    HILOG_INFO(" End => iWallpaperMinWidth[%{public}d]", iWallpaperMinWidth);
-    return iWallpaperMinWidth;
+    int32_t wallpaperErrorCode = reply.ReadInt32();
+    if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
+        minWidth = reply.ReadInt32();
+    }
+    return wallpaperErrorCode;
 }
 
 bool WallpaperServiceProxy::IsChangePermitted()
@@ -294,6 +359,16 @@ bool WallpaperServiceProxy::IsOperationAllowed()
 
 int32_t WallpaperServiceProxy::ResetWallpaper(int wallpaperType)
 {
+    return ResetWallpaperInner(wallpaperType, RESET_WALLPAPER);
+}
+
+int32_t WallpaperServiceProxy::ResetWallpaperV9(int32_t wallpaperType)
+{
+    return ResetWallpaperInner(wallpaperType, RESET_WALLPAPER_V9);
+}
+
+int32_t WallpaperServiceProxy::ResetWallpaperInner(int32_t wallpaperType, uint32_t code)
+{
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -304,7 +379,7 @@ int32_t WallpaperServiceProxy::ResetWallpaper(int wallpaperType)
     }
 
     data.WriteInt32(wallpaperType);
-    int32_t result = Remote()->SendRequest(RESET_WALLPAPER, data, reply, option);
+    int32_t result = Remote()->SendRequest(code, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperServiceProxy::ResetWallpaper fail, result = %{public}d ", result);
         return static_cast<int32_t>(E_DEAL_FAILED);

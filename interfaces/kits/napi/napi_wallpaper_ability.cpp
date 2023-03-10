@@ -15,17 +15,17 @@
 
 #include "napi_wallpaper_ability.h"
 
+#include <map>
 #include <pthread.h>
+#include <string>
 #include <unistd.h>
 #include <uv.h>
-
-#include <map>
-#include <string>
 #include <vector>
 
 #include "hilog_wrapper.h"
 #include "js_error.h"
 #include "uv_queue.h"
+#include "wallpaper_common.h"
 #include "wallpaper_manager.h"
 #include "wallpaper_manager_common_info.h"
 
@@ -47,8 +47,9 @@ napi_value NAPI_GetColors(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetColors in");
     auto context = std::make_shared<GetContextInfo>();
-    NapiWallpaperAbility::GetColorsInner(context);
-    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1, false);
+    ApiInfo apiInfo{ false, false };
+    NapiWallpaperAbility::GetColorsInner(context, apiInfo);
+    AsyncCall asyncCall(env, info, std::dynamic_pointer_cast<AsyncCall::Context>(context), 1, apiInfo.needException);
     return asyncCall.Call(env);
 }
 
@@ -56,12 +57,14 @@ napi_value NAPI_GetColorsSync(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetColorsSync in");
     auto context = std::make_shared<GetContextInfo>();
-    NapiWallpaperAbility::GetColorsInner(context);
-    AsyncCall asyncCall(env, info, context, 1, true);
+
+    ApiInfo apiInfo{ true, true };
+    NapiWallpaperAbility::GetColorsInner(context, apiInfo);
+    AsyncCall asyncCall(env, info, context, 1, apiInfo.needException);
     return asyncCall.SyncCall(env);
 }
 
-void NapiWallpaperAbility::GetColorsInner(std::shared_ptr<GetContextInfo> context)
+void NapiWallpaperAbility::GetColorsInner(std::shared_ptr<GetContextInfo> context, const ApiInfo &apiInfo)
 {
     HILOG_DEBUG("GetColorsInner in");
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
@@ -78,13 +81,23 @@ void NapiWallpaperAbility::GetColorsInner(std::shared_ptr<GetContextInfo> contex
         *result = data;
         return napi_ok;
     };
-    auto exec = [context](AsyncCall::Context *ctx) {
-        HILOG_DEBUG("exec  GetColors");
-        context->colors = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(context->wallpaperType);
-        HILOG_DEBUG("exec  GetColors colors size : %{public}zu", context->colors.size());
-        if (!context->colors.empty()) {
+
+    auto exec = [context, apiInfo](AsyncCall::Context *ctx) {
+        HILOG_DEBUG("exec GetColors");
+        int32_t wallpaperErrorCode =
+            WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(context->wallpaperType, apiInfo,
+                context->colors);
+        if (wallpaperErrorCode == static_cast<int32_t>(E_OK) && !context->colors.empty()) {
             context->status = napi_ok;
+            return;
         }
+        if (apiInfo.needException) {
+            JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(wallpaperErrorCode);
+            if (jsErrorInfo.code != 0) {
+                context->SetErrInfo(jsErrorInfo.code, jsErrorInfo.message);
+            }
+        }
+        HILOG_DEBUG("exec GetColors colors size : %{public}zu", context->colors.size());
     };
     context->SetAction(std::move(input), std::move(output));
     context->SetExecution(std::move(exec));
@@ -96,15 +109,6 @@ napi_value NAPI_GetId(napi_env env, napi_callback_info info)
     NapiWallpaperAbility::GetIdInner(context);
     AsyncCall asyncCall(env, info, context, 1, false);
     return asyncCall.Call(env);
-}
-
-napi_value NAPI_GetIdSync(napi_env env, napi_callback_info info)
-{
-    HILOG_DEBUG("NAPI_GetIdSync in");
-    auto context = std::make_shared<GetContextInfo>();
-    NapiWallpaperAbility::GetIdInner(context);
-    AsyncCall asyncCall(env, info, context, 1, true);
-    return asyncCall.SyncCall(env);
 }
 
 void NapiWallpaperAbility::GetIdInner(std::shared_ptr<GetContextInfo> context)
@@ -138,21 +142,13 @@ napi_value NAPI_GetFile(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetFile in");
     auto context = std::make_shared<GetFileContextInfo>();
-    NapiWallpaperAbility::GetFileInner(context);
-    AsyncCall asyncCall(env, info, context, 1, false);
+    ApiInfo apiInfo{ true, true };
+    NapiWallpaperAbility::GetFileInner(context, apiInfo);
+    AsyncCall asyncCall(env, info, context, 1, apiInfo.needException);
     return asyncCall.Call(env);
 }
 
-napi_value NAPI_GetFileSync(napi_env env, napi_callback_info info)
-{
-    HILOG_DEBUG("NAPI_GetFileSync in");
-    auto context = std::make_shared<GetFileContextInfo>();
-    NapiWallpaperAbility::GetFileInner(context);
-    AsyncCall asyncCall(env, info, context, 1, true);
-    return asyncCall.SyncCall(env);
-}
-
-void NapiWallpaperAbility::GetFileInner(std::shared_ptr<GetFileContextInfo> context)
+void NapiWallpaperAbility::GetFileInner(std::shared_ptr<GetFileContextInfo> context, const ApiInfo &apiInfo)
 {
     HILOG_DEBUG("GetFileInner in");
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
@@ -171,22 +167,22 @@ void NapiWallpaperAbility::GetFileInner(std::shared_ptr<GetFileContextInfo> cont
         *result = data;
         return napi_ok;
     };
-    auto exec = [context](AsyncCall::Context *ctx) {
-        HILOG_DEBUG("exec  GetFile");
-        int32_t wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(
-            context->wallpaperType, context->wallpaperFd);
-        if (wallpaperErrorCode == static_cast<int32_t>(WallpaperMgrService::E_OK)) {
+    auto exec = [context, apiInfo](AsyncCall::Context *ctx) {
+        HILOG_DEBUG("exec GetFile");
+        int32_t wallpaperErrorCode =
+            WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(context->wallpaperType,
+                context->wallpaperFd);
+        if (wallpaperErrorCode == static_cast<int32_t>(E_OK) && context->wallpaperFd >= 0) {
             context->status = napi_ok;
-        } else {
+            return;
+        }
+        if (apiInfo.needException) {
             JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(wallpaperErrorCode);
             if (jsErrorInfo.code != 0) {
                 context->SetErrInfo(jsErrorInfo.code, jsErrorInfo.message);
             }
         }
-        HILOG_DEBUG("exec  GetFile fd: %{public}d", context->wallpaperFd);
-        if (context->wallpaperFd >= 0) {
-            context->status = napi_ok;
-        }
+        HILOG_DEBUG("exec GetFile fd: %{public}d", context->wallpaperFd);
     };
     context->SetAction(std::move(input), std::move(output));
     context->SetExecution(std::move(exec));
@@ -196,8 +192,9 @@ napi_value NAPI_GetMinHeight(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetMinHeight in");
     auto context = std::make_shared<GetMinContextInfo>();
-    NapiWallpaperAbility::GetMinHeightInner(context);
-    AsyncCall asyncCall(env, info, context, 0, false);
+    ApiInfo apiInfo{ false, false };
+    NapiWallpaperAbility::GetMinHeightInner(context, apiInfo);
+    AsyncCall asyncCall(env, info, context, 0, apiInfo.needException);
     return asyncCall.Call(env);
 }
 
@@ -205,12 +202,13 @@ napi_value NAPI_GetMinHeightSync(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetMinHeightSync in");
     auto context = std::make_shared<GetMinContextInfo>();
-    NapiWallpaperAbility::GetMinHeightInner(context);
-    AsyncCall asyncCall(env, info, context, 0, true);
+    ApiInfo apiInfo{ true, true };
+    NapiWallpaperAbility::GetMinHeightInner(context, apiInfo);
+    AsyncCall asyncCall(env, info, context, 0, apiInfo.needException);
     return asyncCall.SyncCall(env);
 }
 
-void NapiWallpaperAbility::GetMinHeightInner(std::shared_ptr<GetMinContextInfo> context)
+void NapiWallpaperAbility::GetMinHeightInner(std::shared_ptr<GetMinContextInfo> context, const ApiInfo &apiInfo)
 {
     HILOG_DEBUG("GetMinHeightInner in");
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
@@ -218,12 +216,19 @@ void NapiWallpaperAbility::GetMinHeightInner(std::shared_ptr<GetMinContextInfo> 
         HILOG_DEBUG("output  napi_create_int32[%{public}d]", status);
         return status;
     };
-    auto exec = [context](AsyncCall::Context *ctx) {
-        HILOG_DEBUG("exec  GetWallpaperMinHeight");
-        context->minHeight = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperMinHeight();
-        HILOG_DEBUG("exec  GetWallpaperMinHeight minHeight : %{public}d", context->minHeight);
-        if (context->minHeight >= 0) {
+    auto exec = [context, apiInfo](AsyncCall::Context *ctx) {
+        HILOG_DEBUG("exec GetWallpaperMinHeight");
+        int32_t wallpaperErrorCode =
+            WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperMinHeight(apiInfo, context->minHeight);
+        if (wallpaperErrorCode == static_cast<int32_t>(E_OK) && context->minHeight >= 0) {
             context->status = napi_ok;
+            return;
+        }
+        if (apiInfo.needException) {
+            JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(wallpaperErrorCode);
+            if (jsErrorInfo.code != 0) {
+                context->SetErrInfo(jsErrorInfo.code, jsErrorInfo.message);
+            }
         }
     };
     context->SetAction(nullptr, std::move(output));
@@ -234,8 +239,9 @@ napi_value NAPI_GetMinWidth(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetMinWidth in");
     auto context = std::make_shared<GetMinContextInfo>();
-    NapiWallpaperAbility::GetMinWidthInner(context);
-    AsyncCall asyncCall(env, info, context, 0, false);
+    ApiInfo apiInfo{ false, false };
+    NapiWallpaperAbility::GetMinWidthInner(context, apiInfo);
+    AsyncCall asyncCall(env, info, context, 0, apiInfo.needException);
     return asyncCall.Call(env);
 }
 
@@ -243,12 +249,13 @@ napi_value NAPI_GetMinWidthSync(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetMinWidthSync in");
     auto context = std::make_shared<GetMinContextInfo>();
-    NapiWallpaperAbility::GetMinWidthInner(context);
-    AsyncCall asyncCall(env, info, context, 0, true);
+    ApiInfo apiInfo{ true, true };
+    NapiWallpaperAbility::GetMinWidthInner(context, apiInfo);
+    AsyncCall asyncCall(env, info, context, 0, apiInfo.needException);
     return asyncCall.SyncCall(env);
 }
 
-void NapiWallpaperAbility::GetMinWidthInner(std::shared_ptr<GetMinContextInfo> context)
+void NapiWallpaperAbility::GetMinWidthInner(std::shared_ptr<GetMinContextInfo> context, const ApiInfo &apiInfo)
 {
     HILOG_DEBUG("GetMinWidthInner in");
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
@@ -256,12 +263,18 @@ void NapiWallpaperAbility::GetMinWidthInner(std::shared_ptr<GetMinContextInfo> c
         HILOG_DEBUG("output  napi_create_int32[%{public}d]", status);
         return status;
     };
-    auto exec = [context](AsyncCall::Context *ctx) {
-        HILOG_DEBUG("exec  GetWallpaperMinWidth");
-        context->minWidth = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperMinWidth();
-        HILOG_DEBUG("exec  GetWallpaperMinWidth minWidth : %{public}d", context->minWidth);
-        if (context->minWidth >= 0) {
+    auto exec = [context, apiInfo](AsyncCall::Context *ctx) {
+        HILOG_DEBUG("exec GetWallpaperMinWidth");
+        int32_t wallpaperErrorCode =
+            WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperMinWidth(apiInfo, context->minWidth);
+        if (wallpaperErrorCode == static_cast<int32_t>(E_OK) && context->minWidth >= 0) {
             context->status = napi_ok;
+        }
+        if (apiInfo.needException) {
+            JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(wallpaperErrorCode);
+            if (jsErrorInfo.code != 0) {
+                context->SetErrInfo(jsErrorInfo.code, jsErrorInfo.message);
+            }
         }
     };
     context->SetAction(nullptr, std::move(output));
@@ -275,15 +288,6 @@ napi_value NAPI_IsChangePermitted(napi_env env, napi_callback_info info)
     NapiWallpaperAbility::IsChangeAllowedInner(context);
     AsyncCall asyncCall(env, info, context, 0, false);
     return asyncCall.Call(env);
-}
-
-napi_value NAPI_IsChangeAllowed(napi_env env, napi_callback_info info)
-{
-    HILOG_DEBUG("NAPI_IsChangeAllowed in");
-    auto context = std::make_shared<PermissionContextInfo>();
-    NapiWallpaperAbility::IsChangeAllowedInner(context);
-    AsyncCall asyncCall(env, info, context, 0, true);
-    return asyncCall.SyncCall(env);
 }
 
 void NapiWallpaperAbility::IsChangeAllowedInner(std::shared_ptr<PermissionContextInfo> context)
@@ -313,15 +317,6 @@ napi_value NAPI_IsOperationAllowed(napi_env env, napi_callback_info info)
     return asyncCall.Call(env);
 }
 
-napi_value NAPI_IsUserChangeAllowed(napi_env env, napi_callback_info info)
-{
-    HILOG_DEBUG("NAPI_IsUserChangeAllowed in");
-    auto context = std::make_shared<PermissionContextInfo>();
-    NapiWallpaperAbility::IsUserChangeAllowedInner(context);
-    AsyncCall asyncCall(env, info, context, 0, true);
-    return asyncCall.SyncCall(env);
-}
-
 void NapiWallpaperAbility::IsUserChangeAllowedInner(std::shared_ptr<PermissionContextInfo> context)
 {
     HILOG_DEBUG("IsUserChangeAllowedInner in");
@@ -344,8 +339,9 @@ napi_value NAPI_Reset(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_Reset in");
     auto context = std::make_shared<SetContextInfo>();
-    NapiWallpaperAbility::RestoreInner(context);
-    AsyncCall asyncCall(env, info, context, 1, false);
+    ApiInfo apiInfo{ false, false };
+    NapiWallpaperAbility::RestoreInner(context, apiInfo);
+    AsyncCall asyncCall(env, info, context, 1, apiInfo.needException);
     return asyncCall.Call(env);
 }
 
@@ -353,12 +349,13 @@ napi_value NAPI_Restore(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_Rrestore in");
     auto context = std::make_shared<SetContextInfo>();
-    NapiWallpaperAbility::RestoreInner(context);
-    AsyncCall asyncCall(env, info, context, 1, true);
+    ApiInfo apiInfo{ true, true };
+    NapiWallpaperAbility::RestoreInner(context, apiInfo);
+    AsyncCall asyncCall(env, info, context, 1, apiInfo.needException);
     return asyncCall.Call(env);
 }
 
-void NapiWallpaperAbility::RestoreInner(std::shared_ptr<SetContextInfo> context)
+void NapiWallpaperAbility::RestoreInner(std::shared_ptr<SetContextInfo> context, const ApiInfo &apiInfo)
 {
     HILOG_DEBUG("RestoreInner in");
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
@@ -372,14 +369,15 @@ void NapiWallpaperAbility::RestoreInner(std::shared_ptr<SetContextInfo> context)
         HILOG_DEBUG("input  wallpaperType : %{public}d", context->wallpaperType);
         return napi_pending_exception;
     };
-    auto exec = [context](AsyncCall::Context *ctx) {
-        HILOG_DEBUG("exec  ResetWallpaper");
+    auto exec = [context, apiInfo](AsyncCall::Context *ctx) {
+        HILOG_DEBUG("exec ResetWallpaper");
         int32_t wallpaperErrorCode =
-            WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(context->wallpaperType);
-        HILOG_DEBUG("exec  ResetWallpaper[%{public}d]", wallpaperErrorCode);
-        if (wallpaperErrorCode == static_cast<int32_t>(WallpaperMgrService::E_OK)) {
+            WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(context->wallpaperType, apiInfo);
+        HILOG_DEBUG("exec ResetWallpaper[%{public}d]", wallpaperErrorCode);
+        if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
             context->status = napi_ok;
-        } else {
+        }
+        if (apiInfo.needException) {
             JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(wallpaperErrorCode);
             if (jsErrorInfo.code != 0) {
                 context->SetErrInfo(jsErrorInfo.code, jsErrorInfo.message);
@@ -394,18 +392,20 @@ void NapiWallpaperAbility::RestoreInner(std::shared_ptr<SetContextInfo> context)
 napi_value NAPI_SetWallpaper(napi_env env, napi_callback_info info)
 {
     auto context = std::make_shared<SetContextInfo>();
+    ApiInfo apiInfo{ false, false };
     NapiWallpaperAbility::SetImageInput(context);
-    NapiWallpaperAbility::SetImageExec(context);
-    AsyncCall asyncCall(env, info, context, TWO, false);
+    NapiWallpaperAbility::SetImageExec(context, apiInfo);
+    AsyncCall asyncCall(env, info, context, TWO, apiInfo.needException);
     return asyncCall.Call(env);
 }
 
 napi_value NAPI_SetImage(napi_env env, napi_callback_info info)
 {
     auto context = std::make_shared<SetContextInfo>();
+    ApiInfo apiInfo{ true, true };
     NapiWallpaperAbility::SetImageInput(context);
-    NapiWallpaperAbility::SetImageExec(context);
-    AsyncCall asyncCall(env, info, context, TWO, true);
+    NapiWallpaperAbility::SetImageExec(context, apiInfo);
+    AsyncCall asyncCall(env, info, context, TWO, apiInfo.needException);
     return asyncCall.Call(env);
 }
 
@@ -443,25 +443,27 @@ void NapiWallpaperAbility::SetImageInput(std::shared_ptr<SetContextInfo> context
     context->SetAction(std::move(input), nullptr);
 }
 
-void NapiWallpaperAbility::SetImageExec(std::shared_ptr<SetContextInfo> context)
+void NapiWallpaperAbility::SetImageExec(std::shared_ptr<SetContextInfo> context, const ApiInfo &apiInfo)
 {
     HILOG_DEBUG("SetImageExec in");
-    auto exec = [context](AsyncCall::Context *ctx) {
+    auto exec = [context, apiInfo](AsyncCall::Context *ctx) {
         int32_t wallpaperErrorCode = 0;
         if (context->url.length() == 0) {
-            HILOG_DEBUG("exec  setWallpaper by pixelMap");
+            HILOG_DEBUG("exec setWallpaper by pixelMap");
             if (!context->isPixelEmp) {
-                wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(
-                    context->pixelMap, context->wallpaperType);
+                wallpaperErrorCode =
+                    WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(context->pixelMap,
+                        context->wallpaperType, apiInfo);
             }
         } else {
-            HILOG_DEBUG("exec  setWallpaper by URL");
-            wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(
-                context->url, context->wallpaperType);
+            HILOG_DEBUG("exec setWallpaper by url");
+            wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(context->url,
+                context->wallpaperType, apiInfo);
         }
         if (wallpaperErrorCode == static_cast<int32_t>(WallpaperMgrService::E_OK)) {
             context->status = napi_ok;
-        } else {
+        }
+        if (apiInfo.needException) {
             JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(wallpaperErrorCode);
             if (jsErrorInfo.code != 0) {
                 context->SetErrInfo(jsErrorInfo.code, jsErrorInfo.message);
@@ -476,8 +478,9 @@ napi_value NAPI_GetPixelMap(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetPixelMap in");
     auto context = std::make_shared<GetContextInfo>();
-    NapiWallpaperAbility::GetImageInner(context);
-    AsyncCall asyncCall(env, info, context, 1, false);
+    ApiInfo apiInfo{ false, false };
+    NapiWallpaperAbility::GetImageInner(context, apiInfo);
+    AsyncCall asyncCall(env, info, context, 1, apiInfo.needException);
     return asyncCall.Call(env);
 }
 
@@ -485,12 +488,13 @@ napi_value NAPI_GetImage(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetImage in");
     auto context = std::make_shared<GetContextInfo>();
-    NapiWallpaperAbility::GetImageInner(context);
-    AsyncCall asyncCall(env, info, context, 1, true);
+    ApiInfo apiInfo{ true, true };
+    NapiWallpaperAbility::GetImageInner(context, apiInfo);
+    AsyncCall asyncCall(env, info, context, 1, apiInfo.needException);
     return asyncCall.Call(env);
 }
 
-void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context)
+void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context, const ApiInfo &apiInfo)
 {
     HILOG_DEBUG("GetImageInner in");
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
@@ -510,16 +514,19 @@ void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context
         *result = pixelVal;
         return napi_ok;
     };
-    auto exec = [context](AsyncCall::Context *ctx) {
-        HILOG_DEBUG("exec  GetImageInner");
+    auto exec = [context, apiInfo](AsyncCall::Context *ctx) {
+        HILOG_DEBUG("exec GetImageInner");
         std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
         int32_t wallpaperErrorCode =
-            WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(context->wallpaperType, pixelMap);
-        HILOG_DEBUG("exec  wallpaperErrorCode[%{public}d]", wallpaperErrorCode);
-        if (wallpaperErrorCode == static_cast<int32_t>(WallpaperMgrService::E_OK) && pixelMap != nullptr) {
+            WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(context->wallpaperType, apiInfo,
+                pixelMap);
+        HILOG_DEBUG("exec wallpaperErrorCode[%{public}d]", wallpaperErrorCode);
+        if (wallpaperErrorCode == static_cast<int32_t>(E_OK) && pixelMap != nullptr) {
             context->status = napi_ok;
             context->pixelMap = std::move(pixelMap);
-        } else {
+            return;
+        }
+        if (apiInfo.needException) {
             JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(wallpaperErrorCode);
             if (jsErrorInfo.code != 0) {
                 context->SetErrInfo(jsErrorInfo.code, jsErrorInfo.message);
@@ -538,11 +545,10 @@ napi_value NAPI_On(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
-    if (!NapiWallpaperAbility::IsValidArgCount(argc, TWO)
-        || !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string)
-        || !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_function)) {
-        HILOG_DEBUG("input  argc : %{public}zu", argc);
-        JsError::ThrowError(env, ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);
+    if (!NapiWallpaperAbility::IsValidArgCount(argc, TWO) ||
+        !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string) ||
+        !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_function)) {
+        HILOG_DEBUG("input argc : %{public}zu", argc);
         return nullptr;
     }
     std::string type = WallpaperJSUtil::Convert2String(env, argv[0]);
@@ -573,7 +579,6 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info)
     if (!NapiWallpaperAbility::IsValidArgCount(argc, ONE)
         || !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string)) {
         HILOG_DEBUG("input  argc : %{public}zu", argc);
-        JsError::ThrowError(env, ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);
         return nullptr;
     }
     std::string type = WallpaperJSUtil::Convert2String(env, argv[0]);
@@ -582,7 +587,6 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info)
     std::shared_ptr<WallpaperMgrService::WallpaperColorChangeListener> listener = nullptr;
     if (argc == TWO) {
         if (!NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_function)) {
-            JsError::ThrowError(env, ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);
             return nullptr;
         }
         listener = std::make_shared<NapiWallpaperAbility>(env, argv[1]);
