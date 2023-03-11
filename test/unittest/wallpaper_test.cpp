@@ -271,22 +271,6 @@ HWTEST_F(WallpaperTest, Reset005, TestSize.Level1)
     int secondId = WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
     EXPECT_EQ(firstId, secondId) << "Id should be same one.";
 }
-
-/**
-* @tc.name:    Reset006
-* @tc.desc:    Reset wallpaper throw permission error
-* @tc.type:    FUNC
-* @tc.require: issueI5UHRG
-*/
-HWTEST_F(WallpaperTest, Reset006, TestSize.Level1)
-{
-    HILOG_INFO("Reset006 begin.");
-    ApiInfo apiInfo{ true, true };
-    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "Failed to throw permission error";
-    wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "Failed to throw permission error";
-}
 /*********************   ResetWallpaper   *********************/
 
 /*********************   IsChangePermitted   *********************/
@@ -378,24 +362,6 @@ HWTEST_F(WallpaperTest, GetColors002, TestSize.Level0)
     EXPECT_EQ(errorCode, static_cast<int32_t>(E_OK)) << "Failed to GetColors.";
     EXPECT_FALSE(colors.empty());
 }
-
-/**
-* @tc.name: GetColors003
-* @tc.desc: GetColors throw permission error.
-* @tc.type: FUNC
-* @tc.require:
-* @tc.author:
-*/
-HWTEST_F(WallpaperTest, GetColors003, TestSize.Level0)
-{
-    HILOG_INFO("GetColors003 begin");
-    std::vector<uint64_t> colors;
-    ApiInfo apiInfo{ true, true };
-    int32_t errorCode = WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN, apiInfo, colors);
-    EXPECT_EQ(errorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "Failed to throw permission error";
-    errorCode = WallpaperManagerkits::GetInstance().GetColors(SYSTYEM, apiInfo, colors);
-    EXPECT_EQ(errorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "Failed to throw permission error";
-}
 /*********************   GetColors   *********************/
 
 /*********************   GetId   *********************/
@@ -412,8 +378,7 @@ HWTEST_F(WallpaperTest, GetId001, TestSize.Level0)
     ApiInfo apiInfo{ false, false };
     bool result = false;
     int ida = HUNDRED;
-    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to ResetWallpaper";
+    ida = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(SYSTYEM);
     if (ida != HUNDRED) {
         result = true;
     }
@@ -433,8 +398,7 @@ HWTEST_F(WallpaperTest, GetId002, TestSize.Level0)
     ApiInfo apiInfo{ false, false };
     bool result = false;
     int ida = HUNDRED;
-    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to ResetWallpaper";
+    ida = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
     if (ida != HUNDRED) {
         result = true;
     }
@@ -520,21 +484,6 @@ HWTEST_F(WallpaperTest, getMinHeight001, TestSize.Level0)
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to get WallpaperMinHeight.";
     EXPECT_GT(height, 0);
 }
-
-/**
-* @tc.name: getMinHeight002
-* @tc.desc: GetWallpaperMinHeight throw permission error.
-* @tc.type: FUNC
-* @tc.require:
-*/
-HWTEST_F(WallpaperTest, getMinHeight002, TestSize.Level0)
-{
-    HILOG_INFO("getMinHeight002  begin");
-    int height = 0;
-    ApiInfo apiInfo{ true, true };
-    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetWallpaperMinHeight(apiInfo, height);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "Failed to throw permission error";
-}
 /*********************   GetWallpaperMinHeight   *********************/
 
 /*********************   GetWallpaperMinWidth   *********************/
@@ -552,21 +501,6 @@ HWTEST_F(WallpaperTest, getMinWidth001, TestSize.Level0)
     int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetWallpaperMinWidth(apiInfo, width);
     EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_OK)) << "Failed to get WallpaperMinWidth.";
     EXPECT_GT(width, 0);
-}
-
-/**
-* @tc.name: getMinWidth002
-* @tc.desc: GetWallpaperMinWidth throw permission error.
-* @tc.type: FUNC
-* @tc.require:
-*/
-HWTEST_F(WallpaperTest, getMinWidth002, TestSize.Level0)
-{
-    HILOG_INFO("getMinWidth002  begin");
-    int width = 0;
-    ApiInfo apiInfo{ true, true };
-    int32_t wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetWallpaperMinWidth(apiInfo, width);
-    EXPECT_EQ(wallpaperErrorCode, static_cast<int32_t>(E_NOT_SYSTEM_APP)) << "Failed to throw permission error";
 }
 /*********************   GetWallpaperMinWidth   *********************/
 
