@@ -375,7 +375,6 @@ HWTEST_F(WallpaperTest, GetColors002, TestSize.Level0)
 HWTEST_F(WallpaperTest, GetId001, TestSize.Level0)
 {
     HILOG_INFO("GetId001 begin");
-    ApiInfo apiInfo{ false, false };
     bool result = false;
     int ida = HUNDRED;
     ida = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(SYSTYEM);
@@ -395,7 +394,6 @@ HWTEST_F(WallpaperTest, GetId001, TestSize.Level0)
 HWTEST_F(WallpaperTest, GetId002, TestSize.Level0)
 {
     HILOG_INFO("GetId002 begin");
-    ApiInfo apiInfo{ false, false };
     bool result = false;
     int ida = HUNDRED;
     ida = OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
