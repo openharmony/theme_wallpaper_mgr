@@ -577,7 +577,6 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info)
     if (!NapiWallpaperAbility::IsValidArgCount(argc, ONE) ||
         !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string)) {
         HILOG_DEBUG("input argc : %{public}zu", argc);
-        JsError::ThrowError(env, ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);
         return nullptr;
     }
     std::string type = WallpaperJSUtil::Convert2String(env, argv[0]);
