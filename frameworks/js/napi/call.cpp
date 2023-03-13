@@ -14,13 +14,13 @@
  */
 #define LOG_TAG "Call"
 #include "call.h"
+
 #include "hilog_wrapper.h"
 #include "js_error.h"
 #include "wallpaper_js_util.h"
 
 namespace OHOS::WallpaperNAPI {
-Call::Call(napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos,
-    bool isNewInterfaces)
+Call::Call(napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos, bool needException)
     : env_(env)
 {
     context_ = new CallContext();
@@ -41,7 +41,7 @@ Call::Call(napi_env env, napi_callback_info info, std::shared_ptr<Context> conte
         }
     }
     auto status = (*context)(env, argc, argv, self);
-    if (status != napi_ok && context->errCode_ != 0 && isNewInterfaces) {
+    if (status != napi_ok && context->errCode_ != 0 && needException) {
         JsError::ThrowError(env, context->errCode_, context->errMsg_);
         context->output_ = nullptr;
         context->exec_ = nullptr;
