@@ -49,7 +49,7 @@ public:
     * WALLPAPER_LOCKSCREEN
     * @return  ErrorCode
     */
-    virtual ErrorCode SetWallpaper(std::string uri, int32_t wallpaperType, const ApiInfo &apiInfo) = 0;
+    virtual ErrorCode SetWallpaper(std::string uri, int32_t wallpaperType) = 0;
 
     /**
     * Wallpaper set.
@@ -57,8 +57,7 @@ public:
     * WALLPAPER_LOCKSCREEN
     * @return  ErrorCode
     */
-    virtual ErrorCode SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType,
-        const ApiInfo &apiInfo) = 0;
+    virtual ErrorCode SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType) = 0;
 
     /**
         *Obtains the default pixel map of a wallpaper of the specified type.
@@ -68,15 +67,14 @@ public:
         * @permission ohos.permission.GET_WALLPAPER
         * @systemapi Hide this for inner system use.
     */
-    virtual ErrorCode GetPixelMap(int32_t wallpaperType, const ApiInfo &apiInfo,
-        std::shared_ptr<OHOS::Media::PixelMap> &pixelMap) = 0;
+    virtual ErrorCode GetPixelMap(int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap) = 0;
 
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of array callback function
      */
-    virtual ErrorCode GetColors(int32_t wallpaperType, const ApiInfo &apiInfo, std::vector<uint64_t> &colors) = 0;
+    virtual std::vector<uint64_t> GetColors(int32_t wallpaperType) = 0;
 
     /**
      * Obtains the ID of the wallpaper of the specified type.
@@ -91,13 +89,13 @@ public:
      * Obtains the minimum height of the wallpaper.
      * @return number type of callback function
      */
-    virtual ErrorCode GetWallpaperMinHeight(const ApiInfo &apiInfo, int32_t &minHeight) = 0;
+    virtual int32_t GetWallpaperMinHeight() = 0;
 
     /**
      * Obtains the minimum width of the wallpaper.
      * @return number type of callback function
      */
-    virtual ErrorCode GetWallpaperMinWidth(const ApiInfo &apiInfo, int32_t &minWidth) = 0;
+    virtual int32_t GetWallpaperMinWidth() = 0;
 
     /**
      * Checks whether to allow the application to change the wallpaper for the current user.
@@ -116,7 +114,7 @@ public:
      * @param wallpaperType  Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @permission ohos.permission.SET_WALLPAPER
      */
-    virtual ErrorCode ResetWallpaper(std::int32_t wallpaperType, const ApiInfo &apiInfo) = 0;
+    virtual ErrorCode ResetWallpaper(std::int32_t wallpaperType) = 0;
 
     /**
      * Registers a listener for wallpaper color changes to receive notifications about the changes.

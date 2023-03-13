@@ -34,11 +34,11 @@ public:
     DISALLOW_COPY_AND_MOVE(WallpaperServiceProxy);
     ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo) override;
-    ErrorCode GetColors(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
+    std::vector<uint64_t> GetColors(int32_t wallpaperType) override;
     ErrorCode GetFile(int32_t wallpaperType, int32_t &wallpaperFd) override;
     int32_t GetWallpaperId(int32_t wallpaperType) override;
-    ErrorCode GetWallpaperMinHeight(int32_t &minHeight) override;
-    ErrorCode GetWallpaperMinWidth(int32_t &minWidth) override;
+    int32_t GetWallpaperMinHeight() override;
+    int32_t GetWallpaperMinWidth() override;
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
     ErrorCode ResetWallpaper(int wallpaperType) override;
@@ -48,20 +48,7 @@ public:
     std::string GetUri();
     ErrorCode ConvertIntToErrorCode(int32_t errorCode);
 
-    ErrorCode SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length) override;
-    ErrorCode GetPixelMapV9(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo) override;
-    ErrorCode GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
-    ErrorCode GetWallpaperMinHeightV9(int32_t &minHeight) override;
-    ErrorCode GetWallpaperMinWidthV9(int32_t &minWidth) override;
-    ErrorCode ResetWallpaperV9(int wallpaperType) override;
-
 private:
-    ErrorCode SetWallpaperInner(int32_t fd, int32_t wallpaperType, int32_t length, uint32_t code);
-    ErrorCode GetPixelMapInner(int32_t wallpaperType, uint32_t code, IWallpaperService::FdInfo &fdInfo);
-    ErrorCode GetColorsInner(int32_t wallpaperType, uint32_t code, std::vector<uint64_t> &colors);
-    ErrorCode GetWallpaperMinHeightInner(uint32_t code, int32_t &minHeight);
-    ErrorCode GetWallpaperMinWidthInner(uint32_t code, int32_t &minWidth);
-    ErrorCode ResetWallpaperInner(int wallpaperType, uint32_t code);
     bool StartSocket(std::string uri, std::string name);
     static inline BrokerDelegator<WallpaperServiceProxy> delegator_;
     sptr<OHOS::Media::PixelMap> pixelMapData_;

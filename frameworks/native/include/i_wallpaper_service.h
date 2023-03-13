@@ -48,13 +48,7 @@ public:
         OFF,
         IS_CHANGE_PERMITTED,
         IS_OPERATION_ALLOWED,
-        REGISTER_CALLBACK,
-        SET_WALLPAPER_V9,
-        GET_PIXELMAP_V9,
-        GET_COLORS_V9,
-        GET_WALLPAPER_MIN_HEIGHT_V9,
-        GET_WALLPAPER_MIN_WIDTH_V9,
-        RESET_WALLPAPER_V9,
+        REGISTER_CALLBACK
     };
     struct getPixelMap {
         std::string result;
@@ -79,7 +73,7 @@ public:
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of array callback function
      */
-    virtual ErrorCode GetColors(int wallpaperType, std::vector<uint64_t> &colors) = 0;
+    virtual std::vector<uint64_t> GetColors(int wallpaperType) = 0;
 
     virtual ErrorCode GetFile(int32_t wallpaperType, int32_t &wallpaperFd) = 0;
 
@@ -94,13 +88,13 @@ public:
      * Obtains the minimum height of the wallpaper.
      * @return number type of callback function
      */
-    virtual ErrorCode GetWallpaperMinHeight(int32_t &minHeight) = 0;
+    virtual int GetWallpaperMinHeight() = 0;
 
     /**
      * Obtains the minimum width of the wallpaper.
      * @return number type of callback function
      */
-    virtual ErrorCode GetWallpaperMinWidth(int32_t &minWidth) = 0;
+    virtual int GetWallpaperMinWidth() = 0;
 
     /**
      * Checks whether to allow the application to change the wallpaper for the current user.
@@ -138,13 +132,6 @@ public:
     virtual bool Off(sptr<IWallpaperColorChangeListener> listener) = 0;
 
     virtual bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) = 0;
-
-    virtual ErrorCode SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length) = 0;
-    virtual ErrorCode GetPixelMapV9(int32_t wallpaperType, FdInfo &fdInfo) = 0;
-    virtual ErrorCode GetColorsV9(int wallpaperType, std::vector<uint64_t> &colors) = 0;
-    virtual ErrorCode GetWallpaperMinHeightV9(int32_t &minHeight) = 0;
-    virtual ErrorCode GetWallpaperMinWidthV9(int32_t &minWidth) = 0;
-    virtual ErrorCode ResetWallpaperV9(int32_t wallpaperType) = 0;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

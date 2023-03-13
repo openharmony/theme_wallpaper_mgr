@@ -36,11 +36,6 @@ static const int TEST_INVALID_USER_ID = -1;
 static const int TEST_USER_ID = 0;
 static const int TEST_SUB_USER_ID = 10;
 
-struct ApiInfo {
-    bool needException;
-    bool isSystemApi;
-};
-
 enum WallpaperModule {
     WALLPAPER_MODULE_SERVICE_ID = 0x07,
 };

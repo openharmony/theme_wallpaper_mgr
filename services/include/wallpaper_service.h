@@ -67,11 +67,11 @@ public:
 
     ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode GetPixelMap(int32_t wallpaperType, FdInfo &fdInfo) override;
-    ErrorCode GetColors(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
+    std::vector<uint64_t> GetColors(int32_t wallpaperType) override;
     ErrorCode GetFile(int32_t wallpaperType, int32_t &wallpaperFd) override;
     int32_t GetWallpaperId(int32_t wallpaperType) override;
-    ErrorCode GetWallpaperMinHeight(int32_t &minHeight) override;
-    ErrorCode GetWallpaperMinWidth(int32_t &minWidth) override;
+    int32_t GetWallpaperMinHeight() override;
+    int32_t GetWallpaperMinWidth() override;
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
     ErrorCode ResetWallpaper(int32_t wallpaperType) override;
@@ -79,13 +79,6 @@ public:
     bool Off(sptr<IWallpaperColorChangeListener> listener) override;
     bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) override;
     int32_t Dump(int32_t fd, const std::vector<std::u16string> &args) override;
-
-    ErrorCode SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length) override;
-    ErrorCode GetPixelMapV9(int32_t wallpaperType, FdInfo &fdInfo) override;
-    ErrorCode GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
-    ErrorCode GetWallpaperMinHeightV9(int32_t &minHeight) override;
-    ErrorCode GetWallpaperMinWidthV9(int32_t &minWidth) override;
-    ErrorCode ResetWallpaperV9(int32_t wallpaperType) override;
 
 public:
     static void OnBootPhase();
@@ -121,8 +114,6 @@ private:
     bool WPCheckCallingPermission(const std::string &permissionName);
     bool WPGetBundleNameByUid(std::int32_t uid, std::string &bname);
     bool MakeCropWallpaper(int32_t userId, WallpaperType wallpaperType);
-    void SetPixelMapCropParameters(std::unique_ptr<Media::PixelMap> wallpaperPixelMap,
-        Media::DecodeOptions &decodeOpts);
     ErrorCode SetWallpaperBackupData(int32_t userId, const std::string &uriOrPixelMap, WallpaperType wallpaperType);
     int32_t ConnectExtensionAbility(const OHOS::AAFwk::Want &want);
     bool IsSystemApp();
