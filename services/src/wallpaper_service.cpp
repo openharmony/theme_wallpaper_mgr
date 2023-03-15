@@ -129,13 +129,11 @@ void WallpaperService::OnStart()
     InitServiceHandler();
     AddSystemAbilityListener(COMMON_EVENT_SERVICE_ID);
     std::thread(&WallpaperService::StartWallpaperExtension, this).detach();
-    int32_t uid = static_cast<int32_t>(IPCSkeleton::GetCallingUid());
     auto cmd = std::make_shared<Command>(std::vector<std::string>({ "-all" }), "Show all",
-        [this, uid](const std::vector<std::string> &input, std::string &output) -> bool {
+        [this](const std::vector<std::string> &input, std::string &output) -> bool {
             int32_t height = GetWallpaperMinHeight();
             int32_t width = GetWallpaperMinWidth();
             std::string bundleName(OHOS_WALLPAPER_BUNDLE_NAME);
-            WPGetBundleNameByUid(uid, bundleName);
             output.append("height\t\t\t: " + std::to_string(height) + "\n")
                 .append("width\t\t\t: " + std::to_string(width) + "\n")
                 .append("WallpaperExtension\t: ExtensionInfo{" + bundleName + "}\n");
@@ -1005,8 +1003,9 @@ bool WallpaperService::WPGetBundleNameByUid(std::int32_t uid, std::string &bname
         return false;
     }
 
-    if (!bundleMgrProxy->GetBundleNameForUid(uid, bname)) {
-        HILOG_ERROR("Get bundle name failed");
+    ErrCode errCode = bundleMgrProxy->GetNameForUid(uid, bname);
+    if (errCode != ERR_OK) {
+        HILOG_ERROR("Get bundle name failed errcode:%{public}d", errCode);
         return false;
     }
     HILOG_INFO("Get bundle name is %{public}s", bname.c_str());
