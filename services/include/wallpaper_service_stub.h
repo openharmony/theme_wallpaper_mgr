@@ -45,6 +45,21 @@ private:
     int32_t OnWallpaperOn(MessageParcel &data, MessageParcel &reply);
     int32_t OnWallpaperOff(MessageParcel &data, MessageParcel &reply);
     int32_t OnRegisterWallpaperCallback(MessageParcel &data, MessageParcel &reply);
+
+    int32_t OnSetWallpaperV9(MessageParcel &data, MessageParcel &reply);
+    int32_t OnGetPixelMapV9(MessageParcel &data, MessageParcel &reply);
+    int32_t OnGetColorsV9(MessageParcel &data, MessageParcel &reply);
+    int32_t OnGetWallpaperMinHeightV9(MessageParcel &data, MessageParcel &reply);
+    int32_t OnGetWallpaperMinWidthV9(MessageParcel &data, MessageParcel &reply);
+    int32_t OnResetWallpaperV9(MessageParcel &data, MessageParcel &reply);
+
+    int32_t OnSetWallpaperInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
+    int32_t OnGetPixelMapInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
+    int32_t OnGetColorsInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
+    int32_t OnGetWallpaperMinHeightInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
+    int32_t OnGetWallpaperMinWidthInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
+    int32_t OnResetWallpaperInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
+
     using WallpaperServiceFunc = int32_t (WallpaperServiceStub::*)(MessageParcel &data, MessageParcel &reply);
     std::map<uint32_t, WallpaperServiceFunc> memberFuncMap_;
 };
