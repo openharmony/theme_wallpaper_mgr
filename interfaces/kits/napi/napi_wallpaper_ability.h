@@ -16,18 +16,19 @@
 #ifndef NAPI_WALLPAPER_ABILITY_H
 #define NAPI_WALLPAPER_ABILITY_H
 
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
+
+#include "async_call.h"
+#include "napi/native_api.h"
 #include "napi/native_common.h"
 #include "napi/native_node_api.h"
-#include "napi/native_api.h"
 #include "pixel_map.h"
 #include "pixel_map_napi.h"
-#include "wallpaper_manager_common_info.h"
 #include "wallpaper_color_change_listener.h"
-#include "async_call.h"
 #include "wallpaper_js_util.h"
+#include "wallpaper_manager_common_info.h"
 
 #define BUFFER_LENGTH_MAX (128)
 #define DEFAULT_STACK_ID (1)
@@ -56,6 +57,7 @@ struct GetContextInfo : public AsyncCall::Context {
     napi_status operator()(napi_env env, napi_value *result) override
     {
         if (status != napi_ok) {
+            output_ = nullptr;
             return status;
         }
         return Context::operator()(env, result);
@@ -77,6 +79,7 @@ struct GetMinContextInfo : public AsyncCall::Context {
     napi_status operator()(napi_env env, napi_value *result) override
     {
         if (status != napi_ok) {
+            output_ = nullptr;
             return status;
         }
         return Context::operator()(env, result);
@@ -98,6 +101,7 @@ struct PermissionContextInfo : public AsyncCall::Context {
     napi_status operator()(napi_env env, napi_value *result) override
     {
         if (status != napi_ok) {
+            output_ = nullptr;
             return status;
         }
         return Context::operator()(env, result);
@@ -121,6 +125,7 @@ struct SetContextInfo : public AsyncCall::Context {
     napi_status operator()(napi_env env, napi_value *result) override
     {
         if (status != napi_ok) {
+            output_ = nullptr;
             return status;
         }
         return Context::operator()(env, result);
@@ -140,6 +145,7 @@ struct GetFileContextInfo : public AsyncCall::Context {
     napi_status operator()(napi_env env, napi_value *result) override
     {
         if (status != napi_ok) {
+            output_ = nullptr;
             return status;
         }
         return Context::operator()(env, result);
@@ -147,20 +153,23 @@ struct GetFileContextInfo : public AsyncCall::Context {
 };
 extern std::shared_ptr<WallpaperMgrService::WallpaperColorChangeListener> colorChangeListener_;
 
-class NapiWallpaperAbility : public WallpaperMgrService::WallpaperColorChangeListener {
+class NapiWallpaperAbility : public WallpaperMgrService::WallpaperColorChangeListener,
+                             public std::enable_shared_from_this<NapiWallpaperAbility> {
 public:
     NapiWallpaperAbility(napi_env env, napi_value callback);
     virtual ~NapiWallpaperAbility();
     void onColorsChange(std::vector<RgbaColor> color, int wallpaperType) override;
+
 private:
     struct EventDataWorker {
-        const NapiWallpaperAbility *listener = nullptr;
+        const std::shared_ptr<NapiWallpaperAbility> listener = nullptr;
         const std::vector<RgbaColor> color;
         const int wallpaperType;
-        EventDataWorker(const NapiWallpaperAbility * const & listenerIn,
-                        const std::vector<RgbaColor> &colorIn,
-                        const int wallpaperTypeIn)
-            : listener(listenerIn), color(colorIn), wallpaperType(wallpaperTypeIn) {}
+        EventDataWorker(const std::shared_ptr<NapiWallpaperAbility> &listenerIn, const std::vector<RgbaColor> &colorIn,
+            const int32_t wallpaperTypeIn)
+            : listener(listenerIn), color(colorIn), wallpaperType(wallpaperTypeIn)
+        {
+        }
     };
     napi_ref callback_ = nullptr;
     napi_env env_;
