@@ -21,6 +21,16 @@ class WallpaperExtensionContext extends ExtensionContext {
         this.extensionAbilityInfo = obj.extensionAbilityInfo
     }
 
+    createWallpaperWin(context) {
+        console.log("createWallpaperWin");
+        return this.__context_impl__.createWallpaperWin(context);
+    }
+
+    setWallpaperUIContent(uri) {
+        console.log("setWallpaperUIContent");
+        return this.__context_impl__.setWallpaperUIContent(uri);
+    }
+
     startAbility(want, options, callback) {
         console.log("startAbility");
         return this.__context_impl__.startAbility(want, options, callback);

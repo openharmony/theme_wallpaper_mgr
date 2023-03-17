@@ -16,6 +16,8 @@
 #include "js_wallpaper_extension_context.h"
 
 #include <cstdint>
+#include <memory>
+#include <iremote_object.h>
 
 #include "hilog_wrapper.h"
 #include "js_data_struct_converter.h"
@@ -28,6 +30,11 @@
 #include "napi_common_want.h"
 #include "napi_remote_object.h"
 #include "start_options.h"
+#include "window.h"
+#include "wm_common.h"
+#include "window_option.h"
+#include "ability_context.h"
+#include "napi/native_node_api.h"
 
 namespace OHOS {
 namespace AbilityRuntime {
@@ -62,6 +69,18 @@ public:
         return (me != nullptr) ? me->OnStartAbility(*engine, *info) : nullptr;
     }
 
+    static NativeValue* CreateWallpaperWin(NativeEngine *engine, NativeCallbackInfo *info)
+    {
+        JsWallpaperExtensionContext* me = CheckParamsAndGetThis<JsWallpaperExtensionContext>(engine, info);
+        return (me != nullptr) ? me->OnCreateWallpaperWin(*engine, *info) : nullptr;
+    }
+
+    static NativeValue* SetWallpaperUIContent(NativeEngine *engine, NativeCallbackInfo *info)
+    {
+        JsWallpaperExtensionContext* me = CheckParamsAndGetThis<JsWallpaperExtensionContext>(engine, info);
+        return (me != nullptr) ? me->OnSetWallpaperUIContent(*engine, *info) : nullptr;
+    }
+
     static NativeValue *StartAbilityWithAccount(NativeEngine *engine, NativeCallbackInfo *info)
     {
         JsWallpaperExtensionContext *me = CheckParamsAndGetThis<JsWallpaperExtensionContext>(engine, info);
@@ -94,6 +113,74 @@ public:
 
 private:
     std::weak_ptr<WallpaperExtensionContext> context_;
+    static sptr<Rosen::Window> window_;
+    std::string contextUrl_;
+    bool windowsCreated_ = false;
+
+    bool GetAPI7Ability(NativeEngine& engine, AppExecFwk::Ability* &ability)
+    {
+        napi_value global;
+        auto env = reinterpret_cast<napi_env>(&engine);
+        if (napi_get_global(env, &global) != napi_ok) {
+            return false;
+        }
+        napi_value jsAbility;
+        napi_status status = napi_get_named_property(env, global, "ability", &jsAbility);
+        if (status != napi_ok || jsAbility == nullptr) {
+            return false;
+        }
+
+        if (napi_get_value_external(env, jsAbility, reinterpret_cast<void **>(&ability)) != napi_ok) {
+            return false;
+        }
+        if (ability == nullptr) {
+            return false;
+        }
+        return true;
+    }
+
+    NativeValue* OnCreateWallpaperWin(NativeEngine& engine, NativeCallbackInfo& info)
+    {
+        void* contextPtr = nullptr;
+        std::string windowName = "wallpaper";
+        Rosen::WindowType winType = Rosen::WindowType::WINDOW_TYPE_WALLPAPER;
+
+        if (info.argv[0] != nullptr) {
+            auto objContext = AbilityRuntime::ConvertNativeValueTo<NativeObject>(info.argv[0]);
+            contextPtr = objContext->GetNativePointer();
+        }
+        auto context = static_cast<std::weak_ptr<AbilityRuntime::Context>*>(contextPtr);
+        sptr<Rosen::WindowOption> windowOption = new (std::nothrow) Rosen::WindowOption();
+        windowOption->SetWindowType(winType);
+        window_ = Rosen::Window::Create(windowName, windowOption, context->lock());
+        if (!windowsCreated_ && contextUrl_.length() > 0) {
+            AppExecFwk::Ability* ability = nullptr;
+            GetAPI7Ability(engine, ability);
+            window_->SetUIContent(contextUrl_, &engine, nullptr, false, ability);
+            window_->Show();
+            window_->SetFullScreen(true);
+            windowsCreated_ = true;
+        }
+        return nullptr;
+    }
+
+    NativeValue* OnSetWallpaperUIContent(NativeEngine& engine, NativeCallbackInfo& info)
+    {
+        std::string contextUrl;
+        if (!ConvertFromJsValue(engine, info.argv[0], contextUrl)) {
+            return nullptr;
+        }
+        if (windowsCreated_) {
+            AppExecFwk::Ability* ability = nullptr;
+            GetAPI7Ability(engine, ability);
+            window_->SetUIContent(contextUrl, &engine, nullptr, false, ability);
+            window_->Show();
+            window_->SetFullScreen(true);
+        } else {
+            contextUrl_ = contextUrl;
+        }
+        return nullptr;
+    }
 
     NativeValue *OnStartAbility(NativeEngine &engine, NativeCallbackInfo &info)
     {
@@ -407,6 +494,7 @@ private:
         return result;
     }
 };
+sptr<Rosen::Window> JsWallpaperExtensionContext::window_ = nullptr;
 } // namespace
 
 NativeValue *CreateJsMetadata(NativeEngine &engine, const AppExecFwk::Metadata &Info)
@@ -475,7 +563,11 @@ NativeValue *CreateJsWallpaperExtensionContext(NativeEngine &engine, std::shared
     // make handler
     handler_ = std::make_shared<AppExecFwk::EventHandler>(AppExecFwk::EventRunner::GetMainEventRunner());
 
-    const char *moduleName = "JsWallpaperExtensionContext";
+    const char* moduleName = "JsWallpaperExtensionContext";
+    BindNativeFunction(
+        engine, *object, "createWallpaperWin", moduleName, JsWallpaperExtensionContext::CreateWallpaperWin);
+    BindNativeFunction(
+        engine, *object, "setWallpaperUIContent", moduleName, JsWallpaperExtensionContext::SetWallpaperUIContent);
     BindNativeFunction(engine, *object, "startAbility", moduleName, JsWallpaperExtensionContext::StartAbility);
     BindNativeFunction(engine, *object, "terminateSelf", moduleName, JsWallpaperExtensionContext::TerminateAbility);
     BindNativeFunction(engine, *object, "connectAbility", moduleName, JsWallpaperExtensionContext::ConnectAbility);

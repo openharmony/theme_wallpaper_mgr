@@ -13,30 +13,11 @@
  * limitations under the License.
  */
 
-var WindowManager = requireNapi("window")
 var WindowName = "wallpaper"
-var windowType = 2000
-var windowsCreated = false;
 
 class WallpaperExtension {
     createWallpaperWin() {
-        console.log(`${WindowName} createWallpaperWin`);
-
-        WindowManager.create(this.context, WindowName, windowType).then((win) => {
-            console.log(`${WindowName} wallpaperWindow`);
-            this.wallpaperWindow = win;
-            console.log(this.wallpaperWindow);
-            this.wallpaperWindow.moveTo(0, 0).then(() => {
-                this.wallpaperWindow.resetSize(480, 960).then(() => {
-                    console.log(`${WindowName} resetSize ${this.wallpaperURI}`);
-                    this.loadUiContent(this.wallpaperURI);
-                    console.log(`${WindowName} window created`);
-                    windowsCreated = true;
-                })
-            })
-        }, (error) => {
-            console.log(`${WindowName} window createFailed, error.code = ${error.code}`);
-        })
+        this.context.createWallpaperWin(this.context);
     }
 
     onCreated(want) {
@@ -44,28 +25,11 @@ class WallpaperExtension {
     }
 
     setUiContent(uri) {
-        console.log(`${WindowName} setUiContent`);
-        if (windowsCreated) {
-            console.log(`${WindowName} loadUiContent`);
-            loadUiContent(uri);
-        } else {
-            console.log(`${WindowName} save wallpaperURI`);
-            this.wallpaperURI = uri;
-        }
+        this.context.setWallpaperUIContent(uri);
     }
 
-    loadUiContent(uri) {
-        console.log(`${WindowName} initUiContent ${uri}`);
-        this.wallpaperWindow.loadContent(uri).then(() => {
-            console.log(`${WindowName} loadContent`);
-            this.wallpaperWindow.show().then(() => {
-                console.log(`${WindowName} window is show`);
-            })
-        })
-    }
-
-    onWallpaperChanged(wallpaperType) {
-        console.log(`${WindowName} onWallpaperChanged ${wallpaperType}`);
+    onChanged(wallpaperType) {
+        console.log(`${WindowName} onChanged ${wallpaperType}`);
     }
 
     onDestroy() {
