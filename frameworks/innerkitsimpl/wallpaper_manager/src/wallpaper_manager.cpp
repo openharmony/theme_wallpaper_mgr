@@ -188,15 +188,18 @@ bool WallpaperManager::SetWallpaper(std::unique_ptr<OHOS::Media::PixelMap> &pixe
         return false;
     }
 
-    std::stringbuf* stringBuf = new std::stringbuf();
-    std::ostream ostream(stringBuf);
+    std::stringbuf stringBuf;
+    std::ostream ostream(&stringBuf);
     int mapSize = WritePixelMapToStream(ostream, std::move(pixelMap));
     if (mapSize <= 0) {
         HILOG_ERROR("WritePixelMapToStream faild");
         return false;
     }
-    char* buffer = new char[mapSize];
-    stringBuf->sgetn(buffer, mapSize);
+    char *buffer = new (std::nothrow) char[mapSize]();
+    if (buffer == nullptr) {
+        return false;
+    }
+    stringBuf.sgetn(buffer, mapSize);
 
     int fd[2];
     pipe(fd);

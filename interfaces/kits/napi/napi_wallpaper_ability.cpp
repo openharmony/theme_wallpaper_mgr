@@ -13,16 +13,18 @@
  * limitations under the License.
  */
 
-#include <pthread.h>
-#include <unistd.h>
+#include "napi_wallpaper_ability.h"
+
 #include <map>
+#include <pthread.h>
 #include <string>
-#include <vector>
+#include <unistd.h>
 #include <uv.h>
+#include <vector>
+
 #include "hilog_wrapper.h"
 #include "wallpaper_manager.h"
 #include "wallpaper_manager_common_info.h"
-#include "napi_wallpaper_ability.h"
 
 using namespace OHOS::Media;
 namespace OHOS {
@@ -37,9 +39,7 @@ napi_value NAPI_GetColors(napi_env env, napi_callback_info info)
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         return napi_ok;
     };
-    auto output = [context](napi_env env, napi_value *result) -> napi_status {
-        return napi_ok;
-    };
+    auto output = [context](napi_env env, napi_value *result) -> napi_status { return napi_ok; };
     auto exec = [context](AsyncCall::Context *ctx) {
         context->SetErrInfo(AsyncCall::ErrorCode::NOT_SUPPORT, "not support");
         HILOG_DEBUG("exec-----NAPI_GetColors in");
@@ -70,8 +70,8 @@ napi_value NAPI_GetId(napi_env env, napi_callback_info info)
     };
     auto exec = [context](AsyncCall::Context *ctx) {
         HILOG_DEBUG("exec ---- GetWallpaperId");
-        context->wallpaperId = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(
-            context->wallpaperType);
+        context->wallpaperId =
+            WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(context->wallpaperType);
         HILOG_DEBUG("exec ---- GetWallpaperId wallpaperId : %{public}d", context->wallpaperId);
         context->status = napi_ok;
     };
@@ -102,8 +102,7 @@ napi_value NAPI_GetPixelMap(napi_env env, napi_callback_info info)
     };
     auto exec = [context](AsyncCall::Context *ctx) {
         HILOG_DEBUG("exec ---- GetPixelMap");
-        auto pixel =
-            WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(context->wallpaperType);
+        auto pixel = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(context->wallpaperType);
         HILOG_DEBUG("exec ---- CreatPixelMap end");
         if (pixel != nullptr) {
             HILOG_DEBUG("exec ---- GetPixelMap pixel != nullptr");
@@ -305,9 +304,7 @@ napi_value NAPI_ScreenshotLiveWallpaper(napi_env env, napi_callback_info info)
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         return napi_ok;
     };
-    auto output = [context](napi_env env, napi_value *result) -> napi_status {
-        return napi_ok;
-    };
+    auto output = [context](napi_env env, napi_value *result) -> napi_status { return napi_ok; };
     auto exec = [context](AsyncCall::Context *ctx) {
         context->SetErrInfo(AsyncCall::ErrorCode::NOT_SUPPORT, "not support");
         HILOG_DEBUG("exec-----NAPI_ScreenshotLiveWallpaper in");
@@ -326,9 +323,7 @@ napi_value NAPI_On(napi_env env, napi_callback_info info)
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         return napi_ok;
     };
-    auto output = [context](napi_env env, napi_value *result) -> napi_status {
-        return napi_ok;
-    };
+    auto output = [context](napi_env env, napi_value *result) -> napi_status { return napi_ok; };
     auto exec = [context](AsyncCall::Context *ctx) {
         context->SetErrInfo(AsyncCall::ErrorCode::NOT_SUPPORT, "not support");
         HILOG_DEBUG("exec-----NAPI_On in");
@@ -345,9 +340,7 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info)
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         return napi_ok;
     };
-    auto output = [context](napi_env env, napi_value *result) -> napi_status {
-        return napi_ok;
-    };
+    auto output = [context](napi_env env, napi_value *result) -> napi_status { return napi_ok; };
     auto exec = [context](AsyncCall::Context *ctx) {
         context->SetErrInfo(AsyncCall::ErrorCode::NOT_SUPPORT, "not support");
         HILOG_DEBUG("exec-----NAPI_Off in");
@@ -365,9 +358,7 @@ napi_value NAPI_GetFile(napi_env env, napi_callback_info info)
         return napi_ok;
     };
 
-    auto output = [context](napi_env env, napi_value *result) -> napi_status {
-        return napi_ok;
-    };
+    auto output = [context](napi_env env, napi_value *result) -> napi_status { return napi_ok; };
     auto exec = [context](AsyncCall::Context *ctx) {
         context->SetErrInfo(AsyncCall::ErrorCode::NOT_SUPPORT, "not support");
         HILOG_DEBUG("exec ---- NAPI_GetFile in");
@@ -377,8 +368,7 @@ napi_value NAPI_GetFile(napi_env env, napi_callback_info info)
     return asyncCall.Call(env, exec);
 }
 
-NapiWallpaperAbility::NapiWallpaperAbility(napi_env env, napi_value callback)
-    : env_(env)
+NapiWallpaperAbility::NapiWallpaperAbility(napi_env env, napi_value callback) : env_(env)
 {
     napi_create_reference(env, callback, 1, &callback_);
     napi_get_uv_event_loop(env, &loop_);
@@ -392,34 +382,53 @@ NapiWallpaperAbility::~NapiWallpaperAbility()
 void NapiWallpaperAbility::onColorsChange(std::vector<RgbaColor> color, int wallpaperType)
 {
     WallpaperMgrService::WallpaperColorChangeListener::onColorsChange(color, wallpaperType);
-    EventDataWorker *eventDataWorker = new EventDataWorker(this, color, wallpaperType);
-    uv_work_t *work = new uv_work_t;
+    EventDataWorker *eventDataWorker = new (std::nothrow)
+        EventDataWorker(this->shared_from_this(), color, wallpaperType);
+    if (eventDataWorker == nullptr) {
+        return;
+    }
+    uv_work_t *work = new (std::nothrow) uv_work_t;
+    if (work == nullptr) {
+        delete eventDataWorker;
+        return;
+    }
+
     work->data = eventDataWorker;
-    uv_queue_work(loop_, work,
-        [](uv_work_t *work) {},
+    uv_queue_work(
+        loop_, work, [](uv_work_t *work) {},
         [](uv_work_t *work, int status) {
             EventDataWorker *eventDataInner = reinterpret_cast<EventDataWorker *>(work->data);
+            if (eventDataInner == nullptr || eventDataInner->listener == nullptr) {
+                delete work;
+                return;
+            }
+            napi_handle_scope scope = nullptr;
+            napi_open_handle_scope(eventDataInner->listener->env_, &scope);
+            if (scope == nullptr) {
+                delete eventDataInner;
+                delete work;
+                return;
+            }
             napi_value jsWallpaperType = nullptr;
             napi_create_int32(eventDataInner->listener->env_, eventDataInner->wallpaperType, &jsWallpaperType);
-            napi_value jsRgbaArray = WallpaperJSUtil::Convert2JSRgbaArray(eventDataInner->listener->env_,
-                eventDataInner->color);
+            napi_value jsRgbaArray =
+                WallpaperJSUtil::Convert2JSRgbaArray(eventDataInner->listener->env_, eventDataInner->color);
             napi_value callback = nullptr;
-            napi_value args[2] = {jsRgbaArray, jsWallpaperType};
+            napi_value args[2] = { jsRgbaArray, jsWallpaperType };
             napi_get_reference_value(eventDataInner->listener->env_, eventDataInner->listener->callback_, &callback);
             napi_value global = nullptr;
             napi_get_global(eventDataInner->listener->env_, &global);
             napi_value result;
-            napi_status callStatus = napi_call_function(eventDataInner->listener->env_, global, callback, 1, args,
-                &result);
+            napi_status callStatus =
+                napi_call_function(eventDataInner->listener->env_, global, callback, 1, args, &result);
             if (callStatus != napi_ok) {
                 HILOG_ERROR("notify data change failed callStatus:%{public}d callback:%{public}p", callStatus,
                     callback);
             }
+            napi_close_handle_scope(eventDataInner->listener->env_, scope);
             delete eventDataInner;
-            eventDataInner = nullptr;
             delete work;
-            work = nullptr;
         });
 }
-}
-}
+} // namespace WallpaperNAPI
+} // namespace OHOS
