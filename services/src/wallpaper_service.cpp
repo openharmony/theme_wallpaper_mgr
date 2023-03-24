@@ -805,7 +805,7 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
 
 ErrorCode WallpaperService::GetPixelMapV9(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
-    return GetPixelMapInner(wallpaperType, fdInfo);
+    return GetPixelMap(wallpaperType, fdInfo);
 }
 
 int32_t WallpaperService::GetWallpaperId(int32_t wallpaperType)
