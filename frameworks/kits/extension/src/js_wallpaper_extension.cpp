@@ -140,7 +140,6 @@ void JsWallpaperExtension::OnStart(const AAFwk::Want &want)
     WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterWallpaperCallback(
         [](int32_t wallpaperType) -> bool {
             HILOG_INFO("jsWallpaperExtension->CallObjectMethod");
-            HandleScope handleScope(jsWallpaperExtension->jsRuntime_);
             NativeEngine *nativeEng = &(jsWallpaperExtension->jsRuntime_).GetNativeEngine();
             WorkData *workData = new (std::nothrow) WorkData(nativeEng, wallpaperType);
             if (workData == nullptr) {
@@ -152,7 +151,7 @@ void JsWallpaperExtension::OnStart(const AAFwk::Want &want)
                     workData->wallpaperType_);
                 NativeValue *nativeType = reinterpret_cast<NativeValue *>(type);
                 NativeValue *arg[] = { nativeType };
-                jsWallpaperExtension->CallObjectMethod("onChanged", arg, ARGC_ONE);
+                jsWallpaperExtension->CallObjectMethod("onWallpaperChanged", arg, ARGC_ONE);
                 delete workData;
                 delete work;
             };
