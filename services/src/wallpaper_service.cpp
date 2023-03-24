@@ -772,13 +772,9 @@ void WallpaperService::ReporterUsageTimeStatistic()
     StatisticReporter::ReportUsageTimeStatistic(uid, timeStat);
 }
 
-ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
+ErrorCode WallpaperService::GetPixelMapInner(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
     HILOG_INFO("WallpaperService::getPixelMap start ");
-    if (!IsSystemApp()) {
-        HILOG_INFO("CallingApp is not SystemApp");
-        return E_DEAL_FAILED;
-    }
     if (!WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER)) {
         HILOG_INFO("GetPixelMap no get permission!");
         return E_NO_PERMISSION;
@@ -803,13 +799,22 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
     return E_OK;
 }
 
+ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
+{
+    if (!IsSystemApp()) {
+        HILOG_INFO("CallingApp is not SystemApp and returns a normal error");
+        return E_DEAL_FAILED;
+    }
+    return GetPixelMapInner(wallpaperType, fdInfo);
+}
+
 ErrorCode WallpaperService::GetPixelMapV9(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
     if (!IsSystemApp()) {
         HILOG_INFO("CallingApp is not SystemApp");
         return E_NOT_SYSTEM_APP;
     }
-    return GetPixelMap(wallpaperType, fdInfo);
+    return GetPixelMapInner(wallpaperType, fdInfo);
 }
 
 int32_t WallpaperService::GetWallpaperId(int32_t wallpaperType)
