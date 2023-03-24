@@ -235,7 +235,7 @@
 <td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p18761104812149"><a name="p18761104812149"></a><a name="p18761104812149"></a>wallpaper extension 初始化的回调</p>
 </td>
 </tr>
-<tr id="row13335054111018"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p12832214151418"><a name="p12832214151418"></a><a name="p12832214151418"></a>onChanged(wallpaperType: number): void</p>
+<tr id="row13335054111018"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p12832214151418"><a name="p12832214151418"></a><a name="p12832214151418"></a>onWallpaperChanged(wallpaperType: number): void</p>
 </td>
 <td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p3335145451011"><a name="p3335145451011"></a><a name="p3335145451011"></a>壁纸发生了变化的回调</p>
 </td>
@@ -610,7 +610,7 @@ export default class WallpaperExtAbility extends Extension {
         console.info(MODULE_TAG + 'ability on created end');
     }
 
-    onChanged(wallpaperType) {
+    onWallpaperChanged(wallpaperType) {
         console.info(MODULE_TAG + "ability on wallpaper changed start, type is : " + wallpaperType);
         if (wallPaper) {
             this.sendPixelMapData();
