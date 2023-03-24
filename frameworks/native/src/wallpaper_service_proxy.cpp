@@ -453,6 +453,7 @@ ErrorCode WallpaperServiceProxy::ConvertIntToErrorCode(int32_t errorCode)
         case static_cast<int32_t>(E_IMAGE_ERRCODE):
         case static_cast<int32_t>(E_NO_MEMORY):
         case static_cast<int32_t>(E_NOT_SYSTEM_APP):
+        case static_cast<int32_t>(E_USER_IDENTITY_ERROR):
             wallpaperErrorCode = static_cast<ErrorCode>(errorCode);
             break;
         default:

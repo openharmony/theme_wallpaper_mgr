@@ -63,6 +63,7 @@ enum ErrorCode : int32_t {
     E_IMAGE_ERRCODE,
     E_NO_MEMORY,
     E_NOT_SYSTEM_APP,
+    E_USER_IDENTITY_ERROR,
     E_UNKNOWN,
 };
 } // namespace WallpaperMgrService
