@@ -145,11 +145,11 @@ HWTEST_F(WallpaperPermissionTest, GetFilePermission001, TestSize.Level0)
 HWTEST_F(WallpaperPermissionTest, GetPixelMapPermission001, TestSize.Level0)
 {
     HILOG_INFO("GetPixelMapPermission001  begin");
-    ApiInfo apiInfo{ true, true };
+    ApiInfo apiInfo{ false, false };
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     ErrorCode wallpaperErrorCode =
         OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(LOCKSCREEN, apiInfo, pixelMap);
-    EXPECT_EQ(wallpaperErrorCode, E_NOT_SYSTEM_APP) << "throw permission error successfully";
+    EXPECT_EQ(wallpaperErrorCode, E_NO_PERMISSION) << "throw permission error successfully";
 }
 /*********************   GetPixelMap   *********************/
 

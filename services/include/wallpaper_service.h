@@ -132,7 +132,6 @@ private:
     bool InitUserDir(int32_t userId);
     bool BlockRetry(int64_t interval, uint32_t maxRetryTimes, std::function<bool()> function);
     int32_t QueryActiveUserId();
-    ErrorCode GetPixelMapInner(int32_t wallpaperType, FdInfo &fdInfo);
 
 private:
     int32_t Init();
