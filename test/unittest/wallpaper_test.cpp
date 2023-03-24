@@ -648,7 +648,7 @@ HWTEST_F(WallpaperTest, GetPixelMap001, TestSize.Level0)
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetPixelMap(SYSTYEM, apiInfo, pixelMap);
-    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetPixelMap.";
+    EXPECT_NE(wallpaperErrorCode, E_OK) << "Normal applications cannot call system APIs";
 }
 
 /**
@@ -663,7 +663,7 @@ HWTEST_F(WallpaperTest, GetPixelMap002, TestSize.Level0)
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetPixelMap(LOCKSCREEN, apiInfo, pixelMap);
-    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetPixelMap.";
+    EXPECT_NE(wallpaperErrorCode, E_OK) << "Normal applications cannot call system APIs";
 }
 
 /**

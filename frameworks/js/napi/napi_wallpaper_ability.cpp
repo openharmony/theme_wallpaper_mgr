@@ -139,7 +139,7 @@ napi_value NAPI_GetFile(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetFile in");
     auto context = std::make_shared<GetFileContextInfo>();
-    ApiInfo apiInfo{ true, true };
+    ApiInfo apiInfo{ false, false };
     NapiWallpaperAbility::GetFileInner(context, apiInfo);
     Call call(env, info, context, 1, apiInfo.needException);
     return call.AsyncCall(env);

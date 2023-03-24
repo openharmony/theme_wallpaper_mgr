@@ -779,6 +779,10 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
         HILOG_INFO("GetPixelMap no get permission!");
         return E_NO_PERMISSION;
     }
+    if (!IsSystemApp()) {
+        HILOG_INFO("CallingApp is not SystemApp");
+        return E_NOT_SYSTEM_APP;
+    }
     if (wallpaperType != static_cast<int32_t>(WALLPAPER_LOCKSCREEN) &&
         wallpaperType != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
         return E_PARAMETERS_INVALID;
@@ -801,10 +805,6 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
 
 ErrorCode WallpaperService::GetPixelMapV9(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
-    if (!IsSystemApp()) {
-        HILOG_INFO("CallingApp is not SystemApp");
-        return E_NOT_SYSTEM_APP;
-    }
     return GetPixelMap(wallpaperType, fdInfo);
 }
 
