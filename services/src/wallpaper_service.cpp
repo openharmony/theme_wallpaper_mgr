@@ -775,6 +775,10 @@ void WallpaperService::ReporterUsageTimeStatistic()
 ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
     HILOG_INFO("WallpaperService::getPixelMap start ");
+    if (!IsSystemApp()) {
+        HILOG_INFO("CallingApp is not SystemApp");
+        return E_DEAL_FAILED;
+    }
     if (!WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER)) {
         HILOG_INFO("GetPixelMap no get permission!");
         return E_NO_PERMISSION;
