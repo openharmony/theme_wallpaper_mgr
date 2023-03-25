@@ -29,6 +29,7 @@
 #include "wallpaper_color_change_listener.h"
 #include "wallpaper_js_util.h"
 #include "wallpaper_manager_common_info.h"
+#include "wallpaper_common.h"
 
 #define BUFFER_LENGTH_MAX (128)
 #define DEFAULT_STACK_ID (1)
@@ -40,7 +41,7 @@
 #define BUSINESS_ERROR_CODE_OK 0
 namespace OHOS {
 namespace WallpaperNAPI {
-
+using namespace OHOS::WallpaperMgrService;
 struct GetContextInfo : public AsyncCall::Context {
     int wallpaperType = 0;
     std::vector<uint64_t> colors;
@@ -169,15 +170,15 @@ public:
         napi_env env, size_t argc, napi_value argValue, std::shared_ptr<AsyncCall::Context> ctx);
     static void GetColorsInner(std::shared_ptr<GetContextInfo> context);
     static void GetIdInner(std::shared_ptr<GetContextInfo> context);
-    static void GetFileInner(std::shared_ptr<GetFileContextInfo> context);
+    static void GetFileInner(std::shared_ptr<GetFileContextInfo> context, const ApiInfo &apiInfo);
     static void GetMinHeightInner(std::shared_ptr<GetMinContextInfo> context);
     static void GetMinWidthInner(std::shared_ptr<GetMinContextInfo> context);
     static void IsChangeAllowedInner(std::shared_ptr<PermissionContextInfo> context);
     static void IsUserChangeAllowedInner(std::shared_ptr<PermissionContextInfo> context);
-    static void RestoreInner(std::shared_ptr<SetContextInfo> context);
+    static void RestoreInner(std::shared_ptr<SetContextInfo> context, const ApiInfo &apiInfo);
     static void SetImageInput(std::shared_ptr<SetContextInfo> context);
-    static void SetImageExec(std::shared_ptr<SetContextInfo> context);
-    static void GetImageInner(std::shared_ptr<GetContextInfo> context);
+    static void SetImageExec(std::shared_ptr<SetContextInfo> context, const ApiInfo &apiInfo);
+    static void GetImageInner(std::shared_ptr<GetContextInfo> context, const ApiInfo &apiInfo);
 
 private:
     struct EventDataWorker {

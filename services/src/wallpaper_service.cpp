@@ -32,7 +32,6 @@
 
 #include "ability_manager_client.h"
 #include "accesstoken_adapter.h"
-#include "bundle_mgr_interface.h"
 #include "bundle_mgr_proxy.h"
 #include "canvas.h"
 #include "color_picker.h"
@@ -672,6 +671,10 @@ void WallpaperService::ReporterUsageTimeStatisic()
 int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
     HILOG_INFO("WallpaperService::getPixelMap start ");
+    if (!IsSystemApp()) {
+        HILOG_INFO("CallingApp is not SystemApp");
+        return static_cast<int32_t>(E_NOT_SYSTEM_APP);
+    }
     bool permissionGet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER);
     if (!permissionGet) {
         HILOG_INFO("GetPixelMap no get permission!");
@@ -1128,6 +1131,34 @@ int32_t WallpaperService::GetFilePath(int wallpaperType, std::string &filePath)
         }
     }
     return static_cast<int32_t>(E_PARAMETERS_INVALID);
+}
+
+bool WallpaperService::IsSystemApp()
+{
+    int32_t uid = IPCSkeleton::GetCallingUid();
+    auto bundleMgr = GetBundleMgr();
+    bool isSystemApplication = false;
+    if (bundleMgr != nullptr) {
+        isSystemApplication = bundleMgr->CheckIsSystemAppByUid(uid);
+    }
+    return isSystemApplication;
+}
+
+OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> WallpaperService::GetBundleMgr()
+{
+    auto systemAbilityManager = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (systemAbilityManager == nullptr) {
+        return nullptr;
+    }
+    auto bundleMgrSa = systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+    if (bundleMgrSa == nullptr) {
+        return nullptr;
+    }
+    auto bundleMgr = OHOS::iface_cast<AppExecFwk::IBundleMgr>(bundleMgrSa);
+    if (bundleMgr == nullptr) {
+        HILOG_INFO("GetBundleMgr is null");
+    }
+    return bundleMgr;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS
