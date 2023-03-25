@@ -98,6 +98,10 @@ int32_t WallpaperServiceStub::OnSetWallpaperUriByFD(MessageParcel &data, Message
     HILOG_INFO("WallpaperServiceStub::SetWallpaperUri start.");
 
     int fd = data.ReadFileDescriptor();
+    if (fd < 0) {
+        HILOG_INFO("ReadFileDescriptor fail. fd[%{public}d]", fd);
+        return IPC_STUB_INVALID_DATA_ERR;
+    }
     int wallpaperType = data.ReadInt32();
     HILOG_INFO("wallpaperType= %{public}d", wallpaperType);
     int length = data.ReadInt32();
