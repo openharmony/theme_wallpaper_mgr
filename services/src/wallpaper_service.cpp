@@ -226,7 +226,7 @@ void WallpaperService::InitData()
     HILOG_INFO("WallpaperService::initData --> end ");
 }
 
-void WallpaperService::AddDeathRecipient()
+void WallpaperService::AddWallpaperExtensionDeathRecipient()
 {
     if (callbackProxy_ != nullptr) {
         IPCObjectProxy *proxy = reinterpret_cast<IPCObjectProxy *>(callbackProxy_.GetRefPtr());

@@ -96,7 +96,7 @@ public:
     void ReporterUsageTimeStatistic();
     void RegisterSubscriber(int32_t times);
     void StartWallpaperExtension();
-    void AddDeathRecipient();
+    void AddWallpaperExtensionDeathRecipient();
 
 protected:
     void OnStart() override;
