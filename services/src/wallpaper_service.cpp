@@ -226,10 +226,10 @@ void WallpaperService::InitData()
     HILOG_INFO("WallpaperService::initData --> end ");
 }
 
-void WallpaperService::AddDeathRecipient(const sptr<IRemoteObject> &remoteObject)
+void WallpaperService::AddDeathRecipient()
 {
-    if (remoteObject != nullptr) {
-        IPCObjectProxy *proxy = reinterpret_cast<IPCObjectProxy *>(remoteObject.GetRefPtr());
+    if (callbackProxy_ != nullptr) {
+        IPCObjectProxy *proxy = reinterpret_cast<IPCObjectProxy *>(callbackProxy_.GetRefPtr());
         if (recipient_ == nullptr) {
             recipient_ = sptr<IRemoteObject::DeathRecipient>(new WallpaperExtensionAbilityDeathRecipient(*this));
         }
@@ -767,9 +767,9 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, const std::st
         wallpaperCommonEventManager->SendWallpaperLockSettingMessage();
         ReporterUsageTimeStatistic();
     }
-    HILOG_INFO("SetWallpaperBackupData callbackProxy->OnCall start");
-    if (callbackProxy != nullptr) {
-        callbackProxy->OnCall(wallpaperType);
+    HILOG_INFO("SetWallpaperBackupData callbackProxy_->OnCall start");
+    if (callbackProxy_ != nullptr) {
+        callbackProxy_->OnCall(wallpaperType);
     }
     return E_OK;
 }
@@ -955,9 +955,9 @@ ErrorCode WallpaperService::SetDefaultDataForWallpaper(int32_t userId, Wallpaper
         HILOG_INFO("Send wallpaper system setting message");
         wallpaperCommonEventManager->SendWallpaperSystemSettingMessage();
     }
-    if (callbackProxy != nullptr) {
+    if (callbackProxy_ != nullptr) {
         HILOG_INFO("CopyScreenLockWallpaper callbackProxy OnCall start");
-        callbackProxy->OnCall(wallpaperType);
+        callbackProxy_->OnCall(wallpaperType);
     }
     SaveColor(userId, wallpaperType);
     return E_OK;
@@ -993,7 +993,8 @@ bool WallpaperService::Off(sptr<IWallpaperColorChangeListener> listener)
 bool WallpaperService::RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback)
 {
     HILOG_INFO("  WallpaperService::RegisterWallpaperCallback");
-    callbackProxy = callback;
+    callbackProxy_ = callback;
+    AddDeathRecipient();
     return true;
 }
 

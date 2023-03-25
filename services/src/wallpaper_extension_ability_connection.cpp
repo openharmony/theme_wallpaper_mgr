@@ -25,7 +25,6 @@ void WallpaperExtensionAbilityConnection::OnAbilityConnectDone(const AppExecFwk:
     const sptr<IRemoteObject> &remoteObject, int32_t resultCode)
 {
     HILOG_INFO("on ability connected");
-    wallpaperService_.AddDeathRecipient(remoteObject);
 }
 
 void WallpaperExtensionAbilityConnection::OnAbilityDisconnectDone(const AppExecFwk::ElementName &element,
