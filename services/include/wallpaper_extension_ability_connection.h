@@ -38,6 +38,7 @@ public:
 private:
     DISALLOW_COPY_AND_MOVE(WallpaperExtensionAbilityConnection);
     WallpaperService &wallpaperService_;
+    sptr<IRemoteObject::DeathRecipient> recipient_;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
