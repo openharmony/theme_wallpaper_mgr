@@ -15,7 +15,6 @@
 #include "wallpaper_extension_ability_connection.h"
 
 #include "hilog_wrapper.h"
-#include "wallpaper_extension_ability_death_recipient.h"
 #include "wallpaper_service.h"
 
 namespace OHOS {
@@ -26,15 +25,7 @@ void WallpaperExtensionAbilityConnection::OnAbilityConnectDone(const AppExecFwk:
     const sptr<IRemoteObject> &remoteObject, int32_t resultCode)
 {
     HILOG_INFO("on ability connected");
-    if (remoteObject != nullptr) {
-        IPCObjectProxy *proxy = reinterpret_cast<IPCObjectProxy *>(remoteObject.GetRefPtr());
-        if (proxy != nullptr && !proxy->IsObjectDead()) {
-            HILOG_INFO("get remoteObject succeed");
-            recipient_ =
-                sptr<IRemoteObject::DeathRecipient>(new WallpaperExtensionAbilityDeathRecipient(wallpaperService_));
-            proxy->AddDeathRecipient(recipient_);
-        }
-    }
+    wallpaperService_.AddDeathRecipient(remoteObject);
 }
 
 void WallpaperExtensionAbilityConnection::OnAbilityDisconnectDone(const AppExecFwk::ElementName &element,
