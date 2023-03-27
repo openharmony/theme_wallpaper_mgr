@@ -229,7 +229,7 @@ void WallpaperService::InitData()
 void WallpaperService::AddWallpaperExtensionDeathRecipient()
 {
     if (callbackProxy_ != nullptr) {
-        IPCObjectProxy *proxy = reinterpret_cast<IPCObjectProxy *>(callbackProxy_.GetRefPtr());
+        IPCObjectProxy *proxy = reinterpret_cast<IPCObjectProxy *>(callbackProxy_->AsObject().GetRefPtr());
         if (recipient_ == nullptr) {
             recipient_ = sptr<IRemoteObject::DeathRecipient>(new WallpaperExtensionAbilityDeathRecipient(*this));
         }
@@ -1145,7 +1145,7 @@ int32_t WallpaperService::ConnectExtensionAbility(const AAFwk::Want &want)
         return AAFwk::INVALID_PARAMETERS_ERR;
     }
     if (connection_ == nullptr) {
-        connection_ = new WallpaperExtensionAbilityConnection(*this);
+        connection_ = new WallpaperExtensionAbilityConnection();
     }
     ret = AAFwk::AbilityManagerClient::GetInstance()->ConnectExtensionAbility(want, connection_, ids[0]);
     HILOG_INFO("ConnectExtensionAbility errCode=%{public}d", ret);

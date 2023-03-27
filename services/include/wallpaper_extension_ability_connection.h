@@ -26,7 +26,7 @@ namespace WallpaperMgrService {
 class WallpaperService;
 class WallpaperExtensionAbilityConnection : public AAFwk::AbilityConnectionStub {
 public:
-    WallpaperExtensionAbilityConnection(WallpaperService &wallpaperService) : wallpaperService_(wallpaperService)
+    WallpaperExtensionAbilityConnection()
     {
     }
     virtual ~WallpaperExtensionAbilityConnection() = default;
@@ -37,7 +37,6 @@ public:
 
 private:
     DISALLOW_COPY_AND_MOVE(WallpaperExtensionAbilityConnection);
-    WallpaperService &wallpaperService_;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
