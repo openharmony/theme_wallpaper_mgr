@@ -45,6 +45,7 @@
 #include "ability_manager_errors.h"
 #include "os_account_manager.h"
 #include "ability_connect_callback_interface.h"
+#include "bundle_mgr_interface.h"
 
 namespace OHOS {
 namespace ColorManager {
@@ -132,7 +133,8 @@ private:
     int32_t SetWallpaperBackupData(std::string uriOrPixelMap, int wallpaperType);
     int32_t ConnectExtensionAbility(const OHOS::AAFwk::Want& want);
     int32_t GetFilePath(int wallpaperType, std::string &filePath);
-
+    bool IsSystemApp();
+    OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr();
 private:
 
     int32_t Init();
@@ -140,6 +142,7 @@ private:
     void InitServiceHandler();
     bool CopySystemWallpaper();
     bool CopyScreenLockWallpaper();
+
     static std::mutex instanceLock_;
     static sptr<WallpaperService> instance_;
     static std::shared_ptr<AppExecFwk::EventHandler> serviceHandler_;
