@@ -58,6 +58,7 @@
 #include "wallpaper_common.h"
 #include "wallpaper_common_event.h"
 #include "wallpaper_service_cb_proxy.h"
+#include "wallpaper_extension_ability_death_recipient.h"
 #include "window.h"
 #include "memory_guard.h"
 
@@ -202,6 +203,7 @@ void WallpaperService::OnStop()
         return;
     }
     serviceHandler_ = nullptr;
+    recipient_ = nullptr;
     state_ = ServiceRunningState::STATE_NOT_START;
     HILOG_INFO("OnStop end.");
 }
@@ -231,6 +233,21 @@ void WallpaperService::InitData()
     colorChangeListenerMap_.clear();
     HILOG_INFO("WallpaperService::initData --> end ");
 }
+
+void WallpaperService::AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObject> &remoteObject)
+{
+    if (remoteObject != nullptr) {
+        IPCObjectProxy *proxy = reinterpret_cast<IPCObjectProxy *>(remoteObject.GetRefPtr());
+        if (recipient_ == nullptr) {
+            recipient_ = sptr<IRemoteObject::DeathRecipient>(new WallpaperExtensionAbilityDeathRecipient(*this));
+        }
+        if (proxy != nullptr && !proxy->IsObjectDead()) {
+            HILOG_INFO("get remoteObject succeed");
+            proxy->AddDeathRecipient(recipient_);
+        }
+    }
+}
+
 void WallpaperService::StartWallpaperExtension()
 {
     MemoryGuard cacheGuard;
