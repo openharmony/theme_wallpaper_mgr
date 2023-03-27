@@ -19,8 +19,8 @@
 #include "iremote_stub.h"
 
 namespace OHOS {
-namespace AbilityRuntime {
+namespace WallpaperMgrService {
 class WallpaperExtensionStub : public IRemoteStub<IWallpaperExtension> {};
-} // namespace AbilityRuntime
+} // namespace WallpaperMgrService
 } // namespace OHOS
 #endif // WALLPAPER_EXTENSION_STUB_H

@@ -18,7 +18,6 @@
 #include "ability_info.h"
 #include "hilog_wrapper.h"
 #include "hitrace_meter.h"
-#include "wallpaper_extension_stub.h"
 #include "js_runtime.h"
 #include "js_runtime_utils.h"
 #include "js_wallpaper_extension_context.h"
@@ -28,6 +27,7 @@
 #include "napi_common_want.h"
 #include "napi_remote_object.h"
 #include "uv_queue.h"
+#include "wallpaper_extension_stub.h"
 #include "wallpaper_manager.h"
 
 namespace OHOS {
@@ -179,12 +179,12 @@ sptr<IRemoteObject> JsWallpaperExtension::OnConnect(const AAFwk::Want &want)
 {
     HILOG_INFO("jws JsWallpaperExtension OnConnect begin.");
     Extension::OnConnect(want);
-    auto remoteObj = new (std::nothrow) WallpaperExtensionStub();
+    auto remoteObj = new (std::nothrow) WallpaperMgrService::WallpaperExtensionStub();
     if (remoteObj == nullptr) {
         HILOG_ERROR("failed to create IWallpaperExtension");
         return nullptr;
     }
-    return remoteObj->AsObject();
+    return remoteObj;
 }
 
 void JsWallpaperExtension::OnDisconnect(const AAFwk::Want &want)

@@ -19,8 +19,8 @@
 #include "iremote_broker.h"
 
 namespace OHOS {
-namespace AbilityRuntime {
+namespace WallpaperMgrService {
 class IWallpaperExtension : public IRemoteBroker {};
-} // namespace AbilityRuntime
+} // namespace WallpaperMgrService
 } // namespace OHOS
 #endif // I_WALLPAPER_EXTENSION_H
