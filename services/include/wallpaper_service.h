@@ -96,7 +96,7 @@ public:
     void ReporterUsageTimeStatistic();
     void RegisterSubscriber(int32_t times);
     void StartWallpaperExtension();
-    void AddWallpaperExtensionDeathRecipient();
+    void AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObject> &remoteObject);
 
 protected:
     void OnStart() override;

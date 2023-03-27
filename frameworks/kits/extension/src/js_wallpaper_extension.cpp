@@ -18,6 +18,7 @@
 #include "ability_info.h"
 #include "hilog_wrapper.h"
 #include "hitrace_meter.h"
+#include "wallpaper_extension_stub.h"
 #include "js_runtime.h"
 #include "js_runtime_utils.h"
 #include "js_wallpaper_extension_context.h"
@@ -177,78 +178,19 @@ void JsWallpaperExtension::OnStop()
 sptr<IRemoteObject> JsWallpaperExtension::OnConnect(const AAFwk::Want &want)
 {
     HILOG_INFO("jws JsWallpaperExtension OnConnect begin.");
-    StartAsyncTrace(HITRACE_TAG_MISC, "OnConnect", static_cast<int32_t>(TraceTaskId::ONCONNECT_EXTENSION));
-    StartAsyncTrace(HITRACE_TAG_MISC, "Extension::OnConnect",
-        static_cast<int32_t>(TraceTaskId::ONCONNECT_MIDDLE_EXTENSION));
     Extension::OnConnect(want);
-    FinishAsyncTrace(HITRACE_TAG_MISC, "Extension::OnConnect",
-        static_cast<int32_t>(TraceTaskId::ONCONNECT_MIDDLE_EXTENSION));
-    HILOG_INFO("%{public}s begin.", __func__);
-    HandleScope handleScope(jsRuntime_);
-    NativeEngine *nativeEngine = &jsRuntime_.GetNativeEngine();
-    napi_value napiWant = OHOS::AppExecFwk::WrapWant(reinterpret_cast<napi_env>(nativeEngine), want);
-    NativeValue *nativeWant = reinterpret_cast<NativeValue *>(napiWant);
-    NativeValue *argv[] = { nativeWant };
-    if (!jsObj_) {
-        HILOG_WARN("Not found WallpaperExtension.js");
-        return nullptr;
-    }
-
-    NativeValue *value = jsObj_->Get();
-    NativeObject *obj = ConvertNativeValueTo<NativeObject>(value);
-    if (obj == nullptr) {
-        HILOG_ERROR("Failed to get WallpaperExtension object");
-        return nullptr;
-    }
-
-    NativeValue *method = obj->GetProperty("onConnect");
-    if (method == nullptr) {
-        HILOG_ERROR("Failed to get onConnect from WallpaperExtension object");
-        return nullptr;
-    }
-    HILOG_INFO("JsWallpaperExtension::CallFunction onConnect, success");
-    NativeValue *remoteNative = nativeEngine->CallFunction(value, method, argv, ARGC_ONE);
-    if (remoteNative == nullptr) {
-        HILOG_ERROR("remoteNative nullptr.");
-    }
-    auto remoteObj = NAPI_ohos_rpc_getNativeRemoteObject(reinterpret_cast<napi_env>(nativeEngine),
-        reinterpret_cast<napi_value>(remoteNative));
+    auto remoteObj = new (std::nothrow) WallpaperExtensionStub();
     if (remoteObj == nullptr) {
-        HILOG_ERROR("remoteObj nullptr.");
+        HILOG_ERROR("failed to create IWallpaperExtension");
+        return nullptr;
     }
-    FinishAsyncTrace(HITRACE_TAG_MISC, "OnConnect", static_cast<int32_t>(TraceTaskId::ONCONNECT_EXTENSION));
-    return remoteObj;
+    return remoteObj->AsObject();
 }
 
 void JsWallpaperExtension::OnDisconnect(const AAFwk::Want &want)
 {
     HILOG_INFO("jws JsWallpaperExtension OnDisconnect begin.");
     Extension::OnDisconnect(want);
-    HILOG_INFO("%{public}s begin.", __func__);
-    HandleScope handleScope(jsRuntime_);
-    NativeEngine *nativeEngine = &jsRuntime_.GetNativeEngine();
-    napi_value napiWant = OHOS::AppExecFwk::WrapWant(reinterpret_cast<napi_env>(nativeEngine), want);
-    NativeValue *nativeWant = reinterpret_cast<NativeValue *>(napiWant);
-    NativeValue *argv[] = { nativeWant };
-    if (!jsObj_) {
-        HILOG_WARN("Not found WallpaperExtension.js");
-        return;
-    }
-
-    NativeValue *value = jsObj_->Get();
-    NativeObject *obj = ConvertNativeValueTo<NativeObject>(value);
-    if (obj == nullptr) {
-        HILOG_ERROR("Failed to get WallpaperExtension object");
-        return;
-    }
-
-    NativeValue *method = obj->GetProperty("onDisconnect");
-    if (method == nullptr) {
-        HILOG_ERROR("Failed to get onDisconnect from WallpaperExtension object");
-        return;
-    }
-    nativeEngine->CallFunction(value, method, argv, ARGC_ONE);
-    HILOG_INFO("%{public}s end.", __func__);
 }
 
 void JsWallpaperExtension::OnCommand(const AAFwk::Want &want, bool restart, int32_t startId)
