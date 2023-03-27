@@ -119,6 +119,7 @@ ohos_shared_library("wallpaperextension") {
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc_js:rpc",
+    "ipc:ipc_single",
   ]
 
   public_deps = [

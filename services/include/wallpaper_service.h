@@ -89,6 +89,7 @@ public:
     void ReporterUsageTimeStatisic();
     void RegisterSubscriber(int times);
     void StartWallpaperExtension();
+    void AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObject> &remoteObject);
 
 protected:
     void OnStart() override;
@@ -166,6 +167,7 @@ private:
     static const std::string WALLPAPER_LOCK_CROP;
     static const std::string WALLPAPER_BUNDLE_NAME;
     sptr<IWallpaperCallback> callbackProxy = nullptr;
+    sptr<IRemoteObject::DeathRecipient> recipient_;
 
     std::string name_;
     std::mutex mtx;
