@@ -20,7 +20,10 @@
 
 namespace OHOS {
 namespace WallpaperMgrService {
-class IWallpaperExtension : public IRemoteBroker {};
+class IWallpaperExtension : public IRemoteBroker {
+public:
+    DECLARE_INTERFACE_DESCRIPTOR(u"ohos.Wallpaper.IWallpaperExtension");
+};
 } // namespace WallpaperMgrService
 } // namespace OHOS
 #endif // I_WALLPAPER_EXTENSION_H
