@@ -96,6 +96,7 @@ public:
     void ReporterUsageTimeStatistic();
     void RegisterSubscriber(int32_t times);
     void StartWallpaperExtension();
+    void AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObject> &remoteObject);
 
 protected:
     void OnStart() override;
@@ -156,9 +157,10 @@ private:
     ConcurrentMap<int32_t, WallpaperData> systemWallpaperMap_;
     ConcurrentMap<int32_t, WallpaperData> lockWallpaperMap_;
     atomic<int32_t> wallpaperId_;
-    sptr<IWallpaperCallback> callbackProxy = nullptr;
+    sptr<IWallpaperCallback> callbackProxy_ = nullptr;
     std::shared_ptr<WallpaperCommonEventSubscriber> subscriber_;
     sptr<WallpaperExtensionAbilityConnection> connection_;
+    sptr<IRemoteObject::DeathRecipient> recipient_;
 
     std::string name_;
     std::mutex mtx_;

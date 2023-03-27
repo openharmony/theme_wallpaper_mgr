@@ -70,6 +70,7 @@ ohos_shared_library("wallpaperextension") {
     "hitrace_native:hitrace_meter",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_napi_common",
+    "ipc:ipc_single",
     "napi:ace_napi",
     "window_manager:libwm",
   ]

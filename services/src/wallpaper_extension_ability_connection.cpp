@@ -25,13 +25,13 @@ void WallpaperExtensionAbilityConnection::OnAbilityConnectDone(const AppExecFwk:
     const sptr<IRemoteObject> &remoteObject, int32_t resultCode)
 {
     HILOG_INFO("on ability connected");
+    wallpaperService_.AddWallpaperExtensionDeathRecipient(remoteObject);
 }
 
 void WallpaperExtensionAbilityConnection::OnAbilityDisconnectDone(const AppExecFwk::ElementName &element,
     int32_t resultCode)
 {
     HILOG_INFO("on ability disconnected");
-    wallpaperService_.StartWallpaperExtension();
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS
