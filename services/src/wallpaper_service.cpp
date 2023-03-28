@@ -994,6 +994,7 @@ bool WallpaperService::RegisterWallpaperCallback(const sptr<IWallpaperCallback> 
 {
     HILOG_INFO("  WallpaperService::RegisterWallpaperCallback");
     callbackProxy_ = callback;
+    AddWallpaperExtensionDeathRecipient(callbackProxy_->AsObject());
     return true;
 }
 
