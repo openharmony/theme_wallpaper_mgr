@@ -230,10 +230,8 @@ void WallpaperService::AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObj
 {
     if (remoteObject != nullptr) {
         IPCObjectProxy *proxy = reinterpret_cast<IPCObjectProxy *>(remoteObject.GetRefPtr());
-        recipient_ = sptr<IRemoteObject::DeathRecipient>(new WallpaperExtensionAbilityDeathRecipient(*this));
         if (recipient_ == nullptr) {
-            HILOG_INFO("recipient_ is nullptr");
-            return;
+            recipient_ = sptr<IRemoteObject::DeathRecipient>(new WallpaperExtensionAbilityDeathRecipient(*this));
         }
         if (proxy != nullptr && !proxy->IsObjectDead()) {
             HILOG_INFO("get remoteObject succeed");
@@ -996,7 +994,6 @@ bool WallpaperService::RegisterWallpaperCallback(const sptr<IWallpaperCallback> 
 {
     HILOG_INFO("  WallpaperService::RegisterWallpaperCallback");
     callbackProxy_ = callback;
-    AddWallpaperExtensionDeathRecipient(callbackProxy_->AsObject());
     return true;
 }
 
