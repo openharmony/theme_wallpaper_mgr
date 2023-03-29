@@ -425,10 +425,6 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
 void WallpaperService::OnBootPhase()
 {
     HILOG_INFO("WallpaperService OnBootPhase");
-    AAFwk::Want want;
-    want.SetElementName(OHOS_WALLPAPER_BUNDLE_NAME, "WallpaperExtAbility");
-    AAFwk::AbilityManagerClient::GetInstance()->Connect();
-    AAFwk::AbilityManagerClient::GetInstance()->StartAbility(want);
 }
 
 int32_t WallpaperService::GetDisplayId()
