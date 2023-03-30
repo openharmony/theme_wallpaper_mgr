@@ -35,7 +35,7 @@ struct WallpaperData {
      * The component name of the currently set live wallpaper.
      */
     ComponentName wallpaperComponent;
-    WallpaperData(int32_t userId, std::string wallpaperFileName, std::string cropFileName);
+    WallpaperData(int32_t userId, std::string fileName);
     WallpaperData();
 };
 } // namespace WallpaperMgrService

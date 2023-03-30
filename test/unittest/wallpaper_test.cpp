@@ -42,9 +42,7 @@ constexpr int32_t INVALID_USERID = -1;
 constexpr const char *URI = "/data/test/theme/wallpaper/wallpaper_test.JPG";
 constexpr const char *WALLPAPER_DEFAULT_PATH = "/data/service/el1/public/wallpaper";
 constexpr const char *SYSTEM_FILE = "/system/wallpaper_system_orig";
-constexpr const char *SYSTEM_CROP_FILE = "/system/wallpaper_system";
 constexpr const char *LOCKSCREEN_FILE = "/lockscreen/wallpaper_lock_orig";
-constexpr const char *LOCKSCREEN_CROP_FILE = "/lockscreen/wallpaper_lock";
 std::shared_ptr<WallpaperCommonEventSubscriber> subscriber = nullptr;
 
 using namespace testing::ext;
@@ -880,11 +878,7 @@ HWTEST_F(WallpaperTest, AddUsersDeal001, TestSize.Level0)
     WallpaperTest::TriggerEvent(TEST_USERID, commonEvent);
     ret = FileDeal::IsFileExist(WallpaperTest::GetUserFilePath(TEST_USERID, SYSTEM_FILE));
     EXPECT_EQ(ret, true);
-    ret = FileDeal::IsFileExist(WallpaperTest::GetUserFilePath(TEST_USERID, SYSTEM_CROP_FILE));
-    EXPECT_EQ(ret, true);
     ret = FileDeal::IsFileExist(WallpaperTest::GetUserFilePath(TEST_USERID, LOCKSCREEN_FILE));
-    EXPECT_EQ(ret, true);
-    ret = FileDeal::IsFileExist(WallpaperTest::GetUserFilePath(TEST_USERID, LOCKSCREEN_CROP_FILE));
     EXPECT_EQ(ret, true);
     std::string userDir = WALLPAPER_DEFAULT_PATH + std::string("/") + std::to_string(TEST_USERID);
     if (!OHOS::ForceRemoveDirectory(userDir)) {
