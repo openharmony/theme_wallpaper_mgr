@@ -19,8 +19,8 @@
 
 namespace OHOS {
 namespace WallpaperMgrService {
-WallpaperData::WallpaperData(int32_t userId, std::string wallpaperFileName)
-    : userId(userId), wallpaperFile(wallpaperFileName), wallpaperId(-1), allowBackup(false)
+WallpaperData::WallpaperData(int32_t userId, std::string fileName)
+    : userId(userId), wallpaperFile(fileName), wallpaperId(-1), allowBackup(false)
 {
 }
 WallpaperData::WallpaperData() : userId(0), wallpaperId(-1), allowBackup(false)
