@@ -1226,7 +1226,6 @@ int32_t WallpaperService::QueryActiveUserId()
 bool WallpaperService::CheckUserPermissionById(int32_t userId)
 {
     AccountSA::OsAccountInfo osAccountInfo;
-    HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
     ErrCode errCode = AccountSA::OsAccountManager::QueryOsAccountById(userId, osAccountInfo);
     if (errCode != ERR_OK) {
         HILOG_ERROR("Query os account info failed, errCode: %{public}d, ", errCode);

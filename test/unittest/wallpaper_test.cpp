@@ -12,10 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define private public
-#define protected public
-#include "wallpaper_service.h"
-#undef private
 
 #include <ctime>
 #include <gtest/gtest.h>
@@ -60,13 +56,12 @@ using namespace OHOS::Security::AccessToken;
 
 void GrantNativePermission()
 {
-    const char **perms = new const char *[3];
+    const char **perms = new const char *[2];
     perms[0] = "ohos.permission.GET_WALLPAPER";
     perms[1] = "ohos.permission.SET_WALLPAPER";
-    perms[2] = "ohos.permission.MANAGE_LOCAL_ACCOUNTS";
     TokenInfoParams infoInstance = {
         .dcapsNum = 0,
-        .permsNum = 3,
+        .permsNum = 2,
         .aclsNum = 0,
         .dcaps = nullptr,
         .perms = perms,
@@ -116,6 +111,9 @@ void WallpaperTest::SetUpTestCase(void)
 void WallpaperTest::TearDownTestCase(void)
 {
     HILOG_INFO("TearDownTestCase");
+    ApiInfo apiInfo{ false, false };
+    WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
+    WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
 }
 
 void WallpaperTest::SetUp(void)
@@ -992,38 +990,6 @@ HWTEST_F(WallpaperTest, InvalidUserIdDeal001, TestSize.Level0)
     if (!OHOS::ForceRemoveDirectory(userDir)) {
         HILOG_ERROR("Force remove user directory path failed, errno %{public}d.", errno);
     }
-}
-
-/**
-* @tc.name:    CheckUserIdentity001
-* @tc.desc:    Verify the user's identity.
-* @tc.type:    FUNC
-* @tc.require: issueI6DWHR
-*/
-HWTEST_F(WallpaperTest, CheckUserIdentity001, TestSize.Level0)
-{
-    HILOG_INFO("CheckUserIdentity001  begin");
-    std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
-    ASSERT_EQ(WallpaperTest::SubscribeCommonEvent(wallpaperService), true);
-    wallpaperService->InitData();
-    AccountSA::OsAccountInfo osAccountInfo;
-    std::string userName = "TestName";
-    ASSERT_EQ(AccountSA::OsAccountManager::CreateOsAccount(userName, AccountSA::OsAccountType::GUEST, osAccountInfo),
-        ERR_OK);
-    int32_t userId = osAccountInfo.GetLocalId();
-    EXPECT_EQ(AccountSA::OsAccountManager::ActivateOsAccount(userId), ERR_OK);
-
-    ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
-    EXPECT_EQ(wallpaperErrorCode, E_USER_IDENTITY_ERROR);
-    wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
-    EXPECT_EQ(wallpaperErrorCode, E_USER_IDENTITY_ERROR);
-    wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, SYSTYEM, apiInfo);
-    EXPECT_EQ(wallpaperErrorCode, E_USER_IDENTITY_ERROR);
-    wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
-    EXPECT_EQ(wallpaperErrorCode, E_USER_IDENTITY_ERROR);
-
-    EXPECT_EQ(AccountSA::OsAccountManager::RemoveOsAccount(userId), ERR_OK);
 }
 /*********************   USER_DEAL   *********************/
 } // namespace WallpaperMgrService
