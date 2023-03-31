@@ -65,6 +65,7 @@ REGISTER_SYSTEM_ABILITY_BY_ID(WallpaperService, WALLPAPER_MANAGER_SERVICE_ID, tr
 using namespace OHOS::Media;
 using namespace OHOS::MiscServices;
 using namespace OHOS::Security::AccessToken;
+using namespace OHOS::AccountSA;
 
 constexpr const char *WALLPAPER = "wallpaper_system_orig";
 constexpr const char *WALLPAPER_CROP = "wallpaper_system";
@@ -1225,14 +1226,14 @@ int32_t WallpaperService::QueryActiveUserId()
 
 bool WallpaperService::CheckUserPermissionById(int32_t userId)
 {
-    AccountSA::OsAccountInfo osAccountInfo;
-    ErrCode errCode = AccountSA::OsAccountManager::QueryOsAccountById(userId, osAccountInfo);
+    OsAccountInfo osAccountInfo;
+    ErrCode errCode = OsAccountManager::QueryOsAccountById(userId, osAccountInfo);
     if (errCode != ERR_OK) {
         HILOG_ERROR("Query os account info failed, errCode: %{public}d, ", errCode);
         return false;
     }
     HILOG_INFO("osAccountInfo GetType: %{public}d", static_cast<int32_t>(osAccountInfo.GetType()));
-    if (osAccountInfo.GetType() == AccountSA::OsAccountType::GUEST) {
+    if (osAccountInfo.GetType() == OsAccountType::GUEST) {
         HILOG_ERROR("The guest does not have permissions");
         return false;
     }
