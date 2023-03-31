@@ -66,6 +66,7 @@ REGISTER_SYSTEM_ABILITY_BY_ID(WallpaperService, WALLPAPER_MANAGER_SERVICE_ID, tr
 using namespace OHOS::Media;
 using namespace OHOS::MiscServices;
 using namespace OHOS::Security::AccessToken;
+using namespace OHOS::AccountSA;
 
 constexpr const char *WALLPAPER_SYSTEM_ORIG = "wallpaper_system_orig";
 constexpr const char *WALLPAPER_LOCK_ORIG = "wallpaper_lock_orig";
@@ -678,8 +679,7 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
         return E_NO_MEMORY;
     }
     std::lock_guard<std::mutex> lock(mtx_);
-    int32_t readSize = read(fd, paperBuf, length);
-    if (readSize <= 0) {
+    if (read(fd, paperBuf, length) <= 0) {
         HILOG_ERROR("read fd failed");
         delete[] paperBuf;
         return E_DEAL_FAILED;
@@ -690,8 +690,7 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
         delete[] paperBuf;
         return E_DEAL_FAILED;
     }
-    int32_t writeSize = write(fdw, paperBuf, length);
-    if (writeSize <= 0) {
+    if (write(fdw, paperBuf, length) <= 0) {
         HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
         delete[] paperBuf;
@@ -703,6 +702,9 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
     WallpaperType type = static_cast<WallpaperType>(wallpaperType);
     int32_t userId = QueryActiveUserId();
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
+    if (!CheckUserPermissionById(userId)) {
+        return E_USER_IDENTITY_ERROR;
+    }
     ErrorCode wallpaperErrorCode = SetWallpaperBackupData(userId, uri, type);
     SaveColor(userId, type);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
@@ -902,6 +904,9 @@ ErrorCode WallpaperService::ResetWallpaper(int32_t wallpaperType)
     WallpaperType type = static_cast<WallpaperType>(wallpaperType);
     int32_t userId = QueryActiveUserId();
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
+    if (!CheckUserPermissionById(userId)) {
+        return E_USER_IDENTITY_ERROR;
+    }
     ErrorCode wallpaperErrorCode = SetDefaultDataForWallpaper(userId, type);
     HILOG_INFO(" Set default data result[%{public}d]", wallpaperErrorCode);
     return wallpaperErrorCode;
@@ -1213,10 +1218,26 @@ int32_t WallpaperService::QueryActiveUserId()
     std::vector<int32_t> ids;
     ErrCode errCode = AccountSA::OsAccountManager::QueryActiveOsAccountIds(ids);
     if (errCode != ERR_OK || ids.empty()) {
-        HILOG_INFO("Query active userid failed, errCode: %{public}d, ", errCode);
+        HILOG_ERROR("Query active userid failed, errCode: %{public}d, ", errCode);
         return DEFAULT_USER_ID;
     }
     return ids[0];
+}
+
+bool WallpaperService::CheckUserPermissionById(int32_t userId)
+{
+    OsAccountInfo osAccountInfo;
+    ErrCode errCode = OsAccountManager::QueryOsAccountById(userId, osAccountInfo);
+    if (errCode != ERR_OK) {
+        HILOG_ERROR("Query os account info failed, errCode: %{public}d, ", errCode);
+        return false;
+    }
+    HILOG_INFO("osAccountInfo GetType: %{public}d", static_cast<int32_t>(osAccountInfo.GetType()));
+    if (osAccountInfo.GetType() == OsAccountType::GUEST) {
+        HILOG_ERROR("The guest does not have permissions");
+        return false;
+    }
+    return true;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS
