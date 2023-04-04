@@ -54,8 +54,9 @@ using namespace OHOS::Security::AccessToken;
 
 void GrantNativePermission()
 {
-    const char **perms = new const char *{ "ohos.permission.GET_WALLPAPER", "ohos.permission.SET_WALLPAPER",
-        "ohos.permission.MANAGE_LOCAL_ACCOUNTS" };
+    const char **perms = new const char *[3] {
+        "ohos.permission.GET_WALLPAPER", "ohos.permission.SET_WALLPAPER", "ohos.permission.MANAGE_LOCAL_ACCOUNTS"
+    };
     TokenInfoParams infoInstance = {
         .dcapsNum = 0,
         .permsNum = 3,
