@@ -700,12 +700,12 @@ int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdIn
         return static_cast<int32_t>(E_NO_PERMISSION);
     }
     int32_t ret = GetImageSize(wallpaperType, fdInfo.size);
-    if(ret !=static_cast<int32_t>(E_OK)){
+    if (ret != static_cast<int32_t>(E_OK)) {
         HILOG_ERROR("GetImageSize failed");
         return ret;
     }
     ret = GetImageFd(wallpaperType, fdInfo.fd);
-    if(ret !=static_cast<int32_t>(E_OK)){
+    if (ret != static_cast<int32_t>(E_OK)) {
         HILOG_ERROR("GetImageFd failed");
         return ret;
     }

@@ -138,6 +138,7 @@ private:
     OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr();
     int32_t GetImageFd(int32_t wallpaperType, int32_t &fd);
     int32_t GetImageSize(int32_t wallpaperType, int32_t &size);
+
 private:
 
     int32_t Init();
