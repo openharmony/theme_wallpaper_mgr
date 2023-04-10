@@ -393,7 +393,7 @@ std::vector<uint64_t> WallpaperService::GetColors(int wallpaperType)
 int32_t WallpaperService::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
 {
     if (!WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER)) {
-        HILOG_INFO("GetPixelMap no get permission!");
+        HILOG_INFO("GetFile no get permission!");
         return static_cast<int32_t>(E_NO_PERMISSION);
     }
     int32_t ret = GetImageFd(wallpaperType, wallpaperFd);
