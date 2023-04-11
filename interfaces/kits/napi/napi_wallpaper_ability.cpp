@@ -28,6 +28,7 @@
 #include "wallpaper_common.h"
 #include "wallpaper_manager.h"
 #include "wallpaper_manager_common_info.h"
+#include "wallpaper_common.h"
 
 using namespace OHOS::Media;
 namespace OHOS {
@@ -106,8 +107,9 @@ void NapiWallpaperAbility::GetColorsInner(std::shared_ptr<GetContextInfo> contex
 napi_value NAPI_GetId(napi_env env, napi_callback_info info)
 {
     auto context = std::make_shared<GetContextInfo>();
+    ApiInfo apiInfo{ false, false };
     NapiWallpaperAbility::GetIdInner(context);
-    AsyncCall asyncCall(env, info, context, 1, false);
+    AsyncCall asyncCall(env, info, context, 1, apiInfo.needException);
     return asyncCall.Call(env);
 }
 
@@ -142,7 +144,7 @@ napi_value NAPI_GetFile(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetFile in");
     auto context = std::make_shared<GetFileContextInfo>();
-    ApiInfo apiInfo{ true, true };
+    ApiInfo apiInfo{ false, false };
     NapiWallpaperAbility::GetFileInner(context, apiInfo);
     AsyncCall asyncCall(env, info, context, 1, apiInfo.needException);
     return asyncCall.Call(env);
@@ -285,8 +287,9 @@ napi_value NAPI_IsChangePermitted(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_IsChangePermitted in");
     auto context = std::make_shared<PermissionContextInfo>();
+    ApiInfo apiInfo{ false, false };
     NapiWallpaperAbility::IsChangeAllowedInner(context);
-    AsyncCall asyncCall(env, info, context, 0, false);
+    AsyncCall asyncCall(env, info, context, 0, apiInfo.needException);
     return asyncCall.Call(env);
 }
 
@@ -312,8 +315,9 @@ napi_value NAPI_IsOperationAllowed(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_IsOperationAllowed in");
     auto context = std::make_shared<PermissionContextInfo>();
+    ApiInfo apiInfo{ false, false };
     NapiWallpaperAbility::IsUserChangeAllowedInner(context);
-    AsyncCall asyncCall(env, info, context, 0, false);
+    AsyncCall asyncCall(env, info, context, 0, apiInfo.needException);
     return asyncCall.Call(env);
 }
 

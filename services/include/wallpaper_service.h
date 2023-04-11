@@ -99,6 +99,7 @@ public:
     void ReporterUsageTimeStatisic();
     void RegisterSubscriber(int times);
     void StartWallpaperExtension();
+    void AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObject> &remoteObject);
 
 protected:
     void OnStart() override;
@@ -146,6 +147,8 @@ private:
         Media::DecodeOptions &decodeOpts);
     bool IsSystemApp();
     OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr();
+    int32_t GetImageFd(int32_t wallpaperType, int32_t &fd);
+    int32_t GetImageSize(int32_t wallpaperType, int32_t &size);
 
 private:
 
@@ -154,6 +157,7 @@ private:
     void InitServiceHandler();
     bool CopySystemWallpaper();
     bool CopyScreenLockWallpaper();
+
     static std::mutex instanceLock_;
     static sptr<WallpaperService> instance_;
     static std::shared_ptr<AppExecFwk::EventHandler> serviceHandler_;
@@ -180,6 +184,7 @@ private:
     static const std::string WALLPAPER_LOCK_CROP;
     static const std::string WALLPAPER_BUNDLE_NAME;
     sptr<IWallpaperCallback> callbackProxy = nullptr;
+    sptr<IRemoteObject::DeathRecipient> recipient_;
 
     std::string name_;
     std::mutex mtx;

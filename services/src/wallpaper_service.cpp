@@ -57,6 +57,7 @@
 #include "wallpaper_common.h"
 #include "wallpaper_common_event.h"
 #include "wallpaper_service_cb_proxy.h"
+#include "wallpaper_extension_ability_death_recipient.h"
 #include "window.h"
 #include "memory_guard.h"
 
@@ -203,6 +204,7 @@ void WallpaperService::OnStop()
         return;
     }
     serviceHandler_ = nullptr;
+    recipient_ = nullptr;
     state_ = ServiceRunningState::STATE_NOT_START;
     HILOG_INFO("OnStop end.");
 }
@@ -232,6 +234,21 @@ void WallpaperService::InitData()
     colorChangeListenerMap_.clear();
     HILOG_INFO("WallpaperService::initData --> end ");
 }
+
+void WallpaperService::AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObject> &remoteObject)
+{
+    if (remoteObject != nullptr) {
+        IPCObjectProxy *proxy = reinterpret_cast<IPCObjectProxy *>(remoteObject.GetRefPtr());
+        if (recipient_ == nullptr) {
+            recipient_ = sptr<IRemoteObject::DeathRecipient>(new WallpaperExtensionAbilityDeathRecipient(*this));
+        }
+        if (proxy != nullptr && !proxy->IsObjectDead()) {
+            HILOG_INFO("get remoteObject succeed");
+            proxy->AddDeathRecipient(recipient_);
+        }
+    }
+}
+
 void WallpaperService::StartWallpaperExtension()
 {
     MemoryGuard cacheGuard;
@@ -385,10 +402,13 @@ int32_t WallpaperService::GetColorsV9(int32_t wallpaperType, std::vector<uint64_
 
 int32_t WallpaperService::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
 {
-    FdInfo fdInfo;
-    int wallpaperErrorCode = GetPixelMap(wallpaperType, fdInfo);
-    wallpaperFd = fdInfo.fd;
-    return wallpaperErrorCode;
+    if (!WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER)) {
+        HILOG_INFO("GetFile no get permission!");
+        return static_cast<int32_t>(E_NO_PERMISSION);
+    }
+    int32_t ret = GetImageFd(wallpaperType, wallpaperFd);
+    HILOG_INFO("Get image fd ret is : %{public}d", ret);
+    return ret;
 }
 
 int64_t WallpaperService::WritePixelMapToFile(const std::string &filePath, std::unique_ptr<PixelMap> pixelMap)
@@ -705,62 +725,34 @@ void WallpaperService::ReporterUsageTimeStatisic()
 
 int32_t WallpaperService::GetPixelMapV9(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
-    if (!IsSystemApp()) {
-        HILOG_INFO("CallingApp is not SystemApp");
-        return static_cast<int32_t>(E_NOT_SYSTEM_APP);
-    }
     return GetPixelMap(wallpaperType, fdInfo);
 }
 
 int32_t WallpaperService::GetPixelMap(int wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
     HILOG_INFO("WallpaperService::getPixelMap start ");
+    if (!IsSystemApp()) {
+        HILOG_INFO("CallingApp is not SystemApp");
+        return static_cast<int32_t>(E_NOT_SYSTEM_APP);
+    }
     if (!WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER)) {
         HILOG_INFO("GetPixelMap no get permission!");
         return static_cast<int32_t>(E_NO_PERMISSION);
     }
-
-    std::string filePath = "";
-    if (GetFilePath(wallpaperType, filePath) != static_cast<int32_t>(E_OK)) {
-        return static_cast<int32_t>(E_PARAMETERS_INVALID);
+    int32_t ret = GetImageSize(wallpaperType, fdInfo.size);
+    if (ret != static_cast<int32_t>(E_OK)) {
+        HILOG_ERROR("GetImageSize failed");
+        return ret;
     }
-
-    if (!OHOS::FileExists(filePath)) {
-        HILOG_ERROR("file is not exist!");
-        return static_cast<int32_t>(E_NOT_FOUND);
+    ret = GetImageFd(wallpaperType, fdInfo.fd);
+    if (ret != static_cast<int32_t>(E_OK)) {
+        HILOG_ERROR("GetImageFd failed");
+        return ret;
     }
-    mtx.lock();
-    FILE *pixmap = fopen(filePath.c_str(), "rb");
-    if (pixmap == nullptr) {
-        HILOG_ERROR("fopen file Path failed, errno %{public}d.", errno);
-        mtx.unlock();
-        return static_cast<int32_t>(E_FILE_ERROR);
-    }
-    int fend = fseek(pixmap, 0, SEEK_END);
-    int length = ftell(pixmap);
-    int fset = fseek(pixmap, 0, SEEK_SET);
-    if (length <= 0 || fend != 0 || fset != 0) {
-        HILOG_ERROR("ftell file failed or fseek file failed, errno %{public}d", errno);
-        fclose(pixmap);
-        mtx.unlock();
-        return static_cast<int32_t>(E_FILE_ERROR);
-    }
-
-    fdInfo.size = length;
-    fclose(pixmap);
-    int fd = open(filePath.c_str(), O_RDONLY, 0440);
-    mtx.unlock();
-    if (fd < 0) {
-        HILOG_ERROR("Open file Path failed, errno %{public}d.", errno);
-        ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
-        return static_cast<int32_t>(E_DEAL_FAILED);
-    }
-    fdInfo.fd = fd;
-    HILOG_INFO("fdInfo.fd = %{public}d", fdInfo.fd);
     return static_cast<int32_t>(E_OK);
 }
 
-int WallpaperService::GetWallpaperId(int wallpaperType)
+int WallpaperService::GetWallpaperId(int32_t wallpaperType)
 {
     HILOG_INFO("WallpaperService::GetWallpaperId --> start ");
     int iWallpaperId = 1;
@@ -1207,6 +1199,58 @@ bool WallpaperService::IsSystemApp()
         isSystemApplication = bundleMgr->CheckIsSystemAppByUid(uid);
     }
     return isSystemApplication;
+}
+
+int32_t WallpaperService::GetImageFd(int32_t wallpaperType, int32_t &fd)
+{
+    HILOG_INFO("WallpaperService::GetImageFd start ");
+    std::string filePath = "";
+    if (GetFilePath(wallpaperType, filePath) != static_cast<int32_t>(E_OK)) {
+        return static_cast<int32_t>(E_PARAMETERS_INVALID);
+    }
+    mtx.lock();
+    fd = open(filePath.c_str(), O_RDONLY, 0440);
+    if (fd < 0) {
+        HILOG_ERROR("Open file Path failed, errno %{public}d.", errno);
+        ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
+        mtx.unlock();
+        return static_cast<int32_t>(E_DEAL_FAILED);
+    }
+    mtx.unlock();
+    return static_cast<int32_t>(E_OK);
+}
+
+int32_t WallpaperService::GetImageSize(int32_t wallpaperType, int32_t &size)
+{
+    HILOG_INFO("WallpaperService::GetImageSize start ");
+    std::string filePath = "";
+    if (GetFilePath(wallpaperType, filePath) != static_cast<int32_t>(E_OK)) {
+        return static_cast<int32_t>(E_PARAMETERS_INVALID);
+    }
+
+    if (!OHOS::FileExists(filePath)) {
+        HILOG_ERROR("file is not exist!");
+        return static_cast<int32_t>(E_NOT_FOUND);
+    }
+    mtx.lock();
+    FILE *fd = fopen(filePath.c_str(), "rb");
+    if (fd == nullptr) {
+        HILOG_ERROR("fopen file Path failed, errno %{public}d.", errno);
+        mtx.unlock();
+        return static_cast<int32_t>(E_FILE_ERROR);
+    }
+    int32_t fend = fseek(fd, 0, SEEK_END);
+    size = ftell(fd);
+    int32_t fset = fseek(fd, 0, SEEK_SET);
+    if (size <= 0 || fend != 0 || fset != 0) {
+        HILOG_ERROR("ftell file failed or fseek file failed, errno %{public}d", errno);
+        fclose(fd);
+        mtx.unlock();
+        return static_cast<int32_t>(E_FILE_ERROR);
+    }
+    fclose(fd);
+    mtx.unlock();
+    return static_cast<int32_t>(E_OK);
 }
 
 OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> WallpaperService::GetBundleMgr()

@@ -30,6 +30,7 @@
 #include "wallpaper_common.h"
 #include "wallpaper_js_util.h"
 #include "wallpaper_manager_common_info.h"
+#include "wallpaper_common.h"
 
 #define BUFFER_LENGTH_MAX (128)
 #define DEFAULT_STACK_ID (1)
