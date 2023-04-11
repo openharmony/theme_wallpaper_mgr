@@ -42,10 +42,10 @@ class WallpaperExtension {
           console.log(WindowName + ' window created');
           windowsCreated = true;
         });
-      })
+      });
     }, (error) => {
       console.log(WindowName + ' window createFailed, error.code = ' + error.code);
-    })
+    });
   }
   onCreated(want) {
     console.log(WindowName + 'onWallpaperExtensionCreated');
@@ -71,8 +71,8 @@ class WallpaperExtension {
       console.log(WindowName + ' loadContent');
       this.wallpaperWindow.show().then(() => {
         console.log(WindowName + ' window is show');
-      })
-    })
+      });
+    });
   }
 
   onWallpaperChanged(wallpaperType) {
