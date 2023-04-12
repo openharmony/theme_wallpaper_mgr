@@ -31,7 +31,6 @@ bool WallpaperCommonEventManager::PublishEvent(const OHOS::AAFwk::Want &want, in
     data.SetCode(eventCode);
     data.SetData(eventData);
     OHOS::EventFwk::CommonEventPublishInfo publishInfo;
-    publishInfo.SetOrdered(true);
     bool publishResult = OHOS::EventFwk::CommonEventManager::PublishCommonEvent(data, publishInfo, nullptr);
     HILOG_INFO("PublishEvent end publishResult = %{public}d", publishResult);
     return publishResult;
