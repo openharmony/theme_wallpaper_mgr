@@ -83,6 +83,7 @@ constexpr int HUNDRED = 100;
 constexpr int FOO_MAX_LEN = 52428800;
 constexpr int MAX_RETRY_TIMES = 20;
 constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
+constexpr int32_t FILE_PERMISSION = 0440;
 std::mutex WallpaperService::instanceLock_;
 
 sptr<WallpaperService> WallpaperService::instance_;
@@ -1209,7 +1210,7 @@ int32_t WallpaperService::GetImageFd(int32_t wallpaperType, int32_t &fd)
         return static_cast<int32_t>(E_PARAMETERS_INVALID);
     }
     mtx.lock();
-    fd = open(filePath.c_str(), O_RDONLY, 0440);
+    fd = open(filePath.c_str(), O_RDONLY, FILE_PERMISSION);
     if (fd < 0) {
         HILOG_ERROR("Open file Path failed, errno %{public}d.", errno);
         ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
