@@ -43,7 +43,7 @@ public:
     * values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    int32_t SetWallpaper(std::string url, int wallpaperType) final;
+    int32_t SetWallpaper(std::string url, int32_t wallpaperType, const ApiInfo &apiInfo) final;
 
       /**
     * Wallpaper set.
@@ -51,7 +51,8 @@ public:
     * values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
     * @return  true or false
     */
-    int32_t SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int wallpaperType) final;
+    int32_t SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType,
+        const ApiInfo &apiInfo) final;
 
     /**
         *Obtains the default pixel map of a wallpaper of the specified type.
@@ -60,14 +61,16 @@ public:
         * @permission ohos.permission.GET_WALLPAPER
         * @systemapi Hide this for inner system use.
     */
-    int32_t GetPixelMap(int wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &PixelMap) final;
+
+    int32_t GetPixelMap(int32_t wallpaperType, const ApiInfo &apiInfo,
+        std::shared_ptr<OHOS::Media::PixelMap> &PixelMap) final;
 
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of array callback function
      */
-    std::vector<uint64_t> GetColors(int wallpaperType) final;
+    int32_t GetColors(int32_t wallpaperType, const ApiInfo &apiInfo, std::vector<uint64_t> &colors) final;
 
     /**
      * Obtains the ID of the wallpaper of the specified type.
@@ -82,13 +85,13 @@ public:
      * Obtains the minimum height of the wallpaper.
      * @return number type of callback function
      */
-    int  GetWallpaperMinHeight() final;
+    int32_t GetWallpaperMinHeight(const ApiInfo &apiInfo, int32_t &minHeight) final;
 
      /**
      * Obtains the minimum width of the wallpaper.
      * @return number type of callback function
      */
-    int GetWallpaperMinWidth() final;
+    int32_t GetWallpaperMinWidth(const ApiInfo &apiInfo, int32_t &minWidth) final;
 
      /**
      * Checks whether to allow the application to change the wallpaper for the current user.
@@ -107,7 +110,7 @@ public:
      * @param wallpaperType  Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @permission ohos.permission.SET_WALLPAPER
      */
-    int32_t ResetWallpaper(std::int32_t wallpaperType) final;
+    int32_t ResetWallpaper(std::int32_t wallpaperType, const ApiInfo &apiInfo) final;
 
      /**
      * Registers a listener for wallpaper color changes to receive notifications about the changes.

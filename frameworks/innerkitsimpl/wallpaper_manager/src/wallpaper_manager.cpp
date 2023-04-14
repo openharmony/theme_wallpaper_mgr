@@ -131,14 +131,17 @@ template<typename F, typename... Args> ErrCode WallpaperManager::CallService(F f
     return result;
 }
 
-std::vector<uint64_t> WallpaperManager::GetColors(int wallpaperType)
+int32_t WallpaperManager::GetColors(int32_t wallpaperType, const ApiInfo &apiInfo, std::vector<uint64_t> &colors)
 {
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
-        return {};
+        return static_cast<int32_t>(E_DEAL_FAILED);
     }
-    return wpServerProxy->GetColors(wallpaperType);
+    if (apiInfo.isSystemApi) {
+        return wpServerProxy->GetColorsV9(wallpaperType, colors);
+    }
+    return wpServerProxy->GetColors(wallpaperType, colors);
 }
 
 int32_t WallpaperManager::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
@@ -161,7 +164,7 @@ int32_t WallpaperManager::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
     return wallpaperErrorCode;
 }
 
-int32_t WallpaperManager::SetWallpaper(std::string url, int wallpaperType)
+int32_t WallpaperManager::SetWallpaper(std::string url, int32_t wallpaperType, const ApiInfo &apiInfo)
 {
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
@@ -178,21 +181,11 @@ int32_t WallpaperManager::SetWallpaper(std::string url, int wallpaperType)
         HILOG_ERROR("fopen faild, %{public}s, %{public}s", fileRealPath.c_str(), strerror(errno));
         return static_cast<int32_t>(E_FILE_ERROR);
     }
-    int fend = fseek(pixMap, 0, SEEK_END);
-    if (fend != 0) {
-        HILOG_ERROR("fseek file failed, errno %{public}d", errno);
-        fclose(pixMap);
-        return static_cast<int32_t>(E_FILE_ERROR);
-    }
-    int length = ftell(pixMap);
-    if (length <= 0) {
-        HILOG_ERROR("ftell file failed, errno %{public}d", errno);
-        fclose(pixMap);
-        return static_cast<int32_t>(E_FILE_ERROR);
-    }
-    int fset = fseek(pixMap, 0, SEEK_SET);
-    if (fset != 0) {
-        HILOG_ERROR("fseek file failed, errno %{public}d", errno);
+    int32_t fend = fseek(pixMap, 0, SEEK_END);
+    int32_t length = ftell(pixMap);
+    int32_t fset = fseek(pixMap, 0, SEEK_SET);
+    if (length <= 0 || fend != 0 || fset != 0) {
+        HILOG_ERROR("ftell file failed or fseek file failed, errno %{public}d", errno);
         fclose(pixMap);
         return static_cast<int32_t>(E_FILE_ERROR);
     }
@@ -204,7 +197,12 @@ int32_t WallpaperManager::SetWallpaper(std::string url, int wallpaperType)
         return static_cast<int32_t>(E_FILE_ERROR);
     }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
-    int32_t wallpaperErrorCode = wpServerProxy->SetWallpaperByFD(fd, wallpaperType, length);
+    int32_t wallpaperErrorCode = 0;
+    if (apiInfo.isSystemApi) {
+        wallpaperErrorCode = wpServerProxy->SetWallpaperByFDV9(fd, wallpaperType, length);
+    } else {
+        wallpaperErrorCode = wpServerProxy->SetWallpaperByFD(fd, wallpaperType, length);
+    }
     close(fd);
     if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
         CloseWallpaperFd(wallpaperType);
@@ -213,7 +211,8 @@ int32_t WallpaperManager::SetWallpaper(std::string url, int wallpaperType)
     return wallpaperErrorCode;
 }
 
-int32_t WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int wallpaperType)
+int32_t WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType,
+    const ApiInfo &apiInfo)
 {
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
@@ -246,7 +245,12 @@ int32_t WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pi
         return static_cast<int32_t>(E_WRITE_PARCEL_ERROR);
     }
     close(fd[1]);
-    int32_t wallpaperErrorCode = wpServerProxy->SetWallpaperByMap(fd[0], wallpaperType, mapSize);
+    int32_t wallpaperErrorCode = 0;
+    if (apiInfo.isSystemApi) {
+        wallpaperErrorCode = wpServerProxy->SetWallpaperByMapV9(fd[0], wallpaperType, mapSize);
+    } else {
+        wallpaperErrorCode = wpServerProxy->SetWallpaperByMap(fd[0], wallpaperType, mapSize);
+    }
     close(fd[0]);
     if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
         CloseWallpaperFd(wallpaperType);
@@ -277,7 +281,8 @@ int64_t WallpaperManager::WritePixelMapToStream(std::ostream &outputStream,
     return packedSize;
 }
 
-int32_t WallpaperManager::GetPixelMap(int wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
+int32_t WallpaperManager::GetPixelMap(int32_t wallpaperType, const ApiInfo &apiInfo,
+    std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
 {
     HILOG_INFO("FrameWork GetPixelMap Start by FD");
     auto wpServerProxy = GetService();
@@ -286,7 +291,12 @@ int32_t WallpaperManager::GetPixelMap(int wallpaperType, std::shared_ptr<OHOS::M
         return static_cast<int32_t>(E_SA_DIED);
     }
     IWallpaperService::FdInfo fdInfo;
-    int32_t wallpaperErrorCode = wpServerProxy->GetPixelMap(wallpaperType, fdInfo);
+    int32_t wallpaperErrorCode = 0;
+    if (apiInfo.isSystemApi) {
+        wallpaperErrorCode = wpServerProxy->GetPixelMapV9(wallpaperType, fdInfo);
+    } else {
+        wallpaperErrorCode = wpServerProxy->GetPixelMap(wallpaperType, fdInfo);
+    }
     if (wallpaperErrorCode != static_cast<int32_t>(E_OK)) {
         return wallpaperErrorCode;
     }
@@ -322,24 +332,30 @@ int WallpaperManager::GetWallpaperId(int wallpaperType)
     return wpServerProxy->GetWallpaperId(wallpaperType);
 }
 
-int WallpaperManager::GetWallpaperMinHeight()
+int32_t WallpaperManager::GetWallpaperMinHeight(const ApiInfo &apiInfo, int32_t &minHeight)
 {
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
-        return -1;
+        return E_DEAL_FAILED;
     }
-    return wpServerProxy->GetWallpaperMinHeight();
+    if (apiInfo.isSystemApi) {
+        return wpServerProxy->GetWallpaperMinHeightV9(minHeight);
+    }
+    return wpServerProxy->GetWallpaperMinHeight(minHeight);
 }
 
-int WallpaperManager::GetWallpaperMinWidth()
+int32_t WallpaperManager::GetWallpaperMinWidth(const ApiInfo &apiInfo, int32_t &minWidth)
 {
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
-        return -1;
+        return E_DEAL_FAILED;
     }
-    return wpServerProxy->GetWallpaperMinWidth();
+    if (apiInfo.isSystemApi) {
+        return wpServerProxy->GetWallpaperMinWidthV9(minWidth);
+    }
+    return wpServerProxy->GetWallpaperMinWidth(minWidth);
 }
 
 bool WallpaperManager::IsChangePermitted()
@@ -361,14 +377,20 @@ bool WallpaperManager::IsOperationAllowed()
     }
     return wpServerProxy->IsOperationAllowed();
 }
-int32_t WallpaperManager::ResetWallpaper(std::int32_t wallpaperType)
+
+int32_t WallpaperManager::ResetWallpaper(std::int32_t wallpaperType, const ApiInfo &apiInfo)
 {
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return static_cast<int32_t>(E_SA_DIED);
     }
-    int32_t wallpaperErrorCode = wpServerProxy->ResetWallpaper(wallpaperType);
+    int32_t wallpaperErrorCode = 0;
+    if (apiInfo.isSystemApi) {
+        wallpaperErrorCode = wpServerProxy->ResetWallpaperV9(wallpaperType);
+    } else {
+        wallpaperErrorCode = wpServerProxy->ResetWallpaper(wallpaperType);
+    }
     if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
         CloseWallpaperFd(wallpaperType);
     }

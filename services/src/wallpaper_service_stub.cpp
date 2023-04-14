@@ -20,10 +20,10 @@
 #include "ashmem.h"
 #include "hilog_wrapper.h"
 #include "ipc_skeleton.h"
+#include "memory_guard.h"
 #include "parcel.h"
 #include "pixel_map.h"
 #include "wallpaper_common.h"
-#include "memory_guard.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -46,6 +46,13 @@ WallpaperServiceStub::WallpaperServiceStub()
     memberFuncMap_[IS_OPERATION_ALLOWED] = &WallpaperServiceStub::OnIsOperationAllowed;
     memberFuncMap_[RESET_WALLPAPER] = &WallpaperServiceStub::OnResetWallpaper;
     memberFuncMap_[REGISTER_CALLBACK] = &WallpaperServiceStub::OnRegisterWallpaperCallback;
+    memberFuncMap_[SET_WALLPAPER_URI_FD_V9] = &WallpaperServiceStub::OnSetWallpaperUriByFDV9;
+    memberFuncMap_[SET_WALLPAPER_MAP_V9] = &WallpaperServiceStub::OnSetWallpaperByMapV9;
+    memberFuncMap_[GET_PIXELMAP_V9] = &WallpaperServiceStub::OnGetPixelMapV9;
+    memberFuncMap_[GET_COLORS_V9] = &WallpaperServiceStub::OnGetColorsV9;
+    memberFuncMap_[GET_WALLPAPER_MIN_HEIGHT_V9] = &WallpaperServiceStub::OnGetWallpaperMinHeightV9;
+    memberFuncMap_[GET_WALLPAPER_MIN_WIDTH_V9] = &WallpaperServiceStub::OnGetWallpaperMinWidthV9;
+    memberFuncMap_[RESET_WALLPAPER_V9] = &WallpaperServiceStub::OnResetWallpaperV9;
 }
 
 WallpaperServiceStub::~WallpaperServiceStub()
@@ -78,14 +85,30 @@ int32_t WallpaperServiceStub::OnRemoteRequest(
     HILOG_INFO(" end##ret = %{public}d", ret);
     return ret;
 }
+
 int32_t WallpaperServiceStub::OnSetWallpaperByMap(MessageParcel &data, MessageParcel &reply)
 {
-    HILOG_INFO("WallpaperServiceStub::SetWallpaperMap start.");
+    return OnSetWallpaperByMapInner(data, reply, false);
+}
 
-    int fd = data.ReadFileDescriptor();
-    int wallpaperType = data.ReadInt32();
-    int length = data.ReadInt32();
-    int32_t wallpaperErrorCode = SetWallpaperByMap(fd, wallpaperType, length);
+int32_t WallpaperServiceStub::OnSetWallpaperByMapV9(MessageParcel &data, MessageParcel &reply)
+{
+    return OnSetWallpaperByMapInner(data, reply, true);
+}
+
+int32_t WallpaperServiceStub::OnSetWallpaperByMapInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi)
+{
+    HILOG_INFO("WallpaperServiceStub::SetWallpaper start.");
+
+    int32_t fd = data.ReadFileDescriptor();
+    int32_t wallpaperType = data.ReadInt32();
+    int32_t length = data.ReadInt32();
+    int32_t wallpaperErrorCode = 0;
+    if (isSystemApi) {
+        wallpaperErrorCode = SetWallpaperByMapV9(fd, wallpaperType, length);
+    } else {
+        wallpaperErrorCode = SetWallpaperByMap(fd, wallpaperType, length);
+    }
     close(fd);
     if (!reply.WriteInt32(wallpaperErrorCode)) {
         HILOG_ERROR("WriteInt32 fail");
@@ -93,7 +116,18 @@ int32_t WallpaperServiceStub::OnSetWallpaperByMap(MessageParcel &data, MessagePa
     }
     return ERR_NONE;
 }
+
 int32_t WallpaperServiceStub::OnSetWallpaperUriByFD(MessageParcel &data, MessageParcel &reply)
+{
+    return OnSetWallpaperUriByFDInner(data, reply, false);
+}
+
+int32_t WallpaperServiceStub::OnSetWallpaperUriByFDV9(MessageParcel &data, MessageParcel &reply)
+{
+    return OnSetWallpaperUriByFDInner(data, reply, true);
+}
+
+int32_t WallpaperServiceStub::OnSetWallpaperUriByFDInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi)
 {
     HILOG_INFO("WallpaperServiceStub::SetWallpaperUri start.");
 
@@ -106,7 +140,12 @@ int32_t WallpaperServiceStub::OnSetWallpaperUriByFD(MessageParcel &data, Message
     HILOG_INFO("wallpaperType= %{public}d", wallpaperType);
     int length = data.ReadInt32();
     HILOG_INFO("SetWallpaperByFD start");
-    int32_t wallpaperErrorCode = SetWallpaperByFD(fd, wallpaperType, length);
+    int32_t wallpaperErrorCode = 0;
+    if (isSystemApi) {
+        wallpaperErrorCode = SetWallpaperByFDV9(fd, wallpaperType, length);
+    } else {
+        wallpaperErrorCode = SetWallpaperByFD(fd, wallpaperType, length);
+    }
     close(fd);
     if (!reply.WriteInt32(wallpaperErrorCode)) {
         HILOG_ERROR("WriteInt32 fail");
@@ -117,11 +156,26 @@ int32_t WallpaperServiceStub::OnSetWallpaperUriByFD(MessageParcel &data, Message
 
 int32_t WallpaperServiceStub::OnGetPixelMap(MessageParcel &data, MessageParcel &reply)
 {
+    return OnGetPixelMapInner(data, reply, false);
+}
+
+int32_t WallpaperServiceStub::OnGetPixelMapV9(MessageParcel &data, MessageParcel &reply)
+{
+    return OnGetPixelMapInner(data, reply, true);
+}
+
+int32_t WallpaperServiceStub::OnGetPixelMapInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi)
+{
     HILOG_INFO("WallpaperServiceStub::GetPixelMap start.");
 
     int wallpaperType = data.ReadInt32();
     IWallpaperService::FdInfo fdInfo;
-    int wallpaperErrorCode = GetPixelMap(wallpaperType, fdInfo);
+    int wallpaperErrorCode = 0;
+    if (isSystemApi) {
+        wallpaperErrorCode = GetPixelMapV9(wallpaperType, fdInfo);
+    } else {
+        wallpaperErrorCode = GetPixelMap(wallpaperType, fdInfo);
+    }
     HILOG_INFO(" OnGetPixelMap wallpaperErrorCode = %{public}d", wallpaperErrorCode);
     if (!reply.WriteInt32(wallpaperErrorCode)) {
         HILOG_ERROR("WriteInt32 fail");
@@ -144,13 +198,35 @@ int32_t WallpaperServiceStub::OnGetPixelMap(MessageParcel &data, MessageParcel &
 
 int32_t WallpaperServiceStub::OnGetColors(MessageParcel &data, MessageParcel &reply)
 {
+    return OnGetColorsInner(data, reply, false);
+}
+
+int32_t WallpaperServiceStub::OnGetColorsV9(MessageParcel &data, MessageParcel &reply)
+{
+    return OnGetColorsInner(data, reply, true);
+}
+
+int32_t WallpaperServiceStub::OnGetColorsInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi)
+{
     HILOG_INFO("WallpaperServiceStub::OnGetColors start.");
-    int wallpaperType = data.ReadInt32();
-    std::vector<uint64_t> vecWallpaperColors = GetColors(wallpaperType);
+    int32_t wallpaperType = data.ReadInt32();
+    std::vector<uint64_t> vecWallpaperColors;
+    int32_t wallpaperErrorCode = 0;
+    if (isSystemApi) {
+        wallpaperErrorCode = GetColorsV9(wallpaperType, vecWallpaperColors);
+    } else {
+        wallpaperErrorCode = GetColors(wallpaperType, vecWallpaperColors);
+    }
     auto size = vecWallpaperColors.size();
-    if (!reply.WriteUInt64Vector(vecWallpaperColors)) {
-        HILOG_ERROR("WallpaperServiceStub::OnGetColors WriteUInt64Vector error.");
+    if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
+        HILOG_ERROR("WriteInt32 fail");
         return IPC_STUB_WRITE_PARCEL_ERR;
+    }
+    if (wallpaperErrorCode == E_OK) {
+        if (!reply.WriteUInt64Vector(vecWallpaperColors)) {
+            HILOG_ERROR("WallpaperServiceStub::OnGetColors WriteUInt64Vector error.");
+            return IPC_STUB_WRITE_PARCEL_ERR;
+        }
     }
     return (size == 0) ? IPC_STUB_INVALID_DATA_ERR : ERR_NONE;
 }
@@ -196,24 +272,67 @@ int32_t WallpaperServiceStub::OnGetWallpaperId(MessageParcel &data, MessageParce
 
 int32_t WallpaperServiceStub::OnGetWallpaperMinHeight(MessageParcel &data, MessageParcel &reply)
 {
+    return OnGetWallpaperMinHeightInner(data, reply, false);
+}
+
+int32_t WallpaperServiceStub::OnGetWallpaperMinHeightV9(MessageParcel &data, MessageParcel &reply)
+{
+    return OnGetWallpaperMinHeightInner(data, reply, true);
+}
+
+int32_t WallpaperServiceStub::OnGetWallpaperMinHeightInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi)
+{
     HILOG_INFO("WallpaperServiceStub::OnGetWallpaperMinHeight start.");
-    int wallpaerMinHeight = GetWallpaperMinHeight();
-    if (!reply.WriteInt32(wallpaerMinHeight)) {
-        HILOG_ERROR("Write result data failed");
+    int32_t wallpaperMinHeight = 0;
+    int32_t wallpaperErrorCode = 0;
+    if (isSystemApi) {
+        wallpaperErrorCode = GetWallpaperMinHeightV9(wallpaperMinHeight);
+    } else {
+        wallpaperErrorCode = GetWallpaperMinHeight(wallpaperMinHeight);
+    }
+    if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
+        HILOG_ERROR("WriteInt32 fail");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
-    HILOG_INFO("End. height[%{public}d]", wallpaerMinHeight);
+    if (wallpaperErrorCode == E_OK) {
+        if (!reply.WriteInt32(wallpaperMinHeight)) {
+            HILOG_ERROR("Write result data failed");
+            return IPC_STUB_WRITE_PARCEL_ERR;
+        }
+    }
+    HILOG_INFO("End. height[%{public}d]", wallpaperMinHeight);
     return ERR_NONE;
 }
 
 int32_t WallpaperServiceStub::OnGetWallpaperMinWidth(MessageParcel &data, MessageParcel &reply)
 {
-    HILOG_INFO("WallpaperServiceStub::OnGetWallpaperMinWidth start.");
+    return OnGetWallpaperMinWidthInner(data, reply, false);
+}
 
-    int wallpaperMinWidth = GetWallpaperMinWidth();
-    if (!reply.WriteInt32(wallpaperMinWidth)) {
-        HILOG_ERROR("Write result data failed");
+int32_t WallpaperServiceStub::OnGetWallpaperMinWidthV9(MessageParcel &data, MessageParcel &reply)
+{
+    return OnGetWallpaperMinWidthInner(data, reply, true);
+}
+
+int32_t WallpaperServiceStub::OnGetWallpaperMinWidthInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi)
+{
+    HILOG_INFO("WallpaperServiceStub::OnGetWallpaperMinWidth start.");
+    int32_t wallpaperMinWidth = 0;
+    int32_t wallpaperErrorCode = 0;
+    if (isSystemApi) {
+        wallpaperErrorCode = GetWallpaperMinWidthV9(wallpaperMinWidth);
+    } else {
+        wallpaperErrorCode = GetWallpaperMinWidth(wallpaperMinWidth);
+    }
+    if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
+        HILOG_ERROR("WriteInt32 fail");
         return IPC_STUB_WRITE_PARCEL_ERR;
+    }
+    if (wallpaperErrorCode == E_OK) {
+        if (!reply.WriteInt32(wallpaperMinWidth)) {
+            HILOG_ERROR("Write result data failed");
+            return IPC_STUB_WRITE_PARCEL_ERR;
+        }
     }
     HILOG_INFO("End. width[%{public}d]", wallpaperMinWidth);
     return ERR_NONE;
@@ -243,10 +362,25 @@ int32_t WallpaperServiceStub::OnIsOperationAllowed(MessageParcel &data, MessageP
 
 int32_t WallpaperServiceStub::OnResetWallpaper(MessageParcel &data, MessageParcel &reply)
 {
+    return OnResetWallpaperInner(data, reply, false);
+}
+
+int32_t WallpaperServiceStub::OnResetWallpaperV9(MessageParcel &data, MessageParcel &reply)
+{
+    return OnResetWallpaperInner(data, reply, true);
+}
+
+int32_t WallpaperServiceStub::OnResetWallpaperInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi)
+{
     HILOG_INFO("WallpaperServiceStub::OnResetWallpaper start.");
-    int wallpaperType = data.ReadInt32();
-    auto wallpaperErrorCode = ResetWallpaper(wallpaperType);
-    if (!reply.WriteInt32(wallpaperErrorCode)) {
+    int32_t wallpaperType = data.ReadInt32();
+    int32_t wallpaperErrorCode = 0;
+    if (isSystemApi) {
+        wallpaperErrorCode = ResetWallpaperV9(wallpaperType);
+    } else {
+        wallpaperErrorCode = ResetWallpaper(wallpaperType);
+    }
+    if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
         HILOG_ERROR("Write result data failed");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
