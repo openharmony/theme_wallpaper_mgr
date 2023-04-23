@@ -43,20 +43,6 @@ describe('WallpaperJSTest', function () {
     afterAll(function () {
         // input testsuite teardown step，teardown invoked after all testcases
         console.info('afterAll called')
-        wallpaper.restore(WALLPAPER_SYSTEM, function (err, data) {
-            if (err) {
-                console.info(`restore WALLPAPER_SYSTEM err ${err}`)
-            } else {
-                console.info('restore successful');
-            }
-        })
-        wallpaper.restore(WALLPAPER_LOCKSCREEN, function (err, data) {
-            if (err) {
-                console.info(`restore WALLPAPER_LOCKSCREEN err ${err}`)
-            } else {
-                console.info('restore successful');
-            }
-        })
     })
 
     async function createTempImage() {
@@ -591,6 +577,7 @@ describe('WallpaperJSTest', function () {
                 expect(null).assertFail();
                 done();
             });
+            await wallpaper.restore(WALLPAPER_LOCKSCREEN);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -615,6 +602,7 @@ describe('WallpaperJSTest', function () {
                 }
                 done();
             });
+            await wallpaper.restore(WALLPAPER_SYSTEM);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -638,6 +626,7 @@ describe('WallpaperJSTest', function () {
                 expect(null).assertFail();
                 done();
             });
+            await wallpaper.restore(WALLPAPER_SYSTEM);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -662,6 +651,7 @@ describe('WallpaperJSTest', function () {
                 }
                 done();
             });
+            await wallpaper.restore(WALLPAPER_LOCKSCREEN);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -685,6 +675,7 @@ describe('WallpaperJSTest', function () {
                 expect(null).assertFail();
                 done();
             });
+            await wallpaper.restore(WALLPAPER_LOCKSCREEN);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -709,6 +700,7 @@ describe('WallpaperJSTest', function () {
                 }
                 done();
             });
+            await wallpaper.restore(WALLPAPER_SYSTEM);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -732,7 +724,7 @@ describe('WallpaperJSTest', function () {
                 expect(null).assertFail();
                 done();
             });
-
+            await wallpaper.restore(WALLPAPER_SYSTEM);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -757,7 +749,7 @@ describe('WallpaperJSTest', function () {
                 }
                 done();
             });
-
+            await wallpaper.restore(WALLPAPER_LOCKSCREEN);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -871,7 +863,7 @@ describe('WallpaperJSTest', function () {
                 expect(null).assertFail();
                 done();
             });
-
+            await wallpaper.restore(WALLPAPER_LOCKSCREEN);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -896,6 +888,7 @@ describe('WallpaperJSTest', function () {
                 }
                 done();
             });
+            await wallpaper.restore(WALLPAPER_SYSTEM);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -919,6 +912,7 @@ describe('WallpaperJSTest', function () {
                 expect(null).assertFail();
                 done();
             });
+            await wallpaper.restore(WALLPAPER_SYSTEM);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -943,6 +937,7 @@ describe('WallpaperJSTest', function () {
                 }
                 done();
             });
+            await wallpaper.restore(WALLPAPER_LOCKSCREEN);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -1635,6 +1630,7 @@ describe('WallpaperJSTest', function () {
             done();
         }
         await wallpaper.setImage(URI, WALLPAPER_LOCKSCREEN);
+        await wallpaper.restore(WALLPAPER_LOCKSCREEN);
     })
 
     /**
@@ -1646,14 +1642,14 @@ describe('WallpaperJSTest', function () {
      */
     it('offCallbackTest001', 0, async function (done) {
         let callbackTimes = 0;
-        await wallpaper.restore(WALLPAPER_SYSTEM);
+        await wallpaper.setImage(URI, WALLPAPER_SYSTEM);
         try {
             wallpaper.on('colorChange', async (colors, wallpaperType) => {
                 console.info(`offCallbackTest001 colors : ${colors}`);
                 callbackTimes = callbackTimes + 1;
                 wallpaper.off('colorChange');
-                await wallpaper.restore(WALLPAPER_SYSTEM);
                 await wallpaper.setImage(URI, WALLPAPER_SYSTEM);
+                await wallpaper.restore(WALLPAPER_SYSTEM);
                 expect(callbackTimes === 1).assertTrue();
                 done();
             })
@@ -1662,6 +1658,6 @@ describe('WallpaperJSTest', function () {
             expect(null).assertFail();
             done();
         }
-        await wallpaper.setImage(URI, WALLPAPER_SYSTEM);
+        await wallpaper.restore(WALLPAPER_SYSTEM);
     })
 })
