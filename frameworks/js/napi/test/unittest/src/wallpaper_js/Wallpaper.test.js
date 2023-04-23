@@ -299,8 +299,8 @@ describe('WallpaperJSTest', function () {
             })
         } catch (error) {
             expect(null).assertFail();
+            done();
         }
-        done();
     })
 
     /**
@@ -783,6 +783,7 @@ describe('WallpaperJSTest', function () {
             })
         } catch (error) {
             expect(null).assertFail();
+            done();
         }
     })
 
@@ -918,7 +919,6 @@ describe('WallpaperJSTest', function () {
                 expect(null).assertFail();
                 done();
             });
-
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -1639,7 +1639,7 @@ describe('WallpaperJSTest', function () {
 
     /**
      * @tc.name:      offCallbackTest001
-     * @tc.desc:      Test off_colorChange to logoff a listener for wallpaper color changes to
+     * @tc.desc:      Test off_colorChange to log off a listener for wallpaper color changes to
      *                    receive notifications about the changes.
      * @tc.type:      FUNC test
      * @tc.require:   issueI5UHRG
@@ -1648,10 +1648,14 @@ describe('WallpaperJSTest', function () {
         let callbackTimes = 0;
         await wallpaper.restore(WALLPAPER_SYSTEM);
         try {
-            wallpaper.on('colorChange', (colors, wallpaperType) => {
+            wallpaper.on('colorChange', async (colors, wallpaperType) => {
                 console.info(`offCallbackTest001 colors : ${colors}`);
                 callbackTimes = callbackTimes + 1;
                 wallpaper.off('colorChange');
+                await wallpaper.restore(WALLPAPER_SYSTEM);
+                await wallpaper.setImage(URI, WALLPAPER_SYSTEM);
+                expect(callbackTimes === 1).assertTrue();
+                done();
             })
         } catch (error) {
             console.info(`offCallbackTest001 error : ${error}`);
@@ -1659,9 +1663,5 @@ describe('WallpaperJSTest', function () {
             done();
         }
         await wallpaper.setImage(URI, WALLPAPER_SYSTEM);
-        await wallpaper.restore(WALLPAPER_SYSTEM);
-        await wallpaper.setImage(URI, WALLPAPER_SYSTEM);
-        expect(callbackTimes === 1).assertTrue();
-        done();
     })
 })
