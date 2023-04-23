@@ -181,7 +181,7 @@ describe('WallpaperJSTest', function () {
      */
     it('restoreCallbackSystemTest001', 0, async function (done) {
         try {
-            wallpaper.restore(WALLPAPER_SYSTEM, function (err, data) {
+            wallpaper.restore(WALLPAPER_SYSTEM, function (err) {
                 if (err) {
                     console.info(`restoreCallbackSystemTest001 err : ${err}`);
                     expect(null).assertFail()
@@ -207,7 +207,7 @@ describe('WallpaperJSTest', function () {
      */
     it('restorePromiseSystemTest002', 0, async function (done) {
         try {
-            wallpaper.restore(WALLPAPER_SYSTEM).then((data) => {
+            wallpaper.restore(WALLPAPER_SYSTEM).then(() => {
                 expect(true).assertTrue();
                 done();
             }).catch((err) => {
@@ -229,7 +229,7 @@ describe('WallpaperJSTest', function () {
      */
     it('restoreCallbackLockTest003', 0, async function (done) {
         try {
-            wallpaper.restore(WALLPAPER_LOCKSCREEN, function (err, data) {
+            wallpaper.restore(WALLPAPER_LOCKSCREEN, function (err) {
                 if (err) {
                     console.info(`restoreCallbackLockTest003 err : ${err}`);
                     expect(null).assertFail();
@@ -252,7 +252,7 @@ describe('WallpaperJSTest', function () {
      */
     it('restorePromiseLockTest004', 0, async function (done) {
         try {
-            wallpaper.restore(WALLPAPER_LOCKSCREEN).then((data) => {
+            wallpaper.restore(WALLPAPER_LOCKSCREEN).then(() => {
                 expect(true).assertTrue();
                 done();
             }).catch((err) => {
@@ -274,7 +274,7 @@ describe('WallpaperJSTest', function () {
      */
     it('restoreCallbackThrowErrorTest005', 0, async function (done) {
         try {
-            wallpaper.restore(INVALID_WALLPAPER_TYPE, function (err, data) {
+            wallpaper.restore(INVALID_WALLPAPER_TYPE, function (err) {
                 if (err) {
                     console.info(`restoreCallbackThrowErrorTest005 err : ${err}`);
                     expect(err.code === PARAMETER_ERROR).assertTrue()
@@ -297,7 +297,7 @@ describe('WallpaperJSTest', function () {
      */
     it('restoreCallbackThrowErrorTest006', 0, async function (done) {
         try {
-            wallpaper.restore(function (err, data) {
+            wallpaper.restore(function (err) {
                 if (err) {
                     console.info(`restoreCallbackThrowErrorTest006 err : ${err}`);
                     expect(null).assertFail();
@@ -320,7 +320,7 @@ describe('WallpaperJSTest', function () {
      */
     it('restorePromiseThrowErrorTest007', 0, async function (done) {
         try {
-            wallpaper.restore(INVALID_WALLPAPER_TYPE).then((data) => {
+            wallpaper.restore(INVALID_WALLPAPER_TYPE).then(() => {
                 expect(null).assertFail();
                 done();
             }).catch((err) => {
@@ -342,7 +342,7 @@ describe('WallpaperJSTest', function () {
      */
     it('restorePromiseThrowErrorTest008', 0, async function (done) {
         try {
-            wallpaper.restore().then((data) => {
+            wallpaper.restore().then(() => {
                 expect(null).assertFail();
                 done();
             }).catch((err) => {
@@ -569,15 +569,15 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageURIPromiseLockTest001', 0, async function (done) {
         try {
-            await wallpaper.setImage(URI, WALLPAPER_LOCKSCREEN).then((data) => {
+            wallpaper.setImage(URI, WALLPAPER_LOCKSCREEN).then(async () => {
                 expect(true).assertTrue();
                 done();
+                await wallpaper.restore(WALLPAPER_LOCKSCREEN);
             }).catch((err) => {
                 console.info(`setImageURIPromiseLockTest001 err : ${err}`);
                 expect(null).assertFail();
                 done();
             });
-            await wallpaper.restore(WALLPAPER_LOCKSCREEN);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -593,7 +593,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageURICallbackSystemTest002', 0, async function (done) {
         try {
-            await wallpaper.setImage(URI, WALLPAPER_SYSTEM, function (err, data) {
+            wallpaper.setImage(URI, WALLPAPER_SYSTEM, async function (err) {
                 if (err) {
                     console.info(`setImageURICallbackSystemTest002 err : ${err}`);
                     expect(null).assertFail();
@@ -601,8 +601,8 @@ describe('WallpaperJSTest', function () {
                     expect(true).assertTrue();
                 }
                 done();
+                await wallpaper.restore(WALLPAPER_SYSTEM);
             });
-            await wallpaper.restore(WALLPAPER_SYSTEM);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -618,15 +618,15 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageURIPromiseSystemTest003', 0, async function (done) {
         try {
-            await wallpaper.setImage(URI, WALLPAPER_SYSTEM).then((data) => {
+            wallpaper.setImage(URI, WALLPAPER_SYSTEM).then(async () => {
                 expect(true).assertTrue();
                 done();
+                await wallpaper.restore(WALLPAPER_SYSTEM);
             }).catch((err) => {
                 console.info(`setImageURIPromiseSystemTest003 err : ${err}`);
                 expect(null).assertFail();
                 done();
             });
-            await wallpaper.restore(WALLPAPER_SYSTEM);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -642,7 +642,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageURICallbackLockTest004', 0, async function (done) {
         try {
-            await wallpaper.setImage(URI, WALLPAPER_LOCKSCREEN, function (err, data) {
+            wallpaper.setImage(URI, WALLPAPER_LOCKSCREEN, async function (err) {
                 if (err) {
                     console.info(`setImageURICallbackLockTest004 err : ${err}`);
                     expect(null).assertFail();
@@ -650,6 +650,7 @@ describe('WallpaperJSTest', function () {
                     expect(true).assertTrue();
                 }
                 done();
+                await wallpaper.restore(WALLPAPER_LOCKSCREEN);
             });
             await wallpaper.restore(WALLPAPER_LOCKSCREEN);
         } catch (error) {
@@ -667,15 +668,15 @@ describe('WallpaperJSTest', function () {
     it('setImageMapPromiseLockTest005', 0, async function (done) {
         try {
             let pixelMap = await createTempPixelMap();
-            await wallpaper.setImage(pixelMap, WALLPAPER_LOCKSCREEN).then((data) => {
+            wallpaper.setImage(pixelMap, WALLPAPER_LOCKSCREEN).then(async () => {
                 expect(true).assertTrue();
                 done();
+                await wallpaper.restore(WALLPAPER_LOCKSCREEN);
             }).catch((err) => {
                 console.info(`setImageMapPromiseLockTest005 err : ${err}`);
                 expect(null).assertFail();
                 done();
             });
-            await wallpaper.restore(WALLPAPER_LOCKSCREEN);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -691,7 +692,7 @@ describe('WallpaperJSTest', function () {
     it('setImageMapCallbackSystemTest006', 0, async function (done) {
         try {
             let pixelMap = await createTempPixelMap();
-            await wallpaper.setImage(pixelMap, WALLPAPER_SYSTEM, function (err, data) {
+            wallpaper.setImage(pixelMap, WALLPAPER_SYSTEM, async function (err) {
                 if (err) {
                     console.info(`setImageMapCallbackSystemTest006 err : ${err}`);
                     expect(null).assertFail();
@@ -699,8 +700,8 @@ describe('WallpaperJSTest', function () {
                     expect(true).assertTrue();
                 }
                 done();
+                await wallpaper.restore(WALLPAPER_SYSTEM);
             });
-            await wallpaper.restore(WALLPAPER_SYSTEM);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -716,15 +717,15 @@ describe('WallpaperJSTest', function () {
     it('setImageMapPromiseSystemTest007', 0, async function (done) {
         try {
             let pixelMap = await createTempPixelMap();
-            await wallpaper.setImage(pixelMap, WALLPAPER_SYSTEM).then((data) => {
+            wallpaper.setImage(pixelMap, WALLPAPER_SYSTEM).then(async () => {
                 expect(true).assertTrue();
                 done();
+                await wallpaper.restore(WALLPAPER_SYSTEM);
             }).catch((err) => {
                 console.info(`setImageMapPromiseSystemTest007 err : ${err}`);
                 expect(null).assertFail();
                 done();
             });
-            await wallpaper.restore(WALLPAPER_SYSTEM);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -740,7 +741,7 @@ describe('WallpaperJSTest', function () {
     it('setImageMapCallbackLockTest008', 0, async function (done) {
         try {
             let pixelMap = await createTempPixelMap();
-            await wallpaper.setImage(pixelMap, WALLPAPER_LOCKSCREEN, function (err, data) {
+            wallpaper.setImage(pixelMap, WALLPAPER_LOCKSCREEN, async function (err) {
                 if (err) {
                     console.info(`setImageMapCallbackLockTest008 err : ${err}`);
                     expect(null).assertFail();
@@ -748,8 +749,8 @@ describe('WallpaperJSTest', function () {
                     expect(true).assertTrue();
                 }
                 done();
+                await wallpaper.restore(WALLPAPER_LOCKSCREEN);
             });
-            await wallpaper.restore(WALLPAPER_LOCKSCREEN);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -764,7 +765,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageCallbackThrowErrorTest009', 0, async function (done) {
         try {
-            wallpaper.setImage(URI, INVALID_WALLPAPER_TYPE, function (err, data) {
+            wallpaper.setImage(URI, INVALID_WALLPAPER_TYPE, function (err) {
                 if (err) {
                     console.info(`setImageCallbackThrowErrorTest009 err : ${err}`);
                     expect(err.code === PARAMETER_ERROR).assertTrue()
@@ -787,7 +788,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImageCallbackThrowErrorTest010', 0, async function (done) {
         try {
-            wallpaper.setImage(URI, function (err, data) {
+            wallpaper.setImage(URI, function (err) {
                 if (err) {
                     console.info(`setImageCallbackThrowErrorTest010 err : ${err}`);
                     expect(null).assertFail();
@@ -810,7 +811,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImagePromiseThrowErrorTest011', 0, async function (done) {
         try {
-            wallpaper.setImage(URI, INVALID_WALLPAPER_TYPE).then((data) => {
+            wallpaper.setImage(URI, INVALID_WALLPAPER_TYPE).then(() => {
                 expect(null).assertFail();
                 done();
             }).catch((err) => {
@@ -832,7 +833,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setImagePromiseThrowErrorTest012', 0, async function (done) {
         try {
-            wallpaper.setImage().then((data) => {
+            wallpaper.setImage().then(() => {
                 expect(null).assertFail();
                 done();
             }).catch((err) => {
@@ -855,15 +856,15 @@ describe('WallpaperJSTest', function () {
     it('setWallpaperMapPromiseLockTest001', 0, async function (done) {
         try {
             let pixelMap = await createTempPixelMap();
-            await wallpaper.setWallpaper(pixelMap, WALLPAPER_LOCKSCREEN).then((data) => {
+            wallpaper.setWallpaper(pixelMap, WALLPAPER_LOCKSCREEN).then(async () => {
                 expect(true).assertTrue();
                 done();
+                await wallpaper.restore(WALLPAPER_LOCKSCREEN);
             }).catch((err) => {
                 console.info(`setWallpaperMapPromiseLockTest001 err : ${err}`);
                 expect(null).assertFail();
                 done();
             });
-            await wallpaper.restore(WALLPAPER_LOCKSCREEN);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -879,7 +880,7 @@ describe('WallpaperJSTest', function () {
     it('setWallpaperMapCallbackSystemTest002', 0, async function (done) {
         try {
             let pixelMap = await createTempPixelMap();
-            await wallpaper.setWallpaper(pixelMap, WALLPAPER_SYSTEM, function (err, data) {
+            wallpaper.setWallpaper(pixelMap, WALLPAPER_SYSTEM, async function (err) {
                 if (err) {
                     console.info(`setWallpaperMapCallbackSystemTest002 err : ${err}`);
                     expect(null).assertFail();
@@ -887,8 +888,8 @@ describe('WallpaperJSTest', function () {
                     expect(true).assertTrue();
                 }
                 done();
+                await wallpaper.restore(WALLPAPER_SYSTEM);
             });
-            await wallpaper.restore(WALLPAPER_SYSTEM);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -904,15 +905,15 @@ describe('WallpaperJSTest', function () {
     it('setWallpaperMapPromiseSystemTest003', 0, async function (done) {
         try {
             let pixelMap = await createTempPixelMap();
-            await wallpaper.setWallpaper(pixelMap, WALLPAPER_SYSTEM).then((data) => {
+            wallpaper.setWallpaper(pixelMap, WALLPAPER_SYSTEM).then(async () => {
                 expect(true).assertTrue();
                 done();
+                await wallpaper.restore(WALLPAPER_SYSTEM);
             }).catch((err) => {
                 console.info(`setWallpaperMapPromiseSystemTest003 err : ${err}`);
                 expect(null).assertFail();
                 done();
             });
-            await wallpaper.restore(WALLPAPER_SYSTEM);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -928,7 +929,7 @@ describe('WallpaperJSTest', function () {
     it('setWallpaperMapCallbackLockTest004', 0, async function (done) {
         try {
             let pixelMap = await createTempPixelMap();
-            await wallpaper.setWallpaper(pixelMap, WALLPAPER_LOCKSCREEN, function (err, data) {
+            wallpaper.setWallpaper(pixelMap, WALLPAPER_LOCKSCREEN, async function (err) {
                 if (err) {
                     console.info(`setWallpaperMapCallbackLockTest004 err : ${err}`);
                     expect(null).assertFail();
@@ -936,8 +937,8 @@ describe('WallpaperJSTest', function () {
                     expect(true).assertTrue();
                 }
                 done();
+                await wallpaper.restore(WALLPAPER_LOCKSCREEN);
             });
-            await wallpaper.restore(WALLPAPER_LOCKSCREEN);
         } catch (error) {
             expect(null).assertFail();
             done();
@@ -1051,7 +1052,7 @@ describe('WallpaperJSTest', function () {
      */
     it('resetCallbackSystemTest001', 0, async function (done) {
         try {
-            wallpaper.reset(WALLPAPER_SYSTEM, function (err, data) {
+            wallpaper.reset(WALLPAPER_SYSTEM, function (err) {
                 if (err) {
                     console.info(`resetCallbackSystemTest001 err : ${err}`);
                     expect(null).assertFail()
@@ -1076,7 +1077,7 @@ describe('WallpaperJSTest', function () {
      */
     it('resetPromiseSystemTest002', 0, async function (done) {
         try {
-            wallpaper.reset(WALLPAPER_SYSTEM).then((data) => {
+            wallpaper.reset(WALLPAPER_SYSTEM).then(() => {
                 expect(true).assertTrue();
                 done();
             }).catch((err) => {
@@ -1098,7 +1099,7 @@ describe('WallpaperJSTest', function () {
      */
     it('resetCallbackLockTest003', 0, async function (done) {
         try {
-            wallpaper.reset(WALLPAPER_LOCKSCREEN, function (err, data) {
+            wallpaper.reset(WALLPAPER_LOCKSCREEN, function (err) {
                 if (err) {
                     console.info(`resetCallbackLockTest003 err : ${err}`);
                     expect(null).assertFail();
@@ -1121,7 +1122,7 @@ describe('WallpaperJSTest', function () {
      */
     it('resetPromiseLockTest004', 0, async function (done) {
         try {
-            wallpaper.reset(WALLPAPER_LOCKSCREEN).then((data) => {
+            wallpaper.reset(WALLPAPER_LOCKSCREEN).then(() => {
                 expect(true).assertTrue();
                 done();
             }).catch((err) => {
