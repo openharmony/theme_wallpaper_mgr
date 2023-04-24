@@ -56,7 +56,10 @@ JsWallpaperExtension *JsWallpaperExtension::Create(const std::unique_ptr<Runtime
 JsWallpaperExtension::JsWallpaperExtension(JsRuntime &jsRuntime) : jsRuntime_(jsRuntime)
 {
 }
-JsWallpaperExtension::~JsWallpaperExtension() = default;
+JsWallpaperExtension::~JsWallpaperExtension()
+{
+    jsRuntime_.FreeNativeReference(std::move(jsObj_));
+}
 
 void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &record,
     const std::shared_ptr<OHOSApplication> &application, std::shared_ptr<AbilityHandler> &handler,
