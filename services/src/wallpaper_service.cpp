@@ -400,6 +400,9 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
         HILOG_ERROR("userId error, userId = %{public}d", userId);
         return;
     }
+    AAFwk::Want want;
+    want.SetElementName(OHOS_WALLPAPER_BUNDLE_NAME, "WallpaperExtAbility");
+    ConnectExtensionAbility(want);
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     LoadSettingsLocked(userId, true);
     if (!FileDeal::IsFileExist(userDir)) {
