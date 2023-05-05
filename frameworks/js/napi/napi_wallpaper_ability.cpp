@@ -49,7 +49,7 @@ napi_value NAPI_GetColors(napi_env env, napi_callback_info info)
     ApiInfo apiInfo{ false, false };
     NapiWallpaperAbility::GetColorsInner(context, apiInfo);
     Call call(env, info, std::dynamic_pointer_cast<Call::Context>(context), 1, apiInfo.needException);
-    return call.AsyncCall(env);
+    return call.AsyncCall(env, "getColors");
 }
 
 napi_value NAPI_GetColorsSync(napi_env env, napi_callback_info info)
@@ -105,7 +105,7 @@ napi_value NAPI_GetId(napi_env env, napi_callback_info info)
     auto context = std::make_shared<GetContextInfo>();
     NapiWallpaperAbility::GetIdInner(context);
     Call call(env, info, context, 1, false);
-    return call.AsyncCall(env);
+    return call.AsyncCall(env, "getId");
 }
 
 void NapiWallpaperAbility::GetIdInner(std::shared_ptr<GetContextInfo> context)
@@ -142,7 +142,7 @@ napi_value NAPI_GetFile(napi_env env, napi_callback_info info)
     ApiInfo apiInfo{ false, false };
     NapiWallpaperAbility::GetFileInner(context, apiInfo);
     Call call(env, info, context, 1, apiInfo.needException);
-    return call.AsyncCall(env);
+    return call.AsyncCall(env, "getFile");
 }
 
 void NapiWallpaperAbility::GetFileInner(std::shared_ptr<GetFileContextInfo> context, const ApiInfo &apiInfo)
@@ -193,7 +193,7 @@ napi_value NAPI_GetMinHeight(napi_env env, napi_callback_info info)
     ApiInfo apiInfo{ false, false };
     NapiWallpaperAbility::GetMinHeightInner(context, apiInfo);
     Call call(env, info, context, 0, apiInfo.needException);
-    return call.AsyncCall(env);
+    return call.AsyncCall(env, "getMinHeight");
 }
 
 napi_value NAPI_GetMinHeightSync(napi_env env, napi_callback_info info)
@@ -240,7 +240,7 @@ napi_value NAPI_GetMinWidth(napi_env env, napi_callback_info info)
     ApiInfo apiInfo{ false, false };
     NapiWallpaperAbility::GetMinWidthInner(context, apiInfo);
     Call call(env, info, context, 0, apiInfo.needException);
-    return call.AsyncCall(env);
+    return call.AsyncCall(env, "getMinWidth");
 }
 
 napi_value NAPI_GetMinWidthSync(napi_env env, napi_callback_info info)
@@ -285,7 +285,7 @@ napi_value NAPI_IsChangePermitted(napi_env env, napi_callback_info info)
     auto context = std::make_shared<PermissionContextInfo>();
     NapiWallpaperAbility::IsChangeAllowedInner(context);
     Call call(env, info, context, 0, false);
-    return call.AsyncCall(env);
+    return call.AsyncCall(env, "isChangePermitted");
 }
 
 void NapiWallpaperAbility::IsChangeAllowedInner(std::shared_ptr<PermissionContextInfo> context)
@@ -312,7 +312,7 @@ napi_value NAPI_IsOperationAllowed(napi_env env, napi_callback_info info)
     auto context = std::make_shared<PermissionContextInfo>();
     NapiWallpaperAbility::IsUserChangeAllowedInner(context);
     Call call(env, info, context, 0, false);
-    return call.AsyncCall(env);
+    return call.AsyncCall(env, "isOperationAllowed");
 }
 
 void NapiWallpaperAbility::IsUserChangeAllowedInner(std::shared_ptr<PermissionContextInfo> context)
@@ -340,7 +340,7 @@ napi_value NAPI_Reset(napi_env env, napi_callback_info info)
     ApiInfo apiInfo{ false, false };
     NapiWallpaperAbility::RestoreInner(context, apiInfo);
     Call call(env, info, context, 1, apiInfo.needException);
-    return call.AsyncCall(env);
+    return call.AsyncCall(env, "reset");
 }
 
 napi_value NAPI_Restore(napi_env env, napi_callback_info info)
@@ -350,7 +350,7 @@ napi_value NAPI_Restore(napi_env env, napi_callback_info info)
     ApiInfo apiInfo{ true, true };
     NapiWallpaperAbility::RestoreInner(context, apiInfo);
     Call call(env, info, context, 1, apiInfo.needException);
-    return call.AsyncCall(env);
+    return call.AsyncCall(env, "restore");
 }
 
 void NapiWallpaperAbility::RestoreInner(std::shared_ptr<SetContextInfo> context, const ApiInfo &apiInfo)
@@ -394,7 +394,7 @@ napi_value NAPI_SetWallpaper(napi_env env, napi_callback_info info)
     NapiWallpaperAbility::SetImageInput(context);
     NapiWallpaperAbility::SetImageExec(context, apiInfo);
     Call call(env, info, context, TWO, apiInfo.needException);
-    return call.AsyncCall(env);
+    return call.AsyncCall(env, "setWallpaper");
 }
 
 napi_value NAPI_SetImage(napi_env env, napi_callback_info info)
@@ -404,7 +404,7 @@ napi_value NAPI_SetImage(napi_env env, napi_callback_info info)
     NapiWallpaperAbility::SetImageInput(context);
     NapiWallpaperAbility::SetImageExec(context, apiInfo);
     Call call(env, info, context, TWO, apiInfo.needException);
-    return call.AsyncCall(env);
+    return call.AsyncCall(env, "setImage");
 }
 
 void NapiWallpaperAbility::SetImageInput(std::shared_ptr<SetContextInfo> context)
@@ -479,7 +479,7 @@ napi_value NAPI_GetPixelMap(napi_env env, napi_callback_info info)
     ApiInfo apiInfo{ false, false };
     NapiWallpaperAbility::GetImageInner(context, apiInfo);
     Call call(env, info, context, 1, apiInfo.needException);
-    return call.AsyncCall(env);
+    return call.AsyncCall(env, "getPixelMap");
 }
 
 napi_value NAPI_GetImage(napi_env env, napi_callback_info info)
@@ -489,7 +489,7 @@ napi_value NAPI_GetImage(napi_env env, napi_callback_info info)
     ApiInfo apiInfo{ true, true };
     NapiWallpaperAbility::GetImageInner(context, apiInfo);
     Call call(env, info, context, 1, apiInfo.needException);
-    return call.AsyncCall(env);
+    return call.AsyncCall(env, "getImage");
 }
 
 void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context, const ApiInfo &apiInfo)
