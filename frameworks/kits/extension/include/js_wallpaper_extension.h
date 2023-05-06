@@ -105,6 +105,10 @@ public:
     virtual void OnStop() override;
 
 private:
+    void RegisterWallpaperCallback();
+    void RegisterOffsetCallback();
+
+private:
     NativeValue *CallObjectMethod(const char *name, NativeValue *const *argv = nullptr, size_t argc = 0);
 
     void GetSrcPath(std::string &srcPath);

@@ -21,6 +21,7 @@
 #include "iremote_object.h"
 #include "iremote_proxy.h"
 #include "refbase.h"
+#include "wallpaper_common.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -34,6 +35,7 @@ public:
     static inline BrokerDelegator<WallpaperServiceCbProxy> delegator_;
 
     int32_t OnCall(const int32_t num) override;
+    int32_t OnOffsetCall(const int32_t xOffset, const int32_t yOffset) override;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

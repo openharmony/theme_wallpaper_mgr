@@ -30,6 +30,7 @@ public:
     static bool CopyFile(const std::string &sourceFile, const std::string &newFile);
     static bool DeleteFile(const std::string &sourceFile);
     static bool IsFileExist(const std::string &name);
+    static std::string GetExtension(const std::string &filePath);
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

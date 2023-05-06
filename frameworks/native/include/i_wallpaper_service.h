@@ -21,11 +21,11 @@
 
 #include "i_wallpaper_callback.h"
 #include "iremote_broker.h"
-#include "iwallpaper_color_change_listener.h"
+#include "iwallpaper_event_listener.h"
 #include "pixel_map.h"
 #include "pixel_map_parcel.h"
-#include "wallpaper_color_change_listener.h"
-#include "wallpaper_color_change_listener_client.h"
+#include "wallpaper_event_listener.h"
+#include "wallpaper_event_listener_client.h"
 #include "wallpaper_common.h"
 #include "wallpaper_manager_common_info.h"
 
@@ -55,6 +55,9 @@ public:
         GET_WALLPAPER_MIN_HEIGHT_V9,
         GET_WALLPAPER_MIN_WIDTH_V9,
         RESET_WALLPAPER_V9,
+        SET_VIDEO,
+        SEND_EVENT,
+        SET_OFFSET
     };
     struct getPixelMap {
         std::string result;
@@ -122,20 +125,20 @@ public:
     virtual ErrorCode ResetWallpaper(int32_t wallpaperType) = 0;
 
     /**
-     * Registers a listener for wallpaper color changes to receive notifications about the changes.
-     * @param type The incoming colorChange table open receiver pick a color change wallpaper wallpaper color changes
-     * @param callback Provides dominant colors of the wallpaper.
+     * Registers a listener for wallpaper event changes to receive notifications about the changes.
+     * @param type event type
+     * @param listener event observer.
      * @return  true or false
      */
-    virtual bool On(sptr<IWallpaperColorChangeListener> listener) = 0;
+    virtual bool On(const std::string &type, sptr<IWallpaperEventListener> listener) = 0;
 
     /**
-     * Registers a listener for wallpaper color changes to receive notifications about the changes.
-     * @param type Incoming 'colorChange' table delete receiver to pick up a color change wallpaper wallpaper color
-     * changes
-     * @param callback Provides dominant colors of the wallpaper.
+     * Unregisters a listener for wallpaper event changes.
+     * @param type event type
+     * @param listener event observer.
+     * @return  true or false
      */
-    virtual bool Off(sptr<IWallpaperColorChangeListener> listener) = 0;
+    virtual bool Off(const std::string &type, sptr<IWallpaperEventListener> listener) = 0;
 
     virtual bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) = 0;
 
@@ -145,6 +148,37 @@ public:
     virtual ErrorCode GetWallpaperMinHeightV9(int32_t &minHeight) = 0;
     virtual ErrorCode GetWallpaperMinWidthV9(int32_t &minWidth) = 0;
     virtual ErrorCode ResetWallpaperV9(int32_t wallpaperType) = 0;
+
+    /**
+     * @brief Sets live wallpaper of the specified type based on the uri path
+     *        of the MP4 file.
+     *
+     * Need @permission ohos.permission.SET_WALLPAPER
+     *
+     * @param fd Indicates the handle of the MP4 file.
+     * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM
+     *        or WALLPAPER_LOCKSCREEN
+     * @param length file size of the MP4 file.
+     * @return ErrorCode
+     */
+    virtual ErrorCode SetVideo(int32_t fd, int32_t wallpaperType, int32_t length) = 0;
+
+    /**
+     * @brief The application sends the event to the wallpaper service.
+     *
+     * Need @permission ohos.permission.SET_WALLPAPER
+     *
+     * @param eventType Event type, values for SHOW_SYSTEMSCREEN or SHOW_LOCKSCREEN
+     * @return ErrorCode
+     */
+    virtual ErrorCode SendEvent(const std::string &eventType) = 0;
+
+    /**
+     * Sets the wallpaper offset.
+     * @param xOffset Indicates the offset ratio of the X axis.
+     * @param yOffset Indicates the offset ratio of the Y axis.
+     */
+    virtual ErrorCode SetOffset(int32_t xOffset, int32_t yOffset) = 0;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

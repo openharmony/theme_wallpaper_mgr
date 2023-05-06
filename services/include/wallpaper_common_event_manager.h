@@ -18,13 +18,14 @@
 #include <string>
 
 #include "common_event_manager.h"
+#include "wallpaper_manager_common_info.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
 
 class WallpaperCommonEventManager {
 public:
-    void SendWallpaperLockSettingMessage();
+    void SendWallpaperLockSettingMessage(WallpaperResourceType resType);
     void SendWallpaperSystemSettingMessage();
 
 private:

@@ -46,6 +46,10 @@ namespace OHOS {
 using namespace MiscServices;
 namespace WallpaperMgrService {
 constexpr int32_t OPTION_QUALITY = 100;
+constexpr int32_t MIN_TIME = 0;
+constexpr int32_t MAX_TIME = 5000;
+constexpr int32_t MAX_VIDEO_SIZE = 104857600;
+
 WallpaperManager::WallpaperManager()
 {
 }
@@ -178,20 +182,14 @@ ErrorCode WallpaperManager::SetWallpaper(std::string uri, int32_t wallpaperType,
         HILOG_ERROR("get real path file failed, len = %{public}zu", uri.size());
         return E_FILE_ERROR;
     }
-    FILE *pixMap = std::fopen(fileRealPath.c_str(), "rb");
-    if (pixMap == nullptr) {
-        HILOG_ERROR("fopen failed, %{public}s, %{public}s", fileRealPath.c_str(), strerror(errno));
-        return E_FILE_ERROR;
+
+    long length = 0;
+    ErrorCode wallpaperErrorCode = CheckWallpaperFormat(fileRealPath, false, length);
+    if (wallpaperErrorCode != E_OK) {
+        HILOG_ERROR("Check wallpaper format failed!");
+        return wallpaperErrorCode;
     }
-    int32_t fend = fseek(pixMap, 0, SEEK_END);
-    int32_t length = ftell(pixMap);
-    int32_t fset = fseek(pixMap, 0, SEEK_SET);
-    if (length <= 0 || fend != 0 || fset != 0) {
-        HILOG_ERROR("ftell file failed or fseek file failed, errno %{public}d", errno);
-        fclose(pixMap);
-        return E_FILE_ERROR;
-    }
-    fclose(pixMap);
+
     int32_t fd = open(fileRealPath.c_str(), O_RDONLY, 0660);
     if (fd < 0) {
         HILOG_ERROR("open file failed, errno %{public}d", errno);
@@ -199,7 +197,6 @@ ErrorCode WallpaperManager::SetWallpaper(std::string uri, int32_t wallpaperType,
         return E_FILE_ERROR;
     }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
-    ErrorCode wallpaperErrorCode = E_UNKNOWN;
     if (apiInfo.isSystemApi) {
         wallpaperErrorCode = wpServerProxy->SetWallpaperV9(fd, wallpaperType, length);
     } else {
@@ -258,6 +255,40 @@ ErrorCode WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> 
         CloseWallpaperFd(wallpaperType);
     }
     delete[] buffer;
+    return wallpaperErrorCode;
+}
+
+ErrorCode WallpaperManager::SetVideo(const std::string &uri, const int32_t wallpaperType)
+{
+    auto wpServerProxy = GetService();
+    if (wpServerProxy == nullptr) {
+        HILOG_ERROR("Get proxy failed");
+        return E_DEAL_FAILED;
+    }
+    
+    std::string fileRealPath;
+    if (!GetRealPath(uri, fileRealPath)) {
+        HILOG_ERROR("Get real path failed, uri: %{public}s", uri.c_str());
+        return E_FILE_ERROR;
+    }
+
+    long length = 0;
+    ErrorCode wallpaperErrorCode = CheckWallpaperFormat(fileRealPath, true, length);
+    if (wallpaperErrorCode != E_OK) {
+        HILOG_ERROR("Check wallpaper format failed!");
+        return wallpaperErrorCode;
+    }
+    
+    int32_t fd = open(fileRealPath.c_str(), O_RDONLY, 0660);
+    if (fd < 0) {
+        HILOG_ERROR("Open file failed, errno %{public}d", errno);
+        ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
+        return E_FILE_ERROR;
+    }
+    StartAsyncTrace(HITRACE_TAG_MISC, "SetVideo", static_cast<int32_t>(TraceTaskId::SET_VIDEO));
+    wallpaperErrorCode = wpServerProxy->SetVideo(fd, wallpaperType, length);
+    close(fd);
+    FinishAsyncTrace(HITRACE_TAG_MISC, "SetVideo", static_cast<int32_t>(TraceTaskId::SET_VIDEO));
     return wallpaperErrorCode;
 }
 
@@ -397,7 +428,7 @@ ErrorCode WallpaperManager::ResetWallpaper(std::int32_t wallpaperType, const Api
     return wallpaperErrorCode;
 }
 
-bool WallpaperManager::On(const std::string &type, std::shared_ptr<WallpaperColorChangeListener> listener)
+bool WallpaperManager::On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener)
 {
     HILOG_DEBUG("WallpaperManager::On in");
     auto wpServerProxy = GetService();
@@ -410,18 +441,17 @@ bool WallpaperManager::On(const std::string &type, std::shared_ptr<WallpaperColo
         return false;
     }
     std::lock_guard<std::mutex> lck(listenerMapMutex_);
-
-    sptr<WallpaperColorChangeListenerClient> ipcListener = new (std::nothrow)
-        WallpaperColorChangeListenerClient(listener);
+    sptr<WallpaperEventListenerClient> ipcListener = new (std::nothrow)
+        WallpaperEventListenerClient(listener);
     if (ipcListener == nullptr) {
-        HILOG_ERROR("new WallpaperColorChangeListenerClient failed");
+        HILOG_ERROR("new WallpaperEventListenerClient failed");
         return false;
     }
     HILOG_DEBUG("WallpaperManager::On out");
-    return wpServerProxy->On(ipcListener);
+    return wpServerProxy->On(type, ipcListener);
 }
 
-bool WallpaperManager::Off(const std::string &type, std::shared_ptr<WallpaperColorChangeListener> listener)
+bool WallpaperManager::Off(const std::string &type, std::shared_ptr<WallpaperEventListener> listener)
 {
     HILOG_DEBUG("WallpaperManager::Off in");
     auto wpServerProxy = GetService();
@@ -432,15 +462,15 @@ bool WallpaperManager::Off(const std::string &type, std::shared_ptr<WallpaperCol
     std::lock_guard<std::mutex> lck(listenerMapMutex_);
     bool status = false;
     if (listener != nullptr) {
-        sptr<WallpaperColorChangeListenerClient> ipcListener = new (std::nothrow)
-            WallpaperColorChangeListenerClient(listener);
+        sptr<WallpaperEventListenerClient> ipcListener = new (std::nothrow)
+            WallpaperEventListenerClient(listener);
         if (ipcListener == nullptr) {
-            HILOG_ERROR("new WallpaperColorChangeListenerClient failed");
+            HILOG_ERROR("new WallpaperEventListenerClient failed");
             return false;
         }
-        status = wpServerProxy->Off(ipcListener);
+        status = wpServerProxy->Off(type, ipcListener);
     } else {
-        status = wpServerProxy->Off(nullptr);
+        status = wpServerProxy->Off(type, nullptr);
     }
     if (!status) {
         HILOG_ERROR("off failed");
@@ -455,12 +485,12 @@ JScallback WallpaperManager::GetCallback()
     return callback;
 }
 
-void WallpaperManager::SetCallback(bool (*cb)(int32_t))
+void WallpaperManager::SetCallback(JScallback cb)
 {
     callback = cb;
 }
 
-bool WallpaperManager::RegisterWallpaperCallback(bool (*callback)(int32_t))
+bool WallpaperManager::RegisterWallpaperCallback(JScallback callback)
 {
     HILOG_ERROR("  WallpaperManager::RegisterWallpaperCallback statrt");
     SetCallback(callback);
@@ -503,6 +533,16 @@ void WallpaperManager::CloseWallpaperFd(int32_t wallpaperType)
     }
 }
 
+ErrorCode WallpaperManager::SendEvent(const std::string &eventType)
+{
+    auto wpServerProxy = GetService();
+    if (wpServerProxy == nullptr) {
+        HILOG_ERROR("Get proxy failed");
+        return E_DEAL_FAILED;
+    }
+    return wpServerProxy->SendEvent(eventType);
+}
+
 bool WallpaperManager::GetRealPath(const std::string &inOriPath, std::string &outRealPath)
 {
     char realPath[PATH_MAX + 1] = { 0x00 };
@@ -513,6 +553,143 @@ bool WallpaperManager::GetRealPath(const std::string &inOriPath, std::string &ou
     outRealPath = std::string(realPath);
     if (!OHOS::FileExists(outRealPath)) {
         HILOG_ERROR("real path file is not exist! %{public}s", outRealPath.c_str());
+        return false;
+    }
+    return true;
+}
+
+bool WallpaperManager::CheckVideoFormat(const std::string &fileName)
+{
+    int32_t videoFd = -1;
+    int64_t length = 0;
+    if (!OpenFile(fileName, videoFd, length)) {
+        HILOG_ERROR("Open file: %{public}s failed.", fileName.c_str());
+        return false;
+    }
+    std::shared_ptr<Media::AVMetadataHelper> helper = Media::AVMetadataHelperFactory::CreateAVMetadataHelper();
+    if (helper == nullptr) {
+        HILOG_ERROR("Create metadata helper failed!");
+        close(videoFd);
+        return false;
+    }
+    int32_t offset = 0;
+    int32_t errorCode = helper->SetSource(videoFd, offset, length);
+    if (errorCode != 0) {
+        HILOG_ERROR("Set helper source failed");
+        return false;
+    }
+    auto metaData = helper->ResolveMetadata();
+    if (metaData.find(Media::AV_KEY_MIME_TYPE) != metaData.end()) {
+        if (metaData[Media::AV_KEY_MIME_TYPE] != "video/mp4") {
+            HILOG_ERROR("Video mime type is not video/mp4!");
+            close(videoFd);
+            return false;
+        }
+    } else {
+        HILOG_INFO("Cannot get video mime type!");
+        close(videoFd);
+        return false;
+    }
+
+    if (metaData.find(Media::AV_KEY_DURATION) != metaData.end()) {
+        int32_t videoDuration = std::stoi(metaData[Media::AV_KEY_DURATION]);
+        if (videoDuration < MIN_TIME || videoDuration > MAX_TIME) {
+            HILOG_ERROR("The durations of this vodeo is not between 0s ~ 5s!");
+            close(videoFd);
+            return false;
+        }
+    } else {
+        HILOG_INFO("Cannot get the duration of this video!");
+        close(videoFd);
+        return false;
+    }
+    close(videoFd);
+    return true;
+}
+
+bool WallpaperManager::OpenFile(const std::string &fileName, int32_t &fd, int64_t &fileSize)
+{
+    if (!OHOS::FileExists(fileName)) {
+        HILOG_ERROR("File is not exist, file: %{public}s", fileName.c_str());
+        return false;
+    }
+
+    fd = open(fileName.c_str(), O_RDONLY);
+    if (fd <= 0) {
+        HILOG_ERROR("Get video fd failed!");
+        return false;
+    }
+    struct stat64 st;
+    if (fstat64(fd, &st) != 0) {
+        HILOG_ERROR("Failed to fstat64");
+        close(fd);
+        return false;
+    }
+    fileSize = static_cast<int64_t>(st.st_size);
+    return true;
+}
+
+ErrorCode WallpaperManager::CheckWallpaperFormat(const std::string &realPath, bool isLive, long &length) {
+    if (isLive && (FileDeal::GetExtension(realPath) != ".mp4" || !CheckVideoFormat(realPath))) {
+        HILOG_ERROR("Check live wallpaper file failed!");
+        return E_PARAMETERS_INVALID;
+    }
+
+    FILE *file = std::fopen(realPath.c_str(), "rb");
+    if (file == nullptr) {
+        HILOG_ERROR("Fopen failed, %{public}s, %{public}s", realPath.c_str(), strerror(errno));
+        return E_FILE_ERROR;
+    }
+
+    int32_t fend = fseek(file, 0, SEEK_END);
+    length = ftell(file);
+    int32_t fset = fseek(file, 0, SEEK_SET);
+    if (length <= 0 || (isLive && length > MAX_VIDEO_SIZE) || fend != 0 || fset != 0) {
+        HILOG_ERROR("ftell file failed or fseek file failed, errno %{public}d", errno);
+        fclose(file);
+        return E_FILE_ERROR;
+    }
+    fclose(file);
+    return E_OK;
+}
+
+ErrorCode WallpaperManager::SetOffset(int32_t xOffset, int32_t yOffset)
+{
+    auto wpServerProxy = GetService();
+    if (wpServerProxy == nullptr) {
+        HILOG_ERROR("Get proxy failed");
+        return E_DEAL_FAILED;
+    }
+    return wpServerProxy->SetOffset(xOffset, yOffset);
+}
+
+JsCallbackOffset WallpaperManager::GetOffsetCallback()
+{
+    return offsetCallback;
+}
+
+void WallpaperManager::SetOffsetCallback(bool (*cb)(int32_t, int32_t))
+{
+    offsetCallback = cb;
+}
+
+bool WallpaperManager::RegisterOffsetCallback(bool (*offsetCallback)(int32_t, int32_t))
+{
+    if (offsetCallback == nullptr) {
+        HILOG_ERROR("offsetCallback is nullptr.");
+        return false;
+    }
+
+    SetOffsetCallback(offsetCallback);
+    auto wpServerProxy = GetService();
+    if (wpServerProxy == nullptr) {
+        HILOG_ERROR("Get proxy failed");
+        return false;
+    }
+
+    bool status = wpServerProxy->RegisterWallpaperCallback(new WallpaperServiceCbStub());
+    if (!status) {
+        HILOG_ERROR("Set offset failed code=%d.", ERR_NONE);
         return false;
     }
     return true;

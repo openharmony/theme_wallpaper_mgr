@@ -13,32 +13,32 @@
  * limitations under the License.
  */
 
-#ifndef WALLPAPER_COLOR_CHANGE_LISTENER_CLIENT_H
-#define WALLPAPER_COLOR_CHANGE_LISTENER_CLIENT_H
+#ifndef WALLPAPER_EVENT_LISTENER_CLIENT_H
+#define WALLPAPER_EVENT_LISTENER_CLIENT_H
 
 #include <memory>
 #include <vector>
 
-#include "wallpaper_color_change_listener.h"
-#include "wallpaper_color_change_listener_stub.h"
+#include "wallpaper_event_listener.h"
+#include "wallpaper_event_listener_stub.h"
 #include "wallpaper_manager_common_info.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
-class WallpaperColorChangeListenerClient : public WallpaperColorChangeListenerStub {
+class WallpaperEventListenerClient : public WallpaperEventListenerStub {
 public:
-    WallpaperColorChangeListenerClient(std::shared_ptr<WallpaperColorChangeListener> wallpaperColorChangerListener);
+    WallpaperEventListenerClient(std::shared_ptr<WallpaperEventListener> wallpaperEventListener);
 
-    ~WallpaperColorChangeListenerClient();
+    ~WallpaperEventListenerClient();
 
     void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType) override;
-
-    const std::shared_ptr<WallpaperColorChangeListener> GetColorChangeListener() const;
+    void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType) override;
+    const std::shared_ptr<WallpaperEventListener> GetEventListener() const;
 
 private:
     // client is responsible for free it when call UnSubscribeKvStore.
-    std::shared_ptr<WallpaperColorChangeListener> wallpaperColorChangerListener_;
+    std::shared_ptr<WallpaperEventListener> wallpaperEventListener_;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
-#endif // WALLPAPER_COLOR_CHANGE_LISTENER_CLIENT_H
+#endif // WALLPAPER_EVENT_LISTENER_CLIENT_H

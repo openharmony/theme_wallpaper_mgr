@@ -13,29 +13,32 @@
  * limitations under the License.
  */
 
-#ifndef WALLPAPER_COLOR_CHANGE_LISTENER_STUB_H
-#define WALLPAPER_COLOR_CHANGE_LISTENER_STUB_H
+#ifndef WALLPAPER_EVENT_LISTENER_PROXY_H
+#define WALLPAPER_EVENT_LISTENER_PROXY_H
 
 #include <cstdint>
 #include <vector>
-
 #include "iremote_broker.h"
 #include "iremote_proxy.h"
 #include "iremote_stub.h"
-#include "iwallpaper_color_change_listener.h"
 #include "refbase.h"
 #include "wallpaper_manager_common_info.h"
+#include "iwallpaper_event_listener.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
-
-class WallpaperColorChangeListenerStub : public IRemoteStub<IWallpaperColorChangeListener> {
+class WallpaperEventListenerProxy : public IRemoteProxy<IWallpaperEventListener> {
 public:
-    virtual int OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
-        MessageOption &option) override;
+    explicit WallpaperEventListenerProxy(const sptr<IRemoteObject> &object)
+        : IRemoteProxy<IWallpaperEventListener>(object)
+    {
+    }
+    ~WallpaperEventListenerProxy() = default;
+    static inline BrokerDelegator<WallpaperEventListenerProxy> delegator_;
+    void OnColorsChange(const std::vector<uint64_t> &color, int32_t wallpaperType) override;
+    void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType) override;
 };
-
 } // namespace WallpaperMgrService
 } // namespace OHOS
 
-#endif // WALLPAPER_COLOR_CHANGE_LISTENER_H
+#endif  // WALLPAPER_EVENT_LISTENER_PROXY_H

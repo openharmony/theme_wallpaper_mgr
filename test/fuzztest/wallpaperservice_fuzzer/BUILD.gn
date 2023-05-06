@@ -29,8 +29,6 @@ ohos_fuzztest("WallpaperServiceFuzzTest") {
     "//base/security/access_token/interfaces/innerkits/accesstoken/include",
     "${wallpaper_path}/frameworks/native/include",
     "${wallpaper_path}/utils/include",
-    "//foundation/window/window_manager/interfaces/innerkits/dm",
-    "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk",
   ]
 
   cflags = [

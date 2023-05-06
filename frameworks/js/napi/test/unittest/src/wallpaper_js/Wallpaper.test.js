@@ -25,7 +25,12 @@ const INVALID_WALLPAPER_TYPE = 2;
 const DEFAULT_WALLPAPER_ID = -1;
 const PARAMETER_ERROR = 401;
 const URI = "/data/storage/el2/base/haps/js.jpeg";
+const URI_30FPS_3S_MP4 = "/system/etc/30fps_3s.mp4";
+const URI_15FPS_7S_MP4 = "/system/etc/15fps_7s.mp4";
+const URI_30FPS_3S_MOV = "/system/etc/30fps_3s.mov";
 
+const SHOW_SYSTEM_SCREEN = "SHOW_SYSTEMSCREEN";
+const SHOW_LOCK_SCREEN = "SHOW_LOCKSCREEN";
 describe('WallpaperJSTest', function () {
     beforeAll(async function () {
         // input testsuite setup step，setup invoked before all testcases
@@ -1660,5 +1665,215 @@ describe('WallpaperJSTest', function () {
             done();
         }
         await wallpaper.restore(WALLPAPER_SYSTEM);
+    })
+
+    /**
+     * @tc.name:      setVideoTest001
+     * @tc.desc:      Test setVideo to set live wallpaper.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI6R07J
+     */
+      it('setVideoTest001', 0, async function (done) {
+        try {
+            wallpaper.setVideo(URI_30FPS_3S_MP4, WALLPAPER_SYSTEM, (error) => {
+                if (error != undefined) {
+                    console.info(`setVideoTest001 error : ${error}`);
+                    expect(null).assertFail();
+                } else {
+                    expect(true).assertTrue();
+                    wallpaper.reset(WALLPAPER_SYSTEM);
+                }
+                done();
+            })
+        } catch (error) {
+            console.info(`setVideoTest001 error : ${error}`);
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setVideoTest002
+     * @tc.desc:      Test setVideo to set live wallpaper.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI6R07J
+     */
+    it('setVideoTest002', 0, async function (done) {
+        try {
+            wallpaper.setVideo(URI_30FPS_3S_MOV, WALLPAPER_SYSTEM, (error) => {
+                if (error != undefined) {
+                    console.info(`setVideoTest002 error : ${error}`);
+                    expect(true).assertTrue();
+                } else {
+                    expect(null).assertFail();
+                }
+                done();
+            })
+        } catch (error) {
+            console.info(`setVideoTest002 error : ${error}`);
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setVideoTest003
+     * @tc.desc:      Test setVideo to set live wallpaper.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI6R07J
+     */
+    it('setVideoTest003', 0, async function (done) {
+        try {
+            wallpaper.setVideo(URI_15FPS_7S_MP4, WALLPAPER_SYSTEM, (error) => {
+                if (error != undefined) {
+                    console.info(`setVideoTest002 error : ${error}`);
+                    expect(true).assertTrue();
+                } else {
+                    expect(null).assertFail();
+                }
+                done();
+            })
+        } catch (error) {
+            console.info(`setVideoTest003 error : ${error}`);
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setVideoTest004
+     * @tc.desc:      Test setVideo to set live wallpaper.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI6R07J
+     */
+    it('setVideoTest004', 0, async function (done) {
+        try {
+            wallpaper.setVideo(URI_30FPS_3S_MP4, WALLPAPER_LOCKSCREEN, (error) => {
+                if (error != undefined) {
+                    console.info(`setVideoTest004 error : ${error}`);
+                    expect(null).assertFail();
+                } else {
+                    expect(true).assertTrue();
+                    wallpaper.reset(WALLPAPER_LOCKSCREEN);
+                }
+                done();
+            })
+        } catch (error) {
+            console.info(`setVideoTest004 error : ${error}`);
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setVideoTest005
+     * @tc.desc:      Test setVideo to set live wallpaper.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI6R07J
+     */
+    it('setVideoTest005', 0, async function (done) {
+        try {
+            wallpaper.setVideo(URI_30FPS_3S_MOV, WALLPAPER_LOCKSCREEN, (error) => {
+                if (error != undefined) {
+                    console.info(`setVideoTest005 error : ${error}`);
+                    expect(true).assertTrue();
+                } else {
+                    expect(null).assertFail();
+                }
+                done();
+            })
+        } catch (error) {
+            console.info(`setVideoTest005 error : ${error}`);
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setVideoTest006
+     * @tc.desc:      Test setVideo to set live wallpaper.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI6R07J
+     */
+    it('setVideoTest006', 0, async function (done) {
+        try {
+            wallpaper.setVideo(URI_15FPS_7S_MP4, WALLPAPER_LOCKSCREEN, (error) => {
+                if (error != undefined) {
+                    console.info(`setVideoTest006 error : ${error}`);
+                    expect(true).assertTrue();
+                } else {
+                    expect(null).assertFail();
+                }
+                done();
+            })
+        } catch (error) {
+            console.info(`setVideoTest006 error : ${error}`);
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      sendEventTest001
+     * @tc.desc:      Display lockScreen in system.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI6R07J
+     */
+    it('sendEventTest001', 0, async function (done) {
+        try {
+            wallpaper.sendEvent(SHOW_LOCK_SCREEN, '', (error) => {
+                if (error != undefined) {
+                    console.info(`sendEventTest001 error : ${error}`);
+                    expect(null).assertFail();
+                } else {
+                    expect(true).assertTrue();
+                }
+                done();
+            })
+        } catch (error) {
+            console.info(`sendEventTest001 error : ${error}`);
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      sendEventTest002
+     * @tc.desc:      Display system in lockScreen.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI6R07J
+     */
+    it('sendEventTest002', 0, async function (done) {
+        try {
+            wallpaper.sendEvent(SHOW_SYSTEM_SCREEN, '', (error) => {
+                if (error != undefined) {
+                    console.info(`sendEventTest001 error : ${error}`);
+                    expect(null).assertFail();
+                } else {
+                    expect(true).assertTrue();
+                }
+                done();
+            })
+        } catch (error) {
+            console.info(`sendEventTest001 error : ${error}`);
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setOffsetTest001
+     * @tc.desc:      Offset wallpaper.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI6R07J
+     */
+    it('setOffsetTest001', 0, async function (done) {
+        let ret = wallpaper.setOffset(10,10)
+        if (ret) {
+            expect(true).assertTrue();
+        } else {
+            expect(null).assertFail();
+        }
+        done();
     })
 })

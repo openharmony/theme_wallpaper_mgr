@@ -22,6 +22,7 @@ namespace WallpaperMgrService {
 WallpaperServiceCbStub::WallpaperServiceCbStub()
 {
     memberFuncMap_[ONCALL] = &WallpaperServiceCbStub::HandleOnCall;
+    memberFuncMap_[ON_OFFSET_CALL] = &WallpaperServiceCbStub::HandleOnOffsetCall;
 }
 
 int32_t WallpaperServiceCbStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
@@ -60,6 +61,23 @@ int32_t WallpaperServiceCbStub::OnCall(const int32_t num)
 {
     HILOG_INFO("  WallpaperServiceCbStub::OnCall");
     WallpaperMgrService::WallpaperManagerkits::GetInstance().GetCallback()(num);
+    return 0;
+}
+
+int32_t WallpaperServiceCbStub::OnOffsetCall(const int32_t xOffset, const int32_t yOffset)
+{
+    HILOG_INFO("WallpaperServiceCbStub::OnOffsetCall");
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().GetOffsetCallback()(xOffset, yOffset);
+    return 0;
+}
+
+int32_t WallpaperServiceCbStub::HandleOnOffsetCall(MessageParcel &data, MessageParcel &reply)
+{
+    HILOG_INFO("WallpaperServiceCbStub::HandleOnOffsetCall");
+    int32_t xOffset = data.ReadInt32();
+    int32_t yOffset = data.ReadInt32();
+    OnOffsetCall(xOffset, yOffset);
+    HILOG_DEBUG("Current xOffset = %{public}d, yOffset = %{public}d", xOffset, yOffset);
     return 0;
 }
 } // namespace WallpaperMgrService

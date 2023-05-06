@@ -37,4 +37,19 @@ enum WallpaperType {
      */
     WALLPAPER_LOCKSCREEN
 };
+
+enum WallpaperResourceType {
+    // default wallpaper resource.
+    DEFAULT,
+
+    // picture wallpaper resource.
+    PICTURE,
+
+    // video wallpaper resource.
+    VIDEO,
+
+    // packge wallpaper resource.
+    PACKGE
+};
+
 #endif
