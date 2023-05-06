@@ -150,6 +150,39 @@ ErrorCode WallpaperServiceProxy::GetPixelMapV9(int32_t wallpaperType, IWallpaper
     return GetPixelMapInner(wallpaperType, GET_PIXELMAP_V9, fdInfo);
 }
 
+ErrorCode WallpaperServiceProxy::SetVideo(int32_t fd, int32_t wallpaperType, int32_t length)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        HILOG_ERROR("Failed to write parcelable");
+        return E_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteFileDescriptor(fd)) {
+        HILOG_ERROR("Failed to WriteFileDescriptor");
+        return E_WRITE_PARCEL_ERROR;
+    }
+
+    if (!data.WriteInt32(wallpaperType)) {
+        HILOG_ERROR("Failed to WriteInt32");
+        return E_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteInt32(length)) {
+        HILOG_ERROR("Failed to WriteInt32");
+        return E_WRITE_PARCEL_ERROR;
+    }
+
+    int32_t result = Remote()->SendRequest(SET_VIDEO, data, reply, option);
+    if (result != ERR_NONE) {
+        HILOG_ERROR("Set video failed, result: %{public}d", result);
+        return E_DEAL_FAILED;
+    }
+
+    return ConvertIntToErrorCode(reply.ReadInt32());
+}
+
 ErrorCode WallpaperServiceProxy::GetPixelMapInner(int32_t wallpaperType, uint32_t code,
     IWallpaperService::FdInfo &fdInfo)
 {
@@ -345,7 +378,31 @@ ErrorCode WallpaperServiceProxy::ResetWallpaperInner(int32_t wallpaperType, uint
     return ConvertIntToErrorCode(reply.ReadInt32());
 }
 
-bool WallpaperServiceProxy::On(sptr<IWallpaperColorChangeListener> listener)
+ErrorCode WallpaperServiceProxy::SendEvent(const std::string &eventType)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        HILOG_ERROR("Failed to write parcelable");
+        return E_WRITE_PARCEL_ERROR;
+    }
+
+    if (!data.WriteString(eventType)) {
+        HILOG_ERROR("write eventType failed.");
+        return E_WRITE_PARCEL_ERROR;
+    }
+
+    int32_t result = Remote()->SendRequest(SEND_EVENT, data, reply, option);
+    if (result != ERR_NONE) {
+        HILOG_ERROR("Failed to send event, result: %{public}d", result);
+        return E_DEAL_FAILED;
+    }
+    return ConvertIntToErrorCode(reply.ReadInt32());
+}
+
+bool WallpaperServiceProxy::On(const std::string &type, sptr<IWallpaperEventListener> listener)
 {
     HILOG_DEBUG("WallpaperServiceProxy::On in");
     MessageParcel data;
@@ -357,6 +414,11 @@ bool WallpaperServiceProxy::On(sptr<IWallpaperColorChangeListener> listener)
     }
     if (listener == nullptr) {
         HILOG_ERROR("listener is nullptr");
+        return false;
+    }
+
+    if (!data.WriteString(type)) {
+        HILOG_ERROR("write type failed.");
         return false;
     }
     if (!data.WriteRemoteObject(listener->AsObject())) {
@@ -375,7 +437,7 @@ bool WallpaperServiceProxy::On(sptr<IWallpaperColorChangeListener> listener)
     return ret;
 }
 
-bool WallpaperServiceProxy::Off(sptr<IWallpaperColorChangeListener> listener)
+bool WallpaperServiceProxy::Off(const std::string &type, sptr<IWallpaperEventListener> listener)
 {
     HILOG_DEBUG("WallpaperServiceProxy::Off in");
     MessageParcel data;
@@ -383,6 +445,10 @@ bool WallpaperServiceProxy::Off(sptr<IWallpaperColorChangeListener> listener)
     MessageOption option;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
+        return false;
+    }
+    if (!data.WriteString(type)) {
+        HILOG_ERROR("write type failed.");
         return false;
     }
     if (listener != nullptr) {
@@ -460,6 +526,33 @@ ErrorCode WallpaperServiceProxy::ConvertIntToErrorCode(int32_t errorCode)
             break;
     }
     return wallpaperErrorCode;
+}
+
+ErrorCode WallpaperServiceProxy::SetOffset(int32_t xOffset, int32_t yOffset)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        HILOG_ERROR("Failed to write parcelable");
+        return E_WRITE_PARCEL_ERROR;
+    }
+
+    if (!data.WriteInt32(xOffset)) {
+        HILOG_ERROR("Failed to WriteInt32 xOffset");
+        return E_WRITE_PARCEL_ERROR;
+    }
+
+    if (!data.WriteInt32(yOffset)) {
+        HILOG_ERROR("Failed to WriteInt32 yOffset");
+        return E_WRITE_PARCEL_ERROR;
+    }
+    int32_t result = Remote()->SendRequest(SET_OFFSET, data, reply, option);
+    if (result != ERR_NONE) {
+        HILOG_ERROR("Set offset failed, result= %{public}d ", result);
+        return E_DEAL_FAILED;
+    }
+    return ConvertIntToErrorCode(reply.ReadInt32());
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

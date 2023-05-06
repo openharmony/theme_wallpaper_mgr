@@ -14,7 +14,7 @@
  */
 #define LOG_TAG "WallpaperJSUtil"
 #include "wallpaper_js_util.h"
-#include "export/color.h"
+#include "color.h"
 #include "hilog_wrapper.h"
 
 namespace OHOS::WallpaperNAPI {

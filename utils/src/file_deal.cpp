@@ -14,6 +14,7 @@
  */
 #include "file_deal.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -94,6 +95,25 @@ bool FileDeal::IsFileExist(const std::string &name)
         return false;
     }
     return true;
+}
+
+std::string FileDeal::GetExtension(const std::string &filePath)
+{
+    std::string filename = filePath;
+    std::string extension = "";
+    std::string::size_type pos = filePath.find_last_of('/');
+    if (pos != std::string::npos) {
+        if (pos + 1 < filePath.length()) {
+            filename = filePath.substr(pos + 1);
+        }
+    }
+
+    pos = filename.find_last_of('.');
+    if (pos != std::string::npos && pos + 1 < filename.length()) {
+        extension = filename.substr(pos);
+        std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+    }
+    return extension;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

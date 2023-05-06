@@ -13,6 +13,7 @@
 
 import("//base/theme/wallpaper_mgr/wallpaper.gni")
 import("//build/ohos.gni")
+import("//foundation/distributeddatamgr/preferences/preferences.gni")
 
 config("wallpaper_service_config") {
   visibility = [ ":*" ]
@@ -28,10 +29,10 @@ config("wallpaper_service_config") {
 ohos_shared_library("wallpaper_service") {
   sources = [
     "src/component_name.cpp",
-    "src/wallpaper_color_change_listener_proxy.cpp",
     "src/wallpaper_common_event_manager.cpp",
     "src/wallpaper_common_event_subscriber.cpp",
     "src/wallpaper_data.cpp",
+    "src/wallpaper_event_listener_proxy.cpp",
     "src/wallpaper_extension_ability_connection.cpp",
     "src/wallpaper_extension_ability_death_recipient.cpp",
     "src/wallpaper_service.cpp",
@@ -63,9 +64,11 @@ ohos_shared_library("wallpaper_service") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_single",
     "os_account:os_account_innerkits",
+    "preferences:native_preferences",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
+
   subsystem_name = "theme"
   part_name = "wallpaper_mgr"
 }

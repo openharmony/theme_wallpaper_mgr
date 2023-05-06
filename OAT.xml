@@ -66,6 +66,14 @@ Note:If the text contains special characters, please escape them according to th
                 <filteritem type="filepath" name="frameworks/js/napi/test/unittest/resource/wallpaper_system.JPG"
                             desc="JPG for js tdd test"/>
                 <filteritem type="filepath" name="test/unittest/resource/wallpaper_test.JPG" desc="JPG for unittest"/>
+                <filteritem type="filename" name="*.mp4" desc="mp4 need to add policy"/>
+                <filteritem type="filepath" name="test/unittest/resource/15fps_4s.mp4" 
+                            desc="mp4 for unittest"/>
+                <filteritem type="filepath" name="test/unittest/resource/30fps_6s.mp4" 
+                            desc="mp4 for unittest"/>
+                <filteritem type="filename" name="*.mov" desc="mov not need to add policy"/>
+                <filteritem type="filepath" name="test/unittest/resource/30fps_4s.mov" 
+                            desc="mov for unittest"/>
             </filefilter>
         </filefilterlist>
     </oatconfig>

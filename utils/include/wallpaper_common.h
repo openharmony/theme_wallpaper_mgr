@@ -66,6 +66,7 @@ enum ErrorCode : int32_t {
     E_USER_IDENTITY_ERROR,
     E_UNKNOWN,
 };
+using JsCallbackOffset = bool (*)(int32_t, int32_t);
 } // namespace WallpaperMgrService
 } // namespace OHOS
 

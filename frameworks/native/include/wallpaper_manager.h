@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 
+#include "avmetadatahelper.h"
 #include "fault_reporter.h"
 #include "i_wallpaper_service.h"
 #include "ipc_skeleton.h"
@@ -120,7 +121,7 @@ public:
      * @param callback Provides dominant colors of the wallpaper.
      * @return  true or false
      */
-    bool On(const std::string &type, std::shared_ptr<WallpaperColorChangeListener> listener) final;
+    bool On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener) final;
 
     /**
      * Registers a listener for wallpaper color changes to receive notifications about the changes.
@@ -128,17 +129,46 @@ public:
      * changes
      * @param callback Provides dominant colors of the wallpaper.
      */
-    bool Off(const std::string &type, std::shared_ptr<WallpaperColorChangeListener> listener) final;
+    bool Off(const std::string &type, std::shared_ptr<WallpaperEventListener> listener) final;
 
-    bool RegisterWallpaperCallback(bool (*callback)(int32_t)) final;
+    /**
+     * Sets live wallpaper of the specified type based on the uri path of the MP4 file.
+     * @param uri Indicates the uri path of the MP4 file.
+     * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
+     * @return ErrorCode
+     * @permission ohos.permission.SET_WALLPAPER
+     */
+    ErrorCode SetVideo(const std::string &uri, const int32_t wallpaperType) final;
+
+    /**
+     * The application sends the event to the wallpaper service.
+     * @param eventType Event type, values for SHOW_SYSTEMSCREEN or SHOW_LOCKSCREEN
+     * @return ErrorCode
+     * @permission ohos.permission.SET_WALLPAPER
+     */
+    ErrorCode SendEvent(const std::string &eventType) final;
+    bool RegisterWallpaperCallback(JScallback callback) final;
 
     JScallback GetCallback() final;
 
-    void SetCallback(bool (*cb)(int32_t)) final;
+    void SetCallback(JScallback cb) final;
 
     void ReporterFault(FaultType faultType, FaultCode faultCode);
 
     void CloseWallpaperFd(int32_t wallpaperType);
+
+    /**
+     * Sets the wallpaper offset.
+     * @param xOffset Indicates the offset ratio of the X axis.
+     * @param yOffset Indicates the offset ratio of the Y axis.
+     */
+    ErrorCode SetOffset(int32_t xOffset, int32_t yOffset) final;
+
+    JsCallbackOffset GetOffsetCallback() final;
+
+    void SetOffsetCallback(bool (*cb)(int32_t, int32_t)) final;
+
+    bool RegisterOffsetCallback(bool (*offsetCallback)(int32_t, int32_t)) final;
 
 private:
     class DeathRecipient final : public IRemoteObject::DeathRecipient {
@@ -152,12 +182,13 @@ private:
 
     template<typename F, typename... Args>
     ErrCode CallService(F func, Args &&...args);
-
+    bool CheckVideoFormat(const std::string &fileName);
     void ResetService(const wptr<IRemoteObject> &remote);
     sptr<IWallpaperService> GetService();
     int64_t WritePixelMapToStream(std::ostream &outputStream, std::shared_ptr<OHOS::Media::PixelMap> pixelMap);
     bool GetRealPath(const std::string &inOriPath, std::string &outRealPath);
-
+    bool OpenFile(const std::string &fileName, int32_t &fd, int64_t &fileSize);
+    ErrorCode CheckWallpaperFormat(const std::string &realPath, bool isLive, long &length);
     sptr<IWallpaperService> wpProxy_{};
     sptr<IRemoteObject::DeathRecipient> deathRecipient_{};
     std::mutex wpFdLock_;
@@ -165,6 +196,7 @@ private:
     std::mutex wpProxyLock_;
     std::mutex listenerMapMutex_;
     bool (*callback)(int32_t);
+    bool (*offsetCallback)(int32_t, int32_t);
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

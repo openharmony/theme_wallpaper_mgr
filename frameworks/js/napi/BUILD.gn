@@ -16,16 +16,11 @@ import("//build/ohos.gni")
 
 ohos_shared_library("wallpaper") {
   include_dirs = [
-    "//foundation/arkui/napi/interfaces/kits",
     "//third_party/node/src",
     "${ability_runtime_services_path}/common/include",
-    "//utils/system/safwk/native/include",
     "${wallpaper_path}/frameworks/js/napi",
     "${wallpaper_path}/frameworks/native/include",
     "${wallpaper_path}/utils/include",
-    "//third_party/libuv/include",
-    "//commonlibrary/c_utils/base/include",
-    "//foundation/graphic/graphic_2d/utils/color_manager",
   ]
 
   sources = [
@@ -35,16 +30,15 @@ ohos_shared_library("wallpaper") {
     "native_module.cpp",
     "wallpaper_js_util.cpp",
   ]
-  deps = [
-    "${wallpaper_path}/frameworks/native:wallpapermanager",
-    "//foundation/graphic/graphic_2d/utils/color_manager:color_manager",
-  ]
+  deps = [ "${wallpaper_path}/frameworks/native:wallpapermanager" ]
 
   external_deps = [
     "c_utils:utils",
+    "graphic_standard:libgraphic_utils",
     "hiviewdfx_hilog_native:libhilog",
     "multimedia_image_framework:image",
     "multimedia_image_framework:image_native",
+    "multimedia_player_framework:media_client",
     "napi:ace_napi",
   ]
 

@@ -22,8 +22,8 @@
 
 #include "pixel_map.h"
 #include "visibility.h"
-#include "wallpaper_color_change_listener.h"
 #include "wallpaper_common.h"
+#include "wallpaper_event_listener.h"
 #include "wallpaper_manager_common_info.h"
 
 /**
@@ -124,7 +124,7 @@ public:
      * @param callback Provides dominant colors of the wallpaper.
      * @return  true or false
      */
-    virtual bool On(const std::string &type, std::shared_ptr<WallpaperColorChangeListener> listener) = 0;
+    virtual bool On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener) = 0;
 
     /**
      * Registers a listener for wallpaper color changes to receive notifications about the changes.
@@ -132,16 +132,46 @@ public:
      * changes
      * @param callback Provides dominant colors of the wallpaper.
      */
-    virtual bool Off(const std::string &type, std::shared_ptr<WallpaperColorChangeListener> listener) = 0;
+    virtual bool Off(const std::string &type, std::shared_ptr<WallpaperEventListener> listener) = 0;
 
-    virtual bool RegisterWallpaperCallback(bool (*callback)(int32_t)) = 0;
+    /**
+     * Sets live wallpaper of the specified type based on the uri path of the MP4 file.
+     * @param uri Indicates the uri path of the MP4 file.
+     * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
+     * @return ErrorCode
+     * @permission ohos.permission.SET_WALLPAPER
+     */
+    virtual ErrorCode SetVideo(const std::string &uri, const int32_t wallpaperType) = 0;
+
+    /**
+     * The application sends the event to the wallpaper service.
+     * @param eventType Event type, values for SHOW_SYSTEMSCREEN or SHOW_LOCKSCREEN
+     * @return ErrorCode
+     * @permission ohos.permission.SET_WALLPAPER
+     */
+    virtual ErrorCode SendEvent(const std::string &eventType) = 0;
     using JScallback = bool (*)(int32_t);
+
+    virtual bool RegisterWallpaperCallback(JScallback callback) = 0;
 
     virtual JScallback GetCallback() = 0;
 
-    virtual void SetCallback(bool (*cb)(int32_t)) = 0;
+    virtual void SetCallback(JScallback cb) = 0;
 
     virtual void CloseWallpaperFd(int32_t wallpaperType) = 0;
+
+    /**
+     * Sets the wallpaper offset.
+     * @param xOffset Indicates the offset ratio of the X axis.
+     * @param yOffset Indicates the offset ratio of the Y axis.
+     */
+    virtual ErrorCode SetOffset(int32_t xOffset, int32_t yOffset) = 0;
+
+    virtual JsCallbackOffset GetOffsetCallback() = 0;
+
+    virtual void SetOffsetCallback(bool (*offsetCallback)(int32_t, int32_t)) = 0;
+
+    virtual bool RegisterOffsetCallback(bool (*offsetCallback)(int32_t, int32_t)) = 0;
 
 protected:
     WallpaperManagerkits() = default;
