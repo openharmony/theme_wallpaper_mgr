@@ -265,7 +265,6 @@ ErrorCode WallpaperManager::SetVideo(const std::string &uri, const int32_t wallp
         HILOG_ERROR("Get proxy failed");
         return E_DEAL_FAILED;
     }
-    
     std::string fileRealPath;
     if (!GetRealPath(uri, fileRealPath)) {
         HILOG_ERROR("Get real path failed, uri: %{public}s", uri.c_str());
@@ -278,7 +277,6 @@ ErrorCode WallpaperManager::SetVideo(const std::string &uri, const int32_t wallp
         HILOG_ERROR("Check wallpaper format failed!");
         return wallpaperErrorCode;
     }
-    
     int32_t fd = open(fileRealPath.c_str(), O_RDONLY, 0660);
     if (fd < 0) {
         HILOG_ERROR("Open file failed, errno %{public}d", errno);
@@ -441,8 +439,7 @@ bool WallpaperManager::On(const std::string &type, std::shared_ptr<WallpaperEven
         return false;
     }
     std::lock_guard<std::mutex> lck(listenerMapMutex_);
-    sptr<WallpaperEventListenerClient> ipcListener = new (std::nothrow)
-        WallpaperEventListenerClient(listener);
+    sptr<WallpaperEventListenerClient> ipcListener = new (std::nothrow) WallpaperEventListenerClient(listener);
     if (ipcListener == nullptr) {
         HILOG_ERROR("new WallpaperEventListenerClient failed");
         return false;
@@ -462,8 +459,7 @@ bool WallpaperManager::Off(const std::string &type, std::shared_ptr<WallpaperEve
     std::lock_guard<std::mutex> lck(listenerMapMutex_);
     bool status = false;
     if (listener != nullptr) {
-        sptr<WallpaperEventListenerClient> ipcListener = new (std::nothrow)
-            WallpaperEventListenerClient(listener);
+        sptr<WallpaperEventListenerClient> ipcListener = new (std::nothrow) WallpaperEventListenerClient(listener);
         if (ipcListener == nullptr) {
             HILOG_ERROR("new WallpaperEventListenerClient failed");
             return false;
@@ -629,7 +625,8 @@ bool WallpaperManager::OpenFile(const std::string &fileName, int32_t &fd, int64_
     return true;
 }
 
-ErrorCode WallpaperManager::CheckWallpaperFormat(const std::string &realPath, bool isLive, long &length) {
+ErrorCode WallpaperManager::CheckWallpaperFormat(const std::string &realPath, bool isLive, long &length)
+{
     if (isLive && (FileDeal::GetExtension(realPath) != ".mp4" || !CheckVideoFormat(realPath))) {
         HILOG_ERROR("Check live wallpaper file failed!");
         return E_PARAMETERS_INVALID;

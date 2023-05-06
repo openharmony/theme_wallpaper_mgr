@@ -427,7 +427,7 @@ void NapiWallpaperAbility::SendEventInner(std::shared_ptr<GetContextInfo> contex
             context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);
             return napi_invalid_arg;
         }
-        char eventType[EVENTTYPESIZE] = {0};
+        char eventType[EVENTTYPESIZE] = { 0 };
         size_t bufSize = BUFFERSIZE;
         size_t len = 0;
         napi_get_value_string_utf8(env, argv[0], eventType, bufSize, &len);
@@ -443,8 +443,8 @@ void NapiWallpaperAbility::SendEventInner(std::shared_ptr<GetContextInfo> contex
     };
 
     auto exec = [context](Call::Context *ctx) {
-        ErrorCode wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::
-                                                            GetInstance().SendEvent(context->eventType);
+        ErrorCode wallpaperErrorCode =
+            WallpaperMgrService::WallpaperManagerkits::GetInstance().SendEvent(context->eventType);
         if (wallpaperErrorCode == E_OK) {
             context->status = napi_ok;
             context->result = true;
@@ -468,7 +468,8 @@ napi_value NAPI_SetVideo(napi_env env, napi_callback_info info)
     return call.AsyncCall(env);
 }
 
-void NapiWallpaperAbility::SetVideoInner(std::shared_ptr<SetContextInfo> context) {
+void NapiWallpaperAbility::SetVideoInner(std::shared_ptr<SetContextInfo> context)
+{
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         if (!NapiWallpaperAbility::IsValidArgCount(argc, TWO) ||
             !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string) ||
@@ -809,8 +810,7 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
         });
 }
 
-void NapiWallpaperAbility::OnWallpaperChange(WallpaperType wallpaperType,
-    WallpaperResourceType resourceType)
+void NapiWallpaperAbility::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType)
 {
     HILOG_ERROR("NapiWallpaperAbility::OnWallpaperChange start!");
     WallpaperChangedData *data = new (std::nothrow)

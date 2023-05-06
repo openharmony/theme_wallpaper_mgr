@@ -35,7 +35,7 @@ namespace AbilityRuntime {
 namespace {
 constexpr size_t ARGC_ONE = 1;
 constexpr size_t ARGC_TWO = 2;
-}
+} // namespace
 struct WorkData {
     NativeEngine *nativeEng_;
     int32_t wallpaperType_;
@@ -50,7 +50,8 @@ struct OffsetWorkData {
     int32_t yOffset_;
     OffsetWorkData(NativeEngine *nativeEng, int32_t xOffset, int32_t yOffset)
         : nativeEng_(nativeEng), xOffset_(xOffset), yOffset_(yOffset)
-    {}
+    {
+    }
 };
 
 JsWallpaperExtension *JsWallpaperExtension::jsWallpaperExtension = NULL;
@@ -125,10 +126,12 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
     HILOG_INFO("Set wallpaper extension");
 
     nativeObj->SetNativePointer(
-        new std::weak_ptr<AbilityRuntime::Context>(context), [](NativeEngine *, void *data, void *) {
+        new std::weak_ptr<AbilityRuntime::Context>(context),
+        [](NativeEngine *, void *data, void *) {
             HILOG_INFO("Finalizer for weak_ptr wallpaper extension context is called");
             delete static_cast<std::weak_ptr<AbilityRuntime::Context> *>(data);
-        }, nullptr);
+        },
+        nullptr);
 
     HILOG_INFO("JsWallpaperExtension::Init end.");
 }
@@ -269,37 +272,35 @@ void JsWallpaperExtension::RegisterWallpaperCallback()
             };
             UvQueue::Call(reinterpret_cast<napi_env>(nativeEng), workData, afterCallback);
             return true;
-        }
-    );
+        });
 }
 
 void JsWallpaperExtension::RegisterOffsetCallback()
 {
-    WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterOffsetCallback(
-        [](int32_t xOffset, int32_t yOffset) -> bool {
-            HILOG_DEBUG("RegisterOffset start");
-            NativeEngine *nativeEng = &(JsWallpaperExtension::jsWallpaperExtension->jsRuntime_).GetNativeEngine();
-            OffsetWorkData *workData = new (std::nothrow) OffsetWorkData(nativeEng, xOffset, yOffset);
-            if (workData == nullptr) {
-                return false;
-            }
-            uv_after_work_cb afterCallback = [](uv_work_t *work, int32_t status) {
-                OffsetWorkData *workData = reinterpret_cast<OffsetWorkData *>(work->data);
-                napi_value xOffset =
-                    OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_), workData->xOffset_);
-                napi_value yOffset =
-                    OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_), workData->yOffset_);
-                NativeValue *nativeX = reinterpret_cast<NativeValue *>(xOffset);
-                NativeValue *nativeY = reinterpret_cast<NativeValue *>(yOffset);
-                NativeValue *arg[] = { nativeX, nativeY };
-                JsWallpaperExtension::jsWallpaperExtension->CallObjectMethod("onOffset", arg, ARGC_TWO);
-                delete workData;
-                delete work;
-            };
-            UvQueue::Call(reinterpret_cast<napi_env>(nativeEng), workData, afterCallback);
-            return true;
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterOffsetCallback([](int32_t xOffset,
+                                                                                        int32_t yOffset) -> bool {
+        HILOG_DEBUG("RegisterOffset start");
+        NativeEngine *nativeEng = &(JsWallpaperExtension::jsWallpaperExtension->jsRuntime_).GetNativeEngine();
+        OffsetWorkData *workData = new (std::nothrow) OffsetWorkData(nativeEng, xOffset, yOffset);
+        if (workData == nullptr) {
+            return false;
         }
-    );
+        uv_after_work_cb afterCallback = [](uv_work_t *work, int32_t status) {
+            OffsetWorkData *workData = reinterpret_cast<OffsetWorkData *>(work->data);
+            napi_value xOffset =
+                OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_), workData->xOffset_);
+            napi_value yOffset =
+                OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_), workData->yOffset_);
+            NativeValue *nativeX = reinterpret_cast<NativeValue *>(xOffset);
+            NativeValue *nativeY = reinterpret_cast<NativeValue *>(yOffset);
+            NativeValue *arg[] = { nativeX, nativeY };
+            JsWallpaperExtension::jsWallpaperExtension->CallObjectMethod("onOffset", arg, ARGC_TWO);
+            delete workData;
+            delete work;
+        };
+        UvQueue::Call(reinterpret_cast<napi_env>(nativeEng), workData, afterCallback);
+        return true;
+    });
 }
 
 } // namespace AbilityRuntime

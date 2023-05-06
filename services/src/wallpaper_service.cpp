@@ -279,11 +279,9 @@ void WallpaperService::StartWallpaperExtension()
         ret = ConnectExtensionAbility(want);
         if (ret == 0 || time >= CONNECT_EXTENSION_MAX_RETRY_TIMES) {
             InitWallpaperConfig();
-            auto sendWallpaperState = [this]() -> bool {
-                return SendWallpaperState();
-            };
+            auto sendWallpaperState = [this]() -> bool { return SendWallpaperState(); };
             BlockRetry(REGISTER_WALLPAPER_CALLBACK_INTERVAL, REGISTER_WALLPAPER_CALLBACK_MAX_RETRY_TIMES,
-                       std::move(sendWallpaperState));
+                std::move(sendWallpaperState));
             break;
         }
         usleep(CONNECT_EXTENSION_INTERVAL);
@@ -717,7 +715,7 @@ ErrorCode WallpaperService::SetWallpaperV9(int32_t fd, int32_t wallpaperType, in
     return SetWallpaper(fd, wallpaperType, length);
 }
 
-ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId,  WallpaperResourceType resourceType,
+ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, WallpaperResourceType resourceType,
     const std::string &uriOrPixelMap, WallpaperType wallpaperType)
 {
     HILOG_INFO("set wallpaper and backup data Start.");
@@ -770,7 +768,7 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId,  WallpaperRes
 bool WallpaperService::SaveWallpaperState(WallpaperType wallpaperType, WallpaperResourceType resourceType)
 {
     if (wallpaperType == WALLPAPER_SYSTEM) {
-        resTypeMap_[SYSTEM_RES_TYPE] = resourceType; 
+        resTypeMap_[SYSTEM_RES_TYPE] = resourceType;
     } else {
         resTypeMap_[LOCKSCREEN_RES_TYPE] = resourceType;
     }
@@ -1396,7 +1394,7 @@ ErrorCode WallpaperService::SetOffset(int32_t xOffset, int32_t yOffset)
         return E_NOT_FOUND;
     }
 
-    if((xOffset < MIN_OFFSET || xOffset > MAX_OFFSET) || (yOffset < MIN_OFFSET || yOffset > MAX_OFFSET)) {
+    if ((xOffset < MIN_OFFSET || xOffset > MAX_OFFSET) || (yOffset < MIN_OFFSET || yOffset > MAX_OFFSET)) {
         HILOG_ERROR("Current xOffset %{public}d or yOffset %{public}d is invalid value, must be between -50 and 50",
             xOffset, yOffset);
         return E_PARAMETERS_INVALID;
@@ -1407,9 +1405,8 @@ ErrorCode WallpaperService::SetOffset(int32_t xOffset, int32_t yOffset)
     GetWallpaperMinHeight(pyScrHeight);
     int remainWidthSize = pictureWidth_ - pyScrWidth;
     int remainHeightSize = pictureHeight_ - pyScrHeight;
-    HILOG_DEBUG(
-        "pictureWidth: %{public}d, pyScrWidth: %{public}d, remainWidthSize: %{public}d, remainHeightSize: "
-        "%{public}d",
+    HILOG_DEBUG("pictureWidth: %{public}d, pyScrWidth: %{public}d, remainWidthSize: %{public}d, remainHeightSize: "
+                "%{public}d",
         pictureWidth_, pyScrWidth, remainWidthSize, remainHeightSize);
     int32_t xOffsetPixel = static_cast<int32_t>(remainWidthSize * xOffset * OFFSET_UNIT);
     int32_t yOffsetPixel = static_cast<int32_t>(remainHeightSize * yOffset * OFFSET_UNIT);

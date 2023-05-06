@@ -22,8 +22,8 @@
 
 #include "pixel_map.h"
 #include "visibility.h"
-#include "wallpaper_event_listener.h"
 #include "wallpaper_common.h"
+#include "wallpaper_event_listener.h"
 #include "wallpaper_manager_common_info.h"
 
 /**
@@ -153,7 +153,6 @@ public:
     using JScallback = bool (*)(int32_t);
 
     virtual bool RegisterWallpaperCallback(JScallback callback) = 0;
-    
 
     virtual JScallback GetCallback() = 0;
 
@@ -173,6 +172,7 @@ public:
     virtual void SetOffsetCallback(bool (*offsetCallback)(int32_t, int32_t)) = 0;
 
     virtual bool RegisterOffsetCallback(bool (*offsetCallback)(int32_t, int32_t)) = 0;
+
 protected:
     WallpaperManagerkits() = default;
 };
