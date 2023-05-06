@@ -84,7 +84,6 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
         HILOG_ERROR("Failed to get srcPath");
         return;
     }
-
     std::string moduleName(Extension::abilityInfo_->moduleName);
     moduleName.append("::").append(abilityInfo_->name);
     HILOG_INFO("JsWallpaperExtension::Init module:%{public}s,srcPath:%{public}s.", moduleName.c_str(), srcPath.c_str());
@@ -102,7 +101,6 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
         HILOG_ERROR("Failed to get JsWallpaperExtension object");
         return;
     }
-
     auto context = GetContext();
     if (context == nullptr) {
         HILOG_ERROR("Failed to get context");
@@ -122,17 +120,12 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
         HILOG_ERROR("Failed to get wallpaper extension native object");
         return;
     }
-
-    HILOG_INFO("Set wallpaper extension");
-
     nativeObj->SetNativePointer(
         new std::weak_ptr<AbilityRuntime::Context>(context),
         [](NativeEngine *, void *data, void *) {
             HILOG_INFO("Finalizer for weak_ptr wallpaper extension context is called");
             delete static_cast<std::weak_ptr<AbilityRuntime::Context> *>(data);
-        },
-        nullptr);
-
+        }, nullptr);
     HILOG_INFO("JsWallpaperExtension::Init end.");
 }
 
