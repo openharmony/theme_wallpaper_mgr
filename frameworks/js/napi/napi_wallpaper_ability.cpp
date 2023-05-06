@@ -583,11 +583,10 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info)
     HILOG_DEBUG("type : %{public}s", type.c_str());
 
     std::shared_ptr<WallpaperMgrService::WallpaperColorChangeListener> listener = nullptr;
-    if (argc == TWO) {
-        if (!NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_function)) {
-            return nullptr;
+    if (argc >= TWO) {
+        if (NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_function)) {
+            listener = std::make_shared<NapiWallpaperAbility>(env, argv[1]);
         }
-        listener = std::make_shared<NapiWallpaperAbility>(env, argv[1]);
     }
 
     bool status = WallpaperMgrService::WallpaperManagerkits::GetInstance().Off(type, listener);
