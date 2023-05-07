@@ -11,8 +11,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//arkcompiler/ets_frontend/ts2panda/ts2abc_config.gni")
 import("//build/ohos.gni")
+import(
+    "../../../../../../../arkcompiler/ets_frontend/ts2panda/ts2abc_config.gni")
 
 ts2abc_gen_abc("gen_wallpaper_extension_context_abc") {
   src_js = rebase_path("wallpaper_extension_context.js")

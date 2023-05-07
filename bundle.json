@@ -20,8 +20,8 @@
       "adapted_system_type": [
         "standard"
       ],
-      "rom":"60MB",
-      "ram":"128MB",
+      "rom":"930KB",
+      "ram":"2895KB",
       "deps": {
         "components": [
           "ability_manager",
@@ -40,10 +40,14 @@
           "napi",
           "ability_base",
           "hiviewdfx_hilog_native",
-          "c_utils"
+          "c_utils",
+          "bundle_framework",
+          "os_account",
+          "window_manager",
+          "multimedia_image_framework"
         ],
         "third_party": [
-          "jsoncpp"
+          "libuv"
         ]
       },
       "build": {
