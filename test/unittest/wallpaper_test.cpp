@@ -163,7 +163,8 @@ void WallpaperEventListenerTestImpl::OnColorsChange(const std::vector<uint64_t> 
 
 void WallpaperEventListenerTestImpl::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType)
 {
-    HILOG_INFO("wallpaperType: %{public}d, resourceType: %{public}d", static_cast<int32_t>(wallpaperType), static_cast<int32_t>(resourceType));
+    HILOG_INFO("wallpaperType: %{public}d, resourceType: %{public}d", static_cast<int32_t>(wallpaperType),
+        static_cast<int32_t>(resourceType));
 }
 
 WallpaperEventListenerTestImpl::WallpaperEventListenerTestImpl()
@@ -1137,7 +1138,6 @@ HWTEST_F(WallpaperTest, SendEvent001, TestSize.Level0)
     ErrorCode ret = WallpaperManagerkits::GetInstance().SendEvent("SHOW_ERROREVENTTYPE");
     EXPECT_EQ(ret, E_PARAMETERS_INVALID);
 }
-
 
 /**
  * @tc.name:    SendEvent002

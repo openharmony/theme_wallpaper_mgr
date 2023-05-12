@@ -1796,7 +1796,8 @@ describe('WallpaperJSTest', function () {
                 expect(wallpaperType != null).assertTrue();
                 expect(resourceType != null).assertTrue();
                 callbackTimes = callbackTimes + 1;
-                wallpaper.off('wallpaperChange', async (wallpaperType, resourceType) => {})
+                wallpaper.off('wallpaperChange', async (wallpaperType, resourceType) => {
+                })
                 await wallpaper.setImage(URI, WALLPAPER_SYSTEM);
                 await wallpaper.restore(WALLPAPER_SYSTEM);
                 expect(callbackTimes === 1).assertTrue();
@@ -2089,7 +2090,7 @@ describe('WallpaperJSTest', function () {
      * @tc.require:   issueI6R07J
      */
     it('setOffsetTest001', 0, async function (done) {
-        let ret = wallpaper.setOffset(10,10)
+        let ret = wallpaper.setOffset(10, 10)
         if (ret) {
             expect(true).assertTrue();
         } else {

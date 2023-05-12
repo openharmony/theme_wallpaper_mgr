@@ -38,7 +38,6 @@ const int32_t BUFFERSIZE = 100;
 constexpr const char *COLOR_CHANGE_EVENT = "colorChange";
 constexpr const char *WALLPAPER_CHANGE_EVENT = "wallpaperChange";
 
-
 struct WorkData {
     napi_env env_;
     napi_ref callback_;
@@ -645,7 +644,7 @@ napi_value NAPI_On(napi_env env, napi_callback_info info)
         !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string) ||
         !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_function)) {
         HILOG_DEBUG("input argc : %{public}zu", argc);
-        if (NapiWallpaperAbility::IsValidArgCount(argc, 1) &&   // 1: argument count
+        if (NapiWallpaperAbility::IsValidArgCount(argc, 1) && // 1: argument count
             NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string) &&
             WallpaperJSUtil::Convert2String(env, argv[0]) == COLOR_CHANGE_EVENT) {
             return nullptr;
@@ -688,7 +687,7 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    if (!NapiWallpaperAbility::IsValidArgCount(argc, 1) ||  // 1: argument count
+    if (!NapiWallpaperAbility::IsValidArgCount(argc, 1) || // 1: argument count
         !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string)) {
         HILOG_DEBUG("input argc : %{public}zu", argc);
         JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(E_PARAMETERS_INVALID);

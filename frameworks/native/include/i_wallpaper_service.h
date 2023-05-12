@@ -24,9 +24,9 @@
 #include "iwallpaper_event_listener.h"
 #include "pixel_map.h"
 #include "pixel_map_parcel.h"
+#include "wallpaper_common.h"
 #include "wallpaper_event_listener.h"
 #include "wallpaper_event_listener_client.h"
-#include "wallpaper_common.h"
 #include "wallpaper_manager_common_info.h"
 
 namespace OHOS {

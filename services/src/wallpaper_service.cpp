@@ -879,8 +879,8 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
         (type == WALLPAPER_SYSTEM ? resTypeMap_[SYSTEM_RES_TYPE] : resTypeMap_[LOCKSCREEN_RES_TYPE]);
     if (resType != PICTURE) {
         HILOG_ERROR("Current user's wallpaper is live video, not image");
-        fdInfo.size = 0;    // 0: empty file size
-        fdInfo.fd = -1;     // -1: invalid file description
+        fdInfo.size = 0; // 0: empty file size
+        fdInfo.fd = -1;  // -1: invalid file description
         return E_OK;
     }
     ErrorCode ret = GetImageSize(userId, type, fdInfo.size);
