@@ -331,6 +331,11 @@ ErrorCode WallpaperManager::GetPixelMap(int32_t wallpaperType, const ApiInfo &ap
     if (wallpaperErrorCode != E_OK) {
         return wallpaperErrorCode;
     }
+    // current wallpaper is live video, not image
+    if (fdInfo.size == 0 && fdInfo.fd == -1) { // 0: empty file size; -1: invalid file description
+        pixelMap = nullptr;
+        return E_OK;
+    }
     uint32_t errorCode = 0;
     OHOS::Media::SourceOptions opts;
     opts.formatHint = "image/jpeg";
@@ -426,54 +431,47 @@ ErrorCode WallpaperManager::ResetWallpaper(std::int32_t wallpaperType, const Api
     return wallpaperErrorCode;
 }
 
-bool WallpaperManager::On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener)
+ErrorCode WallpaperManager::On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener)
 {
     HILOG_DEBUG("WallpaperManager::On in");
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
-        return false;
+        return E_SA_DIED;
     }
     if (listener == nullptr) {
         HILOG_ERROR("listener is nullptr.");
-        return false;
+        return E_DEAL_FAILED;
     }
     std::lock_guard<std::mutex> lck(listenerMapMutex_);
     sptr<WallpaperEventListenerClient> ipcListener = new (std::nothrow) WallpaperEventListenerClient(listener);
     if (ipcListener == nullptr) {
         HILOG_ERROR("new WallpaperEventListenerClient failed");
-        return false;
+        return E_NO_MEMORY;
     }
     HILOG_DEBUG("WallpaperManager::On out");
     return wpServerProxy->On(type, ipcListener);
 }
 
-bool WallpaperManager::Off(const std::string &type, std::shared_ptr<WallpaperEventListener> listener)
+ErrorCode WallpaperManager::Off(const std::string &type, std::shared_ptr<WallpaperEventListener> listener)
 {
     HILOG_DEBUG("WallpaperManager::Off in");
     auto wpServerProxy = GetService();
     if (wpServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
-        return false;
+        return E_SA_DIED;
     }
     std::lock_guard<std::mutex> lck(listenerMapMutex_);
-    bool status = false;
+    sptr<WallpaperEventListenerClient> ipcListener = nullptr;
     if (listener != nullptr) {
         sptr<WallpaperEventListenerClient> ipcListener = new (std::nothrow) WallpaperEventListenerClient(listener);
         if (ipcListener == nullptr) {
             HILOG_ERROR("new WallpaperEventListenerClient failed");
-            return false;
+            return E_NO_MEMORY;
         }
-        status = wpServerProxy->Off(type, ipcListener);
-    } else {
-        status = wpServerProxy->Off(type, nullptr);
-    }
-    if (!status) {
-        HILOG_ERROR("off failed");
-        return false;
     }
     HILOG_DEBUG("WallpaperManager::Off out");
-    return true;
+    return wpServerProxy->Off(type, ipcListener);
 }
 
 JScallback WallpaperManager::GetCallback()

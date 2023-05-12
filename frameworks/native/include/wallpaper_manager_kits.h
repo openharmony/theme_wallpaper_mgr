@@ -119,20 +119,20 @@ public:
     virtual ErrorCode ResetWallpaper(std::int32_t wallpaperType, const ApiInfo &apiInfo) = 0;
 
     /**
-     * Registers a listener for wallpaper color changes to receive notifications about the changes.
-     * @param type The incoming colorChange table open receiver pick a color change wallpaper wallpaper color changes
-     * @param callback Provides dominant colors of the wallpaper.
-     * @return  true or false
+     * Registers a listener for wallpaper event to receive notifications about the changes.
+     * @param type event type
+     * @param listener event listener
+     * @return error code
      */
-    virtual bool On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener) = 0;
+    virtual ErrorCode On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener) = 0;
 
     /**
-     * Registers a listener for wallpaper color changes to receive notifications about the changes.
-     * @param type Incoming 'colorChange' table delete receiver to pick up a color change wallpaper wallpaper color
-     * changes
-     * @param callback Provides dominant colors of the wallpaper.
+     * Unregisters a listener for wallpaper event to receive notifications about the changes.
+     * @param type event type
+     * @param listener event listener
+     * @return error code
      */
-    virtual bool Off(const std::string &type, std::shared_ptr<WallpaperEventListener> listener) = 0;
+    virtual ErrorCode Off(const std::string &type, std::shared_ptr<WallpaperEventListener> listener) = 0;
 
     /**
      * Sets live wallpaper of the specified type based on the uri path of the MP4 file.
