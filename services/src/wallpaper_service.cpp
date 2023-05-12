@@ -84,6 +84,7 @@ constexpr int32_t MAX_RETRY_TIMES = 20;
 constexpr int32_t QUERY_USER_MAX_RETRY_TIMES = 100;
 constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
 constexpr int32_t DEFAULT_USER_ID = 0;
+constexpr int32_t DEFAULT_VALUE = -1;
 std::mutex WallpaperService::instanceLock_;
 
 sptr<WallpaperService> WallpaperService::instance_;
@@ -1129,16 +1130,10 @@ int32_t WallpaperService::ConnectExtensionAbility(const AAFwk::Want &want)
         HILOG_ERROR("connect ability server failed errCode=%{public}d", errCode);
         return errCode;
     }
-    std::vector<int32_t> ids;
-    ErrCode ret = AccountSA::OsAccountManager::QueryActiveOsAccountIds(ids);
-    if (ret != ERR_OK || ids.empty()) {
-        HILOG_ERROR("query active user failed errCode=%{public}d", ret);
-        return AAFwk::INVALID_PARAMETERS_ERR;
-    }
     if (connection_ == nullptr) {
         connection_ = new WallpaperExtensionAbilityConnection(*this);
     }
-    ret = AAFwk::AbilityManagerClient::GetInstance()->ConnectExtensionAbility(want, connection_, ids[0]);
+    ret = AAFwk::AbilityManagerClient::GetInstance()->ConnectExtensionAbility(want, connection_, DEFAULT_VALUE);
     HILOG_INFO("ConnectExtensionAbility errCode=%{public}d", ret);
     return ret;
 }
