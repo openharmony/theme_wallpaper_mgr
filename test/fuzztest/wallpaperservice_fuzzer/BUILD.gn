@@ -11,7 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//base/theme/wallpaper_mgr/wallpaper.gni")
+import("../../../wallpaper.gni")
 
 #####################hydra-fuzz###################
 import("//build/config/features.gni")
@@ -26,11 +26,8 @@ ohos_fuzztest("WallpaperServiceFuzzTest") {
 
   include_dirs = [
     "${wallpaper_path}/services/include",
-    "//base/security/access_token/interfaces/innerkits/accesstoken/include",
     "${wallpaper_path}/frameworks/native/include",
     "${wallpaper_path}/utils/include",
-    "//foundation/window/window_manager/interfaces/innerkits/dm",
-    "//foundation/systemabilitymgr/safwk/interfaces/innerkits/safwk",
   ]
 
   cflags = [
@@ -49,6 +46,7 @@ ohos_fuzztest("WallpaperServiceFuzzTest") {
 
   external_deps = [
     "ability_runtime:abilitykit_native",
+    "access_token:libaccesstoken_sdk",
     "access_token:libtoken_setproc",
     "graphic_standard:surface",
     "hiviewdfx_hilog_native:libhilog",

@@ -12,9 +12,13 @@
 # limitations under the License.
 
 import("//build/test.gni")
+import("../../../../../../../wallpaper.gni")
 
 ohos_js_unittest("WallpaperJSTest") {
   module_out_path = "theme/wallpaperJsTest"
+
+  resource_config_file =
+      "${wallpaper_path}/test/unittest/resource/ohos_test.xml"
 
   hap_profile = "./config.json"
 

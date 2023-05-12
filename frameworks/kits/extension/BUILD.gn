@@ -11,8 +11,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//base/theme/wallpaper_mgr/wallpaper.gni")
 import("//build/ohos.gni")
+import("../../../wallpaper.gni")
 
 config("ability_config") {
   visibility = [ ":*" ]
@@ -20,7 +20,6 @@ config("ability_config") {
     "${wallpaper_path}/frameworks/native/include",
     "${wallpaper_path}/frameworks/kits/extension/include",
     "${ability_runtime_services_path}/common/include",
-    "${ability_runtime_napi_path}/inner/napi_common",
   ]
 
   cflags = []
@@ -44,7 +43,6 @@ ohos_shared_library("wallpaperextension") {
   include_dirs = [
     "${wallpaper_path}/frameworks/native/include",
     "${wallpaper_path}/frameworks/kits/extension/include",
-    "//base/global/i18n/frameworks/intl/include",
   ]
 
   sources = [
@@ -71,6 +69,7 @@ ohos_shared_library("wallpaperextension") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_napi_common",
     "ipc:ipc_single",
+    "multimedia_player_framework:media_client",
     "napi:ace_napi",
     "window_manager:libwm",
   ]

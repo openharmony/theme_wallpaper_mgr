@@ -27,10 +27,12 @@ namespace WallpaperMgrService {
 struct WallpaperData {
     int32_t userId;
     std::string wallpaperFile; // source image
+    std::string liveWallpaperFile; // source video
     std::string cropFile;      // eventual destination
     std::string name;
     int32_t wallpaperId;
     bool allowBackup;
+    WallpaperResourceType resourceType;
     /**
      * The component name of the currently set live wallpaper.
      */

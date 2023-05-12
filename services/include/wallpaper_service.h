@@ -34,10 +34,11 @@
 #include "ipc_skeleton.h"
 #include "os_account_manager.h"
 #include "pixel_map.h"
+#include "preferences.h"
 #include "statistic_reporter.h"
 #include "surface_buffer.h"
 #include "system_ability.h"
-#include "wallpaper_color_change_listener.h"
+#include "wallpaper_event_listener.h"
 #include "wallpaper_common.h"
 #include "wallpaper_common_event_subscriber.h"
 #include "wallpaper_data.h"
@@ -75,10 +76,11 @@ public:
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
     ErrorCode ResetWallpaper(int32_t wallpaperType) override;
-    bool On(sptr<IWallpaperColorChangeListener> listener) override;
-    bool Off(sptr<IWallpaperColorChangeListener> listener) override;
+    bool On(const std::string &type, sptr<IWallpaperEventListener> listener) override;
+    bool Off(const std::string &type, sptr<IWallpaperEventListener> listener) override;
     bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) override;
     int32_t Dump(int32_t fd, const std::vector<std::u16string> &args) override;
+    ErrorCode SetOffset(int32_t xOffset, int32_t yOffset) override;
 
     ErrorCode SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode GetPixelMapV9(int32_t wallpaperType, FdInfo &fdInfo) override;
@@ -86,6 +88,8 @@ public:
     ErrorCode GetWallpaperMinHeightV9(int32_t &minHeight) override;
     ErrorCode GetWallpaperMinWidthV9(int32_t &minWidth) override;
     ErrorCode ResetWallpaperV9(int32_t wallpaperType) override;
+    ErrorCode SetVideo(int32_t fd, int32_t wallpaperType, int32_t length) override;
+    ErrorCode SendEvent(const std::string &eventType) override;
 
 public:
     static void OnBootPhase();
@@ -109,12 +113,14 @@ private:
     void InitResources(int32_t userId, WallpaperType wallpaperType);
     void InitQueryUserId(int32_t times);
     bool InitUsersOnBoot();
+    void InitWallpaperConfig();
     int64_t WritePixelMapToFile(const std::string &filePath, std::unique_ptr<OHOS::Media::PixelMap> pixelMap);
     bool CompareColor(const uint64_t &localColor, const ColorManager::Color &color);
     bool SaveColor(int32_t userId, WallpaperType wallpaperType);
     void LoadSettingsLocked(int32_t userId, bool keepDimensionHints);
     std::string GetWallpaperDir(int32_t userId, WallpaperType wallpaperType);
-    bool GetFileNameFromMap(int32_t userId, WallpaperType wallpaperType, FileType fileType, std::string &fileName);
+    bool GetFileNameFromMap(int32_t userId, WallpaperType wallpaperType, FileType fileType, bool getWithType,
+        std::string &fileName);
     bool GetWallpaperSafeLocked(int32_t userId, WallpaperType wallpaperType, WallpaperData &wallpaperData);
     void ClearWallpaperLocked(int32_t userId, WallpaperType wallpaperType);
     ErrorCode SetDefaultDataForWallpaper(int32_t userId, WallpaperType wallpaperType);
@@ -124,16 +130,28 @@ private:
     bool MakeCropWallpaper(int32_t userId, WallpaperType wallpaperType);
     void SetPixelMapCropParameters(std::unique_ptr<Media::PixelMap> wallpaperPixelMap,
         Media::DecodeOptions &decodeOpts);
-    ErrorCode SetWallpaperBackupData(int32_t userId, const std::string &uriOrPixelMap, WallpaperType wallpaperType);
+    ErrorCode SetWallpaperBackupData(int32_t userId, WallpaperResourceType resourceType,
+        const std::string &uriOrPixelMap, WallpaperType wallpaperType);
     int32_t ConnectExtensionAbility(const OHOS::AAFwk::Want &want);
     bool IsSystemApp();
-    ErrorCode GetImageFd(int32_t userId, WallpaperType wallpaperType, int32_t &fd);
+    ErrorCode GetImageFd(int32_t userId, WallpaperType wallpaperType, bool getWithType, int32_t &fd);
     ErrorCode GetImageSize(int32_t userId, WallpaperType wallpaperType, int32_t &size);
     bool RestoreUserResources(const WallpaperData &wallpaperData, WallpaperType wallpaperType);
     bool InitUserDir(int32_t userId);
     bool BlockRetry(int64_t interval, uint32_t maxRetryTimes, std::function<bool()> function);
     int32_t QueryActiveUserId();
     bool CheckUserPermissionById(int32_t userId);
+
+    bool ReadWallpaperState(int32_t userId);
+    bool SendWallpaperState();
+    ErrorCode checkSetOffsetPermission();
+    bool SaveWallpaperState(WallpaperType wallpaperType, WallpaperResourceType resourceType);
+    ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length, WallpaperResourceType resourceType);
+    void OnColorsChange(WallpaperType wallpaperType, const ColorManager::Color &color);
+    ErrorCode CheckValid(int32_t wallpaperType, int32_t length, WallpaperResourceType resourceType);
+    bool WallpaperChanged(WallpaperType wallpaperType, WallpaperResourceType resType);
+    void StoreResType();
+    void LoadResType();
 
 private:
     int32_t Init();
@@ -150,9 +168,9 @@ private:
     std::string wallpaperSystemCropFileFullPath_;
     std::string wallpaperTmpFullPath_;
     std::string wallpaperCropPath_;
-    typedef std::map<int32_t, WallpaperColorChangeListener *> DISPLAYIDCOLORSLISTENERMAP;
+    typedef std::map<int32_t, WallpaperEventListener *> DISPLAYIDCOLORSLISTENERMAP;
     typedef std::map<int32_t, DISPLAYIDCOLORSLISTENERMAP> COLORSLISTENERMAP;
-    typedef std::list<WallpaperColorChangeListener *> LISTENERLIST;
+    typedef std::list<WallpaperEventListener *> LISTENERLIST;
     LISTENERLIST colorListeners_;
     COLORSLISTENERMAP colorsChangedListeners_;
     ConcurrentMap<int32_t, WallpaperData> systemWallpaperMap_;
@@ -167,8 +185,11 @@ private:
     std::mutex mtx_;
     uint64_t lockWallpaperColor_;
     uint64_t systemWallpaperColor_;
-    std::map<int32_t, sptr<IWallpaperColorChangeListener>> colorChangeListenerMap_;
+    std::map<std::string, sptr<IWallpaperEventListener>> colorChangeListenerMap_;
     std::mutex listenerMapMutex_;
+    int32_t pictureWidth_ = 0;
+    int32_t pictureHeight_ = 0;
+    std::map<std::string, WallpaperResourceType> resTypeMap_;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

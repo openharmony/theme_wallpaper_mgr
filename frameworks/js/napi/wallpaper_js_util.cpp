@@ -14,10 +14,11 @@
  */
 #define LOG_TAG "WallpaperJSUtil"
 #include "wallpaper_js_util.h"
-#include "export/color.h"
+#include "color.h"
 #include "hilog_wrapper.h"
 
 namespace OHOS::WallpaperNAPI {
+using namespace WallpaperMgrService;
 constexpr const uint32_t COLOR_MASK{ 0xFF };
 
 std::string WallpaperJSUtil::Convert2String(napi_env env, napi_value jsString)

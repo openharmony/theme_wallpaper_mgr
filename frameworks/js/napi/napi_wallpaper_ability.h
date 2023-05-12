@@ -26,7 +26,7 @@
 #include "napi/native_node_api.h"
 #include "pixel_map.h"
 #include "pixel_map_napi.h"
-#include "wallpaper_color_change_listener.h"
+#include "wallpaper_event_listener.h"
 #include "wallpaper_common.h"
 #include "wallpaper_js_util.h"
 #include "wallpaper_manager_common_info.h"
@@ -48,6 +48,9 @@ struct GetContextInfo : public Call::Context {
     int32_t wallpaperType = 0;
     std::vector<uint64_t> colors;
     int32_t wallpaperId = 0;
+    std::string eventType = "";
+    std::string parameter = "";
+    bool result = false;
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     napi_status status = napi_generic_failure;
     GetContextInfo() : Context(nullptr, nullptr){};
@@ -118,6 +121,9 @@ struct SetContextInfo : public Call::Context {
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     napi_status status = napi_generic_failure;
     bool isPixelEmp = false;
+    int32_t xOffset = 0;
+    int32_t yOffset = 0;
+    bool isSetOffset = false;
     SetContextInfo() : Context(nullptr, nullptr){};
     SetContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)){};
 
@@ -159,12 +165,13 @@ struct GetFileContextInfo : public Call::Context {
     }
 };
 
-class NapiWallpaperAbility : public WallpaperMgrService::WallpaperColorChangeListener,
+class NapiWallpaperAbility : public WallpaperMgrService::WallpaperEventListener,
                              public std::enable_shared_from_this<NapiWallpaperAbility> {
 public:
     NapiWallpaperAbility(napi_env env, napi_value callback);
     virtual ~NapiWallpaperAbility();
     void OnColorsChange(const std::vector<uint64_t> &color, int32_t wallpaperType) override;
+    void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType) override;
     static bool IsValidArgCount(size_t argc, size_t expectationSize);
     static bool IsValidArgType(napi_env env, napi_value argValue, napi_valuetype expectationType);
     static bool IsValidArgRange(napi_env env, napi_value argValue);
@@ -181,8 +188,22 @@ public:
     static void SetImageInput(std::shared_ptr<SetContextInfo> context);
     static void SetImageExec(std::shared_ptr<SetContextInfo> context, const ApiInfo &apiInfo);
     static void GetImageInner(std::shared_ptr<GetContextInfo> context, const ApiInfo &apiInfo);
+    static void SetVideoInner(std::shared_ptr<SetContextInfo> context);
+    static void SendEventInner(std::shared_ptr<GetContextInfo> context);
+    static void SetOffsetInner(std::shared_ptr<SetContextInfo> context);
 
 private:
+    struct WallpaperChangedData {
+        WallpaperChangedData(const std::shared_ptr<NapiWallpaperAbility> &listenerIn, const WallpaperType &type,
+            const WallpaperResourceType &resType)
+            : listener(listenerIn), wallpaperType(type), resourceType(resType)
+        {
+        }
+        const std::shared_ptr<NapiWallpaperAbility> listener = nullptr;
+        WallpaperType wallpaperType;
+        WallpaperResourceType resourceType;
+    };
+
     struct EventDataWorker {
         const std::shared_ptr<NapiWallpaperAbility> listener = nullptr;
         const std::vector<uint64_t> color;
@@ -220,6 +241,9 @@ napi_value NAPI_GetPixelMap(napi_env env, napi_callback_info info);
 napi_value NAPI_GetImage(napi_env env, napi_callback_info info);
 napi_value NAPI_On(napi_env env, napi_callback_info info);
 napi_value NAPI_Off(napi_env env, napi_callback_info info);
+napi_value NAPI_SetVideo(napi_env env, napi_callback_info info);
+napi_value NAPI_SendEvent(napi_env env, napi_callback_info info);
+napi_value NAPI_SetOffset(napi_env env, napi_callback_info info);
 } // namespace WallpaperNAPI
 } // namespace OHOS
 #endif //  NAPI_WALLPAPER_ABILITY_H

@@ -21,8 +21,11 @@ namespace OHOS {
 namespace WallpaperMgrService {
 class IWallpaperCallback : public IRemoteBroker {
 public:
-    enum Message { ONCALL = 0 };
+    enum Message { ONCALL = 0, ON_OFFSET_CALL};
     virtual int32_t OnCall(const int32_t num) = 0;
+
+    virtual int32_t OnOffsetCall(const int32_t xOffset, const int32_t yOffset) = 0;
+
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.Wallpaper.IWallpaperCallback");
 };
 } // namespace WallpaperMgrService

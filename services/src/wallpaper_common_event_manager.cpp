@@ -36,11 +36,12 @@ bool WallpaperCommonEventManager::PublishEvent(const OHOS::AAFwk::Want &want, in
     return publishResult;
 }
 
-void WallpaperCommonEventManager::SendWallpaperLockSettingMessage()
+void WallpaperCommonEventManager::SendWallpaperLockSettingMessage(WallpaperResourceType resType)
 {
     OHOS::AAFwk::Want want;
     int32_t eventCode = LOCKSCREEN_WALLPAPER_SETTING_SUCCESS_CODE;
     want.SetParam("WallpaperLockSettingMessage", true);
+    want.SetParam("WallpaperLockScreenResourceType", static_cast<int>(resType));
     want.SetAction(LOCKSCREEN_WALLPAPER_SETTING_SUCCESS_EVENT);
     std::string eventData("WallpaperLockSettingMessage");
     PublishEvent(want, eventCode, eventData);

@@ -34,11 +34,22 @@ namespace OHOS {
 namespace AbilityRuntime {
 namespace {
 constexpr size_t ARGC_ONE = 1;
-}
+constexpr size_t ARGC_TWO = 2;
+} // namespace
 struct WorkData {
     NativeEngine *nativeEng_;
     int32_t wallpaperType_;
     WorkData(NativeEngine *nativeEng, int32_t wallpaperType) : nativeEng_(nativeEng), wallpaperType_(wallpaperType)
+    {
+    }
+};
+
+struct OffsetWorkData {
+    NativeEngine *nativeEng_;
+    int32_t xOffset_;
+    int32_t yOffset_;
+    OffsetWorkData(NativeEngine *nativeEng, int32_t xOffset, int32_t yOffset)
+        : nativeEng_(nativeEng), xOffset_(xOffset), yOffset_(yOffset)
     {
     }
 };
@@ -73,7 +84,6 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
         HILOG_ERROR("Failed to get srcPath");
         return;
     }
-
     std::string moduleName(Extension::abilityInfo_->moduleName);
     moduleName.append("::").append(abilityInfo_->name);
     HILOG_INFO("JsWallpaperExtension::Init module:%{public}s,srcPath:%{public}s.", moduleName.c_str(), srcPath.c_str());
@@ -91,7 +101,6 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
         HILOG_ERROR("Failed to get JsWallpaperExtension object");
         return;
     }
-
     auto context = GetContext();
     if (context == nullptr) {
         HILOG_ERROR("Failed to get context");
@@ -111,15 +120,12 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
         HILOG_ERROR("Failed to get wallpaper extension native object");
         return;
     }
-
-    HILOG_INFO("Set wallpaper extension");
-
     nativeObj->SetNativePointer(
-        new std::weak_ptr<AbilityRuntime::Context>(context), [](NativeEngine *, void *data, void *) {
+        new std::weak_ptr<AbilityRuntime::Context>(context),
+        [](NativeEngine *, void *data, void *) {
             HILOG_INFO("Finalizer for weak_ptr wallpaper extension context is called");
             delete static_cast<std::weak_ptr<AbilityRuntime::Context> *>(data);
         }, nullptr);
-
     HILOG_INFO("JsWallpaperExtension::Init end.");
 }
 
@@ -141,27 +147,8 @@ void JsWallpaperExtension::OnStart(const AAFwk::Want &want)
     CallObjectMethod("onCreated", argv, ARGC_ONE);
     FinishAsyncTrace(HITRACE_TAG_MISC, "onCreated", static_cast<int32_t>(TraceTaskId::ONCREATE_EXTENSION));
     CallObjectMethod("createWallpaperWin");
-    WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterWallpaperCallback(
-        [](int32_t wallpaperType) -> bool {
-            HILOG_INFO("jsWallpaperExtension->CallObjectMethod");
-            NativeEngine *nativeEng = &(jsWallpaperExtension->jsRuntime_).GetNativeEngine();
-            WorkData *workData = new (std::nothrow) WorkData(nativeEng, wallpaperType);
-            if (workData == nullptr) {
-                return false;
-            }
-            uv_after_work_cb afterCallback = [](uv_work_t *work, int32_t status) {
-                WorkData *workData = reinterpret_cast<WorkData *>(work->data);
-                napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_),
-                    workData->wallpaperType_);
-                NativeValue *nativeType = reinterpret_cast<NativeValue *>(type);
-                NativeValue *arg[] = { nativeType };
-                jsWallpaperExtension->CallObjectMethod("onWallpaperChanged", arg, ARGC_ONE);
-                delete workData;
-                delete work;
-            };
-            UvQueue::Call(reinterpret_cast<napi_env>(nativeEng), workData, afterCallback);
-            return true;
-        });
+    RegisterWallpaperCallback();
+    RegisterOffsetCallback();
     HILOG_INFO("%{public}s end.", __func__);
     FinishAsyncTrace(HITRACE_TAG_MISC, "onCreated", static_cast<int32_t>(TraceTaskId::ONSTART_EXTENSION));
 }
@@ -254,5 +241,60 @@ void JsWallpaperExtension::GetSrcPath(std::string &srcPath)
         srcPath.append(".abc");
     }
 }
+
+void JsWallpaperExtension::RegisterWallpaperCallback()
+{
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterWallpaperCallback(
+        [](int32_t wallpaperType) -> bool {
+            HILOG_INFO("jsWallpaperExtension->CallObjectMethod");
+            NativeEngine *nativeEng = &(JsWallpaperExtension::jsWallpaperExtension->jsRuntime_).GetNativeEngine();
+            WorkData *workData = new (std::nothrow) WorkData(nativeEng, wallpaperType);
+            if (workData == nullptr) {
+                return false;
+            }
+            uv_after_work_cb afterCallback = [](uv_work_t *work, int32_t status) {
+                WorkData *workData = reinterpret_cast<WorkData *>(work->data);
+                napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_),
+                    workData->wallpaperType_);
+
+                NativeValue *nativeType = reinterpret_cast<NativeValue *>(type);
+                NativeValue *arg[] = { nativeType };
+                JsWallpaperExtension::jsWallpaperExtension->CallObjectMethod("onWallpaperChanged", arg, ARGC_ONE);
+                delete workData;
+                delete work;
+            };
+            UvQueue::Call(reinterpret_cast<napi_env>(nativeEng), workData, afterCallback);
+            return true;
+        });
+}
+
+void JsWallpaperExtension::RegisterOffsetCallback()
+{
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterOffsetCallback([](int32_t xOffset,
+                                                                                        int32_t yOffset) -> bool {
+        HILOG_DEBUG("RegisterOffset start");
+        NativeEngine *nativeEng = &(JsWallpaperExtension::jsWallpaperExtension->jsRuntime_).GetNativeEngine();
+        OffsetWorkData *workData = new (std::nothrow) OffsetWorkData(nativeEng, xOffset, yOffset);
+        if (workData == nullptr) {
+            return false;
+        }
+        uv_after_work_cb afterCallback = [](uv_work_t *work, int32_t status) {
+            OffsetWorkData *workData = reinterpret_cast<OffsetWorkData *>(work->data);
+            napi_value xOffset =
+                OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_), workData->xOffset_);
+            napi_value yOffset =
+                OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_), workData->yOffset_);
+            NativeValue *nativeX = reinterpret_cast<NativeValue *>(xOffset);
+            NativeValue *nativeY = reinterpret_cast<NativeValue *>(yOffset);
+            NativeValue *arg[] = { nativeX, nativeY };
+            JsWallpaperExtension::jsWallpaperExtension->CallObjectMethod("onOffset", arg, ARGC_TWO);
+            delete workData;
+            delete work;
+        };
+        UvQueue::Call(reinterpret_cast<napi_env>(nativeEng), workData, afterCallback);
+        return true;
+    });
+}
+
 } // namespace AbilityRuntime
 } // namespace OHOS
