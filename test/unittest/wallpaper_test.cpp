@@ -141,8 +141,8 @@ public:
     WallpaperEventListenerTestImpl &operator=(WallpaperEventListenerTestImpl &&) = delete;
 
     // callback function will be called when the db data is changed.
-    void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType);
-
+    void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType) override;
+    void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType) override;
     // reset the callCount_ to zero.
     void ResetToZero();
 
@@ -159,6 +159,12 @@ void WallpaperEventListenerTestImpl::OnColorsChange(const std::vector<uint64_t> 
         color_.push_back(each);
     }
     wallpaperType_ = wallpaperType;
+}
+
+void WallpaperEventListenerTestImpl::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType)
+{
+    HILOG_INFO("wallpaperType: %{public}d, resourceType: %{public}d", static_cast<int32_t>(wallpaperType),
+        static_cast<int32_t>(resourceType));
 }
 
 WallpaperEventListenerTestImpl::WallpaperEventListenerTestImpl()
@@ -380,10 +386,27 @@ HWTEST_F(WallpaperTest, On001, TestSize.Level1)
 {
     HILOG_INFO("On001 begin");
     auto listener = std::make_shared<WallpaperEventListenerTestImpl>();
-    WallpaperManagerkits::GetInstance().On("colorChange", listener);
-
+    auto status = WallpaperManagerkits::GetInstance().On("colorChange", listener);
+    EXPECT_EQ(status, E_OK) << "subscribe wallpaper color change failed.";
     auto offSubStatus = WallpaperManagerkits::GetInstance().Off("colorChange", listener);
-    EXPECT_EQ(offSubStatus, true) << "unsubscribe wallpaper color change.";
+    EXPECT_EQ(offSubStatus, E_OK) << "unsubscribe wallpaper color change failed.";
+}
+
+/**
+* @tc.name: On002
+* @tc.desc: set wallpaper and get callback.
+* @tc.type: FUNC
+* @tc.require:
+* @tc.author:
+*/
+HWTEST_F(WallpaperTest, On002, TestSize.Level1)
+{
+    HILOG_INFO("On002 begin");
+    auto listener = std::make_shared<WallpaperEventListenerTestImpl>();
+    auto status = WallpaperManagerkits::GetInstance().On("wallpaperChange", listener);
+    EXPECT_EQ(status, E_NOT_SYSTEM_APP) << "subscribe wallpaper change.";
+    auto offSubStatus = WallpaperManagerkits::GetInstance().Off("wallpaperChange", listener);
+    EXPECT_EQ(offSubStatus, E_NOT_SYSTEM_APP) << "unsubscribe wallpaper change.";
 }
 
 /*********************   On & Off   *********************/
@@ -1029,7 +1052,7 @@ HWTEST_F(WallpaperTest, SetVideo003, TestSize.Level0)
 {
     HILOG_INFO("SetVideo003 begin");
     ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(URI_30FPS_3S_MP4, SYSTYEM);
-    EXPECT_EQ(ret, E_OK);
+    EXPECT_EQ(ret, E_NOT_SYSTEM_APP);
 }
 
 /**
@@ -1042,6 +1065,59 @@ HWTEST_F(WallpaperTest, SetVideo004, TestSize.Level0)
 {
     HILOG_INFO("SetVideo004 begin");
     ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(URI_15FPS_7S_MP4, SYSTYEM);
+    EXPECT_EQ(ret, E_PARAMETERS_INVALID);
+}
+
+/**
+ * @tc.name:    SetVideo005
+ * @tc.desc:    SetVideo input error fileType
+ * @tc.type:    FUNC
+ * @tc.require: issueI6R07J
+ */
+HWTEST_F(WallpaperTest, SetVideo005, TestSize.Level0)
+{
+    HILOG_INFO("SetVideo005 begin");
+    ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(URI_30FPS_3S_MOV, LOCKSCREEN);
+    EXPECT_EQ(ret, E_PARAMETERS_INVALID);
+}
+
+/**
+ * @tc.name:    SetVideo006
+ * @tc.desc:    SetVideo input error uri
+ * @tc.type:    FUNC
+ * @tc.require: issueI6R07J
+ */
+HWTEST_F(WallpaperTest, SetVideo006, TestSize.Level0)
+{
+    HILOG_INFO("SetVideo006 begin");
+    std::string errUri = "errorPath/zm_30fps_4s.mp4";
+    ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(errUri, LOCKSCREEN);
+    EXPECT_EQ(ret, E_FILE_ERROR);
+}
+
+/**
+ * @tc.name:    SetVideo007
+ * @tc.desc:    SetVideo input correct parameter
+ * @tc.type:    FUNC
+ * @tc.require: issueI6R07J
+ */
+HWTEST_F(WallpaperTest, SetVideo007, TestSize.Level0)
+{
+    HILOG_INFO("SetVideo007 begin");
+    ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(URI_30FPS_3S_MP4, LOCKSCREEN);
+    EXPECT_EQ(ret, E_NOT_SYSTEM_APP);
+}
+
+/**
+ * @tc.name:    SetVideo008
+ * @tc.desc:    SetVideo input error duration
+ * @tc.type:    FUNC
+ * @tc.require: issueI6R07J
+ */
+HWTEST_F(WallpaperTest, SetVideo008, TestSize.Level0)
+{
+    HILOG_INFO("SetVideo008 begin");
+    ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(URI_15FPS_7S_MP4, LOCKSCREEN);
     EXPECT_EQ(ret, E_PARAMETERS_INVALID);
 }
 
@@ -1062,7 +1138,6 @@ HWTEST_F(WallpaperTest, SendEvent001, TestSize.Level0)
     ErrorCode ret = WallpaperManagerkits::GetInstance().SendEvent("SHOW_ERROREVENTTYPE");
     EXPECT_EQ(ret, E_PARAMETERS_INVALID);
 }
-
 
 /**
  * @tc.name:    SendEvent002

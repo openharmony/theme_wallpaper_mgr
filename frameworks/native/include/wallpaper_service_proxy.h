@@ -42,8 +42,8 @@ public:
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
     ErrorCode ResetWallpaper(int wallpaperType) override;
-    bool On(const std::string &type, sptr<IWallpaperEventListener> listener) override;
-    bool Off(const std::string &type, sptr<IWallpaperEventListener> listener) override;
+    ErrorCode On(const std::string &type, sptr<IWallpaperEventListener> listener) override;
+    ErrorCode Off(const std::string &type, sptr<IWallpaperEventListener> listener) override;
     bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) override;
     ErrorCode SetVideo(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode SendEvent(const std::string &eventType) override;

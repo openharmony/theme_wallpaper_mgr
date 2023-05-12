@@ -383,9 +383,9 @@ int32_t WallpaperServiceStub::OnWallpaperOn(MessageParcel &data, MessageParcel &
         HILOG_ERROR("OnWallpaperOn nullptr after ipc");
         return IPC_STUB_INVALID_DATA_ERR;
     }
-    sptr<IWallpaperEventListener> WallpaperListenerProxy = iface_cast<IWallpaperEventListener>(remote);
-    bool status = On(type, std::move(WallpaperListenerProxy));
-    int32_t ret = status ? static_cast<int32_t>(E_OK) : static_cast<int32_t>(E_DEAL_FAILED);
+    sptr<IWallpaperEventListener> wallpaperListenerProxy = iface_cast<IWallpaperEventListener>(remote);
+    ErrorCode errorCode = On(type, std::move(wallpaperListenerProxy));
+    int32_t ret = static_cast<int32_t>(errorCode);
     if (!reply.WriteInt32(ret)) {
         HILOG_ERROR("WriteInt32 failed");
         return IPC_STUB_WRITE_PARCEL_ERR;
@@ -403,14 +403,14 @@ int32_t WallpaperServiceStub::OnWallpaperOff(MessageParcel &data, MessageParcel 
         return IPC_STUB_INVALID_DATA_ERR;
     }
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
-    bool status = false;
+    ErrorCode errorCode = E_UNKNOWN;
     if (remote == nullptr) {
-        status = Off(type, nullptr);
+        errorCode = Off(type, nullptr);
     } else {
-        sptr<IWallpaperEventListener> WallpaperListenerProxy = iface_cast<IWallpaperEventListener>(remote);
-        status = Off(type, std::move(WallpaperListenerProxy));
+        sptr<IWallpaperEventListener> wallpaperListenerProxy = iface_cast<IWallpaperEventListener>(remote);
+        errorCode = Off(type, std::move(wallpaperListenerProxy));
     }
-    int32_t ret = status ? static_cast<int32_t>(E_OK) : static_cast<int32_t>(E_DEAL_FAILED);
+    int32_t ret = static_cast<int32_t>(errorCode);
     if (!reply.WriteInt32(ret)) {
         HILOG_ERROR("WriteInt32 failed");
         return IPC_STUB_WRITE_PARCEL_ERR;

@@ -38,10 +38,10 @@
 #include "statistic_reporter.h"
 #include "surface_buffer.h"
 #include "system_ability.h"
-#include "wallpaper_event_listener.h"
 #include "wallpaper_common.h"
 #include "wallpaper_common_event_subscriber.h"
 #include "wallpaper_data.h"
+#include "wallpaper_event_listener.h"
 #include "wallpaper_extension_ability_connection.h"
 #include "wallpaper_manager_common_info.h"
 #include "wallpaper_service_stub.h"
@@ -58,6 +58,7 @@ class WallpaperService : public SystemAbility, public WallpaperServiceStub {
     DECLARE_SYSTEM_ABILITY(WallpaperService);
     enum class ServiceRunningState { STATE_NOT_START, STATE_RUNNING };
     enum class FileType : uint8_t { WALLPAPER_FILE, CROP_FILE };
+    using WallpaperListenerMap = std::map<int32_t, sptr<IWallpaperEventListener>>;
 
 public:
     DISALLOW_COPY_AND_MOVE(WallpaperService);
@@ -76,8 +77,8 @@ public:
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
     ErrorCode ResetWallpaper(int32_t wallpaperType) override;
-    bool On(const std::string &type, sptr<IWallpaperEventListener> listener) override;
-    bool Off(const std::string &type, sptr<IWallpaperEventListener> listener) override;
+    ErrorCode On(const std::string &type, sptr<IWallpaperEventListener> listener) override;
+    ErrorCode Off(const std::string &type, sptr<IWallpaperEventListener> listener) override;
     bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) override;
     int32_t Dump(int32_t fd, const std::vector<std::u16string> &args) override;
     ErrorCode SetOffset(int32_t xOffset, int32_t yOffset) override;
@@ -150,6 +151,7 @@ private:
     void OnColorsChange(WallpaperType wallpaperType, const ColorManager::Color &color);
     ErrorCode CheckValid(int32_t wallpaperType, int32_t length, WallpaperResourceType resourceType);
     bool WallpaperChanged(WallpaperType wallpaperType, WallpaperResourceType resType);
+    void NotifyColorChange(const std::vector<uint64_t> &colors, const WallpaperType &wallpaperType);
     void StoreResType();
     void LoadResType();
 
@@ -185,7 +187,7 @@ private:
     std::mutex mtx_;
     uint64_t lockWallpaperColor_;
     uint64_t systemWallpaperColor_;
-    std::map<std::string, sptr<IWallpaperEventListener>> colorChangeListenerMap_;
+    std::map<std::string, WallpaperListenerMap> wallpaperEventMap_;
     std::mutex listenerMapMutex_;
     int32_t pictureWidth_ = 0;
     int32_t pictureHeight_ = 0;

@@ -402,7 +402,7 @@ ErrorCode WallpaperServiceProxy::SendEvent(const std::string &eventType)
     return ConvertIntToErrorCode(reply.ReadInt32());
 }
 
-bool WallpaperServiceProxy::On(const std::string &type, sptr<IWallpaperEventListener> listener)
+ErrorCode WallpaperServiceProxy::On(const std::string &type, sptr<IWallpaperEventListener> listener)
 {
     HILOG_DEBUG("WallpaperServiceProxy::On in");
     MessageParcel data;
@@ -410,34 +410,32 @@ bool WallpaperServiceProxy::On(const std::string &type, sptr<IWallpaperEventList
     MessageOption option;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return false;
+        return E_WRITE_PARCEL_ERROR;
     }
     if (listener == nullptr) {
         HILOG_ERROR("listener is nullptr");
-        return false;
+        return E_DEAL_FAILED;
     }
 
     if (!data.WriteString(type)) {
         HILOG_ERROR("write type failed.");
-        return false;
+        return E_WRITE_PARCEL_ERROR;
     }
     if (!data.WriteRemoteObject(listener->AsObject())) {
         HILOG_ERROR("write subscribe type or parcel failed.");
-        return false;
+        return E_WRITE_PARCEL_ERROR;
     }
     int32_t result = Remote()->SendRequest(ON, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperServiceProxy::On fail, result = %{public}d ", result);
-        return false;
+        return E_DEAL_FAILED;
     }
 
-    int32_t status = reply.ReadInt32();
-    bool ret = status == static_cast<int32_t>(E_OK);
     HILOG_DEBUG("WallpaperServiceProxy::On out");
-    return ret;
+    return ConvertIntToErrorCode(reply.ReadInt32());
 }
 
-bool WallpaperServiceProxy::Off(const std::string &type, sptr<IWallpaperEventListener> listener)
+ErrorCode WallpaperServiceProxy::Off(const std::string &type, sptr<IWallpaperEventListener> listener)
 {
     HILOG_DEBUG("WallpaperServiceProxy::Off in");
     MessageParcel data;
@@ -445,29 +443,27 @@ bool WallpaperServiceProxy::Off(const std::string &type, sptr<IWallpaperEventLis
     MessageOption option;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR(" Failed to write parcelable ");
-        return false;
+        return E_WRITE_PARCEL_ERROR;
     }
     if (!data.WriteString(type)) {
         HILOG_ERROR("write type failed.");
-        return false;
+        return E_WRITE_PARCEL_ERROR;
     }
     if (listener != nullptr) {
         if (!data.WriteRemoteObject(listener->AsObject())) {
             HILOG_ERROR("write subscribe type or parcel failed.");
-            return false;
+            return E_WRITE_PARCEL_ERROR;
         }
     }
 
     int32_t result = Remote()->SendRequest(OFF, data, reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR(" WallpaperServiceProxy::Off fail, result = %{public}d ", result);
-        return false;
+        return E_DEAL_FAILED;
     }
 
-    int32_t status = reply.ReadInt32();
-    bool ret = status == static_cast<int32_t>(E_OK);
     HILOG_DEBUG("WallpaperServiceProxy::Off out");
-    return ret;
+    return ConvertIntToErrorCode(reply.ReadInt32());
 }
 
 bool WallpaperServiceProxy::RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback)

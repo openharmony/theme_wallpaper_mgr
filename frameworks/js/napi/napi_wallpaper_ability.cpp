@@ -35,6 +35,8 @@ const int32_t ONE = 1;
 const int32_t TWO = 2;
 const int32_t EVENTTYPESIZE = 64;
 const int32_t BUFFERSIZE = 100;
+constexpr const char *COLOR_CHANGE_EVENT = "colorChange";
+constexpr const char *WALLPAPER_CHANGE_EVENT = "wallpaperChange";
 
 struct WorkData {
     napi_env env_;
@@ -601,7 +603,8 @@ void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context
         return napi_ok;
     };
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
-        napi_value pixelVal = PixelMapNapi::CreatePixelMap(env, std::move(context->pixelMap));
+        napi_value pixelVal =
+            (context->pixelMap != nullptr ? PixelMapNapi::CreatePixelMap(env, std::move(context->pixelMap)) : nullptr);
         HILOG_DEBUG("output PixelMapNapi::CreatePixelMap != nullptr[%{public}d]", pixelVal != nullptr);
         *result = pixelVal;
         return napi_ok;
@@ -613,9 +616,9 @@ void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context
             WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(context->wallpaperType, apiInfo,
                 pixelMap);
         HILOG_DEBUG("exec wallpaperErrorCode[%{public}d]", wallpaperErrorCode);
-        if (wallpaperErrorCode == E_OK && pixelMap != nullptr) {
+        if (wallpaperErrorCode == E_OK) {
             context->status = napi_ok;
-            context->pixelMap = std::move(pixelMap);
+            context->pixelMap = (pixelMap != nullptr ? std::move(pixelMap) : nullptr);
             return;
         }
         if (apiInfo.needException) {
@@ -641,20 +644,36 @@ napi_value NAPI_On(napi_env env, napi_callback_info info)
         !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string) ||
         !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_function)) {
         HILOG_DEBUG("input argc : %{public}zu", argc);
+        if (NapiWallpaperAbility::IsValidArgCount(argc, 1) && // 1: argument count
+            NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string) &&
+            WallpaperJSUtil::Convert2String(env, argv[0]) == COLOR_CHANGE_EVENT) {
+            return nullptr;
+        }
+        JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(E_PARAMETERS_INVALID);
+        JsError::ThrowError(env, jsErrorInfo.code, jsErrorInfo.message);
         return nullptr;
     }
+
     std::string type = WallpaperJSUtil::Convert2String(env, argv[0]);
     HILOG_DEBUG("type : %{public}s", type.c_str());
-
-    std::shared_ptr<WallpaperMgrService::WallpaperEventListener> listener =
-        std::make_shared<NapiWallpaperAbility>(env, argv[1]);
-
-    bool status = WallpaperMgrService::WallpaperManagerkits::GetInstance().On(type, listener);
-    if (!status) {
-        HILOG_ERROR("WallpaperMgrService::WallpaperManagerkits::GetInstance().On failed!");
+    if (type != COLOR_CHANGE_EVENT && type != WALLPAPER_CHANGE_EVENT) {
+        HILOG_ERROR("do not support event type: %{public}s", type.c_str());
+        JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(E_PARAMETERS_INVALID);
+        JsError::ThrowError(env, jsErrorInfo.code, jsErrorInfo.message);
         return nullptr;
     }
-
+    std::shared_ptr<WallpaperMgrService::WallpaperEventListener> listener =
+        std::make_shared<NapiWallpaperAbility>(env, argv[1]);
+    ErrorCode errorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().On(type, listener);
+    if (errorCode != E_OK) {
+        HILOG_ERROR("WallpaperMgrService::WallpaperManagerkits::GetInstance().On failed!");
+        if (type == COLOR_CHANGE_EVENT) {
+            return nullptr;
+        }
+        JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(errorCode);
+        JsError::ThrowError(env, jsErrorInfo.code, jsErrorInfo.message);
+        return nullptr;
+    }
     napi_value result = nullptr;
     napi_get_undefined(env, &result);
     return result;
@@ -668,27 +687,38 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info)
     napi_value thisVar = nullptr;
     void *data = nullptr;
     napi_get_cb_info(env, info, &argc, argv, &thisVar, &data);
-    if (!NapiWallpaperAbility::IsValidArgCount(argc, ONE) ||
+    if (!NapiWallpaperAbility::IsValidArgCount(argc, 1) || // 1: argument count
         !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string)) {
         HILOG_DEBUG("input argc : %{public}zu", argc);
+        JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(E_PARAMETERS_INVALID);
+        JsError::ThrowError(env, jsErrorInfo.code, jsErrorInfo.message);
         return nullptr;
     }
+
     std::string type = WallpaperJSUtil::Convert2String(env, argv[0]);
     HILOG_DEBUG("type : %{public}s", type.c_str());
-
+    if (type != COLOR_CHANGE_EVENT && type != WALLPAPER_CHANGE_EVENT) {
+        HILOG_ERROR("do not support event type: %{public}s", type.c_str());
+        JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(E_PARAMETERS_INVALID);
+        JsError::ThrowError(env, jsErrorInfo.code, jsErrorInfo.message);
+        return nullptr;
+    }
     std::shared_ptr<WallpaperMgrService::WallpaperEventListener> listener = nullptr;
     if (argc >= TWO) {
         if (NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_function)) {
             listener = std::make_shared<NapiWallpaperAbility>(env, argv[1]);
         }
     }
-
-    bool status = WallpaperMgrService::WallpaperManagerkits::GetInstance().Off(type, listener);
-    if (!status) {
+    ErrorCode errorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().Off(type, listener);
+    if (errorCode != E_OK) {
         HILOG_ERROR("WallpaperMgrService::WallpaperManagerkits::GetInstance().Off failed!");
+        if (type == COLOR_CHANGE_EVENT) {
+            return nullptr;
+        }
+        JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(errorCode);
+        JsError::ThrowError(env, jsErrorInfo.code, jsErrorInfo.message);
         return nullptr;
     }
-
     napi_value result = nullptr;
     napi_get_undefined(env, &result);
     return result;

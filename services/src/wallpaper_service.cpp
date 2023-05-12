@@ -80,6 +80,7 @@ constexpr const char *SHOW_LOCK_SCREEN = "SHOW_LOCKSCREEN";
 constexpr const char *SYSTEM_RES_TYPE = "SystemResType";
 constexpr const char *LOCKSCREEN_RES_TYPE = "LockScreenResType";
 constexpr const char *WALLPAPER_CHANGE = "wallpaperChange";
+constexpr const char *COLOR_CHANGE = "colorChange";
 
 constexpr int64_t INIT_INTERVAL = 10000L;
 constexpr int64_t DELAY_TIME = 1000L;
@@ -238,7 +239,7 @@ void WallpaperService::InitData()
     wallpaperCropPath_ = WALLPAPER_USERID_PATH + WALLPAPER_CROP_PICTURE;
     systemWallpaperColor_ = 0;
     lockWallpaperColor_ = 0;
-    colorChangeListenerMap_.clear();
+    wallpaperEventMap_.clear();
     InitUserDir(userId);
     LoadSettingsLocked(userId, true);
     InitResources(userId, WALLPAPER_SYSTEM);
@@ -831,6 +832,10 @@ bool WallpaperService::SendWallpaperState()
 
 ErrorCode WallpaperService::SetVideo(int32_t fd, int32_t wallpaperType, int32_t length)
 {
+    if (!IsSystemApp()) {
+        HILOG_ERROR("current app is not SystemApp");
+        return E_NOT_SYSTEM_APP;
+    }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetVideo", static_cast<int32_t>(TraceTaskId::SET_VIDEO));
     ErrorCode wallpaperErrorCode = SetWallpaper(fd, wallpaperType, length, VIDEO);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetVideo", static_cast<int32_t>(TraceTaskId::SET_VIDEO));
@@ -869,6 +874,15 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
     auto type = static_cast<WallpaperType>(wallpaperType);
     int32_t userId = QueryActiveUserId();
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
+    // current user's wallpaper is live video, not image
+    WallpaperResourceType resType =
+        (type == WALLPAPER_SYSTEM ? resTypeMap_[SYSTEM_RES_TYPE] : resTypeMap_[LOCKSCREEN_RES_TYPE]);
+    if (resType != PICTURE) {
+        HILOG_ERROR("Current user's wallpaper is live video, not image");
+        fdInfo.size = 0; // 0: empty file size
+        fdInfo.fd = -1;  // -1: invalid file description
+        return E_OK;
+    }
     ErrorCode ret = GetImageSize(userId, type, fdInfo.size);
     if (ret != E_OK) {
         HILOG_ERROR("GetImageSize failed");
@@ -1030,31 +1044,42 @@ ErrorCode WallpaperService::SetDefaultDataForWallpaper(int32_t userId, Wallpaper
     return E_OK;
 }
 
-bool WallpaperService::On(const std::string &type, sptr<IWallpaperEventListener> listener)
+ErrorCode WallpaperService::On(const std::string &type, sptr<IWallpaperEventListener> listener)
 {
     HILOG_DEBUG("WallpaperService::On in");
     if (listener == nullptr) {
         HILOG_ERROR("WallpaperService::On listener is null");
-        return false;
+        return E_DEAL_FAILED;
+    }
+    if (type == WALLPAPER_CHANGE && !IsSystemApp()) {
+        HILOG_ERROR("current app is not SystemApp");
+        return E_NOT_SYSTEM_APP;
     }
     std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
-    colorChangeListenerMap_[type] = listener;
+    wallpaperEventMap_[type].insert_or_assign(IPCSkeleton::GetCallingTokenID(), listener);
     HILOG_DEBUG("WallpaperService::On out");
-    return true;
+    return E_OK;
 }
 
-bool WallpaperService::Off(const std::string &type, sptr<IWallpaperEventListener> listener)
+ErrorCode WallpaperService::Off(const std::string &type, sptr<IWallpaperEventListener> listener)
 {
     HILOG_DEBUG("WallpaperService::Off in");
     (void)listener;
+    if (type == WALLPAPER_CHANGE && !IsSystemApp()) {
+        HILOG_ERROR("current app is not SystemApp");
+        return E_NOT_SYSTEM_APP;
+    }
     std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
-    auto iter = colorChangeListenerMap_.find(type);
-    if (iter != colorChangeListenerMap_.end()) {
-        iter->second = nullptr;
-        colorChangeListenerMap_.erase(iter);
+    auto iter = wallpaperEventMap_.find(type);
+    if (iter != wallpaperEventMap_.end()) {
+        auto it = iter->second.find(IPCSkeleton::GetCallingTokenID());
+        if (it != iter->second.end()) {
+            it->second = nullptr;
+            iter->second.erase(it);
+        }
     }
     HILOG_DEBUG("WallpaperService::Off out");
-    return true;
+    return E_OK;
 }
 
 bool WallpaperService::RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback)
@@ -1424,17 +1449,11 @@ void WallpaperService::OnColorsChange(WallpaperType wallpaperType, const ColorMa
     if (wallpaperType == WALLPAPER_SYSTEM && !CompareColor(systemWallpaperColor_, color)) {
         systemWallpaperColor_ = color.PackValue();
         colors.emplace_back(systemWallpaperColor_);
-        std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
-        for (const auto &listener : colorChangeListenerMap_) {
-            listener.second->OnColorsChange(colors, WALLPAPER_SYSTEM);
-        }
+        NotifyColorChange(colors, WALLPAPER_SYSTEM);
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN && !CompareColor(lockWallpaperColor_, color)) {
         lockWallpaperColor_ = color.PackValue();
         colors.emplace_back(lockWallpaperColor_);
-        std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
-        for (const auto &listener : colorChangeListenerMap_) {
-            listener.second->OnColorsChange(colors, WALLPAPER_LOCKSCREEN);
-        }
+        NotifyColorChange(colors, WALLPAPER_LOCKSCREEN);
     }
 }
 
@@ -1459,13 +1478,31 @@ ErrorCode WallpaperService::CheckValid(int32_t wallpaperType, int32_t length, Wa
 bool WallpaperService::WallpaperChanged(WallpaperType wallpaperType, WallpaperResourceType resType)
 {
     std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
-    auto it = colorChangeListenerMap_.find(WALLPAPER_CHANGE);
-    if (it != colorChangeListenerMap_.end() && it->second != nullptr) {
-        it->second->OnWallpaperChange(wallpaperType, resType);
+    auto it = wallpaperEventMap_.find(WALLPAPER_CHANGE);
+    if (it != wallpaperEventMap_.end()) {
+        for (auto iter = it->second.begin(); iter != it->second.end(); iter++) {
+            if (iter->second == nullptr) {
+                continue;
+            }
+            iter->second->OnWallpaperChange(wallpaperType, resType);
+        }
         return true;
     }
-
     return false;
+}
+
+void WallpaperService::NotifyColorChange(const std::vector<uint64_t> &colors, const WallpaperType &wallpaperType)
+{
+    std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
+    auto it = wallpaperEventMap_.find(COLOR_CHANGE);
+    if (it != wallpaperEventMap_.end()) {
+        for (auto iter = it->second.begin(); iter != it->second.end(); iter++) {
+            if (iter->second == nullptr) {
+                continue;
+            }
+            iter->second->OnColorsChange(colors, wallpaperType);
+        }
+    }
 }
 
 void WallpaperService::StoreResType()

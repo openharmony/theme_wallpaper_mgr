@@ -24,9 +24,9 @@
 #include "iwallpaper_event_listener.h"
 #include "pixel_map.h"
 #include "pixel_map_parcel.h"
+#include "wallpaper_common.h"
 #include "wallpaper_event_listener.h"
 #include "wallpaper_event_listener_client.h"
-#include "wallpaper_common.h"
 #include "wallpaper_manager_common_info.h"
 
 namespace OHOS {
@@ -128,17 +128,17 @@ public:
      * Registers a listener for wallpaper event changes to receive notifications about the changes.
      * @param type event type
      * @param listener event observer.
-     * @return  true or false
+     * @return error code
      */
-    virtual bool On(const std::string &type, sptr<IWallpaperEventListener> listener) = 0;
+    virtual ErrorCode On(const std::string &type, sptr<IWallpaperEventListener> listener) = 0;
 
     /**
      * Unregisters a listener for wallpaper event changes.
      * @param type event type
      * @param listener event observer.
-     * @return  true or false
+     * @return error code
      */
-    virtual bool Off(const std::string &type, sptr<IWallpaperEventListener> listener) = 0;
+    virtual ErrorCode Off(const std::string &type, sptr<IWallpaperEventListener> listener) = 0;
 
     virtual bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) = 0;
 
