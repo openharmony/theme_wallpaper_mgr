@@ -1211,7 +1211,7 @@ int32_t WallpaperService::ConnectExtensionAbility(const AAFwk::Want &want)
     if (connection_ == nullptr) {
         connection_ = new WallpaperExtensionAbilityConnection(*this);
     }
-    ret = AAFwk::AbilityManagerClient::GetInstance()->ConnectExtensionAbility(want, connection_, DEFAULT_VALUE);
+    auto ret = AAFwk::AbilityManagerClient::GetInstance()->ConnectExtensionAbility(want, connection_, DEFAULT_VALUE);
     HILOG_INFO("ConnectExtensionAbility errCode=%{public}d", ret);
     return ret;
 }
