@@ -60,7 +60,7 @@ Call::~Call()
     DeleteContext(env_, context_);
 }
 
-napi_value Call::AsyncCall(napi_env env)
+napi_value Call::AsyncCall(napi_env env, const std::string &resourceName)
 {
     if (context_ == nullptr) {
         HILOG_DEBUG("context_ is null");
@@ -79,7 +79,8 @@ napi_value Call::AsyncCall(napi_env env)
     }
     napi_async_work work = context_->work;
     napi_value resource = nullptr;
-    napi_create_string_utf8(env, "AsyncCall", NAPI_AUTO_LENGTH, &resource);
+    std::string name = "THEME_" + resourceName;
+    napi_create_string_utf8(env, name.c_str(), NAPI_AUTO_LENGTH, &resource);
     napi_create_async_work(env, nullptr, resource, Call::OnExecute, Call::OnComplete, context_, &work);
     context_->work = work;
     context_ = nullptr;

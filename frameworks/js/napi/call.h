@@ -93,7 +93,7 @@ public:
     Call(napi_env env, napi_callback_info info, std::shared_ptr<Context> context, size_t pos = ASYNC_DEFAULT_POS,
         bool needException = true);
     ~Call();
-    napi_value AsyncCall(napi_env env);
+    napi_value AsyncCall(napi_env env, const std::string &resourceName = "AsyncCall");
     napi_value SyncCall(napi_env env);
 
 private:
