@@ -96,6 +96,7 @@ constexpr int32_t MAX_RETRY_TIMES = 20;
 constexpr int32_t QUERY_USER_MAX_RETRY_TIMES = 100;
 constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
 constexpr int32_t DEFAULT_USER_ID = 0;
+constexpr int32_t DEFAULT_VALUE = -1;
 constexpr int32_t MAX_VIDEO_SIZE = 104857600;
 constexpr int32_t MIN_OFFSET = -50;
 constexpr int32_t MAX_OFFSET = 50;
@@ -428,6 +429,9 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
         HILOG_ERROR("userId error, userId = %{public}d", userId);
         return;
     }
+    AAFwk::Want want;
+    want.SetElementName(OHOS_WALLPAPER_BUNDLE_NAME, "WallpaperExtAbility");
+    ConnectExtensionAbility(want);
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     LoadSettingsLocked(userId, true);
     if (!FileDeal::IsFileExist(userDir)) {
@@ -1229,16 +1233,10 @@ int32_t WallpaperService::ConnectExtensionAbility(const AAFwk::Want &want)
         HILOG_ERROR("connect ability server failed errCode=%{public}d", errCode);
         return errCode;
     }
-    std::vector<int32_t> ids;
-    ErrCode ret = AccountSA::OsAccountManager::QueryActiveOsAccountIds(ids);
-    if (ret != ERR_OK || ids.empty()) {
-        HILOG_ERROR("query active user failed errCode=%{public}d", ret);
-        return AAFwk::INVALID_PARAMETERS_ERR;
-    }
     if (connection_ == nullptr) {
         connection_ = new WallpaperExtensionAbilityConnection(*this);
     }
-    ret = AAFwk::AbilityManagerClient::GetInstance()->ConnectExtensionAbility(want, connection_, ids[0]);
+    auto ret = AAFwk::AbilityManagerClient::GetInstance()->ConnectExtensionAbility(want, connection_, DEFAULT_VALUE);
     HILOG_INFO("ConnectExtensionAbility errCode=%{public}d", ret);
     return ret;
 }
