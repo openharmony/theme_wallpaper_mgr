@@ -51,8 +51,8 @@ ohos_shared_library("wallpapermanager") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_single",
     "multimedia_image_framework:image_native",
-    "multimedia_player_framework:media_client",
     "napi:ace_napi",
+    "player_framework:media_client",
     "samgr:samgr_proxy",
   ]
   subsystem_name = "theme"
@@ -79,8 +79,8 @@ ohos_static_library("wallpapermanager_static") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_single",
     "multimedia_image_framework:image_native",
-    "multimedia_player_framework:media_client",
     "napi:ace_napi",
+    "player_framework:media_client",
     "samgr:samgr_proxy",
   ]
   subsystem_name = "theme"

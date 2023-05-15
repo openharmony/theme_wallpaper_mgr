@@ -53,8 +53,8 @@ ohos_fuzztest("WallpaperManagerFuzzTest") {
     "graphic_standard:surface",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_single",
-    "multimedia_player_framework:media_client",
     "os_account:os_account_innerkits",
+    "player_framework:media_client",
     "window_manager:libwm",
   ]
 }
