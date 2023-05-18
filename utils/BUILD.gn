@@ -36,5 +36,6 @@ ohos_shared_library("wallpaper_utils") {
     "hiviewdfx_hilog_native:libhilog",
   ]
   subsystem_name = "theme"
+  innerapi_tags = [ "platformsdk_indirect" ]
   part_name = "wallpaper_mgr"
 }
