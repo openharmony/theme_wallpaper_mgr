@@ -620,6 +620,7 @@ bool WallpaperService::SaveColor(int32_t userId, WallpaperType wallpaperType)
         return false;
     }
     OHOS::Media::DecodeOptions decodeOpts;
+    decodeOpts.allocatorType = AllocatorType::HEAP_ALLOC;
     std::unique_ptr<PixelMap> wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     if (errorCode != 0) {
         HILOG_ERROR("CreatePixelMap failed");
