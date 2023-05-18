@@ -241,6 +241,8 @@ ErrorCode WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> 
         HILOG_ERROR("Write file failed, errno %{public}d", errno);
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         delete[] buffer;
+        close(fd[1]);
+        close(fd[0]);
         return E_WRITE_PARCEL_ERROR;
     }
     close(fd[1]);
@@ -344,8 +346,10 @@ ErrorCode WallpaperManager::GetPixelMap(int32_t wallpaperType, const ApiInfo &ap
         OHOS::Media::ImageSource::CreateImageSource(fdInfo.fd, opts, errorCode);
     if (errorCode != 0) {
         HILOG_ERROR("ImageSource::CreateImageSource failed,errcode= %{public}d", errorCode);
+        close(fdInfo.fd);
         return E_IMAGE_ERRCODE;
     }
+    close(fdInfo.fd);
     OHOS::Media::DecodeOptions decodeOpts;
     HILOG_INFO(" CreatePixelMap");
     pixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
@@ -464,7 +468,7 @@ ErrorCode WallpaperManager::Off(const std::string &type, std::shared_ptr<Wallpap
     std::lock_guard<std::mutex> lck(listenerMapMutex_);
     sptr<WallpaperEventListenerClient> ipcListener = nullptr;
     if (listener != nullptr) {
-        sptr<WallpaperEventListenerClient> ipcListener = new (std::nothrow) WallpaperEventListenerClient(listener);
+        ipcListener = new (std::nothrow) WallpaperEventListenerClient(listener);
         if (ipcListener == nullptr) {
             HILOG_ERROR("new WallpaperEventListenerClient failed");
             return E_NO_MEMORY;
@@ -549,6 +553,10 @@ bool WallpaperManager::GetRealPath(const std::string &inOriPath, std::string &ou
         HILOG_ERROR("real path file is not exist! %{public}s", outRealPath.c_str());
         return false;
     }
+    if (outRealPath.compare(inOriPath) != 0) {
+        HILOG_ERROR("illegal file path input %{public}s", inOriPath.c_str());
+        return false;
+    }
     return true;
 }
 
@@ -570,6 +578,7 @@ bool WallpaperManager::CheckVideoFormat(const std::string &fileName)
     int32_t errorCode = helper->SetSource(videoFd, offset, length);
     if (errorCode != 0) {
         HILOG_ERROR("Set helper source failed");
+        close(videoFd);
         return false;
     }
     auto metaData = helper->ResolveMetadata();

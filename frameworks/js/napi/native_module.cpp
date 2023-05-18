@@ -30,17 +30,17 @@ EXTERN_C_START
 static napi_value Init(napi_env env, napi_value exports)
 {
     HILOG_INFO("napi_module Init start...");
-    napi_value WallpaperType = nullptr;
+    napi_value wallpaperType = nullptr;
     napi_value wpType_system = nullptr;
     napi_value wpType_lockscreen = nullptr;
     NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(WALLPAPER_SYSTEM), &wpType_system));
     NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(WALLPAPER_LOCKSCREEN), &wpType_lockscreen));
-    NAPI_CALL(env, napi_create_object(env, &WallpaperType));
-    NAPI_CALL(env, napi_set_named_property(env, WallpaperType, "WALLPAPER_SYSTEM", wpType_system));
-    NAPI_CALL(env, napi_set_named_property(env, WallpaperType, "WALLPAPER_LOCKSCREEN", wpType_lockscreen));
+    NAPI_CALL(env, napi_create_object(env, &wallpaperType));
+    NAPI_CALL(env, napi_set_named_property(env, wallpaperType, "WALLPAPER_SYSTEM", wpType_system));
+    NAPI_CALL(env, napi_set_named_property(env, wallpaperType, "WALLPAPER_LOCKSCREEN", wpType_lockscreen));
 
     // WallpaperResourceType
-    napi_value WallpaperResourceType = nullptr;
+    napi_value wallpaperResourceType = nullptr;
     napi_value wallpaperResDefault = nullptr;
     napi_value wallpaperResPicture = nullptr;
     napi_value wallpaperResVideo = nullptr;
@@ -49,11 +49,11 @@ static napi_value Init(napi_env env, napi_value exports)
     NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(PICTURE), &wallpaperResPicture));
     NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(VIDEO), &wallpaperResVideo));
     NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(PACKGE), &wallpaperResPackge));
-    NAPI_CALL(env, napi_create_object(env, &WallpaperResourceType));
-    NAPI_CALL(env, napi_set_named_property(env, WallpaperResourceType, "DEFAULT", wallpaperResDefault));
-    NAPI_CALL(env, napi_set_named_property(env, WallpaperResourceType, "PICTURE", wallpaperResPicture));
-    NAPI_CALL(env, napi_set_named_property(env, WallpaperResourceType, "VIDEO", wallpaperResVideo));
-    NAPI_CALL(env, napi_set_named_property(env, WallpaperResourceType, "PACKGE", wallpaperResPackge));
+    NAPI_CALL(env, napi_create_object(env, &wallpaperResourceType));
+    NAPI_CALL(env, napi_set_named_property(env, wallpaperResourceType, "DEFAULT", wallpaperResDefault));
+    NAPI_CALL(env, napi_set_named_property(env, wallpaperResourceType, "PICTURE", wallpaperResPicture));
+    NAPI_CALL(env, napi_set_named_property(env, wallpaperResourceType, "VIDEO", wallpaperResVideo));
+    NAPI_CALL(env, napi_set_named_property(env, wallpaperResourceType, "PACKGE", wallpaperResPackge));
 
     napi_property_descriptor desc[] = {
         DECLARE_NAPI_FUNCTION("getColors", NAPI_GetColors),
@@ -77,8 +77,8 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("setVideo", NAPI_SetVideo),
         DECLARE_NAPI_FUNCTION("sendEvent", NAPI_SendEvent),
         DECLARE_NAPI_FUNCTION("setOffset", NAPI_SetOffset),
-        DECLARE_NAPI_STATIC_PROPERTY("WallpaperType", WallpaperType),
-        DECLARE_NAPI_STATIC_PROPERTY("WallpaperResourceType", WallpaperResourceType),
+        DECLARE_NAPI_STATIC_PROPERTY("WallpaperType", wallpaperType),
+        DECLARE_NAPI_STATIC_PROPERTY("WallpaperResourceType", wallpaperResourceType),
     };
 
     NAPI_CALL(env, napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc));
