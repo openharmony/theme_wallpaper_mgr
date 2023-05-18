@@ -14,6 +14,6 @@
 import("//build/ohos/sa_profile/sa_profile.gni")
 
 ohos_sa_profile("wallpaper_sa_profiles") {
-  sources = [ "3705.xml" ]
+  sources = [ "wallpaper_service.json" ]
   part_name = "wallpaper_mgr"
 }
