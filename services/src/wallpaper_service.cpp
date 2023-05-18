@@ -443,6 +443,7 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
     SaveColor(userId, WALLPAPER_SYSTEM);
     SaveColor(userId, WALLPAPER_LOCKSCREEN);
     InitWallpaperConfig();
+    std::lock_guard<std::mutex> autoLock(resTypeMapMutex_);
     WallpaperChanged(WALLPAPER_SYSTEM, resTypeMap_[SYSTEM_RES_TYPE]);
     shared_ptr<WallpaperCommonEventManager> wallpaperCommonEventManager = make_shared<WallpaperCommonEventManager>();
     HILOG_INFO("Send wallpaper setting message");
@@ -620,7 +621,6 @@ bool WallpaperService::SaveColor(int32_t userId, WallpaperType wallpaperType)
         return false;
     }
     OHOS::Media::DecodeOptions decodeOpts;
-    decodeOpts.allocatorType = AllocatorType::HEAP_ALLOC;
     std::unique_ptr<PixelMap> wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
     if (errorCode != 0) {
         HILOG_ERROR("CreatePixelMap failed");
@@ -773,6 +773,7 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, WallpaperReso
 
 bool WallpaperService::SaveWallpaperState(WallpaperType wallpaperType, WallpaperResourceType resourceType)
 {
+    std::lock_guard<std::mutex> autoLock(resTypeMapMutex_);
     if (wallpaperType == WALLPAPER_SYSTEM) {
         resTypeMap_[SYSTEM_RES_TYPE] = resourceType;
     } else {
@@ -784,6 +785,7 @@ bool WallpaperService::SaveWallpaperState(WallpaperType wallpaperType, Wallpaper
 
 bool WallpaperService::ReadWallpaperState(int32_t userId)
 {
+    std::lock_guard<std::mutex> autoLock(resTypeMapMutex_);
     LoadResType();
     if (systemWallpaperMap_.Contains(userId)) {
         systemWallpaperMap_[userId].resourceType = resTypeMap_[SYSTEM_RES_TYPE];
@@ -879,6 +881,7 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
     auto type = static_cast<WallpaperType>(wallpaperType);
     int32_t userId = QueryActiveUserId();
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
+    std::lock_guard<std::mutex> autoLock(resTypeMapMutex_);
     // current user's wallpaper is live video, not image
     WallpaperResourceType resType =
         (type == WALLPAPER_SYSTEM ? resTypeMap_[SYSTEM_RES_TYPE] : resTypeMap_[LOCKSCREEN_RES_TYPE]);
