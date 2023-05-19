@@ -1816,7 +1816,7 @@ describe('WallpaperJSTest', function () {
             done();
         } catch (error) {
             console.info(`offCallbackTest006 error : ${error.message}`);
-            expect(error.code == PARAMETER_ERROR).assertTrue();
+            expect(error.code === PARAMETER_ERROR).assertTrue();
             done();
         }
         await wallpaper.restore(WALLPAPER_SYSTEM);

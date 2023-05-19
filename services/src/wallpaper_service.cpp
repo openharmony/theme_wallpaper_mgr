@@ -739,15 +739,12 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, WallpaperReso
     wallpaperData.resourceType = resourceType;
     wallpaperData.wallpaperId = MakeWallpaperIdLocked();
     std::string wallpaperFile = resourceType == VIDEO ? wallpaperData.liveWallpaperFile : wallpaperData.wallpaperFile;
-    {
-        std::lock_guard<std::mutex> lock(mtx_);
-        if (!FileDeal::CopyFile(uriOrPixelMap, wallpaperFile)) {
-            HILOG_ERROR("CopyFile failed !");
-            return E_DEAL_FAILED;
-        }
-        if (!FileDeal::DeleteFile(uriOrPixelMap)) {
-            return E_DEAL_FAILED;
-        }
+    if (!FileDeal::CopyFile(uriOrPixelMap, wallpaperFile)) {
+        HILOG_ERROR("CopyFile failed !");
+        return E_DEAL_FAILED;
+    }
+    if (!FileDeal::DeleteFile(uriOrPixelMap)) {
+        return E_DEAL_FAILED;
     }
     if (!SaveWallpaperState(wallpaperType, resourceType)) {
         HILOG_ERROR("Save wallpaper state failed!");
@@ -1364,30 +1361,28 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
     if (paperBuf == nullptr) {
         return E_NO_MEMORY;
     }
-    {
-        std::lock_guard<std::mutex> lock(mtx_);
-        if (read(fd, paperBuf, length) <= 0) {
-            HILOG_ERROR("read fd failed");
-            delete[] paperBuf;
-            return E_DEAL_FAILED;
-        }
-        mode_t mode = 0660;
-        int32_t fdw = open(uri.c_str(), O_WRONLY | O_CREAT, mode);
-        if (fdw < 0) {
-            HILOG_ERROR("Open wallpaper tmpFullPath failed, errno %{public}d", errno);
-            delete[] paperBuf;
-            return E_DEAL_FAILED;
-        }
-        if (write(fdw, paperBuf, length) <= 0) {
-            HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
-            ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
-            delete[] paperBuf;
-            close(fdw);
-            return E_DEAL_FAILED;
-        }
+    std::lock_guard<std::mutex> lock(mtx_);
+    if (read(fd, paperBuf, length) <= 0) {
+        HILOG_ERROR("read fd failed");
+        delete[] paperBuf;
+        return E_DEAL_FAILED;
+    }
+    mode_t mode = 0660;
+    int32_t fdw = open(uri.c_str(), O_WRONLY | O_CREAT, mode);
+    if (fdw < 0) {
+        HILOG_ERROR("Open wallpaper tmpFullPath failed, errno %{public}d", errno);
+        delete[] paperBuf;
+        return E_DEAL_FAILED;
+    }
+    if (write(fdw, paperBuf, length) <= 0) {
+        HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
+        ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
         delete[] paperBuf;
         close(fdw);
+        return E_DEAL_FAILED;
     }
+    delete[] paperBuf;
+    close(fdw);
     WallpaperType type = static_cast<WallpaperType>(wallpaperType);
     int32_t userId = QueryActiveUserId();
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
