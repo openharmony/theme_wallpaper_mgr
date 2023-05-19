@@ -65,21 +65,21 @@ WallpaperManager::~WallpaperManager()
 void WallpaperManager::ResetService(const wptr<IRemoteObject> &remote)
 {
     HILOG_INFO("Remote is dead, reset service instance");
-    std::lock_guard<std::mutex> lock(wpProxyLock_);
-    if (wpProxy_ != nullptr) {
-        sptr<IRemoteObject> object = wpProxy_->AsObject();
+    std::lock_guard<std::mutex> lock(wallpaperProxyLock_);
+    if (wallpaperProxy_ != nullptr) {
+        sptr<IRemoteObject> object = wallpaperProxy_->AsObject();
         if ((object != nullptr) && (remote == object)) {
             object->RemoveDeathRecipient(deathRecipient_);
-            wpProxy_ = nullptr;
+            wallpaperProxy_ = nullptr;
         }
     }
 }
 
 sptr<IWallpaperService> WallpaperManager::GetService()
 {
-    std::lock_guard<std::mutex> lock(wpProxyLock_);
-    if (wpProxy_ != nullptr) {
-        return wpProxy_;
+    std::lock_guard<std::mutex> lock(wallpaperProxyLock_);
+    if (wallpaperProxy_ != nullptr) {
+        return wallpaperProxy_;
     }
 
     sptr<ISystemAbilityManager> samgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
@@ -102,11 +102,11 @@ sptr<IWallpaperService> WallpaperManager::GetService()
     }
 
     HILOG_INFO("get remote object ok");
-    wpProxy_ = iface_cast<WallpaperServiceProxy>(object);
-    if (wpProxy_ == nullptr) {
+    wallpaperProxy_ = iface_cast<WallpaperServiceProxy>(object);
+    if (wallpaperProxy_ == nullptr) {
         HILOG_ERROR("iface_cast failed");
     }
-    return wpProxy_;
+    return wallpaperProxy_;
 }
 
 void WallpaperManager::DeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &remote)
@@ -139,31 +139,31 @@ ErrCode WallpaperManager::CallService(F func, Args &&...args)
 
 ErrorCode WallpaperManager::GetColors(int32_t wallpaperType, const ApiInfo &apiInfo, std::vector<uint64_t> &colors)
 {
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return E_DEAL_FAILED;
     }
     if (apiInfo.isSystemApi) {
-        return wpServerProxy->GetColorsV9(wallpaperType, colors);
+        return wallpaperServerProxy->GetColorsV9(wallpaperType, colors);
     }
-    return wpServerProxy->GetColors(wallpaperType, colors);
+    return wallpaperServerProxy->GetColors(wallpaperType, colors);
 }
 
 ErrorCode WallpaperManager::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
 {
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return E_DEAL_FAILED;
     }
-    std::lock_guard<std::mutex> lock(wpFdLock_);
+    std::lock_guard<std::mutex> lock(wallpaperFdLock_);
     std::map<int32_t, int32_t>::iterator iter = wallpaperFdMap_.find(wallpaperType);
     if (iter != wallpaperFdMap_.end() && fcntl(iter->second, F_GETFL) != -1) {
         close(iter->second);
         wallpaperFdMap_.erase(iter);
     }
-    ErrorCode wallpaperErrorCode = wpServerProxy->GetFile(wallpaperType, wallpaperFd);
+    ErrorCode wallpaperErrorCode = wallpaperServerProxy->GetFile(wallpaperType, wallpaperFd);
     if (wallpaperErrorCode == E_OK && wallpaperFd != -1) {
         wallpaperFdMap_.insert(std::pair<int32_t, int32_t>(wallpaperType, wallpaperFd));
     }
@@ -172,8 +172,8 @@ ErrorCode WallpaperManager::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
 
 ErrorCode WallpaperManager::SetWallpaper(std::string uri, int32_t wallpaperType, const ApiInfo &apiInfo)
 {
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return E_DEAL_FAILED;
     }
@@ -198,9 +198,9 @@ ErrorCode WallpaperManager::SetWallpaper(std::string uri, int32_t wallpaperType,
     }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
     if (apiInfo.isSystemApi) {
-        wallpaperErrorCode = wpServerProxy->SetWallpaperV9(fd, wallpaperType, length);
+        wallpaperErrorCode = wallpaperServerProxy->SetWallpaperV9(fd, wallpaperType, length);
     } else {
-        wallpaperErrorCode = wpServerProxy->SetWallpaper(fd, wallpaperType, length);
+        wallpaperErrorCode = wallpaperServerProxy->SetWallpaper(fd, wallpaperType, length);
     }
     close(fd);
     if (wallpaperErrorCode == E_OK) {
@@ -213,8 +213,8 @@ ErrorCode WallpaperManager::SetWallpaper(std::string uri, int32_t wallpaperType,
 ErrorCode WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType,
     const ApiInfo &apiInfo)
 {
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return E_DEAL_FAILED;
     }
@@ -248,9 +248,9 @@ ErrorCode WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> 
     close(fd[1]);
     ErrorCode wallpaperErrorCode = E_UNKNOWN;
     if (apiInfo.isSystemApi) {
-        wallpaperErrorCode = wpServerProxy->SetWallpaperV9(fd[0], wallpaperType, mapSize);
+        wallpaperErrorCode = wallpaperServerProxy->SetWallpaperV9(fd[0], wallpaperType, mapSize);
     } else {
-        wallpaperErrorCode = wpServerProxy->SetWallpaper(fd[0], wallpaperType, mapSize);
+        wallpaperErrorCode = wallpaperServerProxy->SetWallpaper(fd[0], wallpaperType, mapSize);
     }
     close(fd[0]);
     if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
@@ -262,8 +262,8 @@ ErrorCode WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> 
 
 ErrorCode WallpaperManager::SetVideo(const std::string &uri, const int32_t wallpaperType)
 {
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return E_DEAL_FAILED;
     }
@@ -286,7 +286,7 @@ ErrorCode WallpaperManager::SetVideo(const std::string &uri, const int32_t wallp
         return E_FILE_ERROR;
     }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetVideo", static_cast<int32_t>(TraceTaskId::SET_VIDEO));
-    wallpaperErrorCode = wpServerProxy->SetVideo(fd, wallpaperType, length);
+    wallpaperErrorCode = wallpaperServerProxy->SetVideo(fd, wallpaperType, length);
     close(fd);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetVideo", static_cast<int32_t>(TraceTaskId::SET_VIDEO));
     return wallpaperErrorCode;
@@ -318,17 +318,17 @@ ErrorCode WallpaperManager::GetPixelMap(int32_t wallpaperType, const ApiInfo &ap
     std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
 {
     HILOG_INFO("FrameWork GetPixelMap Start by FD");
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return E_SA_DIED;
     }
     IWallpaperService::FdInfo fdInfo;
     ErrorCode wallpaperErrorCode = E_UNKNOWN;
     if (apiInfo.isSystemApi) {
-        wallpaperErrorCode = wpServerProxy->GetPixelMapV9(wallpaperType, fdInfo);
+        wallpaperErrorCode = wallpaperServerProxy->GetPixelMapV9(wallpaperType, fdInfo);
     } else {
-        wallpaperErrorCode = wpServerProxy->GetPixelMap(wallpaperType, fdInfo);
+        wallpaperErrorCode = wallpaperServerProxy->GetPixelMap(wallpaperType, fdInfo);
     }
     if (wallpaperErrorCode != E_OK) {
         return wallpaperErrorCode;
@@ -363,71 +363,71 @@ ErrorCode WallpaperManager::GetPixelMap(int32_t wallpaperType, const ApiInfo &ap
 
 int32_t WallpaperManager::GetWallpaperId(int32_t wallpaperType)
 {
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return -1;
     }
-    return wpServerProxy->GetWallpaperId(wallpaperType);
+    return wallpaperServerProxy->GetWallpaperId(wallpaperType);
 }
 
 ErrorCode WallpaperManager::GetWallpaperMinHeight(const ApiInfo &apiInfo, int32_t &minHeight)
 {
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return E_DEAL_FAILED;
     }
     if (apiInfo.isSystemApi) {
-        return wpServerProxy->GetWallpaperMinHeightV9(minHeight);
+        return wallpaperServerProxy->GetWallpaperMinHeightV9(minHeight);
     }
-    return wpServerProxy->GetWallpaperMinHeight(minHeight);
+    return wallpaperServerProxy->GetWallpaperMinHeight(minHeight);
 }
 
 ErrorCode WallpaperManager::GetWallpaperMinWidth(const ApiInfo &apiInfo, int32_t &minWidth)
 {
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return E_DEAL_FAILED;
     }
     if (apiInfo.isSystemApi) {
-        return wpServerProxy->GetWallpaperMinWidthV9(minWidth);
+        return wallpaperServerProxy->GetWallpaperMinWidthV9(minWidth);
     }
-    return wpServerProxy->GetWallpaperMinWidth(minWidth);
+    return wallpaperServerProxy->GetWallpaperMinWidth(minWidth);
 }
 
 bool WallpaperManager::IsChangePermitted()
 {
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return false;
     }
-    return wpServerProxy->IsChangePermitted();
+    return wallpaperServerProxy->IsChangePermitted();
 }
 
 bool WallpaperManager::IsOperationAllowed()
 {
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return false;
     }
-    return wpServerProxy->IsOperationAllowed();
+    return wallpaperServerProxy->IsOperationAllowed();
 }
 ErrorCode WallpaperManager::ResetWallpaper(std::int32_t wallpaperType, const ApiInfo &apiInfo)
 {
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return E_SA_DIED;
     }
     ErrorCode wallpaperErrorCode = E_UNKNOWN;
     if (apiInfo.isSystemApi) {
-        wallpaperErrorCode = wpServerProxy->ResetWallpaperV9(wallpaperType);
+        wallpaperErrorCode = wallpaperServerProxy->ResetWallpaperV9(wallpaperType);
     } else {
-        wallpaperErrorCode = wpServerProxy->ResetWallpaper(wallpaperType);
+        wallpaperErrorCode = wallpaperServerProxy->ResetWallpaper(wallpaperType);
     }
     if (wallpaperErrorCode == E_OK) {
         CloseWallpaperFd(wallpaperType);
@@ -438,8 +438,8 @@ ErrorCode WallpaperManager::ResetWallpaper(std::int32_t wallpaperType, const Api
 ErrorCode WallpaperManager::On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener)
 {
     HILOG_DEBUG("WallpaperManager::On in");
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return E_SA_DIED;
     }
@@ -447,25 +447,23 @@ ErrorCode WallpaperManager::On(const std::string &type, std::shared_ptr<Wallpape
         HILOG_ERROR("listener is nullptr.");
         return E_DEAL_FAILED;
     }
-    std::lock_guard<std::mutex> lck(listenerMapMutex_);
     sptr<WallpaperEventListenerClient> ipcListener = new (std::nothrow) WallpaperEventListenerClient(listener);
     if (ipcListener == nullptr) {
         HILOG_ERROR("new WallpaperEventListenerClient failed");
         return E_NO_MEMORY;
     }
     HILOG_DEBUG("WallpaperManager::On out");
-    return wpServerProxy->On(type, ipcListener);
+    return wallpaperServerProxy->On(type, ipcListener);
 }
 
 ErrorCode WallpaperManager::Off(const std::string &type, std::shared_ptr<WallpaperEventListener> listener)
 {
     HILOG_DEBUG("WallpaperManager::Off in");
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return E_SA_DIED;
     }
-    std::lock_guard<std::mutex> lck(listenerMapMutex_);
     sptr<WallpaperEventListenerClient> ipcListener = nullptr;
     if (listener != nullptr) {
         ipcListener = new (std::nothrow) WallpaperEventListenerClient(listener);
@@ -475,7 +473,7 @@ ErrorCode WallpaperManager::Off(const std::string &type, std::shared_ptr<Wallpap
         }
     }
     HILOG_DEBUG("WallpaperManager::Off out");
-    return wpServerProxy->Off(type, ipcListener);
+    return wallpaperServerProxy->Off(type, ipcListener);
 }
 
 JScallback WallpaperManager::GetCallback()
@@ -492,8 +490,8 @@ bool WallpaperManager::RegisterWallpaperCallback(JScallback callback)
 {
     HILOG_ERROR("  WallpaperManager::RegisterWallpaperCallback statrt");
     SetCallback(callback);
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return false;
     }
@@ -504,7 +502,7 @@ bool WallpaperManager::RegisterWallpaperCallback(JScallback callback)
     }
     HILOG_INFO("  WallpaperManager::RegisterWallpaperCallback");
 
-    bool status = wpServerProxy->RegisterWallpaperCallback(new WallpaperServiceCbStub());
+    bool status = wallpaperServerProxy->RegisterWallpaperCallback(new WallpaperServiceCbStub());
     if (!status) {
         HILOG_ERROR("off failed code=%d.", ERR_NONE);
         return false;
@@ -523,7 +521,7 @@ void WallpaperManager::ReporterFault(FaultType faultType, FaultCode faultCode)
 
 void WallpaperManager::CloseWallpaperFd(int32_t wallpaperType)
 {
-    std::lock_guard<std::mutex> lock(wpFdLock_);
+    std::lock_guard<std::mutex> lock(wallpaperFdLock_);
     std::map<int32_t, int32_t>::iterator iter = wallpaperFdMap_.find(wallpaperType);
     if (iter != wallpaperFdMap_.end() && fcntl(iter->second, F_GETFL) != -1) {
         close(iter->second);
@@ -533,12 +531,12 @@ void WallpaperManager::CloseWallpaperFd(int32_t wallpaperType)
 
 ErrorCode WallpaperManager::SendEvent(const std::string &eventType)
 {
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return E_DEAL_FAILED;
     }
-    return wpServerProxy->SendEvent(eventType);
+    return wallpaperServerProxy->SendEvent(eventType);
 }
 
 bool WallpaperManager::GetRealPath(const std::string &inOriPath, std::string &outRealPath)
@@ -553,7 +551,7 @@ bool WallpaperManager::GetRealPath(const std::string &inOriPath, std::string &ou
         HILOG_ERROR("real path file is not exist! %{public}s", outRealPath.c_str());
         return false;
     }
-    if (outRealPath.compare(inOriPath) != 0) {
+    if (outRealPath != inOriPath) {
         HILOG_ERROR("illegal file path input %{public}s", inOriPath.c_str());
         return false;
     }
@@ -659,12 +657,12 @@ ErrorCode WallpaperManager::CheckWallpaperFormat(const std::string &realPath, bo
 
 ErrorCode WallpaperManager::SetOffset(int32_t xOffset, int32_t yOffset)
 {
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return E_DEAL_FAILED;
     }
-    return wpServerProxy->SetOffset(xOffset, yOffset);
+    return wallpaperServerProxy->SetOffset(xOffset, yOffset);
 }
 
 JsCallbackOffset WallpaperManager::GetOffsetCallback()
@@ -685,13 +683,13 @@ bool WallpaperManager::RegisterOffsetCallback(bool (*offsetCallback)(int32_t, in
     }
 
     SetOffsetCallback(offsetCallback);
-    auto wpServerProxy = GetService();
-    if (wpServerProxy == nullptr) {
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed");
         return false;
     }
 
-    bool status = wpServerProxy->RegisterWallpaperCallback(new WallpaperServiceCbStub());
+    bool status = wallpaperServerProxy->RegisterWallpaperCallback(new WallpaperServiceCbStub());
     if (!status) {
         HILOG_ERROR("Set offset failed code=%d.", ERR_NONE);
         return false;

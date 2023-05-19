@@ -31,13 +31,13 @@ static napi_value Init(napi_env env, napi_value exports)
 {
     HILOG_INFO("napi_module Init start...");
     napi_value wallpaperType = nullptr;
-    napi_value wpType_system = nullptr;
-    napi_value wpType_lockscreen = nullptr;
-    NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(WALLPAPER_SYSTEM), &wpType_system));
-    NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(WALLPAPER_LOCKSCREEN), &wpType_lockscreen));
+    napi_value systemType = nullptr;
+    napi_value lockscreenType = nullptr;
+    NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(WALLPAPER_SYSTEM), &systemType));
+    NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(WALLPAPER_LOCKSCREEN), &lockscreenType));
     NAPI_CALL(env, napi_create_object(env, &wallpaperType));
-    NAPI_CALL(env, napi_set_named_property(env, wallpaperType, "WALLPAPER_SYSTEM", wpType_system));
-    NAPI_CALL(env, napi_set_named_property(env, wallpaperType, "WALLPAPER_LOCKSCREEN", wpType_lockscreen));
+    NAPI_CALL(env, napi_set_named_property(env, wallpaperType, "WALLPAPER_SYSTEM", systemType));
+    NAPI_CALL(env, napi_set_named_property(env, wallpaperType, "WALLPAPER_LOCKSCREEN", lockscreenType));
 
     // WallpaperResourceType
     napi_value wallpaperResourceType = nullptr;

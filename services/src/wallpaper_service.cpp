@@ -443,8 +443,10 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
     SaveColor(userId, WALLPAPER_SYSTEM);
     SaveColor(userId, WALLPAPER_LOCKSCREEN);
     InitWallpaperConfig();
-    std::lock_guard<std::mutex> autoLock(resTypeMapMutex_);
-    WallpaperChanged(WALLPAPER_SYSTEM, resTypeMap_[SYSTEM_RES_TYPE]);
+    {
+        std::lock_guard<std::mutex> autoLock(resTypeMapMutex_);
+        WallpaperChanged(WALLPAPER_SYSTEM, resTypeMap_[SYSTEM_RES_TYPE]);
+    }
     shared_ptr<WallpaperCommonEventManager> wallpaperCommonEventManager = make_shared<WallpaperCommonEventManager>();
     HILOG_INFO("Send wallpaper setting message");
     wallpaperCommonEventManager->SendWallpaperSystemSettingMessage();
@@ -563,7 +565,7 @@ ErrorCode WallpaperService::GetColorsV9(int32_t wallpaperType, std::vector<uint6
 
 ErrorCode WallpaperService::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
 {
-    if (!WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER)) {
+    if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER)) {
         HILOG_ERROR("GetPixelMap no get permission!");
         return E_NO_PERMISSION;
     }
@@ -737,15 +739,16 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, WallpaperReso
     wallpaperData.resourceType = resourceType;
     wallpaperData.wallpaperId = MakeWallpaperIdLocked();
     std::string wallpaperFile = resourceType == VIDEO ? wallpaperData.liveWallpaperFile : wallpaperData.wallpaperFile;
-
-    if (!FileDeal::CopyFile(uriOrPixelMap, wallpaperFile)) {
-        HILOG_ERROR("CopyFile failed !");
-        return E_DEAL_FAILED;
+    {
+        std::lock_guard<std::mutex> lock(mtx_);
+        if (!FileDeal::CopyFile(uriOrPixelMap, wallpaperFile)) {
+            HILOG_ERROR("CopyFile failed !");
+            return E_DEAL_FAILED;
+        }
+        if (!FileDeal::DeleteFile(uriOrPixelMap)) {
+            return E_DEAL_FAILED;
+        }
     }
-    if (!FileDeal::DeleteFile(uriOrPixelMap)) {
-        return E_DEAL_FAILED;
-    }
-
     if (!SaveWallpaperState(wallpaperType, resourceType)) {
         HILOG_ERROR("Save wallpaper state failed!");
     }
@@ -799,7 +802,7 @@ bool WallpaperService::ReadWallpaperState(int32_t userId)
 ErrorCode WallpaperService::SendEvent(const std::string &eventType)
 {
     HILOG_DEBUG("Send event start.");
-    if (!WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
+    if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
         HILOG_ERROR("Send event not set permission!");
         return E_NO_PERMISSION;
     }
@@ -853,7 +856,7 @@ void WallpaperService::ReporterUsageTimeStatistic()
 {
     int32_t uid = static_cast<int32_t>(IPCSkeleton::GetCallingUid());
     std::string bundleName;
-    bool bRet = WPGetBundleNameByUid(uid, bundleName);
+    bool bRet = GetBundleNameByUid(uid, bundleName);
     if (!bRet) {
         bundleName = OHOS_WALLPAPER_BUNDLE_NAME;
     }
@@ -866,7 +869,7 @@ void WallpaperService::ReporterUsageTimeStatistic()
 ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
     HILOG_INFO("WallpaperService::getPixelMap start ");
-    if (!WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER)) {
+    if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER)) {
         HILOG_INFO("GetPixelMap no get permission!");
         return E_NO_PERMISSION;
     }
@@ -881,15 +884,17 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
     auto type = static_cast<WallpaperType>(wallpaperType);
     int32_t userId = QueryActiveUserId();
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
-    std::lock_guard<std::mutex> autoLock(resTypeMapMutex_);
-    // current user's wallpaper is live video, not image
-    WallpaperResourceType resType =
-        (type == WALLPAPER_SYSTEM ? resTypeMap_[SYSTEM_RES_TYPE] : resTypeMap_[LOCKSCREEN_RES_TYPE]);
-    if (resType != PICTURE) {
-        HILOG_ERROR("Current user's wallpaper is live video, not image");
-        fdInfo.size = 0; // 0: empty file size
-        fdInfo.fd = -1;  // -1: invalid file description
-        return E_OK;
+    {
+        std::lock_guard<std::mutex> autoLock(resTypeMapMutex_);
+        // current user's wallpaper is live video, not image
+        WallpaperResourceType resType =
+            (type == WALLPAPER_SYSTEM ? resTypeMap_[SYSTEM_RES_TYPE] : resTypeMap_[LOCKSCREEN_RES_TYPE]);
+        if (resType != PICTURE) {
+            HILOG_ERROR("Current user's wallpaper is live video, not image");
+            fdInfo.size = 0; // 0: empty file size
+            fdInfo.fd = -1;  // -1: invalid file description
+            return E_OK;
+        }
     }
     ErrorCode ret = GetImageSize(userId, type, fdInfo.size);
     if (ret != E_OK) {
@@ -975,21 +980,21 @@ ErrorCode WallpaperService::GetWallpaperMinWidthV9(int32_t &minWidth)
 bool WallpaperService::IsChangePermitted()
 {
     HILOG_INFO("IsChangePermitted wallpaper Start!");
-    bool bFlag = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
+    bool bFlag = CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     return bFlag;
 }
 
 bool WallpaperService::IsOperationAllowed()
 {
     HILOG_INFO("IsOperationAllowed wallpaper Start!");
-    bool bFlag = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
+    bool bFlag = CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     return bFlag;
 }
 
 ErrorCode WallpaperService::ResetWallpaper(int32_t wallpaperType)
 {
     HILOG_INFO("reset wallpaper Start!");
-    bool permissionSet = WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
+    bool permissionSet = CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     if (!permissionSet) {
         HILOG_INFO("reset wallpaper no set permission!");
         return E_NO_PERMISSION;
@@ -1135,7 +1140,7 @@ void WallpaperService::ClearWallpaperLocked(int32_t userId, WallpaperType wallpa
     HILOG_INFO("Clear wallpaper End!");
 }
 
-bool WallpaperService::WPCheckCallingPermission(const std::string &permissionName)
+bool WallpaperService::CheckCallingPermission(const std::string &permissionName)
 {
     bool bflag = false;
     int32_t result;
@@ -1156,7 +1161,7 @@ bool WallpaperService::WPCheckCallingPermission(const std::string &permissionNam
     return bflag;
 }
 
-bool WallpaperService::WPGetBundleNameByUid(std::int32_t uid, std::string &bname)
+bool WallpaperService::GetBundleNameByUid(std::int32_t uid, std::string &bname)
 {
     sptr<ISystemAbilityManager> systemMgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (systemMgr == nullptr) {
@@ -1259,8 +1264,10 @@ ErrorCode WallpaperService::GetImageFd(int32_t userId, WallpaperType wallpaperTy
     if (!GetFileNameFromMap(userId, wallpaperType, FileType::WALLPAPER_FILE, getWithType, filePathName)) {
         return E_DEAL_FAILED;
     }
-    std::lock_guard<std::mutex> lock(mtx_);
-    fd = open(filePathName.c_str(), O_RDONLY, S_IREAD);
+    {
+        std::lock_guard<std::mutex> lock(mtx_);
+        fd = open(filePathName.c_str(), O_RDONLY, S_IREAD);
+    }
     if (fd < 0) {
         HILOG_ERROR("Open file failed, errno %{public}d", errno);
         ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
@@ -1357,28 +1364,30 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
     if (paperBuf == nullptr) {
         return E_NO_MEMORY;
     }
-    std::lock_guard<std::mutex> lock(mtx_);
-    if (read(fd, paperBuf, length) <= 0) {
-        HILOG_ERROR("read fd failed");
-        delete[] paperBuf;
-        return E_DEAL_FAILED;
-    }
-    mode_t mode = 0660;
-    int32_t fdw = open(uri.c_str(), O_WRONLY | O_CREAT, mode);
-    if (fdw < 0) {
-        HILOG_ERROR("Open wallpaper tmpFullPath failed, errno %{public}d", errno);
-        delete[] paperBuf;
-        return E_DEAL_FAILED;
-    }
-    if (write(fdw, paperBuf, length) <= 0) {
-        HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
-        ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
+    {
+        std::lock_guard<std::mutex> lock(mtx_);
+        if (read(fd, paperBuf, length) <= 0) {
+            HILOG_ERROR("read fd failed");
+            delete[] paperBuf;
+            return E_DEAL_FAILED;
+        }
+        mode_t mode = 0660;
+        int32_t fdw = open(uri.c_str(), O_WRONLY | O_CREAT, mode);
+        if (fdw < 0) {
+            HILOG_ERROR("Open wallpaper tmpFullPath failed, errno %{public}d", errno);
+            delete[] paperBuf;
+            return E_DEAL_FAILED;
+        }
+        if (write(fdw, paperBuf, length) <= 0) {
+            HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
+            ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
+            delete[] paperBuf;
+            close(fdw);
+            return E_DEAL_FAILED;
+        }
         delete[] paperBuf;
         close(fdw);
-        return E_DEAL_FAILED;
     }
-    delete[] paperBuf;
-    close(fdw);
     WallpaperType type = static_cast<WallpaperType>(wallpaperType);
     int32_t userId = QueryActiveUserId();
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
@@ -1461,7 +1470,7 @@ void WallpaperService::OnColorsChange(WallpaperType wallpaperType, const ColorMa
 
 ErrorCode WallpaperService::CheckValid(int32_t wallpaperType, int32_t length, WallpaperResourceType resourceType)
 {
-    if (!WPCheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
+    if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
         HILOG_INFO("SetWallpaper no set permission!");
         return E_NO_PERMISSION;
     }

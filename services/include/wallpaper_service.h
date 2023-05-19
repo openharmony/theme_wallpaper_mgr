@@ -126,8 +126,8 @@ private:
     void ClearWallpaperLocked(int32_t userId, WallpaperType wallpaperType);
     ErrorCode SetDefaultDataForWallpaper(int32_t userId, WallpaperType wallpaperType);
     int32_t MakeWallpaperIdLocked();
-    bool WPCheckCallingPermission(const std::string &permissionName);
-    bool WPGetBundleNameByUid(std::int32_t uid, std::string &bname);
+    bool CheckCallingPermission(const std::string &permissionName);
+    bool GetBundleNameByUid(std::int32_t uid, std::string &bname);
     bool MakeCropWallpaper(int32_t userId, WallpaperType wallpaperType);
     void SetPixelMapCropParameters(std::unique_ptr<Media::PixelMap> wallpaperPixelMap,
         Media::DecodeOptions &decodeOpts);

@@ -189,12 +189,11 @@ private:
     bool GetRealPath(const std::string &inOriPath, std::string &outRealPath);
     bool OpenFile(const std::string &fileName, int32_t &fd, int64_t &fileSize);
     ErrorCode CheckWallpaperFormat(const std::string &realPath, bool isLive, long &length);
-    sptr<IWallpaperService> wpProxy_{};
+    sptr<IWallpaperService> wallpaperProxy_{};
     sptr<IRemoteObject::DeathRecipient> deathRecipient_{};
-    std::mutex wpFdLock_;
+    std::mutex wallpaperFdLock_;
     std::map<int32_t, int32_t> wallpaperFdMap_;
-    std::mutex wpProxyLock_;
-    std::mutex listenerMapMutex_;
+    std::mutex wallpaperProxyLock_;
     bool (*callback)(int32_t);
     bool (*offsetCallback)(int32_t, int32_t);
 };
