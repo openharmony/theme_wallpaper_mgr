@@ -126,8 +126,8 @@ private:
     void ClearWallpaperLocked(int32_t userId, WallpaperType wallpaperType);
     ErrorCode SetDefaultDataForWallpaper(int32_t userId, WallpaperType wallpaperType);
     int32_t MakeWallpaperIdLocked();
-    bool WPCheckCallingPermission(const std::string &permissionName);
-    bool WPGetBundleNameByUid(std::int32_t uid, std::string &bname);
+    bool CheckCallingPermission(const std::string &permissionName);
+    bool GetBundleNameByUid(std::int32_t uid, std::string &bname);
     bool MakeCropWallpaper(int32_t userId, WallpaperType wallpaperType);
     void SetPixelMapCropParameters(std::unique_ptr<Media::PixelMap> wallpaperPixelMap,
         Media::DecodeOptions &decodeOpts);
@@ -191,6 +191,7 @@ private:
     std::mutex listenerMapMutex_;
     int32_t pictureWidth_ = 0;
     int32_t pictureHeight_ = 0;
+    std::mutex resTypeMapMutex_;
     std::map<std::string, WallpaperResourceType> resTypeMap_;
 };
 } // namespace WallpaperMgrService

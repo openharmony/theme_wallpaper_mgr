@@ -37,19 +37,19 @@ constexpr size_t ARGC_ONE = 1;
 constexpr size_t ARGC_TWO = 2;
 } // namespace
 struct WorkData {
-    NativeEngine *nativeEng_;
-    int32_t wallpaperType_;
-    WorkData(NativeEngine *nativeEng, int32_t wallpaperType) : nativeEng_(nativeEng), wallpaperType_(wallpaperType)
+    NativeEngine *nativeEng;
+    int32_t wallpaperType;
+    WorkData(NativeEngine *nativeEng, int32_t wallpaperType) : nativeEng(nativeEng), wallpaperType(wallpaperType)
     {
     }
 };
 
 struct OffsetWorkData {
-    NativeEngine *nativeEng_;
-    int32_t xOffset_;
-    int32_t yOffset_;
+    NativeEngine *nativeEng;
+    int32_t xOffset;
+    int32_t yOffset;
     OffsetWorkData(NativeEngine *nativeEng, int32_t xOffset, int32_t yOffset)
-        : nativeEng_(nativeEng), xOffset_(xOffset), yOffset_(yOffset)
+        : nativeEng(nativeEng), xOffset(xOffset), yOffset(yOffset)
     {
     }
 };
@@ -254,8 +254,8 @@ void JsWallpaperExtension::RegisterWallpaperCallback()
             }
             uv_after_work_cb afterCallback = [](uv_work_t *work, int32_t status) {
                 WorkData *workData = reinterpret_cast<WorkData *>(work->data);
-                napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_),
-                    workData->wallpaperType_);
+                napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng),
+                    workData->wallpaperType);
 
                 NativeValue *nativeType = reinterpret_cast<NativeValue *>(type);
                 NativeValue *arg[] = { nativeType };
@@ -281,9 +281,9 @@ void JsWallpaperExtension::RegisterOffsetCallback()
         uv_after_work_cb afterCallback = [](uv_work_t *work, int32_t status) {
             OffsetWorkData *workData = reinterpret_cast<OffsetWorkData *>(work->data);
             napi_value xOffset =
-                OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_), workData->xOffset_);
+                OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng), workData->xOffset);
             napi_value yOffset =
-                OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_), workData->yOffset_);
+                OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng), workData->yOffset);
             NativeValue *nativeX = reinterpret_cast<NativeValue *>(xOffset);
             NativeValue *nativeY = reinterpret_cast<NativeValue *>(yOffset);
             NativeValue *arg[] = { nativeX, nativeY };
