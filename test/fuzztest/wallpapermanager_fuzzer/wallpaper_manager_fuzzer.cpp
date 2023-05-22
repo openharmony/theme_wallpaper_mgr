@@ -28,6 +28,7 @@ using namespace OHOS::Media;
 
 namespace OHOS {
 constexpr size_t THRESHOLD = 10;
+constexpr size_t LENGTH = 2;
 constexpr int32_t OFFSET = 4;
 
 void GrantNativePermission()
@@ -97,7 +98,10 @@ void GetColorsFuzzTest(const uint8_t *data, size_t size)
 {
     uint32_t wallpaperType = ConvertToUint32(data);
     GrantNativePermission();
-    WallpaperMgrService::ApiInfo apiInfo{ false, false };
+    if (size < LENGTH) {
+        return;
+    }
+    WallpaperMgrService::ApiInfo apiInfo{ static_cast<bool>(data[0] % 2), static_cast<bool>(data[1] % 2) };
     std::vector<uint64_t> colors;
     WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(wallpaperType, apiInfo, colors);
 }
@@ -113,7 +117,10 @@ void ResetWallpaperFuzzTest(const uint8_t *data, size_t size)
 {
     uint32_t wallpaperType = ConvertToUint32(data);
     GrantNativePermission();
-    WallpaperMgrService::ApiInfo apiInfo{ false, false };
+    if (size < LENGTH) {
+        return;
+    }
+    WallpaperMgrService::ApiInfo apiInfo{ static_cast<bool>(data[0] % 2), static_cast<bool>(data[1] % 2) };
     WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(wallpaperType, apiInfo);
 }
 
@@ -124,7 +131,10 @@ void SetWallpaperByUriFuzzTest(const uint8_t *data, size_t size)
     size = size - OFFSET;
     GrantNativePermission();
     std::string uri(reinterpret_cast<const char *>(data), size);
-    WallpaperMgrService::ApiInfo apiInfo{ false, false };
+    if (size < LENGTH) {
+        return;
+    }
+    WallpaperMgrService::ApiInfo apiInfo{ static_cast<bool>(data[0] % 2), static_cast<bool>(data[1] % 2) };
     auto listener = std::make_shared<WallpaperEventListenerFuzzTestImpl>();
     WallpaperMgrService::WallpaperManagerkits::GetInstance().On("colorChange", listener);
     WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(uri, wallpaperType, apiInfo);
@@ -140,7 +150,10 @@ void SetWallpaperByMapFuzzTest(const uint8_t *data, size_t size)
     std::unique_ptr<PixelMap> uniquePixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
     std::shared_ptr<PixelMap> pixelMap = std::move(uniquePixelMap);
     auto listener = std::make_shared<WallpaperEventListenerFuzzTestImpl>();
-    WallpaperMgrService::ApiInfo apiInfo{ false, false };
+    if (size < LENGTH) {
+        return;
+    }
+    WallpaperMgrService::ApiInfo apiInfo{ static_cast<bool>(data[0] % 2), static_cast<bool>(data[1] % 2) };
     WallpaperMgrService::WallpaperManagerkits::GetInstance().On("colorChange", listener);
     WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, wallpaperType, apiInfo);
     WallpaperMgrService::WallpaperManagerkits::GetInstance().Off("colorChange", listener);
@@ -154,12 +167,30 @@ void GetFileFuzzTest(const uint8_t *data, size_t size)
     WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(wallpaperType, wallpaperFd);
 }
 
+void WallpaperManagerFuzzTest(const uint8_t *data, size_t size)
+{
+    auto minHeight = static_cast<int32_t>(size);
+    auto minWidth = static_cast<int32_t>(size);
+    if (size < LENGTH) {
+        return;
+    }
+    WallpaperMgrService::ApiInfo apiInfo{ static_cast<bool>(data[0] % 2), static_cast<bool>(data[1] % 2) };
+    GrantNativePermission();
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperMinHeight(apiInfo, minHeight);
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperMinWidth(apiInfo, minWidth);
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().IsChangePermitted();
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().IsOperationAllowed();
+}
+
 void GetPixelMapFuzzTest(const uint8_t *data, size_t size)
 {
     uint32_t wallpaperType = ConvertToUint32(data);
     GrantNativePermission();
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
-    WallpaperMgrService::ApiInfo apiInfo{ false, false };
+    if (size < LENGTH) {
+        return;
+    }
+    WallpaperMgrService::ApiInfo apiInfo{ static_cast<bool>(data[0] % 2), static_cast<bool>(data[1] % 2) };
     WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(wallpaperType, apiInfo, pixelMap);
 }
 
@@ -184,8 +215,8 @@ void SendEventFuzzTest(const uint8_t *data, size_t size)
 
 void SetOffsetFuzzTest(const uint8_t *data, size_t size)
 {
-    int32_t xOffsetValue = *(reinterpret_cast<const int32_t*>(data));
-    int32_t yOffsetValue = *(reinterpret_cast<const int32_t*>(data));
+    int32_t xOffsetValue = *(reinterpret_cast<const int32_t *>(data));
+    int32_t yOffsetValue = *(reinterpret_cast<const int32_t *>(data));
     GrantNativePermission();
     WallpaperMgrService::WallpaperManagerkits::GetInstance().SetOffset(xOffsetValue, yOffsetValue);
 }
@@ -204,6 +235,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::SetWallpaperByUriFuzzTest(data, size);
     OHOS::SetWallpaperByMapFuzzTest(data, size);
     OHOS::GetFileFuzzTest(data, size);
+    OHOS::WallpaperManagerFuzzTest(data, size);
     OHOS::GetPixelMapFuzzTest(data, size);
     OHOS::SetOffsetFuzzTest(data, size);
     OHOS::SendEventFuzzTest(data, size);
