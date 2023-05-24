@@ -69,8 +69,8 @@ ohos_shared_library("wallpaperextension") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_napi_common",
     "ipc:ipc_single",
-    "multimedia_player_framework:media_client",
     "napi:ace_napi",
+    "player_framework:media_client",
     "window_manager:libwm",
   ]
 

@@ -36,8 +36,8 @@ ohos_shared_library("wallpaper") {
     "hiviewdfx_hilog_native:libhilog",
     "multimedia_image_framework:image",
     "multimedia_image_framework:image_native",
-    "multimedia_player_framework:media_client",
     "napi:ace_napi",
+    "player_framework:media_client",
   ]
 
   relative_install_dir = "module"
