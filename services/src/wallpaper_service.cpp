@@ -448,6 +448,14 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
         WallpaperChanged(WALLPAPER_SYSTEM, resTypeMap_[SYSTEM_RES_TYPE]);
     }
     shared_ptr<WallpaperCommonEventManager> wallpaperCommonEventManager = make_shared<WallpaperCommonEventManager>();
+    WallpaperData wallpaperData;
+    if (!GetWallpaperSafeLocked(userId, WALLPAPER_SYSTEM, wallpaperData)) {
+        HILOG_ERROR("Get wallpaper safe locked failed!");
+        return;
+    }
+    if (callbackProxy_ != nullptr && wallpaperData.resourceType == PICTURE) {
+        callbackProxy_->OnCall(WALLPAPER_SYSTEM);
+    }
     HILOG_INFO("Send wallpaper setting message");
     wallpaperCommonEventManager->SendWallpaperSystemSettingMessage();
     wallpaperCommonEventManager->SendWallpaperLockSettingMessage(resTypeMap_[LOCKSCREEN_RES_TYPE]);
