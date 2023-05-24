@@ -46,12 +46,14 @@ ohos_shared_library("wallpaper_service") {
     "${graphic_2d_path}/utils/color_manager",
   ]
   deps = [
+    "${ability_runtime_inner_api_path}/uri_permission:uri_permission_mgr",
     "${graphic_2d_path}/rosen/modules/effect/color_picker:color_picker",
     "${graphic_2d_path}/utils/color_manager:color_manager",
     "${utils_path}:wallpaper_utils",
   ]
   external_deps = [
     "ability_base:want",
+    "ability_base:zuri",
     "ability_runtime:ability_manager",
     "ability_runtime:abilitykit_native",
     "access_token:libaccesstoken_sdk",
