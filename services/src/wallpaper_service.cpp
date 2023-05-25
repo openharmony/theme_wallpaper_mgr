@@ -245,6 +245,7 @@ void WallpaperService::InitData()
     LoadSettingsLocked(userId, true);
     InitResources(userId, WALLPAPER_SYSTEM);
     InitResources(userId, WALLPAPER_LOCKSCREEN);
+    InitWallpaperConfig();
     SaveColor(userId, WALLPAPER_SYSTEM);
     SaveColor(userId, WALLPAPER_LOCKSCREEN);
     HILOG_INFO("WallpaperService::initData --> end ");
@@ -280,10 +281,6 @@ void WallpaperService::StartWallpaperExtension()
         time++;
         ret = ConnectExtensionAbility(want);
         if (ret == 0 || time >= CONNECT_EXTENSION_MAX_RETRY_TIMES) {
-            InitWallpaperConfig();
-            auto sendWallpaperState = [this]() -> bool { return SendWallpaperState(); };
-            BlockRetry(REGISTER_WALLPAPER_CALLBACK_INTERVAL, REGISTER_WALLPAPER_CALLBACK_MAX_RETRY_TIMES,
-                std::move(sendWallpaperState));
             break;
         }
         usleep(CONNECT_EXTENSION_INTERVAL);
