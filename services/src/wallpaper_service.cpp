@@ -440,17 +440,24 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
         InitResources(userId, WALLPAPER_SYSTEM);
         InitResources(userId, WALLPAPER_LOCKSCREEN);
     }
-    SaveColor(userId, WALLPAPER_SYSTEM);
-    SaveColor(userId, WALLPAPER_LOCKSCREEN);
     InitWallpaperConfig();
+    WallpaperResourceType systemResType = DEFAULT;
+    WallpaperResourceType lockscreenResType = DEFAULT;
     {
         std::lock_guard<std::mutex> autoLock(resTypeMapMutex_);
-        WallpaperChanged(WALLPAPER_SYSTEM, resTypeMap_[SYSTEM_RES_TYPE]);
+        systemResType = resTypeMap_[SYSTEM_RES_TYPE];
+        lockscreenResType = resTypeMap_[LOCKSCREEN_RES_TYPE];
     }
-    shared_ptr<WallpaperCommonEventManager> wallpaperCommonEventManager = make_shared<WallpaperCommonEventManager>();
+    WallpaperChanged(WALLPAPER_SYSTEM, systemResType);
     HILOG_INFO("Send wallpaper setting message");
+    shared_ptr<WallpaperCommonEventManager> wallpaperCommonEventManager = make_shared<WallpaperCommonEventManager>();
     wallpaperCommonEventManager->SendWallpaperSystemSettingMessage();
-    wallpaperCommonEventManager->SendWallpaperLockSettingMessage(resTypeMap_[LOCKSCREEN_RES_TYPE]);
+    wallpaperCommonEventManager->SendWallpaperLockSettingMessage(lockscreenResType);
+    if (callbackProxy_ != nullptr && systemResType == PICTURE) {
+        callbackProxy_->OnCall(WALLPAPER_SYSTEM);
+    }
+    SaveColor(userId, WALLPAPER_SYSTEM);
+    SaveColor(userId, WALLPAPER_LOCKSCREEN);
     HILOG_INFO("OnSwitchedUser end, newUserId = %{public}d", userId);
 }
 
