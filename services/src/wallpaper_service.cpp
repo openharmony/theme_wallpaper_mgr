@@ -583,6 +583,27 @@ ErrorCode WallpaperService::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
     return ret;
 }
 
+int64_t WallpaperService::WritePixelMapToFile(const std::string &filePath, std::unique_ptr<PixelMap> pixelMap)
+{
+    ImagePacker imagePacker;
+    PackOption option;
+    option.format = "image/jpeg";
+    option.quality = HUNDRED;
+    option.numberHint = 1;
+    std::set<std::string> formats;
+    uint32_t ret = imagePacker.GetSupportedFormats(formats);
+    if (ret != 0) {
+        return 0;
+    }
+    imagePacker.StartPacking(filePath, option);
+    HILOG_INFO("AddImage start");
+    imagePacker.AddImage(*pixelMap);
+    int64_t packedSize = 0;
+    HILOG_INFO("FinalizePacking start");
+    imagePacker.FinalizePacking(packedSize);
+    return packedSize;
+}
+
 bool WallpaperService::CompareColor(const uint64_t &localColor, const ColorManager::Color &color)
 {
     return localColor == color.PackValue();
@@ -626,6 +647,65 @@ bool WallpaperService::SaveColor(int32_t userId, WallpaperType wallpaperType)
     }
     OnColorsChange(wallpaperType, color);
     return true;
+}
+
+bool WallpaperService::MakeCropWallpaper(int32_t userId, WallpaperType wallpaperType)
+{
+    uint32_t errorCode = 0;
+    OHOS::Media::SourceOptions opts;
+    opts.formatHint = "image/jpeg";
+    std::string pathName;
+    if (!GetFileNameFromMap(userId, wallpaperType, FileType::WALLPAPER_FILE, true, pathName)) {
+        return false;
+    }
+    auto imageSource = OHOS::Media::ImageSource::CreateImageSource(pathName, opts, errorCode);
+    if (imageSource == nullptr || errorCode != 0) {
+        return false;
+    }
+    OHOS::Media::DecodeOptions decodeOpts;
+    std::unique_ptr<PixelMap> wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
+    if (wallpaperPixelMap == nullptr || errorCode != 0) {
+        return false;
+    }
+    SetPixelMapCropParameters(std::move(wallpaperPixelMap), decodeOpts);
+    wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
+    if (errorCode != 0) {
+        return false;
+    }
+    std::string &tmpPath = wallpaperCropPath_;
+    int64_t packedSize = WritePixelMapToFile(tmpPath, std::move(wallpaperPixelMap));
+    std::string cropFile;
+    if (packedSize <= 0 || !GetFileNameFromMap(userId, wallpaperType, FileType::CROP_FILE, true, cropFile)) {
+        return false;
+    }
+    if (!FileDeal::CopyFile(tmpPath, cropFile) || !FileDeal::DeleteFile(tmpPath)) {
+        return false;
+    }
+    return true;
+}
+
+void WallpaperService::SetPixelMapCropParameters(std::unique_ptr<PixelMap> wallpaperPixelMap, DecodeOptions &decodeOpts)
+{
+    int32_t pictureHeight = wallpaperPixelMap->GetHeight();
+    int32_t pictureWidth = wallpaperPixelMap->GetWidth();
+    int32_t pyScrWidth = 0;
+    int32_t pyScrHeight = 0;
+    GetWallpaperMinWidth(pyScrWidth);
+    GetWallpaperMinHeight(pyScrHeight);
+    bool bHeightFlag = false;
+    bool bWidthFlag = false;
+    if (pictureHeight > pyScrHeight) {
+        decodeOpts.CropRect.top = (pictureHeight - pyScrHeight) / HALF;
+        bHeightFlag = true;
+    }
+    if (pictureWidth > pyScrWidth) {
+        decodeOpts.CropRect.left = (pictureWidth - pyScrWidth) / HALF;
+        bWidthFlag = true;
+    }
+    decodeOpts.CropRect.height = bHeightFlag ? pyScrHeight : pictureHeight;
+    decodeOpts.desiredSize.height = decodeOpts.CropRect.height;
+    decodeOpts.CropRect.width = bWidthFlag ? pyScrWidth : pictureWidth;
+    decodeOpts.desiredSize.width = decodeOpts.CropRect.width;
 }
 
 ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length)
