@@ -266,7 +266,7 @@ void JsWallpaperExtension::RegisterWallpaperCallback()
                     return;
                 }
                 napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_),
-                    workData->wallpaperType);
+                    workData->wallpaperType_);
 
                 NativeValue *nativeType = reinterpret_cast<NativeValue *>(type);
                 NativeValue *arg[] = { nativeType };
