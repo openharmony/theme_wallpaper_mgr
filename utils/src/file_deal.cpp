@@ -62,7 +62,6 @@ bool FileDeal::CopyFile(const std::string &sourceFile, const std::string &newFil
     if (in.fail()) {
         HILOG_INFO("open file failed, errInfo=%{public}s", strerror(errno));
         in.close();
-        out.close();
         return false;
     }
     out.open(newFile.c_str(), std::ios::binary);

@@ -87,9 +87,7 @@ constexpr int64_t DELAY_TIME = 1000L;
 constexpr int64_t QUERY_USER_ID_INTERVAL = 300L;
 constexpr int32_t HALF = 2;
 constexpr int32_t CONNECT_EXTENSION_INTERVAL = 500000;
-constexpr int32_t REGISTER_WALLPAPER_CALLBACK_INTERVAL = 500;
 constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 360;
-constexpr int32_t REGISTER_WALLPAPER_CALLBACK_MAX_RETRY_TIMES = 360;
 constexpr int32_t HUNDRED = 100;
 constexpr int32_t FOO_MAX_LEN = 52428800;
 constexpr int32_t MAX_RETRY_TIMES = 20;
@@ -245,6 +243,7 @@ void WallpaperService::InitData()
     LoadSettingsLocked(userId, true);
     InitResources(userId, WALLPAPER_SYSTEM);
     InitResources(userId, WALLPAPER_LOCKSCREEN);
+    InitWallpaperConfig();
     SaveColor(userId, WALLPAPER_SYSTEM);
     SaveColor(userId, WALLPAPER_LOCKSCREEN);
     HILOG_INFO("WallpaperService::initData --> end ");
@@ -280,10 +279,6 @@ void WallpaperService::StartWallpaperExtension()
         time++;
         ret = ConnectExtensionAbility(want);
         if (ret == 0 || time >= CONNECT_EXTENSION_MAX_RETRY_TIMES) {
-            InitWallpaperConfig();
-            auto sendWallpaperState = [this]() -> bool { return SendWallpaperState(); };
-            BlockRetry(REGISTER_WALLPAPER_CALLBACK_INTERVAL, REGISTER_WALLPAPER_CALLBACK_MAX_RETRY_TIMES,
-                std::move(sendWallpaperState));
             break;
         }
         usleep(CONNECT_EXTENSION_INTERVAL);
@@ -443,7 +438,10 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
     SaveColor(userId, WALLPAPER_SYSTEM);
     SaveColor(userId, WALLPAPER_LOCKSCREEN);
     InitWallpaperConfig();
-    WallpaperChanged(WALLPAPER_SYSTEM, resTypeMap_[SYSTEM_RES_TYPE]);
+    {
+        std::lock_guard<std::mutex> autoLock(resTypeMapMutex_);
+        WallpaperChanged(WALLPAPER_SYSTEM, resTypeMap_[SYSTEM_RES_TYPE]);
+    }
     shared_ptr<WallpaperCommonEventManager> wallpaperCommonEventManager = make_shared<WallpaperCommonEventManager>();
     HILOG_INFO("Send wallpaper setting message");
     wallpaperCommonEventManager->SendWallpaperSystemSettingMessage();
@@ -772,6 +770,7 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, WallpaperReso
 
 bool WallpaperService::SaveWallpaperState(WallpaperType wallpaperType, WallpaperResourceType resourceType)
 {
+    std::lock_guard<std::mutex> autoLock(resTypeMapMutex_);
     if (wallpaperType == WALLPAPER_SYSTEM) {
         resTypeMap_[SYSTEM_RES_TYPE] = resourceType;
     } else {
@@ -783,6 +782,7 @@ bool WallpaperService::SaveWallpaperState(WallpaperType wallpaperType, Wallpaper
 
 bool WallpaperService::ReadWallpaperState(int32_t userId)
 {
+    std::lock_guard<std::mutex> autoLock(resTypeMapMutex_);
     LoadResType();
     if (systemWallpaperMap_.Contains(userId)) {
         systemWallpaperMap_[userId].resourceType = resTypeMap_[SYSTEM_RES_TYPE];
@@ -878,14 +878,17 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
     auto type = static_cast<WallpaperType>(wallpaperType);
     int32_t userId = QueryActiveUserId();
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
-    // current user's wallpaper is live video, not image
-    WallpaperResourceType resType =
-        (type == WALLPAPER_SYSTEM ? resTypeMap_[SYSTEM_RES_TYPE] : resTypeMap_[LOCKSCREEN_RES_TYPE]);
-    if (resType != PICTURE) {
-        HILOG_ERROR("Current user's wallpaper is live video, not image");
-        fdInfo.size = 0; // 0: empty file size
-        fdInfo.fd = -1;  // -1: invalid file description
-        return E_OK;
+    {
+        std::lock_guard<std::mutex> autoLock(resTypeMapMutex_);
+        // current user's wallpaper is live video, not image
+        WallpaperResourceType resType =
+            (type == WALLPAPER_SYSTEM ? resTypeMap_[SYSTEM_RES_TYPE] : resTypeMap_[LOCKSCREEN_RES_TYPE]);
+        if (resType != PICTURE) {
+            HILOG_ERROR("Current user's wallpaper is live video, not image");
+            fdInfo.size = 0; // 0: empty file size
+            fdInfo.fd = -1;  // -1: invalid file description
+            return E_OK;
+        }
     }
     ErrorCode ret = GetImageSize(userId, type, fdInfo.size);
     if (ret != E_OK) {
@@ -1255,8 +1258,10 @@ ErrorCode WallpaperService::GetImageFd(int32_t userId, WallpaperType wallpaperTy
     if (!GetFileNameFromMap(userId, wallpaperType, FileType::WALLPAPER_FILE, getWithType, filePathName)) {
         return E_DEAL_FAILED;
     }
-    std::lock_guard<std::mutex> lock(mtx_);
-    fd = open(filePathName.c_str(), O_RDONLY, S_IREAD);
+    {
+        std::lock_guard<std::mutex> lock(mtx_);
+        fd = open(filePathName.c_str(), O_RDONLY, S_IREAD);
+    }
     if (fd < 0) {
         HILOG_ERROR("Open file failed, errno %{public}d", errno);
         ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
