@@ -194,7 +194,6 @@ private:
     std::mutex wpFdLock_;
     std::map<int32_t, int32_t> wallpaperFdMap_;
     std::mutex wpProxyLock_;
-    std::mutex listenerMapMutex_;
     bool (*callback)(int32_t);
     bool (*offsetCallback)(int32_t, int32_t);
 };

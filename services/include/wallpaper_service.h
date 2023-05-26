@@ -191,6 +191,7 @@ private:
     std::mutex listenerMapMutex_;
     int32_t pictureWidth_ = 0;
     int32_t pictureHeight_ = 0;
+    std::mutex resTypeMapMutex_;
     std::map<std::string, WallpaperResourceType> resTypeMap_;
 };
 } // namespace WallpaperMgrService

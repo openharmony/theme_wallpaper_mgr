@@ -162,11 +162,13 @@ int32_t WallpaperServiceStub::OnGetPixelMapInner(MessageParcel &data, MessagePar
     HILOG_INFO(" OnGetPixelMap wallpaperErrorCode = %{public}d", wallpaperErrorCode);
     if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
         HILOG_ERROR("WriteInt32 fail");
+        close(fdInfo.fd);
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     if (wallpaperErrorCode == E_OK) {
         if (!reply.WriteInt32(fdInfo.size)) {
             HILOG_ERROR("WriteInt32 fail");
+            close(fdInfo.fd);
             return IPC_STUB_WRITE_PARCEL_ERR;
         }
         if (!reply.WriteFileDescriptor(fdInfo.fd)) {
@@ -174,8 +176,8 @@ int32_t WallpaperServiceStub::OnGetPixelMapInner(MessageParcel &data, MessagePar
             close(fdInfo.fd);
             return IPC_STUB_WRITE_PARCEL_ERR;
         }
-        close(fdInfo.fd);
     }
+    close(fdInfo.fd);
     return ERR_NONE;
 }
 
