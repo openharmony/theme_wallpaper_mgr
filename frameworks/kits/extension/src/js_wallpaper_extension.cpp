@@ -259,19 +259,19 @@ void JsWallpaperExtension::RegisterWallpaperCallback()
                     return;
                 }
                 napi_handle_scope scope = nullptr;
-                napi_open_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng), &scope);
+                napi_open_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng_), &scope);
                 if (scope == nullptr) {
                     delete workData;
                     delete work;
                     return;
                 }
-                napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng),
+                napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng_),
                     workData->wallpaperType);
 
                 NativeValue *nativeType = reinterpret_cast<NativeValue *>(type);
                 NativeValue *arg[] = { nativeType };
                 JsWallpaperExtension::jsWallpaperExtension->CallObjectMethod("onWallpaperChanged", arg, ARGC_ONE);
-                napi_close_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng), scope);
+                napi_close_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng_), scope);
                 delete workData;
                 delete work;
             };
@@ -297,7 +297,7 @@ void JsWallpaperExtension::RegisterOffsetCallback()
                 return;
             }
             napi_handle_scope scope = nullptr;
-            napi_open_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng), &scope);
+            napi_open_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng_), &scope);
             if (scope == nullptr) {
                 delete workData;
                 delete work;
@@ -311,7 +311,7 @@ void JsWallpaperExtension::RegisterOffsetCallback()
             NativeValue *nativeY = reinterpret_cast<NativeValue *>(yOffset);
             NativeValue *arg[] = { nativeX, nativeY };
             JsWallpaperExtension::jsWallpaperExtension->CallObjectMethod("onOffset", arg, ARGC_TWO);
-            napi_close_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng), scope);
+            napi_close_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng_), scope);
             delete workData;
             delete work;
         };
