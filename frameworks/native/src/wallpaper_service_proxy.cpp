@@ -90,12 +90,6 @@ ErrorCode WallpaperServiceProxy::GetFile(int32_t wallpaperType, int32_t &wallpap
     return wallpaperErrorCode;
 }
 
-std::string WallpaperServiceProxy::GetUri()
-{
-    HILOG_INFO("return serviceReadUri = %{public}s ", serviceReadUri.c_str());
-    return serviceReadUri;
-}
-
 ErrorCode WallpaperServiceProxy::SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length)
 {
     return SetWallpaperInner(fd, wallpaperType, length, SET_WALLPAPER);

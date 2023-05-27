@@ -115,7 +115,6 @@ private:
     void InitQueryUserId(int32_t times);
     bool InitUsersOnBoot();
     void InitWallpaperConfig();
-    int64_t WritePixelMapToFile(const std::string &filePath, std::unique_ptr<OHOS::Media::PixelMap> pixelMap);
     bool CompareColor(const uint64_t &localColor, const ColorManager::Color &color);
     bool SaveColor(int32_t userId, WallpaperType wallpaperType);
     void LoadSettingsLocked(int32_t userId, bool keepDimensionHints);
@@ -128,9 +127,6 @@ private:
     int32_t MakeWallpaperIdLocked();
     bool CheckCallingPermission(const std::string &permissionName);
     bool GetBundleNameByUid(std::int32_t uid, std::string &bname);
-    bool MakeCropWallpaper(int32_t userId, WallpaperType wallpaperType);
-    void SetPixelMapCropParameters(std::unique_ptr<Media::PixelMap> wallpaperPixelMap,
-        Media::DecodeOptions &decodeOpts);
     ErrorCode SetWallpaperBackupData(int32_t userId, WallpaperResourceType resourceType,
         const std::string &uriOrPixelMap, WallpaperType wallpaperType);
     int32_t ConnectExtensionAbility(const OHOS::AAFwk::Want &want);
