@@ -31,6 +31,7 @@ public:
     static bool DeleteFile(const std::string &sourceFile);
     static bool IsFileExist(const std::string &name);
     static std::string GetExtension(const std::string &filePath);
+    static bool GetRealPath(const std::string &inOriPath, std::string &outRealPath);
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

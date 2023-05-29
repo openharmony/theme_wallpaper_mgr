@@ -1287,7 +1287,7 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
         delete[] paperBuf;
         return E_DEAL_FAILED;
     }
-    mode_t mode = 0660;
+    mode_t mode = S_IRUSR | S_IWUSR;
     int32_t fdw = open(uri.c_str(), O_WRONLY | O_CREAT, mode);
     if (fdw < 0) {
         HILOG_ERROR("Open wallpaper tmpFullPath failed, errno %{public}d", errno);
@@ -1444,8 +1444,13 @@ void WallpaperService::StoreResType()
 
     int32_t userId = QueryActiveUserId();
     std::string userPath = WALLPAPER_USERID_PATH + std::to_string(userId) + "/wallpapercfg";
-    mode_t mode = 0660;
-    int fd = open(userPath.c_str(), O_CREAT | O_WRONLY | O_SYNC, mode);
+    std::string fileRealPath;
+    if (!FileDeal::GetRealPath(userPath, fileRealPath)) {
+        HILOG_ERROR("get real path file failed, len = %{public}zu", userPath.size());
+        return;
+    }
+    mode_t mode = S_IRUSR | S_IWUSR;
+    int fd = open(fileRealPath.c_str(), O_CREAT | O_WRONLY | O_SYNC, mode);
     if (fd <= 0) {
         HILOG_ERROR("open user config file failed.");
         return;
@@ -1465,7 +1470,12 @@ void WallpaperService::LoadResType()
     resTypeMap_[LOCKSCREEN_RES_TYPE] = PICTURE;
     int32_t userId = QueryActiveUserId();
     std::string userPath = WALLPAPER_USERID_PATH + std::to_string(userId) + "/wallpapercfg";
-    int fd = open(userPath.c_str(), O_RDONLY, S_IREAD);
+    std::string fileRealPath;
+    if (!FileDeal::GetRealPath(userPath, fileRealPath)) {
+        HILOG_ERROR("get real path file failed, len = %{public}zu", userPath.size());
+        return;
+    }
+    int fd = open(fileRealPath.c_str(), O_RDONLY, S_IREAD);
     if (fd <= 0) {
         HILOG_ERROR("open user config file failed.");
         return;

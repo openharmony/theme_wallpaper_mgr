@@ -114,5 +114,23 @@ std::string FileDeal::GetExtension(const std::string &filePath)
     }
     return extension;
 }
+bool FileDeal::GetRealPath(const std::string &inOriPath, std::string &outRealPath)
+{
+    char realPath[PATH_MAX + 1] = { 0x00 };
+    if (inOriPath.size() > PATH_MAX || realpath(inOriPath.c_str(), realPath) == nullptr) {
+        HILOG_ERROR("get real path fail");
+        return false;
+    }
+    outRealPath = std::string(realPath);
+    if (!IsFileExist(outRealPath)) {
+        HILOG_ERROR("real path file is not exist! %{public}s", outRealPath.c_str());
+        return false;
+    }
+    if (outRealPath != inOriPath) {
+        HILOG_ERROR("illegal file path input %{public}s", inOriPath.c_str());
+        return false;
+    }
+    return true;
+}
 } // namespace WallpaperMgrService
 } // namespace OHOS
