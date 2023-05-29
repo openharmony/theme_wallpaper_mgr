@@ -13,43 +13,43 @@
  * limitations under the License.
  */
 
-var ExtensionContext = requireNapi("application.ExtensionContext")
+let ExtensionContext = requireNapi('application.ExtensionContext');
 
 class WallpaperExtensionContext extends ExtensionContext {
-    constructor(obj) {
-        super(obj);
-        this.extensionAbilityInfo = obj.extensionAbilityInfo
-    }
+  constructor(obj) {
+    super(obj);
+    this.extensionAbilityInfo = obj.extensionAbilityInfo;
+  }
 
-    startAbility(want, options, callback) {
-        console.log("startAbility");
-        return this.__context_impl__.startAbility(want, options, callback);
-    }
+  startAbility(want, options, callback) {
+    console.log('startAbility');
+    return this.__context_impl__.startAbility(want, options, callback);
+  }
 
-    connectAbility(want, options) {
-        console.log("connectAbility");
-        return this.__context_impl__.connectAbility(want, options);
-    }
+  connectAbility(want, options) {
+    console.log('connectAbility');
+    return this.__context_impl__.connectAbility(want, options);
+  }
 
-    startAbilityWithAccount(want, accountId, options, callback) {
-        console.log("startAbilityWithAccount");
-        return this.__context_impl__.startAbilityWithAccount(want, accountId, options, callback);
-    }
+  startAbilityWithAccount(want, accountId, options, callback) {
+    console.log('startAbilityWithAccount');
+    return this.__context_impl__.startAbilityWithAccount(want, accountId, options, callback);
+  }
 
-    connectAbilityWithAccount(want, accountId, options) {
-        console.log("connectAbilityWithAccount");
-        return this.__context_impl__.connectAbilityWithAccount(want, accountId, options);
-    }
+  connectAbilityWithAccount(want, accountId, options) {
+    console.log('connectAbilityWithAccount');
+    return this.__context_impl__.connectAbilityWithAccount(want, accountId, options);
+  }
 
-    disconnectAbility(connection, callback) {
-        console.log("disconnectAbility");
-        return this.__context_impl__.disconnectAbility(connection, callback);
-    }
+  disconnectAbility(connection, callback) {
+    console.log('disconnectAbility');
+    return this.__context_impl__.disconnectAbility(connection, callback);
+  }
 
-    terminateSelf(callback) {
-        console.log("terminateSelf");
-        return this.__context_impl__.terminateSelf(callback);
-    }
+  terminateSelf(callback) {
+    console.log('terminateSelf');
+    return this.__context_impl__.terminateSelf(callback);
+  }
 }
 
-export default WallpaperExtensionContext
+export default WallpaperExtensionContext;

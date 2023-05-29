@@ -186,7 +186,6 @@ private:
     void ResetService(const wptr<IRemoteObject> &remote);
     sptr<IWallpaperService> GetService();
     int64_t WritePixelMapToStream(std::ostream &outputStream, std::shared_ptr<OHOS::Media::PixelMap> pixelMap);
-    bool GetRealPath(const std::string &inOriPath, std::string &outRealPath);
     bool OpenFile(const std::string &fileName, int32_t &fd, int64_t &fileSize);
     ErrorCode CheckWallpaperFormat(const std::string &realPath, bool isLive, long &length);
     sptr<IWallpaperService> wallpaperProxy_{};
