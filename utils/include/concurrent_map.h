@@ -68,10 +68,10 @@ public:
     }
 
     template<typename... _Args>
-    bool Emplace(_Args &&...__args) noexcept
+    bool Emplace(_Args &&...args) noexcept
     {
         std::lock_guard<decltype(mutex_)> lock(mutex_);
-        auto it = entries_.emplace(std::forward<_Args>(__args)...);
+        auto it = entries_.emplace(std::forward<_Args>(args)...);
         return it->second;
     }
 
