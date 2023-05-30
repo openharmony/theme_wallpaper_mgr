@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-let WindowManager = requireNapi("window")
-let WindowName = "wallpaper"
-let windowType = 2000
+let WindowManager = requireNapi('window');
+let WindowName = 'wallpaper';
+let windowType = 2000;
 let windowsCreated = false;
 let WIDTH = 480;
 let HEIGHT = 960;
