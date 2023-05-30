@@ -77,7 +77,7 @@ public:
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
     ErrorCode ResetWallpaper(int32_t wallpaperType) override;
-    ErrorCode On(const std::string &type, sptr<IWallpaperEventListener> listener) override;
+    ErrorCode On(const std::string &type, sptr<IWallpaperEventListener> listener, std::string &uri) override;
     ErrorCode Off(const std::string &type, sptr<IWallpaperEventListener> listener) override;
     bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) override;
     int32_t Dump(int32_t fd, const std::vector<std::u16string> &args) override;
@@ -90,6 +90,7 @@ public:
     ErrorCode GetWallpaperMinWidthV9(int32_t &minWidth) override;
     ErrorCode ResetWallpaperV9(int32_t wallpaperType) override;
     ErrorCode SetVideo(int32_t fd, int32_t wallpaperType, int32_t length) override;
+    ErrorCode SetCustomWallpaper(const std::string &uri, int32_t wallpaperType) override;
     ErrorCode SendEvent(const std::string &eventType) override;
 
 public:
@@ -150,7 +151,7 @@ private:
     ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length, WallpaperResourceType resourceType);
     void OnColorsChange(WallpaperType wallpaperType, const ColorManager::Color &color);
     ErrorCode CheckValid(int32_t wallpaperType, int32_t length, WallpaperResourceType resourceType);
-    bool WallpaperChanged(WallpaperType wallpaperType, WallpaperResourceType resType);
+    bool WallpaperChanged(WallpaperType wallpaperType, WallpaperResourceType resType, const std::string &uri);
     void NotifyColorChange(const std::vector<uint64_t> &colors, const WallpaperType &wallpaperType);
     void StoreResType();
     void LoadResType();

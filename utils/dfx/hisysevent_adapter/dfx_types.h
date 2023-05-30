@@ -62,6 +62,7 @@ enum class TraceTaskId : int32_t {
     ONCONNECT_EXTENSION,
     ONCONNECT_MIDDLE_EXTENSION,
     SET_VIDEO,
+    SetCustomWallpaper,
 };
 } // namespace MiscServices
 } // namespace OHOS

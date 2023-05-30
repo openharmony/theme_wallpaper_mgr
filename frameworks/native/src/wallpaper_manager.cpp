@@ -292,6 +292,26 @@ ErrorCode WallpaperManager::SetVideo(const std::string &uri, const int32_t wallp
     return wallpaperErrorCode;
 }
 
+ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int32_t wallpaperType)
+{
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
+        HILOG_ERROR("Get proxy failed");
+        return E_DEAL_FAILED;
+    }
+    std::string fileRealPath;
+    if (!GetRealPath(uri, fileRealPath)) {
+        HILOG_ERROR("Get real path failed, uri: %{public}s", uri.c_str());
+        return E_FILE_ERROR;
+    }
+    //给uri授权给三合一应用
+
+    StartAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SetCustomWallpaper));
+    ErrorCode wallpaperErrorCode = wallpaperServerProxy->SetCustomWallpaper(uri, wallpaperType);
+    FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SetCustomWallpaper));
+    return wallpaperErrorCode;
+}
+
 int64_t WallpaperManager::WritePixelMapToStream(std::ostream &outputStream,
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap)
 {
@@ -435,7 +455,7 @@ ErrorCode WallpaperManager::ResetWallpaper(std::int32_t wallpaperType, const Api
     return wallpaperErrorCode;
 }
 
-ErrorCode WallpaperManager::On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener)
+ErrorCode WallpaperManager::On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener, std::string &uri)
 {
     HILOG_DEBUG("WallpaperManager::On in");
     auto wallpaperServerProxy = GetService();
@@ -453,7 +473,7 @@ ErrorCode WallpaperManager::On(const std::string &type, std::shared_ptr<Wallpape
         return E_NO_MEMORY;
     }
     HILOG_DEBUG("WallpaperManager::On out");
-    return wallpaperServerProxy->On(type, ipcListener);
+    return wallpaperServerProxy->On(type, ipcListener, uri);
 }
 
 ErrorCode WallpaperManager::Off(const std::string &type, std::shared_ptr<WallpaperEventListener> listener)

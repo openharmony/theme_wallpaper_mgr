@@ -24,7 +24,7 @@ namespace WallpaperMgrService {
 using namespace std;
 class IWallpaperManagerCallback {
 public:
-    virtual void OnWallpaperChanged();
+    virtual void OnWallpaperChanged(const std::string &uri);
     /**
      * Called when wallpaper colors change
      */

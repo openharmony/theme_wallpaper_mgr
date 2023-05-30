@@ -124,7 +124,7 @@ public:
      * @param listener event listener
      * @return error code
      */
-    virtual ErrorCode On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener) = 0;
+    virtual ErrorCode On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener, std::string &uri) = 0;
 
     /**
      * Unregisters a listener for wallpaper event to receive notifications about the changes.
@@ -142,6 +142,15 @@ public:
      * @permission ohos.permission.SET_WALLPAPER
      */
     virtual ErrorCode SetVideo(const std::string &uri, const int32_t wallpaperType) = 0;
+
+    /**
+     * Sets custom wallpaper of the specified type based on the uri path.
+     * @param uri Indicates the uri path.
+     * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
+     * @return ErrorCode
+     * @permission ohos.permission.SET_WALLPAPER
+     */
+    virtual ErrorCode SetCustomWallpaper(const std::string &uri, int32_t wallpaperType) = 0;
 
     /**
      * The application sends the event to the wallpaper service.

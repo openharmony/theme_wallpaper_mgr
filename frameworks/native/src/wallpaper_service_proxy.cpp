@@ -183,6 +183,32 @@ ErrorCode WallpaperServiceProxy::SetVideo(int32_t fd, int32_t wallpaperType, int
     return ConvertIntToErrorCode(reply.ReadInt32());
 }
 
+ErrorCode WallpaperServiceProxy::SetCustomWallpaper(const std::string &uri, int32_t wallpaperType)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        HILOG_ERROR("Failed to write parcelable");
+        return E_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteString(uri)) {
+        HILOG_ERROR("Failed to WriteString");
+        return E_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteInt32(wallpaperType)) {
+        HILOG_ERROR("Failed to WriteInt32");
+        return E_WRITE_PARCEL_ERROR;
+    }
+    int32_t result = Remote()->SendRequest(SET_CUSTOM, data, reply, option);
+    if (result != ERR_NONE) {
+        HILOG_ERROR("Set video failed, result: %{public}d", result);
+        return E_DEAL_FAILED;
+    }
+    return ConvertIntToErrorCode(reply.ReadInt32());
+}
+
 ErrorCode WallpaperServiceProxy::GetPixelMapInner(int32_t wallpaperType, uint32_t code,
     IWallpaperService::FdInfo &fdInfo)
 {
@@ -402,7 +428,7 @@ ErrorCode WallpaperServiceProxy::SendEvent(const std::string &eventType)
     return ConvertIntToErrorCode(reply.ReadInt32());
 }
 
-ErrorCode WallpaperServiceProxy::On(const std::string &type, sptr<IWallpaperEventListener> listener)
+ErrorCode WallpaperServiceProxy::On(const std::string &type, sptr<IWallpaperEventListener> listener, std::string &uri)
 {
     HILOG_DEBUG("WallpaperServiceProxy::On in");
     MessageParcel data;
@@ -432,7 +458,11 @@ ErrorCode WallpaperServiceProxy::On(const std::string &type, sptr<IWallpaperEven
     }
 
     HILOG_DEBUG("WallpaperServiceProxy::On out");
-    return ConvertIntToErrorCode(reply.ReadInt32());
+    ErrorCode wallpaperErrorCode = ConvertIntToErrorCode(reply.ReadInt32());
+    if (wallpaperErrorCode == E_OK) {
+        uri = reply.ReadString();
+    }
+    return wallpaperErrorCode;
 }
 
 ErrorCode WallpaperServiceProxy::Off(const std::string &type, sptr<IWallpaperEventListener> listener)

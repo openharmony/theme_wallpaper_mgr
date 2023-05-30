@@ -51,7 +51,7 @@ void WallpaperEventListenerProxy::OnColorsChange(const std::vector<uint64_t> &co
 }
 
 void WallpaperEventListenerProxy::OnWallpaperChange(WallpaperType wallpaperType,
-    WallpaperResourceType resourceType)
+    WallpaperResourceType resourceType, const std::string &uri)
 {
     HILOG_DEBUG("WallpaperEventListenerProxy::OnWallpaperChange Start");
     MessageParcel data;
@@ -68,6 +68,10 @@ void WallpaperEventListenerProxy::OnWallpaperChange(WallpaperType wallpaperType,
     }
     if (!data.WriteInt32(resourceType)) {
         HILOG_ERROR("write resourceType failed");
+        return;
+    }
+    if (!data.WriteString(uri)) {
+        HILOG_ERROR("write uri failed");
         return;
     }
 

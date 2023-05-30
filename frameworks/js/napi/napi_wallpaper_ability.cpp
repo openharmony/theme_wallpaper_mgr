@@ -664,7 +664,7 @@ napi_value NAPI_On(napi_env env, napi_callback_info info)
     }
     std::shared_ptr<WallpaperMgrService::WallpaperEventListener> listener =
         std::make_shared<NapiWallpaperAbility>(env, argv[1]);
-    ErrorCode errorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().On(type, listener);
+    ErrorCode errorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().On(type, listener, uri);
     if (errorCode != E_OK) {
         HILOG_ERROR("WallpaperMgrService::WallpaperManagerkits::GetInstance().On failed!");
         if (type == COLOR_CHANGE_EVENT) {
@@ -765,6 +765,47 @@ void NapiWallpaperAbility::SetOffsetInner(std::shared_ptr<SetContextInfo> contex
     };
 
     context->SetAction(std::move(input), std::move(output));
+    context->SetExecution(std::move(exec));
+}
+
+napi_value NAPI_SetCustomWallpaper(napi_env env, napi_callback_info info)
+{
+    auto context = std::make_shared<SetContextInfo>();
+    NapiWallpaperAbility::SetCustomWallpaper(context);
+    Call call(env, info, context, TWO, true);
+    return call.AsyncCall(env);
+}
+
+void NapiWallpaperAbility::SetCustomWallpaper(std::shared_ptr<SetContextInfo> context)
+{
+    auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
+        if (!NapiWallpaperAbility::IsValidArgCount(argc, TWO) ||
+            !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string) ||
+            !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_number)) {
+            HILOG_ERROR("Input argc: %{public}zu", argc);
+            context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);
+            return napi_invalid_arg;
+        }
+        context->uri = WallpaperJSUtil::Convert2String(env, argv[0]);
+        napi_get_value_int32(env, argv[1], &context->wallpaperType);
+        HILOG_DEBUG("Input wallpaperType: %{public}d", context->wallpaperType);
+        return napi_ok;
+    };
+
+    auto exec = [context](Call::Context *ctx) {
+        ErrorCode wallpaperErrorCode =
+            WallpaperMgrService::WallpaperManagerkits::GetInstance().SetCustomWallpaper(context->uri, context->wallpaperType);
+        if (wallpaperErrorCode == E_OK) {
+            context->status = napi_ok;
+        } else {
+            JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(wallpaperErrorCode);
+            if (jsErrorInfo.code != 0) {
+                context->SetErrInfo(jsErrorInfo.code, jsErrorInfo.message);
+            }
+        }
+        HILOG_DEBUG("Exec context status:[%{public}d]", context->status);
+    };
+    context->SetAction(std::move(input), nullptr);
     context->SetExecution(std::move(exec));
 }
 

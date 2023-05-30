@@ -191,6 +191,7 @@ public:
     static void SetVideoInner(std::shared_ptr<SetContextInfo> context);
     static void SendEventInner(std::shared_ptr<GetContextInfo> context);
     static void SetOffsetInner(std::shared_ptr<SetContextInfo> context);
+    static void SetCustomWallpaper(std::shared_ptr<SetContextInfo> context);
 
 private:
     struct WallpaperChangedData {
