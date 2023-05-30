@@ -13,10 +13,12 @@
  * limitations under the License.
  */
 
-let WindowManager = requireNapi("window")
-let WindowName = "wallpaper"
-let windowType = 2000
+let WindowManager = requireNapi('window');
+let WindowName = 'wallpaper';
+let windowType = 2000;
 let windowsCreated = false;
+let WIDTH = 480;
+let HEIGHT = 960;
 
 class WallpaperExtension {
   createWallpaperWin() {
@@ -27,7 +29,7 @@ class WallpaperExtension {
       this.wallpaperWindow = win;
       console.log(this.wallpaperWindow);
       this.wallpaperWindow.moveTo(0, 0).then(() => {
-        this.wallpaperWindow.resetSize(480, 960).then(() => {
+        this.wallpaperWindow.resetSize(WIDTH, HEIGHT).then(() => {
           console.log(`${WindowName} resetSize ${this.wallpaperURI}`);
           this.loadUiContent(this.wallpaperURI);
           console.log(`${WindowName} window created`);
