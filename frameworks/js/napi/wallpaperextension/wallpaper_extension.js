@@ -13,68 +13,68 @@
  * limitations under the License.
  */
 
-var WindowManager = requireNapi("window")
-var WindowName = "wallpaper"
-var windowType = 2000
-var windowsCreated = false;
+let WindowManager = requireNapi("window")
+let WindowName = "wallpaper"
+let windowType = 2000
+let windowsCreated = false;
 
 class WallpaperExtension {
-    createWallpaperWin() {
-        console.log(`${WindowName} createWallpaperWin`);
+  createWallpaperWin() {
+    console.log(`${WindowName} createWallpaperWin`);
 
-        WindowManager.create(this.context, WindowName, windowType).then((win) => {
-            console.log(`${WindowName} wallpaperWindow`);
-            this.wallpaperWindow = win;
-            console.log(this.wallpaperWindow);
-            this.wallpaperWindow.moveTo(0, 0).then(() => {
-                this.wallpaperWindow.resetSize(480, 960).then(() => {
-                    console.log(`${WindowName} resetSize ${this.wallpaperURI}`);
-                    this.loadUiContent(this.wallpaperURI);
-                    console.log(`${WindowName} window created`);
-                    windowsCreated = true;
-                })
-            })
-        }, (error) => {
-            console.log(`${WindowName} window createFailed, error.code = ${error.code}`);
-        })
-    }
+    WindowManager.create(this.context, WindowName, windowType).then((win) => {
+      console.log(`${WindowName} wallpaperWindow`);
+      this.wallpaperWindow = win;
+      console.log(this.wallpaperWindow);
+      this.wallpaperWindow.moveTo(0, 0).then(() => {
+        this.wallpaperWindow.resetSize(480, 960).then(() => {
+          console.log(`${WindowName} resetSize ${this.wallpaperURI}`);
+          this.loadUiContent(this.wallpaperURI);
+          console.log(`${WindowName} window created`);
+          windowsCreated = true;
+        });
+      });
+    }, (error) => {
+      console.log(`${WindowName} window createFailed, error.code = ${error.code}`);
+    });
+  }
 
-    onCreated(want) {
-        console.log(`${WindowName} onWallpaperExtensionCreated`);
-    }
+  onCreated(want) {
+    console.log(`${WindowName} onWallpaperExtensionCreated`);
+  }
 
-    setUiContent(uri) {
-        console.log(`${WindowName} setUiContent`);
-        if (windowsCreated) {
-            console.log(`${WindowName} loadUiContent`);
-            loadUiContent(uri);
-        } else {
-            console.log(`${WindowName} save wallpaperURI`);
-            this.wallpaperURI = uri;
-        }
+  setUiContent(uri) {
+    console.log(`${WindowName} setUiContent`);
+    if (windowsCreated) {
+      console.log(`${WindowName} loadUiContent`);
+      loadUiContent(uri);
+    } else {
+      console.log(`${WindowName} save wallpaperURI`);
+      this.wallpaperURI = uri;
     }
+  }
 
-    loadUiContent(uri) {
-        console.log(`${WindowName} initUiContent ${uri}`);
-        this.wallpaperWindow.loadContent(uri).then(() => {
-            console.log(`${WindowName} loadContent`);
-            this.wallpaperWindow.show().then(() => {
-                console.log(`${WindowName} window is show`);
-            })
-        })
-    }
+  loadUiContent(uri) {
+    console.log(`${WindowName} initUiContent ${uri}`);
+    this.wallpaperWindow.loadContent(uri).then(() => {
+      console.log(`${WindowName} loadContent`);
+      this.wallpaperWindow.show().then(() => {
+        console.log(`${WindowName} window is show`);
+      });
+    });
+  }
 
-    onWallpaperChanged(wallpaperType) {
-        console.log(`${WindowName} onWallpaperChanged ${wallpaperType}`);
-    }
+  onWallpaperChanged(wallpaperType) {
+    console.log(`${WindowName} onWallpaperChanged ${wallpaperType}`);
+  }
 
-    onDestroy() {
-        console.log(`${WindowName} onWallpaperExtensionDestroy`);
-    }
+  onDestroy() {
+    console.log(`${WindowName} onWallpaperExtensionDestroy`);
+  }
 
-    onOffset(xOffset, yOffset) {
-        console.log(`${WindowName} onOffset ${xOffset}, ${yOffset} `);
-    }
+  onOffset(xOffset, yOffset) {
+    console.log(`${WindowName} onOffset ${xOffset}, ${yOffset} `);
+  }
 }
 
-export default WallpaperExtension
+export default WallpaperExtension;

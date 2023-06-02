@@ -178,7 +178,7 @@ ErrorCode WallpaperManager::SetWallpaper(std::string uri, int32_t wallpaperType,
         return E_DEAL_FAILED;
     }
     std::string fileRealPath;
-    if (!GetRealPath(uri, fileRealPath)) {
+    if (!FileDeal::GetRealPath(uri, fileRealPath)) {
         HILOG_ERROR("get real path file failed, len = %{public}zu", uri.size());
         return E_FILE_ERROR;
     }
@@ -268,7 +268,7 @@ ErrorCode WallpaperManager::SetVideo(const std::string &uri, const int32_t wallp
         return E_DEAL_FAILED;
     }
     std::string fileRealPath;
-    if (!GetRealPath(uri, fileRealPath)) {
+    if (!FileDeal::GetRealPath(uri, fileRealPath)) {
         HILOG_ERROR("Get real path failed, uri: %{public}s", uri.c_str());
         return E_FILE_ERROR;
     }
@@ -300,7 +300,7 @@ ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int
         return E_DEAL_FAILED;
     }
     std::string fileRealPath;
-    if (!GetRealPath(uri, fileRealPath)) {
+    if (!FileDeal::GetRealPath(uri, fileRealPath)) {
         HILOG_ERROR("Get real path failed, uri: %{public}s", uri.c_str());
         return E_FILE_ERROR;
     }
@@ -455,7 +455,7 @@ ErrorCode WallpaperManager::ResetWallpaper(std::int32_t wallpaperType, const Api
     return wallpaperErrorCode;
 }
 
-ErrorCode WallpaperManager::On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener, std::string &uri)
+ErrorCode WallpaperManager::On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener)
 {
     HILOG_DEBUG("WallpaperManager::On in");
     auto wallpaperServerProxy = GetService();
@@ -473,7 +473,7 @@ ErrorCode WallpaperManager::On(const std::string &type, std::shared_ptr<Wallpape
         return E_NO_MEMORY;
     }
     HILOG_DEBUG("WallpaperManager::On out");
-    return wallpaperServerProxy->On(type, ipcListener, uri);
+    return wallpaperServerProxy->On(type, ipcListener);
 }
 
 ErrorCode WallpaperManager::Off(const std::string &type, std::shared_ptr<WallpaperEventListener> listener)
@@ -557,25 +557,6 @@ ErrorCode WallpaperManager::SendEvent(const std::string &eventType)
         return E_DEAL_FAILED;
     }
     return wallpaperServerProxy->SendEvent(eventType);
-}
-
-bool WallpaperManager::GetRealPath(const std::string &inOriPath, std::string &outRealPath)
-{
-    char realPath[PATH_MAX + 1] = { 0x00 };
-    if (inOriPath.size() > PATH_MAX || realpath(inOriPath.c_str(), realPath) == nullptr) {
-        HILOG_ERROR("get real path fail");
-        return false;
-    }
-    outRealPath = std::string(realPath);
-    if (!OHOS::FileExists(outRealPath)) {
-        HILOG_ERROR("real path file is not exist! %{public}s", outRealPath.c_str());
-        return false;
-    }
-    if (outRealPath != inOriPath) {
-        HILOG_ERROR("illegal file path input %{public}s", inOriPath.c_str());
-        return false;
-    }
-    return true;
 }
 
 bool WallpaperManager::CheckVideoFormat(const std::string &fileName)

@@ -90,12 +90,6 @@ ErrorCode WallpaperServiceProxy::GetFile(int32_t wallpaperType, int32_t &wallpap
     return wallpaperErrorCode;
 }
 
-std::string WallpaperServiceProxy::GetUri()
-{
-    HILOG_INFO("return serviceReadUri = %{public}s ", serviceReadUri.c_str());
-    return serviceReadUri;
-}
-
 ErrorCode WallpaperServiceProxy::SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length)
 {
     return SetWallpaperInner(fd, wallpaperType, length, SET_WALLPAPER);
@@ -428,7 +422,7 @@ ErrorCode WallpaperServiceProxy::SendEvent(const std::string &eventType)
     return ConvertIntToErrorCode(reply.ReadInt32());
 }
 
-ErrorCode WallpaperServiceProxy::On(const std::string &type, sptr<IWallpaperEventListener> listener, std::string &uri)
+ErrorCode WallpaperServiceProxy::On(const std::string &type, sptr<IWallpaperEventListener> listener)
 {
     HILOG_DEBUG("WallpaperServiceProxy::On in");
     MessageParcel data;
@@ -458,11 +452,7 @@ ErrorCode WallpaperServiceProxy::On(const std::string &type, sptr<IWallpaperEven
     }
 
     HILOG_DEBUG("WallpaperServiceProxy::On out");
-    ErrorCode wallpaperErrorCode = ConvertIntToErrorCode(reply.ReadInt32());
-    if (wallpaperErrorCode == E_OK) {
-        uri = reply.ReadString();
-    }
-    return wallpaperErrorCode;
+    return ConvertIntToErrorCode(reply.ReadInt32());
 }
 
 ErrorCode WallpaperServiceProxy::Off(const std::string &type, sptr<IWallpaperEventListener> listener)

@@ -401,15 +401,10 @@ int32_t WallpaperServiceStub::OnWallpaperOn(MessageParcel &data, MessageParcel &
     }
 
     sptr<IWallpaperEventListener> wallpaperListenerProxy = iface_cast<IWallpaperEventListener>(remote);
-    std::string uri;
-    ErrorCode errorCode = On(type, std::move(wallpaperListenerProxy), uri);
+    ErrorCode errorCode = On(type, std::move(wallpaperListenerProxy));
     int32_t ret = static_cast<int32_t>(errorCode);
     if (!reply.WriteInt32(ret)) {
         HILOG_ERROR("WriteInt32 failed");
-        return IPC_STUB_WRITE_PARCEL_ERR;
-    }
-    if (!reply.WriteString(uri)) {
-        HILOG_ERROR("WriteString failed");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     HILOG_DEBUG("WallpaperServiceStub::OnWallpaperOn out");

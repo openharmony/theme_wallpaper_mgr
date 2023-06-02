@@ -121,7 +121,7 @@ public:
      * @param listener event listener
      * @return error code
      */
-    ErrorCode On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener, std::string &uri) final;
+    ErrorCode On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener) final;
 
     /**
      * Unregisters a listener for wallpaper event to receive notifications about the changes.
@@ -147,7 +147,7 @@ public:
      * @return ErrorCode
      * @permission ohos.permission.SET_WALLPAPER
      */
-    ErrorCode SetCustomWallpaper(const std::string &uri, int32_t wallpaperType) = 0;
+    ErrorCode SetCustomWallpaper(const std::string &uri, int32_t wallpaperType) final;
 
     /**
      * The application sends the event to the wallpaper service.
@@ -195,7 +195,6 @@ private:
     void ResetService(const wptr<IRemoteObject> &remote);
     sptr<IWallpaperService> GetService();
     int64_t WritePixelMapToStream(std::ostream &outputStream, std::shared_ptr<OHOS::Media::PixelMap> pixelMap);
-    bool GetRealPath(const std::string &inOriPath, std::string &outRealPath);
     bool OpenFile(const std::string &fileName, int32_t &fd, int64_t &fileSize);
     ErrorCode CheckWallpaperFormat(const std::string &realPath, bool isLive, long &length);
     sptr<IWallpaperService> wallpaperProxy_{};

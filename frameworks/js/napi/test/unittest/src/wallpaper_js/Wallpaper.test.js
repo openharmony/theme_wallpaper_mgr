@@ -1969,6 +1969,191 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
+     * @tc.name:      setCustomWallpaperCallbackTest001
+     * @tc.desc:      Test setCustomWallpaper to set a custom system wallpaper.
+     * @tc.type:      FUNC test
+     * @tc.require:
+     */
+    it('setCustomWallpaperTest001', 0, async function (done) {
+        try {
+            wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM, (error) => {
+                if (error !== undefined) {
+                    console.info(`setCustomWallpaperTest001 error : ${error}`);
+                    expect(null).assertFail();
+                } else {
+                    expect(true).assertTrue();
+                    wallpaper.reset(WALLPAPER_SYSTEM);
+                }
+                done();
+            })
+        } catch (error) {
+            console.info(`setCustomWallpaperTest001 error : ${error}`);
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setCustomWallpaperPromiseTest002
+     * @tc.desc:      Test setCustomWallpaper to sets a custom system wallpaper.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI5UHRG
+     */
+    it('setCustomWallpaperPromiseTest002', 0, async function (done) {
+        try {
+            wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM).then(async () => {
+                expect(true).assertTrue();
+                done();
+                await wallpaper.restore(WALLPAPER_SYSTEM);
+            }).catch((err) => {
+                console.info(`setCustomWallpaperPromiseTest002 err : ${err}`);
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setCustomWallpaperCallbackTest003
+     * @tc.desc:      Test setCustomWallpaper to sets a custom lockscreen wallpaper.
+     * @tc.type:      FUNC test
+     * @tc.require:
+     */
+    it('setCustomWallpaperCallbackTest003', 0, async function (done) {
+        try {
+            wallpaper.setCustomWallpaper(URI, WALLPAPER_LOCKSCREEN, (error) => {
+                if (error !== undefined) {
+                    console.info(`setCustomWallpaperCallbackTest003 error : ${error}`);
+                    expect(true).assertTrue();
+                } else {
+                    expect(null).assertFail();
+                }
+                done();
+            })
+        } catch (error) {
+            console.info(`setCustomWallpaperCallbackTest003 error : ${error}`);
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setCustomWallpaperPromiseTest004
+     * @tc.desc:      Test setCustomWallpaper to sets a custom lockscreen wallpaper.
+     * @tc.type:      FUNC test
+     * @tc.require:
+     */
+    it('setCustomWallpaperPromiseTest004', 0, async function (done) {
+        try {
+            wallpaper.setCustomWallpaper(URI, WALLPAPER_LOCKSCREEN).then(async () => {
+                expect(true).assertTrue();
+                done();
+                await wallpaper.restore(WALLPAPER_LOCKSCREEN);
+            }).catch((err) => {
+                console.info(`setCustomWallpaperPromiseTest004 err : ${err}`);
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setCustomWallpaperCallbackThrowErrorTest005
+     * @tc.desc:      Test setCustomWallpaper throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:
+     */
+    it('setCustomCallbackThrowErrorTest005', 0, async function (done) {
+        try {
+            wallpaper.setCustomWallpaper(URI, INVALID_WALLPAPER_TYPE, function (err) {
+                if (err) {
+                    console.info(`setCustomCallbackThrowErrorTest005 err : ${err}`);
+                    expect(err.code === PARAMETER_ERROR).assertTrue()
+                } else {
+                    expect(null).assertFail();
+                }
+                done();
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setCustomWallpaperCallbackThrowErrorTest006
+     * @tc.desc:      Test setImage() throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:
+     */
+    it('setCustomWallpaperCallbackThrowErrorTest006', 0, async function (done) {
+        try {
+            wallpaper.setCustomWallpaper(URI, function (err) {
+                if (err) {
+                    console.info(`setCustomWallpaperCallbackThrowErrorTest006 err : ${err}`);
+                    expect(null).assertFail();
+                } else {
+                    expect(null).assertFail();
+                }
+                done();
+            })
+        } catch (error) {
+            expect(error.code === PARAMETER_ERROR).assertTrue()
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setCustomWallpaperPromiseThrowErrorTest007
+     * @tc.desc:      Test setCustomWallpaper throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:
+     */
+    it('setCustomWallpaperPromiseThrowErrorTest007', 0, async function (done) {
+        try {
+            wallpaper.setCustomWallpaper(URI, INVALID_WALLPAPER_TYPE).then(() => {
+                expect(null).assertFail();
+                done();
+            }).catch((err) => {
+                console.info(`setCustomWallpaperPromiseThrowErrorTest007 err : ${err}`);
+                expect(err.code === PARAMETER_ERROR).assertTrue()
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setCustomWallpaperPromiseThrowErrorTest008
+     * @tc.desc:      Test setCustomWallpaper throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:
+     */
+    it('setCustomWallpaperPromiseThrowErrorTest008', 0, async function (done) {
+        try {
+            wallpaper.setCustomWallpaper().then(() => {
+                expect(null).assertFail();
+                done();
+            }).catch((err) => {
+                console.info(`setCustomWallpaperPromiseThrowErrorTest008 err : ${err}`);
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(error.code === PARAMETER_ERROR).assertTrue()
+            done();
+        }
+    })
+
+    /**
      * @tc.name:      sendEventTest001
      * @tc.desc:      Display lockScreen in system.
      * @tc.type:      FUNC test

@@ -42,13 +42,12 @@ public:
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
     ErrorCode ResetWallpaper(int wallpaperType) override;
-    ErrorCode On(const std::string &type, sptr<IWallpaperEventListener> listener, std::string &uri) override;
+    ErrorCode On(const std::string &type, sptr<IWallpaperEventListener> listener) override;
     ErrorCode Off(const std::string &type, sptr<IWallpaperEventListener> listener) override;
     bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) override;
     ErrorCode SetVideo(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode SetCustomWallpaper(const std::string &uri, int32_t wallpaperType) override;
     ErrorCode SendEvent(const std::string &eventType) override;
-    std::string GetUri();
     ErrorCode ConvertIntToErrorCode(int32_t errorCode);
     ErrorCode SetOffset(int32_t xOffset, int32_t yOffset) override;
 

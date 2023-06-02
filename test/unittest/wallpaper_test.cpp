@@ -142,7 +142,8 @@ public:
 
     // callback function will be called when the db data is changed.
     void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType) override;
-    void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType) override;
+    void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
+        const std::string &uri) override;
     // reset the callCount_ to zero.
     void ResetToZero();
 
@@ -161,10 +162,11 @@ void WallpaperEventListenerTestImpl::OnColorsChange(const std::vector<uint64_t> 
     wallpaperType_ = wallpaperType;
 }
 
-void WallpaperEventListenerTestImpl::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType)
+void WallpaperEventListenerTestImpl::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
+    const std::string &uri)
 {
-    HILOG_INFO("wallpaperType: %{public}d, resourceType: %{public}d", static_cast<int32_t>(wallpaperType),
-        static_cast<int32_t>(resourceType));
+    HILOG_INFO("wallpaperType: %{public}d, resourceType: %{public}d, uri: %{public}s",
+        static_cast<int32_t>(wallpaperType), static_cast<int32_t>(resourceType), uri.c_str());
 }
 
 WallpaperEventListenerTestImpl::WallpaperEventListenerTestImpl()
@@ -1120,8 +1122,22 @@ HWTEST_F(WallpaperTest, SetVideo008, TestSize.Level0)
     ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(URI_15FPS_7S_MP4, LOCKSCREEN);
     EXPECT_EQ(ret, E_PARAMETERS_INVALID);
 }
-
 /*********************   SetVideo    *********************/
+
+/**
+ * @tc.name:    SetCustomWallpaper001
+ * @tc.desc:    Set custom wallpaper
+ * @tc.type:    FUNC
+ * @tc.require:
+ */
+HWTEST_F(WallpaperTest, SetCustomWallpaper001, TestSize.Level0)
+{
+    HILOG_INFO("SetCustomWallpaper001 begin");
+    ErrorCode ret = WallpaperManagerkits::GetInstance().SetCustomWallpaper(URI, SYSTYEM);
+    EXPECT_EQ(ret, E_NOT_SYSTEM_APP);
+    ret = WallpaperManagerkits::GetInstance().SetCustomWallpaper(URI, LOCKSCREEN);
+    EXPECT_EQ(ret, E_NOT_SYSTEM_APP);
+}
 
 /*********************   SendEvent    *********************/
 

@@ -131,7 +131,7 @@ public:
      * @param listener event observer.
      * @return error code
      */
-    virtual ErrorCode On(const std::string &type, sptr<IWallpaperEventListener> listener, std::string &uri) = 0;
+    virtual ErrorCode On(const std::string &type, sptr<IWallpaperEventListener> listener) = 0;
 
     /**
      * Unregisters a listener for wallpaper event changes.

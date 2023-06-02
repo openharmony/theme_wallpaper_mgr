@@ -13,7 +13,7 @@
 
 on boot
     start wallpaper_service
-service wallpaper_service /system/bin/sa_main /system/profile/wallpaper_service.xml
+service wallpaper_service /system/bin/sa_main /system/profile/wallpaper_service.json
     class z_core
     user system
     group system shell

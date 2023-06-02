@@ -32,7 +32,6 @@ public:
 
 private:
     int32_t OnSetWallpaper(MessageParcel &data, MessageParcel &reply);
-    int32_t OnGetPixelMapFile(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetPixelMap(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetColors(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetFile(MessageParcel &data, MessageParcel &reply);
