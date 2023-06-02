@@ -833,6 +833,7 @@ NapiWallpaperAbility::~NapiWallpaperAbility()
 
 void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType)
 {
+    HILOG_ERROR("NapiWallpaperAbility::OnColorsChange start!");
     WallpaperMgrService::WallpaperEventListener::OnColorsChange(color, wallpaperType);
     EventDataWorker *eventDataWorker = new (std::nothrow)
         EventDataWorker(this->shared_from_this(), color, wallpaperType);
@@ -884,7 +885,6 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
 void NapiWallpaperAbility::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
     const std::string &uri)
 {
-    HILOG_ERROR("NapiWallpaperAbility::OnWallpaperChange start!");
     WallpaperChangedData *data = new (std::nothrow)
         WallpaperChangedData(this->shared_from_this(), wallpaperType, resourceType);
     if (data == nullptr) {

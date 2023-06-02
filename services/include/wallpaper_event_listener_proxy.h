@@ -18,12 +18,13 @@
 
 #include <cstdint>
 #include <vector>
+
 #include "iremote_broker.h"
 #include "iremote_proxy.h"
 #include "iremote_stub.h"
+#include "iwallpaper_event_listener.h"
 #include "refbase.h"
 #include "wallpaper_manager_common_info.h"
-#include "iwallpaper_event_listener.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -36,9 +37,10 @@ public:
     ~WallpaperEventListenerProxy() = default;
     static inline BrokerDelegator<WallpaperEventListenerProxy> delegator_;
     void OnColorsChange(const std::vector<uint64_t> &color, int32_t wallpaperType) override;
-    void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType, const std::string &uri) override;
+    void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
+        const std::string &uri) override;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
 
-#endif  // WALLPAPER_EVENT_LISTENER_PROXY_H
+#endif // WALLPAPER_EVENT_LISTENER_PROXY_H
