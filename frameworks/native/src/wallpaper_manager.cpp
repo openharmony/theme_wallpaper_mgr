@@ -304,8 +304,6 @@ ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int
         HILOG_ERROR("Get real path failed, uri: %{public}s", uri.c_str());
         return E_FILE_ERROR;
     }
-    //给uri授权给三合一应用
-
     StartAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
     ErrorCode wallpaperErrorCode = wallpaperServerProxy->SetCustomWallpaper(uri, wallpaperType);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
