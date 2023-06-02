@@ -758,7 +758,7 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
         HILOG_ERROR("current app is not SystemApp");
         return E_NOT_SYSTEM_APP;
     }
-    StartAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SetCustomWallpaper));
+    StartAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
     int32_t userId = QueryActiveUserId();
     WallpaperType wallpaperType = static_cast<WallpaperType>(type);
 
@@ -778,7 +778,7 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
         HILOG_ERROR("Send wallpaper state failed!");
         return E_DEAL_FAILED;
     }
-    FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SetCustomWallpaper));
+    FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
     return E_OK;
 }
 
@@ -814,15 +814,13 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
     auto type = static_cast<WallpaperType>(wallpaperType);
     int32_t userId = QueryActiveUserId();
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
-    {
-        // current user's wallpaper is live video, not image
-        WallpaperResourceType resType = GetResType(userId, type);
-        if (resType != PICTURE) {
-            HILOG_ERROR("Current user's wallpaper is live video, not image");
-            fdInfo.size = 0; // 0: empty file size
-            fdInfo.fd = -1;  // -1: invalid file description
-            return E_OK;
-        }
+    // current user's wallpaper is live video, not image
+    WallpaperResourceType resType = GetResType(userId, type);
+    if (resType != PICTURE) {
+        HILOG_ERROR("Current user's wallpaper is live video, not image");
+        fdInfo.size = 0; // 0: empty file size
+        fdInfo.fd = -1;  // -1: invalid file description
+        return E_OK;
     }
     ErrorCode ret = GetImageSize(userId, type, fdInfo.size);
     if (ret != E_OK) {

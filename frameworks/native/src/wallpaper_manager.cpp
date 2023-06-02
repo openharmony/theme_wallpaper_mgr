@@ -306,9 +306,9 @@ ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int
     }
     //给uri授权给三合一应用
 
-    StartAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SetCustomWallpaper));
+    StartAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
     ErrorCode wallpaperErrorCode = wallpaperServerProxy->SetCustomWallpaper(uri, wallpaperType);
-    FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SetCustomWallpaper));
+    FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
     return wallpaperErrorCode;
 }
 
