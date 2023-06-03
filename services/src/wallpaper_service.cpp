@@ -736,6 +736,9 @@ bool WallpaperService::SendWallpaperChangeEvent(int32_t userId, WallpaperType wa
     }
     std::string uri;
     GetFileNameFromMap(userId, wallpaperType, true, uri);
+    if (wallpaperData.resourceType != PACKGE) {
+        uri = "";
+    }
     WallpaperChanged(wallpaperType, wallpaperData.resourceType, uri);
     return true;
 }
@@ -757,6 +760,13 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
     if (!IsSystemApp()) {
         HILOG_ERROR("current app is not SystemApp");
         return E_NOT_SYSTEM_APP;
+    }
+    if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
+        HILOG_INFO("SetWallpaper no set permission!");
+        return E_NO_PERMISSION;
+    }
+    if (type != static_cast<int32_t>(WALLPAPER_LOCKSCREEN) && type != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
+        return E_PARAMETERS_INVALID;
     }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
     int32_t userId = QueryActiveUserId();
@@ -1440,19 +1450,17 @@ void WallpaperService::NotifyColorChange(const std::vector<uint64_t> &colors, co
 
 bool WallpaperService::SaveWallpaperState(int32_t userId, WallpaperType wallpaperType)
 {
-    WallpaperData data;
-    if (!GetWallpaperSafeLocked(userId, wallpaperType, data)) {
-        HILOG_ERROR("Get wallpaper data failed!");
-        return E_NOT_FOUND;
+    WallpaperData systemData;
+    WallpaperData lockScreenData;
+    if (!GetWallpaperSafeLocked(userId, WALLPAPER_SYSTEM, systemData) ||
+        !GetWallpaperSafeLocked(userId, WALLPAPER_LOCKSCREEN, lockScreenData)) {
+        return false;
     }
     nlohmann::json root;
-    if (wallpaperType == WALLPAPER_SYSTEM) {
-        root[SYSTEM_RES_TYPE] = static_cast<int32_t>(data.resourceType);
-        root[CUSTOM_SYSTEM_URI] = data.customPackageUri;
-    } else {
-        root[LOCKSCREEN_RES_TYPE] = static_cast<int32_t>(data.resourceType);
-        root[CUSTOM_LOCKSCREEN_URI] = data.customPackageUri;
-    }
+    root[SYSTEM_RES_TYPE] = static_cast<int32_t>(systemData.resourceType);
+    root[CUSTOM_SYSTEM_URI] = systemData.customPackageUri;
+    root[LOCKSCREEN_RES_TYPE] = static_cast<int32_t>(lockScreenData.resourceType);
+    root[CUSTOM_LOCKSCREEN_URI] = lockScreenData.customPackageUri;
     std::string json = root.dump();
     if (json.empty()) {
         HILOG_ERROR("write user config file failed. because json content is empty.");
@@ -1460,13 +1468,8 @@ bool WallpaperService::SaveWallpaperState(int32_t userId, WallpaperType wallpape
     }
 
     std::string userPath = WALLPAPER_USERID_PATH + std::to_string(userId) + "/wallpapercfg";
-    std::string fileRealPath;
-    if (!FileDeal::GetRealPath(userPath, fileRealPath)) {
-        HILOG_ERROR("get real path file failed, len = %{public}zu", userPath.size());
-        return false;
-    }
     mode_t mode = S_IRUSR | S_IWUSR;
-    int fd = open(fileRealPath.c_str(), O_CREAT | O_WRONLY | O_SYNC, mode);
+    int fd = open(userPath.c_str(), O_CREAT | O_WRONLY | O_SYNC, mode);
     if (fd <= 0) {
         HILOG_ERROR("open user config file failed.");
         return false;
@@ -1485,12 +1488,7 @@ void WallpaperService::ReadWallpaperState()
 {
     int32_t userId = QueryActiveUserId();
     std::string userPath = WALLPAPER_USERID_PATH + std::to_string(userId) + "/wallpapercfg";
-    std::string fileRealPath;
-    if (!FileDeal::GetRealPath(userPath, fileRealPath)) {
-        HILOG_ERROR("get real path file failed, len = %{public}zu", userPath.size());
-        return;
-    }
-    int fd = open(fileRealPath.c_str(), O_RDONLY, S_IREAD);
+    int fd = open(userPath.c_str(), O_RDONLY, S_IREAD);
     if (fd <= 0) {
         HILOG_ERROR("open user config file failed.");
         return;

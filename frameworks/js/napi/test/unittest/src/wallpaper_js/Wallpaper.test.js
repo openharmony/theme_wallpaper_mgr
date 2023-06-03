@@ -1708,7 +1708,7 @@ describe('WallpaperJSTest', function () {
             expect(null).assertFail();
             done();
         }
-        await wallpaper.setImage(URI, WALLPAPER_SYSTEM);
+        await wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM);
         await wallpaper.restore(WALLPAPER_SYSTEM);
     })
 
