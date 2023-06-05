@@ -778,8 +778,13 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
         return E_DEAL_FAILED;
     }
     wallpaperData.resourceType = PACKGE;
+    wallpaperData.customPackageUri = uri;
     wallpaperData.wallpaperId = MakeWallpaperIdLocked();
-
+    if (wallpaperType == WALLPAPER_SYSTEM) {
+        systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
+    } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
+        lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
+    }
     if (!SaveWallpaperState(userId, wallpaperType)) {
         HILOG_ERROR("Save wallpaper state failed!");
     }
