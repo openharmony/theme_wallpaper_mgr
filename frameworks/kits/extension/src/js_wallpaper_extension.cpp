@@ -90,7 +90,8 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
     HandleScope handleScope(jsRuntime_);
     auto &engine = jsRuntime_.GetNativeEngine();
 
-    jsObj_ = jsRuntime_.LoadModule(moduleName, srcPath, abilityInfo_->hapPath);
+    jsObj_ = jsRuntime_.LoadModule(moduleName, srcPath, abilityInfo_->hapPath,
+        Extension::abilityInfo_->compileMode == CompileMode::ES_MODULE);
     if (jsObj_ == nullptr) {
         HILOG_ERROR("Failed to get jsObj_");
         return;
