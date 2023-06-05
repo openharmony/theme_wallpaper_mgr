@@ -197,8 +197,8 @@ public:
 private:
     struct WallpaperChangedData {
         WallpaperChangedData(const std::shared_ptr<NapiWallpaperAbility> &listenerIn, const WallpaperType &type,
-            const WallpaperResourceType &resType)
-            : listener(listenerIn), wallpaperType(type), resourceType(resType)
+            const WallpaperResourceType &resType, const std::string &uri)
+            : listener(listenerIn), wallpaperType(type), resourceType(resType), uri(uri)
         {
         }
         const std::shared_ptr<NapiWallpaperAbility> listener = nullptr;

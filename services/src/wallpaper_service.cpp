@@ -468,7 +468,7 @@ bool WallpaperService::GetFileNameFromMap(int32_t userId, WallpaperType wallpape
         HILOG_INFO("system wallpaper already cleared");
         return false;
     }
-    HILOG_INFO("GetFileNameFromMap resourceType : %{public}d", static_cast<int>(iterator.second.resourceType));
+    HILOG_INFO("GetFileNameFromMap resourceType : %{public}d", static_cast<int32_t>(iterator.second.resourceType));
     if (getWithType) {
         switch (iterator.second.resourceType) {
             case PICTURE:
@@ -479,8 +479,10 @@ bool WallpaperService::GetFileNameFromMap(int32_t userId, WallpaperType wallpape
                 break;
             case DEFAULT:
                 filePathName = iterator.second.wallpaperFile;
+                break;
             case PACKGE:
                 filePathName = iterator.second.customPackageUri;
+                break;
             default:
                 filePathName = "";
                 break;

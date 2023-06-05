@@ -1696,12 +1696,13 @@ describe('WallpaperJSTest', function () {
     it('onCallbackTest004', 0, async function (done) {
         await wallpaper.restore(WALLPAPER_SYSTEM);
         try {
-            wallpaper.on('wallpaperChange', (wallpaperType, resourceType, uri) => {
+            wallpaper.on('wallpaperChange', async (wallpaperType, resourceType, uri) => {
                 expect(wallpaperType != null).assertTrue();
                 expect(resourceType != null).assertTrue();
                 expect(uri !== "").assertTrue();
                 wallpaper.off('wallpaperChange');
                 done();
+                await wallpaper.restore(WALLPAPER_SYSTEM);
             })
         } catch (error) {
             console.info(`onCallbackTest004 error : ${error.message}`);
@@ -1709,7 +1710,6 @@ describe('WallpaperJSTest', function () {
             done();
         }
         await wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM);
-        await wallpaper.restore(WALLPAPER_SYSTEM);
     })
 
     /**
@@ -2053,9 +2053,10 @@ describe('WallpaperJSTest', function () {
             wallpaper.setCustomWallpaper(URI, WALLPAPER_LOCKSCREEN, (error) => {
                 if (error !== undefined) {
                     console.info(`setCustomWallpaperCallbackTest003 error : ${error}`);
-                    expect(true).assertTrue();
-                } else {
                     expect(null).assertFail();
+                } else {
+                    expect(true).assertTrue();
+                    wallpaper.reset(WALLPAPER_SYSTEM);
                 }
                 done();
             })

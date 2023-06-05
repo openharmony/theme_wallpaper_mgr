@@ -886,7 +886,7 @@ void NapiWallpaperAbility::OnWallpaperChange(WallpaperType wallpaperType, Wallpa
     const std::string &uri)
 {
     WallpaperChangedData *data = new (std::nothrow)
-        WallpaperChangedData(this->shared_from_this(), wallpaperType, resourceType);
+        WallpaperChangedData(this->shared_from_this(), wallpaperType, resourceType, uri);
     if (data == nullptr) {
         return;
     }
