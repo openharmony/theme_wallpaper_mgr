@@ -806,7 +806,7 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
     }
     wallpaperData.customPackageUri = "file://" + hapInfo.bundleName + uri;
     wallpaperData.wallpaperId = MakeWallpaperIdLocked();
-    if (!UriPermission::GrantUriPermission(wallpaperData.customPackageUri, SCENEBOARD_BUNDLENAME)) {
+    if (UriPermission::GrantUriPermission(wallpaperData.customPackageUri, SCENEBOARD_BUNDLENAME) != ERR_OK) {
         HILOG_ERROR("Grant uri permission failed! Scene board may not exist");
         return E_NOT_FOUND;
     }

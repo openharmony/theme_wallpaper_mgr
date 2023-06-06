@@ -22,7 +22,7 @@ namespace OHOS {
 namespace WallpaperMgrService {
 class UriPermission {
 public:
-    static bool GrantUriPermission(const std::string &path, const std::string &bundleName);
+    static int32_t GrantUriPermission(const std::string &path, const std::string &bundleName);
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

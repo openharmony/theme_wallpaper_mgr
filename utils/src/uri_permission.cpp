@@ -20,7 +20,7 @@
 
 namespace OHOS {
 namespace WallpaperMgrService {
-bool UriPermission::GrantUriPermission(const std::string &path, const std::string &bundleName)
+int32_t UriPermission::GrantUriPermission(const std::string &path, const std::string &bundleName)
 {
     Uri uri(path);
     return AAFwk::UriPermissionManagerClient::GetInstance().GrantUriPermission(uri,

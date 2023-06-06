@@ -1715,10 +1715,6 @@ describe('WallpaperJSTest', function () {
      * @tc.require:
      */
     it('onCallbackTest004', 0, async function (done) {
-        if (!isBundleNameExists) {
-            expect(true).assertTrue();
-            return;
-        }
         await wallpaper.restore(WALLPAPER_SYSTEM);
         try {
             wallpaper.on('wallpaperChange', async (wallpaperType, resourceType, uri) => {
@@ -1729,12 +1725,18 @@ describe('WallpaperJSTest', function () {
                 done();
                 await wallpaper.restore(WALLPAPER_SYSTEM);
             })
+            if (isBundleNameExists) {
+                await wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM);
+            } else {
+                wallpaper.off('wallpaperChange');
+                expect(true).assertTrue();
+                done();
+            }
         } catch (error) {
             console.info(`onCallbackTest004 error : ${error.message}`);
             expect(null).assertFail();
             done();
         }
-        await wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM);
     })
 
     /**
@@ -2026,18 +2028,18 @@ describe('WallpaperJSTest', function () {
      * @tc.require:
      */
     it('setCustomWallpaperTest001', 0, async function (done) {
-        if (!isBundleNameExists) {
-            expect(true).assertTrue();
-            return;
-        }
         try {
             wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM, (error) => {
-                if (error !== undefined) {
-                    console.info(`setCustomWallpaperTest001 error : ${error}`);
-                    expect(null).assertFail();
+                if (isBundleNameExists()) {
+                    if (error !== undefined) {
+                        console.info(`setCustomWallpaperTest001 error : ${error}`);
+                        expect(null).assertFail();
+                    } else {
+                        expect(true).assertTrue();
+                        wallpaper.reset(WALLPAPER_SYSTEM);
+                    }
                 } else {
                     expect(true).assertTrue();
-                    wallpaper.reset(WALLPAPER_SYSTEM);
                 }
                 done();
             })
@@ -2055,19 +2057,20 @@ describe('WallpaperJSTest', function () {
      * @tc.require:   issueI5UHRG
      */
     it('setCustomWallpaperPromiseTest002', 0, async function (done) {
-        if (!isBundleNameExists) {
-            expect(true).assertTrue();
-            return;
-        }
         try {
             wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM).then(async () => {
                 expect(true).assertTrue();
                 done();
                 await wallpaper.restore(WALLPAPER_SYSTEM);
             }).catch((err) => {
-                console.info(`setCustomWallpaperPromiseTest002 err : ${err}`);
-                expect(null).assertFail();
-                done();
+                if (isBundleNameExists()) {
+                    console.info(`setCustomWallpaperPromiseTest002 err : ${err}`);
+                    expect(null).assertFail();
+                    done();
+                } else {
+                    expect(true).assertTrue();
+                    done();
+                }
             });
         } catch (error) {
             expect(null).assertFail();
@@ -2082,18 +2085,18 @@ describe('WallpaperJSTest', function () {
      * @tc.require:
      */
     it('setCustomWallpaperCallbackTest003', 0, async function (done) {
-        if (!isBundleNameExists) {
-            expect(true).assertTrue();
-            return;
-        }
         try {
             wallpaper.setCustomWallpaper(URI, WALLPAPER_LOCKSCREEN, (error) => {
-                if (error !== undefined) {
-                    console.info(`setCustomWallpaperCallbackTest003 error : ${error}`);
-                    expect(null).assertFail();
+                if (isBundleNameExists()) {
+                    if (error !== undefined) {
+                        console.info(`setCustomWallpaperCallbackTest003 error : ${error}`);
+                        expect(null).assertFail();
+                    } else {
+                        expect(true).assertTrue();
+                        wallpaper.reset(WALLPAPER_SYSTEM);
+                    }
                 } else {
                     expect(true).assertTrue();
-                    wallpaper.reset(WALLPAPER_SYSTEM);
                 }
                 done();
             })
@@ -2111,19 +2114,20 @@ describe('WallpaperJSTest', function () {
      * @tc.require:
      */
     it('setCustomWallpaperPromiseTest004', 0, async function (done) {
-        if (!isBundleNameExists) {
-            expect(true).assertTrue();
-            return;
-        }
         try {
             wallpaper.setCustomWallpaper(URI, WALLPAPER_LOCKSCREEN).then(async () => {
                 expect(true).assertTrue();
                 done();
                 await wallpaper.restore(WALLPAPER_LOCKSCREEN);
             }).catch((err) => {
-                console.info(`setCustomWallpaperPromiseTest004 err : ${err}`);
-                expect(null).assertFail();
-                done();
+                if (isBundleNameExists()) {
+                    console.info(`setCustomWallpaperPromiseTest004 err : ${err}`);
+                    expect(null).assertFail();
+                    done();
+                } else {
+                    expect(true).assertTrue();
+                    done();
+                }
             });
         } catch (error) {
             expect(null).assertFail();
