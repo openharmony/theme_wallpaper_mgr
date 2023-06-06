@@ -16,6 +16,7 @@
 import wallpaper from '@ohos.wallpaper'
 import image from '@ohos.multimedia.image'
 import fileio from '@ohos.fileio'
+import bundleManager from "@ohos.bundle.bundleManager"
 
 import {describe, beforeAll, beforeEach, afterEach, afterAll, it, expect} from 'deccjsunit/index'
 
@@ -31,6 +32,8 @@ const URI_30FPS_3S_MOV = "/system/etc/30fps_3s.mov";
 
 const SHOW_SYSTEM_SCREEN = "SHOW_SYSTEMSCREEN";
 const SHOW_LOCK_SCREEN = "SHOW_LOCKSCREEN";
+const BUNDLE_NAME = "com.ohos.sceneboard";
+
 describe('WallpaperJSTest', function () {
     beforeAll(async function () {
         // input testsuite setup step，setup invoked before all testcases
@@ -71,6 +74,24 @@ describe('WallpaperJSTest', function () {
         let opts = {editable: true, pixelFormat: 3, size: {height: 4, width: 6}};
         let pixelMap = await image.createPixelMap(color, opts);
         return pixelMap;
+    }
+
+    function isBundleNameExists() {
+        try {
+            bundleManager.getBundleInfo(BUNDLE_NAME, bundleManager.BundleFlag.GET_BUNDLE_INFO_DEFAULT, (e) => {
+                if (e) {
+                    console.info(`getBundleInfo error ${e.code}`);
+                    return false;
+                } else {
+                    console.info(`Wallpaper : getBundleInfo is success`);
+                    return true;
+                }
+            })
+        } catch (error) {
+            console.info(`getBundleInfo error ${error.code}`);
+            return false;
+        }
+
     }
 
     /**
@@ -1694,6 +1715,10 @@ describe('WallpaperJSTest', function () {
      * @tc.require:
      */
     it('onCallbackTest004', 0, async function (done) {
+        if (!isBundleNameExists) {
+            expect(true).assertTrue();
+            return;
+        }
         await wallpaper.restore(WALLPAPER_SYSTEM);
         try {
             wallpaper.on('wallpaperChange', async (wallpaperType, resourceType, uri) => {
@@ -2001,6 +2026,10 @@ describe('WallpaperJSTest', function () {
      * @tc.require:
      */
     it('setCustomWallpaperTest001', 0, async function (done) {
+        if (!isBundleNameExists) {
+            expect(true).assertTrue();
+            return;
+        }
         try {
             wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM, (error) => {
                 if (error !== undefined) {
@@ -2026,6 +2055,10 @@ describe('WallpaperJSTest', function () {
      * @tc.require:   issueI5UHRG
      */
     it('setCustomWallpaperPromiseTest002', 0, async function (done) {
+        if (!isBundleNameExists) {
+            expect(true).assertTrue();
+            return;
+        }
         try {
             wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM).then(async () => {
                 expect(true).assertTrue();
@@ -2049,6 +2082,10 @@ describe('WallpaperJSTest', function () {
      * @tc.require:
      */
     it('setCustomWallpaperCallbackTest003', 0, async function (done) {
+        if (!isBundleNameExists) {
+            expect(true).assertTrue();
+            return;
+        }
         try {
             wallpaper.setCustomWallpaper(URI, WALLPAPER_LOCKSCREEN, (error) => {
                 if (error !== undefined) {
@@ -2074,6 +2111,10 @@ describe('WallpaperJSTest', function () {
      * @tc.require:
      */
     it('setCustomWallpaperPromiseTest004', 0, async function (done) {
+        if (!isBundleNameExists) {
+            expect(true).assertTrue();
+            return;
+        }
         try {
             wallpaper.setCustomWallpaper(URI, WALLPAPER_LOCKSCREEN).then(async () => {
                 expect(true).assertTrue();

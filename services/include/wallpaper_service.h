@@ -148,6 +148,7 @@ private:
     bool SaveWallpaperState(int32_t userId, WallpaperType wallpaperType);
     void ReadWallpaperState();
     WallpaperResourceType GetResType(int32_t userId, WallpaperType wallpaperType);
+    void GrantUriPermissionByUserId(int32_t userId);
 
 private:
     int32_t Init();

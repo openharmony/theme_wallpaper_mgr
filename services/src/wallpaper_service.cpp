@@ -53,6 +53,7 @@
 #include "surface.h"
 #include "system_ability_definition.h"
 #include "tokenid_kit.h"
+#include "uri_permission.h"
 #include "wallpaper_common.h"
 #include "wallpaper_common_event_manager.h"
 #include "wallpaper_extension_ability_connection.h"
@@ -429,11 +430,28 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
         InitResources(userId, WALLPAPER_LOCKSCREEN);
     }
     ReadWallpaperState();
+    GrantUriPermissionByUserId(userId);
     SendWallpaperChangeEvent(userId, WALLPAPER_SYSTEM);
     SendWallpaperChangeEvent(userId, WALLPAPER_LOCKSCREEN);
     SaveColor(userId, WALLPAPER_SYSTEM);
     SaveColor(userId, WALLPAPER_LOCKSCREEN);
     HILOG_INFO("OnSwitchedUser end, newUserId = %{public}d", userId);
+}
+
+void WallpaperService::GrantUriPermissionByUserId(int32_t userId)
+{
+    WallpaperData systemData;
+    WallpaperData lockScreenData;
+    if (!GetWallpaperSafeLocked(userId, WALLPAPER_SYSTEM, systemData) ||
+        !GetWallpaperSafeLocked(userId, WALLPAPER_LOCKSCREEN, lockScreenData)) {
+        return;
+    }
+    if (systemData.resourceType == PACKGE) {
+        UriPermission::GrantUriPermission(systemData.customPackageUri, SCENEBOARD_BUNDLENAME);
+    }
+    if (lockScreenData.resourceType == PACKGE) {
+        UriPermission::GrantUriPermission(lockScreenData.customPackageUri, SCENEBOARD_BUNDLENAME);
+    }
 }
 
 void WallpaperService::OnBootPhase()
@@ -776,12 +794,22 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
 
     WallpaperData wallpaperData;
     if (!GetWallpaperSafeLocked(userId, wallpaperType, wallpaperData)) {
-        HILOG_ERROR("GetWallpaper data failed !");
+        HILOG_ERROR("GetWallpaper data failed!");
         return E_DEAL_FAILED;
     }
     wallpaperData.resourceType = PACKGE;
-    wallpaperData.customPackageUri = uri;
+    Security::AccessToken::HapTokenInfo hapInfo;
+    if (Security::AccessToken::AccessTokenKit::GetHapTokenInfo(IPCSkeleton::GetCallingTokenID(), hapInfo) !=
+        Security::AccessToken::AccessTokenKitRet::RET_SUCCESS) {
+        HILOG_ERROR("Get bundle info by tokenID error");
+        return E_DEAL_FAILED;
+    }
+    wallpaperData.customPackageUri = "file://" + hapInfo.bundleName + uri;
     wallpaperData.wallpaperId = MakeWallpaperIdLocked();
+    if (!UriPermission::GrantUriPermission(wallpaperData.customPackageUri, SCENEBOARD_BUNDLENAME)) {
+        HILOG_ERROR("Grant uri permission failed! Scene board may not exist");
+        return E_NOT_FOUND;
+    }
     if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
@@ -790,7 +818,6 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
     if (!SaveWallpaperState(userId, wallpaperType)) {
         HILOG_ERROR("Save wallpaper state failed!");
     }
-
     if (!SendWallpaperChangeEvent(userId, wallpaperType)) {
         HILOG_ERROR("Send wallpaper state failed!");
         return E_DEAL_FAILED;
