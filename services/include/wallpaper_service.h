@@ -119,7 +119,8 @@ private:
     bool SaveColor(int32_t userId, WallpaperType wallpaperType);
     void LoadSettingsLocked(int32_t userId, bool keepDimensionHints);
     std::string GetWallpaperDir(int32_t userId, WallpaperType wallpaperType);
-    bool GetFileNameFromMap(int32_t userId, WallpaperType wallpaperType, bool getWithType, std::string &fileName);
+    bool GetFileNameFromMap(int32_t userId, WallpaperType wallpaperType, std::string &fileName);
+    bool GetPictureFileName(int32_t userId, WallpaperType wallpaperType, std::string &fileName);
     bool GetWallpaperSafeLocked(int32_t userId, WallpaperType wallpaperType, WallpaperData &wallpaperData);
     void ClearWallpaperLocked(int32_t userId, WallpaperType wallpaperType);
     ErrorCode SetDefaultDataForWallpaper(int32_t userId, WallpaperType wallpaperType);
@@ -130,7 +131,7 @@ private:
         const std::string &uriOrPixelMap, WallpaperType wallpaperType);
     int32_t ConnectExtensionAbility(const OHOS::AAFwk::Want &want);
     bool IsSystemApp();
-    ErrorCode GetImageFd(int32_t userId, WallpaperType wallpaperType, bool getWithType, int32_t &fd);
+    ErrorCode GetImageFd(int32_t userId, WallpaperType wallpaperType, int32_t &fd);
     ErrorCode GetImageSize(int32_t userId, WallpaperType wallpaperType, int32_t &size);
     bool RestoreUserResources(const WallpaperData &wallpaperData, WallpaperType wallpaperType);
     bool InitUserDir(int32_t userId);

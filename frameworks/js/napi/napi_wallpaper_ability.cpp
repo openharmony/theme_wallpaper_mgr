@@ -779,8 +779,7 @@ napi_value NAPI_SetCustomWallpaper(napi_env env, napi_callback_info info)
 void NapiWallpaperAbility::SetCustomWallpaper(std::shared_ptr<SetContextInfo> context)
 {
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
-        if (!NapiWallpaperAbility::IsValidArgCount(argc, TWO) ||
-            !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string) ||
+        if (argc < TWO || !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string) ||
             !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_number)) {
             HILOG_ERROR("Input argc: %{public}zu", argc);
             context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);

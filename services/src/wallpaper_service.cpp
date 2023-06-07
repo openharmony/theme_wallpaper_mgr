@@ -338,7 +338,7 @@ void WallpaperService::OnInitUser(int32_t userId)
 void WallpaperService::InitResources(int32_t userId, WallpaperType wallpaperType)
 {
     std::string pathName;
-    if (!GetFileNameFromMap(userId, wallpaperType, true, pathName)) {
+    if (!GetFileNameFromMap(userId, wallpaperType, pathName)) {
         HILOG_ERROR("Get user file name from map failed, userId = %{public}d", userId);
         return;
     }
@@ -446,10 +446,10 @@ void WallpaperService::GrantUriPermissionByUserId(int32_t userId)
         !GetWallpaperSafeLocked(userId, WALLPAPER_LOCKSCREEN, lockScreenData)) {
         return;
     }
-    if (systemData.resourceType == PACKGE) {
+    if (systemData.resourceType == PACKAGE) {
         UriPermission::GrantUriPermission(systemData.customPackageUri, SCENEBOARD_BUNDLENAME);
     }
-    if (lockScreenData.resourceType == PACKGE) {
+    if (lockScreenData.resourceType == PACKAGE) {
         UriPermission::GrantUriPermission(lockScreenData.customPackageUri, SCENEBOARD_BUNDLENAME);
     }
 }
@@ -477,38 +477,47 @@ std::string WallpaperService::GetWallpaperDir(int32_t userId, WallpaperType wall
     return wallpaperFilePath;
 }
 
-bool WallpaperService::GetFileNameFromMap(int32_t userId, WallpaperType wallpaperType, bool getWithType,
+bool WallpaperService::GetFileNameFromMap(int32_t userId, WallpaperType wallpaperType,
     std::string &filePathName)
 {
     auto iterator = wallpaperType == WALLPAPER_SYSTEM ? systemWallpaperMap_.Find(userId)
                                                       : lockWallpaperMap_.Find(userId);
     if (!iterator.first) {
-        HILOG_INFO("system wallpaper already cleared");
+        HILOG_ERROR("system wallpaper already cleared");
         return false;
     }
     HILOG_INFO("GetFileNameFromMap resourceType : %{public}d", static_cast<int32_t>(iterator.second.resourceType));
-    if (getWithType) {
-        switch (iterator.second.resourceType) {
-            case PICTURE:
-                filePathName = iterator.second.wallpaperFile;
-                break;
-            case VIDEO:
-                filePathName = iterator.second.liveWallpaperFile;
-                break;
-            case DEFAULT:
-                filePathName = iterator.second.wallpaperFile;
-                break;
-            case PACKGE:
-                filePathName = iterator.second.customPackageUri;
-                break;
-            default:
-                filePathName = "";
-                break;
-        }
-    } else {
-        filePathName = iterator.second.wallpaperFile;
+    switch (iterator.second.resourceType) {
+        case PICTURE:
+            filePathName = iterator.second.wallpaperFile;
+            break;
+        case VIDEO:
+            filePathName = iterator.second.liveWallpaperFile;
+            break;
+        case DEFAULT:
+            filePathName = iterator.second.wallpaperFile;
+            break;
+        case PACKAGE:
+            filePathName = iterator.second.customPackageUri;
+            break;
+        default:
+            filePathName = "";
+            break;
     }
-    HILOG_INFO("GetFileNameFromMap filePathName : %{public}s", filePathName.c_str());
+    return filePathName != "";
+}
+
+bool WallpaperService::GetPictureFileName(int32_t userId, WallpaperType wallpaperType,
+    std::string &filePathName)
+{
+    auto iterator = wallpaperType == WALLPAPER_SYSTEM ? systemWallpaperMap_.Find(userId)
+                                                      : lockWallpaperMap_.Find(userId);
+    if (!iterator.first) {
+        HILOG_ERROR("system wallpaper already cleared");
+        return false;
+    }
+    filePathName = iterator.second.wallpaperFile;
+    HILOG_INFO("GetPictureFileName filePathName : %{public}s", filePathName.c_str());
     return filePathName != "";
 }
 
@@ -579,8 +588,13 @@ ErrorCode WallpaperService::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
     }
     auto type = static_cast<WallpaperType>(wallpaperType);
     int32_t userId = QueryActiveUserId();
+    if (GetResType(userId, type) == WallpaperResourceType::PACKAGE) {
+        HILOG_ERROR("Current user's wallpaper is custom package");
+        wallpaperFd = -1;  // -1: invalid file description
+        return E_OK;
+    }
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
-    ErrorCode ret = GetImageFd(userId, type, true, wallpaperFd);
+    ErrorCode ret = GetImageFd(userId, type, wallpaperFd);
     HILOG_INFO("GetImageFd fd:%{public}d, ret:%{public}d", wallpaperFd, ret);
     return ret;
 }
@@ -596,7 +610,7 @@ bool WallpaperService::SaveColor(int32_t userId, WallpaperType wallpaperType)
     OHOS::Media::SourceOptions opts;
     opts.formatHint = "image/jpeg";
     std::string pathName;
-    if (!GetFileNameFromMap(userId, wallpaperType, false, pathName)) {
+    if (!GetPictureFileName(userId, wallpaperType, pathName)) {
         return false;
     }
     std::unique_ptr<OHOS::Media::ImageSource> imageSource =
@@ -730,7 +744,7 @@ ErrorCode WallpaperService::SendEvent(const std::string &eventType)
     }
     ReporterUsageTimeStatistic();
     std::string uri;
-    GetFileNameFromMap(userId, WALLPAPER_SYSTEM, true, uri);
+    GetFileNameFromMap(userId, WALLPAPER_SYSTEM, uri);
     WallpaperChanged(wallpaperType, data.resourceType, uri);
     return E_OK;
 }
@@ -755,8 +769,8 @@ bool WallpaperService::SendWallpaperChangeEvent(int32_t userId, WallpaperType wa
         callbackProxy_->OnCall(wallpaperType);
     }
     std::string uri;
-    GetFileNameFromMap(userId, wallpaperType, true, uri);
-    if (wallpaperData.resourceType != PACKGE) {
+    GetFileNameFromMap(userId, wallpaperType, uri);
+    if (wallpaperData.resourceType != PACKAGE) {
         uri = "";
     }
     WallpaperChanged(wallpaperType, wallpaperData.resourceType, uri);
@@ -797,7 +811,7 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
         HILOG_ERROR("GetWallpaper data failed!");
         return E_DEAL_FAILED;
     }
-    wallpaperData.resourceType = PACKGE;
+    wallpaperData.resourceType = PACKAGE;
     Security::AccessToken::HapTokenInfo hapInfo;
     if (Security::AccessToken::AccessTokenKit::GetHapTokenInfo(IPCSkeleton::GetCallingTokenID(), hapInfo) !=
         Security::AccessToken::AccessTokenKitRet::RET_SUCCESS) {
@@ -871,7 +885,7 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
         HILOG_ERROR("GetImageSize failed");
         return ret;
     }
-    ret = GetImageFd(userId, type, false, fdInfo.fd);
+    ret = GetImageFd(userId, type, fdInfo.fd);
     if (ret != E_OK) {
         HILOG_ERROR("GetImageFd failed");
         return ret;
@@ -1220,14 +1234,14 @@ bool WallpaperService::IsSystemApp()
     return TokenIdKit::IsSystemAppByFullTokenID(tokenId);
 }
 
-ErrorCode WallpaperService::GetImageFd(int32_t userId, WallpaperType wallpaperType, bool getWithType, int32_t &fd)
+ErrorCode WallpaperService::GetImageFd(int32_t userId, WallpaperType wallpaperType, int32_t &fd)
 {
     HILOG_INFO("WallpaperService::GetImageFd start ");
     std::string filePathName;
-    if (!GetFileNameFromMap(userId, wallpaperType, getWithType, filePathName)) {
+    if (!GetFileNameFromMap(userId, wallpaperType, filePathName)) {
         return E_DEAL_FAILED;
     }
-    if (GetResType(userId, wallpaperType) == WallpaperResourceType::PACKGE) {
+    if (GetResType(userId, wallpaperType) == WallpaperResourceType::PACKAGE) {
         HILOG_INFO("The current wallpaper is a custom wallpaper");
         return E_OK;
     }
@@ -1249,7 +1263,7 @@ ErrorCode WallpaperService::GetImageSize(int32_t userId, WallpaperType wallpaper
     HILOG_INFO("WallpaperService::GetImageSize start ");
     std::string filePathName;
     HILOG_INFO("userId = %{public}d", userId);
-    if (!GetFileNameFromMap(userId, wallpaperType, false, filePathName)) {
+    if (!GetPictureFileName(userId, wallpaperType, filePathName)) {
         return E_DEAL_FAILED;
     }
 
