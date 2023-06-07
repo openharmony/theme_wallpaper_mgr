@@ -12,7 +12,6 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("../wallpaper.gni")
 ohos_shared_library("wallpaper_utils") {
   if (use_musl) {
     if (use_jemalloc && use_jemalloc_dfx_intf) {
@@ -32,12 +31,7 @@ ohos_shared_library("wallpaper_utils") {
     "dfx/hisysevent_adapter",
     "include",
   ]
-  deps =
-      [ "${ability_runtime_inner_api_path}/uri_permission:uri_permission_mgr" ]
   external_deps = [
-    "ability_base:want",
-    "ability_base:zuri",
-    "c_utils:utils",
     "hisysevent_native:libhisysevent",
     "hiviewdfx_hilog_native:libhilog",
   ]

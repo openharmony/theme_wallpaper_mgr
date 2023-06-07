@@ -30,8 +30,6 @@ static const std::string WALLPAPER_PERMISSION_NAME_CAPTURE_SCREEN = "ohos.permis
 static const std::string TEST_LABEL = "test label";
 static const std::string TEST_DESCRIPTION = "test description";
 
-static const std::string SCENEBOARD_BUNDLENAME = "com.ohos.sceneboard";
-
 static const int TEST_LABEL_ID = 9527;
 static const int TEST_DESCRIPTION_ID = 9528;
 static const int TEST_INVALID_USER_ID = -1;

@@ -147,10 +147,11 @@ private:
     bool WallpaperChanged(WallpaperType wallpaperType, WallpaperResourceType resType, const std::string &uri);
     void NotifyColorChange(const std::vector<uint64_t> &colors, const WallpaperType &wallpaperType);
     bool SaveWallpaperState(int32_t userId, WallpaperType wallpaperType);
-    void ReadWallpaperState();
+    void LoadWallpaperState();
     WallpaperResourceType GetResType(int32_t userId, WallpaperType wallpaperType);
     void GrantUriPermissionByUserId(int32_t userId);
     int32_t GrantUriPermission(const std::string &path, const std::string &bundleName);
+    void InitBundleNameParameter();
 
 private:
     int32_t Init();
@@ -188,6 +189,7 @@ private:
     std::mutex listenerMapMutex_;
     int32_t pictureWidth_ = 0;
     int32_t pictureHeight_ = 0;
+    std::string appBundleName_;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
