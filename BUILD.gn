@@ -20,6 +20,8 @@ group("wallpaper_mgr_packages") {
       "services:wallpaper_service",
       "services/etc/init:wallpaperservice.rc",
       "services/profile:wallpaper_sa_profiles",
+      "services/etc:wallpaper.para",
+      "services/etc:wallpaper.para.dac",
     ]
   }
 }
