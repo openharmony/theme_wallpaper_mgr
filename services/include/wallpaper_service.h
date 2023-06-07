@@ -150,6 +150,7 @@ private:
     void NotifyColorChange(const std::vector<uint64_t> &colors, const WallpaperType &wallpaperType);
     void StoreResType();
     void LoadResType();
+    int32_t GrantUriPermission(const std::string &path, const std::string &bundleName);
 
 private:
     int32_t Init();
