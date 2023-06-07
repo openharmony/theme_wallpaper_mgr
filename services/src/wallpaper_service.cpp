@@ -55,7 +55,6 @@
 #include "system_ability_definition.h"
 #include "tokenid_kit.h"
 #include "uri.h"
-#include "uri_permission.h"
 #include "uri_permission_manager_client.h"
 #include "wallpaper_common.h"
 #include "wallpaper_common_event_manager.h"
