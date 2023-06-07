@@ -60,6 +60,9 @@
 #include "wallpaper_extension_ability_death_recipient.h"
 #include "wallpaper_service_cb_proxy.h"
 #include "window.h"
+#include "uri_permission_manager_client.h"
+#include "uri.h"
+#include "want.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -687,7 +690,6 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, WallpaperReso
     if (!SaveWallpaperState(userId, wallpaperType)) {
         HILOG_ERROR("Save wallpaper state failed!");
     }
-
     if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
         ReporterUsageTimeStatistic();
@@ -1569,6 +1571,13 @@ void WallpaperService::ReadWallpaperState()
         lockScreenData.resourceType = static_cast<WallpaperResourceType>(root[LOCKSCREEN_RES_TYPE].get<int>());
         lockScreenData.customPackageUri = root[CUSTOM_LOCKSCREEN_URI].get<string>();
     }
+}
+
+int32_t WallpaperService::GrantUriPermission(const std::string &path, const std::string &bundleName)
+{
+    Uri uri(path);
+    return AAFwk::UriPermissionManagerClient::GetInstance().GrantUriPermission(uri,
+        AAFwk::Want::FLAG_AUTH_READ_URI_PERMISSION, bundleName, 0);
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

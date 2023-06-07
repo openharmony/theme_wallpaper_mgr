@@ -150,6 +150,7 @@ private:
     void ReadWallpaperState();
     WallpaperResourceType GetResType(int32_t userId, WallpaperType wallpaperType);
     void GrantUriPermissionByUserId(int32_t userId);
+    int32_t GrantUriPermission(const std::string &path, const std::string &bundleName);
 
 private:
     int32_t Init();
