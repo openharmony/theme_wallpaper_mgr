@@ -11,4 +11,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-persist.wallpaper_mgr. = wallpaper_mgr:wallpaper_mgr:0770:string
+persist.wallpaper_mgr. = wallpaper_service:wallpaper_service:0770:string
