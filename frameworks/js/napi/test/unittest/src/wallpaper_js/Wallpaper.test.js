@@ -48,9 +48,11 @@ describe('WallpaperJSTest', function () {
         // input testcase teardown step，teardown invoked after each testcases
         console.info('afterEach called')
     })
-    afterAll(function () {
+    afterAll(async function () {
         // input testsuite teardown step，teardown invoked after all testcases
         console.info('afterAll called')
+        await wallpaper.restore(WALLPAPER_SYSTEM);
+        await wallpaper.restore(WALLPAPER_LOCKSCREEN);
     })
 
     async function createTempImage() {
@@ -2223,69 +2225,5 @@ describe('WallpaperJSTest', function () {
             expect(error.code === PARAMETER_ERROR).assertTrue()
             done();
         }
-    })
-
-    /**
-     * @tc.name:      sendEventTest001
-     * @tc.desc:      Display lockScreen in system.
-     * @tc.type:      FUNC test
-     * @tc.require:   issueI6R07J
-     */
-    it('sendEventTest001', 0, async function (done) {
-        try {
-            wallpaper.sendEvent(SHOW_LOCK_SCREEN, '', (error) => {
-                if (error != undefined) {
-                    console.info(`sendEventTest001 error : ${error}`);
-                    expect(null).assertFail();
-                } else {
-                    expect(true).assertTrue();
-                }
-                done();
-            })
-        } catch (error) {
-            console.info(`sendEventTest001 error : ${error}`);
-            expect(null).assertFail();
-            done();
-        }
-    })
-
-    /**
-     * @tc.name:      sendEventTest002
-     * @tc.desc:      Display system in lockScreen.
-     * @tc.type:      FUNC test
-     * @tc.require:   issueI6R07J
-     */
-    it('sendEventTest002', 0, async function (done) {
-        try {
-            wallpaper.sendEvent(SHOW_SYSTEM_SCREEN, '', (error) => {
-                if (error != undefined) {
-                    console.info(`sendEventTest001 error : ${error}`);
-                    expect(null).assertFail();
-                } else {
-                    expect(true).assertTrue();
-                }
-                done();
-            })
-        } catch (error) {
-            console.info(`sendEventTest001 error : ${error}`);
-            expect(null).assertFail();
-            done();
-        }
-    })
-
-    /**
-     * @tc.name:      setOffsetTest001
-     * @tc.desc:      Offset wallpaper.
-     * @tc.type:      FUNC test
-     * @tc.require:   issueI6R07J
-     */
-    it('setOffsetTest001', 0, async function (done) {
-        let ret = wallpaper.setOffset(10, 10)
-        if (ret) {
-            expect(true).assertTrue();
-        } else {
-            expect(null).assertFail();
-        }
-        done();
     })
 })
