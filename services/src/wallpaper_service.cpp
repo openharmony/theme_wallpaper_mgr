@@ -87,7 +87,7 @@ constexpr const char *WALLPAPER_CHANGE = "wallpaperChange";
 constexpr const char *COLOR_CHANGE = "colorChange";
 constexpr const char *CUSTOM_SYSTEM_URI = "CustomSystemUri";
 constexpr const char *CUSTOM_LOCKSCREEN_URI = "CustomLockscreenUri";
-constexpr const char *BUNDLE_NAME_KEY = "persist.wallpaper.bundleName";
+constexpr const char *BUNDLE_NAME_KEY = "persist.wallpaper_mgr.bundleName";
 
 constexpr int64_t INIT_INTERVAL = 10000L;
 constexpr int64_t DELAY_TIME = 1000L;
@@ -252,8 +252,9 @@ void WallpaperService::InitData()
 void WallpaperService::InitBundleNameParameter()
 {
     char value[CONFIG_LEN] = "com.ohos.sceneboard";
-    if (GetParameter(BUNDLE_NAME_KEY, "", value, CONFIG_LEN) < 0) {
+    if (GetParameter(BUNDLE_NAME_KEY, "", value, CONFIG_LEN) < 0 || strlen(value) == 0) {
         HILOG_ERROR("No found bundle name from system parameter.");
+        return ;
     }
     appBundleName_ = value;
     HILOG_INFO("get appBundleName_ :%{public}s", appBundleName_.c_str());

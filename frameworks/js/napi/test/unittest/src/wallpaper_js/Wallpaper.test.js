@@ -1725,7 +1725,7 @@ describe('WallpaperJSTest', function () {
                 done();
                 await wallpaper.restore(WALLPAPER_SYSTEM);
             })
-            if (isBundleNameExists) {
+            if (isBundleNameExists()) {
                 await wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM);
             } else {
                 wallpaper.off('wallpaperChange');
