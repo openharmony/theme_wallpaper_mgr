@@ -1714,7 +1714,7 @@ describe('WallpaperJSTest', function () {
      * @tc.desc:      Test on_wallpaperChange to registers a listener for wallpaper changes to
      *                    receive notifications about the changes.
      * @tc.type:      FUNC test
-     * @tc.require:
+     * @tc.require:   issueI7AAMU
      */
     it('onCallbackTest004', 0, async function (done) {
         await wallpaper.restore(WALLPAPER_SYSTEM);
@@ -2027,7 +2027,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      setCustomWallpaperCallbackTest001
      * @tc.desc:      Test setCustomWallpaper to set a custom system wallpaper.
      * @tc.type:      FUNC test
-     * @tc.require:
+     * @tc.require:   issueI7AAMU
      */
     it('setCustomWallpaperTest001', 0, async function (done) {
         try {
@@ -2056,7 +2056,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      setCustomWallpaperPromiseTest002
      * @tc.desc:      Test setCustomWallpaper to sets a custom system wallpaper.
      * @tc.type:      FUNC test
-     * @tc.require:   issueI5UHRG
+     * @tc.require:   issueI7AAMU
      */
     it('setCustomWallpaperPromiseTest002', 0, async function (done) {
         try {
@@ -2084,7 +2084,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      setCustomWallpaperCallbackTest003
      * @tc.desc:      Test setCustomWallpaper to sets a custom lockscreen wallpaper.
      * @tc.type:      FUNC test
-     * @tc.require:
+     * @tc.require:   issueI7AAMU
      */
     it('setCustomWallpaperCallbackTest003', 0, async function (done) {
         try {
@@ -2113,7 +2113,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      setCustomWallpaperPromiseTest004
      * @tc.desc:      Test setCustomWallpaper to sets a custom lockscreen wallpaper.
      * @tc.type:      FUNC test
-     * @tc.require:
+     * @tc.require:   issueI7AAMU
      */
     it('setCustomWallpaperPromiseTest004', 0, async function (done) {
         try {
@@ -2141,7 +2141,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      setCustomWallpaperCallbackThrowErrorTest005
      * @tc.desc:      Test setCustomWallpaper throw parameter error.
      * @tc.type:      FUNC test
-     * @tc.require:
+     * @tc.require:   issueI7AAMU
      */
     it('setCustomCallbackThrowErrorTest005', 0, async function (done) {
         try {
@@ -2164,7 +2164,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      setCustomWallpaperCallbackThrowErrorTest006
      * @tc.desc:      Test setImage() throw parameter error.
      * @tc.type:      FUNC test
-     * @tc.require:
+     * @tc.require:   issueI7AAMU
      */
     it('setCustomWallpaperCallbackThrowErrorTest006', 0, async function (done) {
         try {
@@ -2187,7 +2187,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      setCustomWallpaperPromiseThrowErrorTest007
      * @tc.desc:      Test setCustomWallpaper throw parameter error.
      * @tc.type:      FUNC test
-     * @tc.require:
+     * @tc.require:   issueI7AAMU
      */
     it('setCustomWallpaperPromiseThrowErrorTest007', 0, async function (done) {
         try {
@@ -2209,7 +2209,7 @@ describe('WallpaperJSTest', function () {
      * @tc.name:      setCustomWallpaperPromiseThrowErrorTest008
      * @tc.desc:      Test setCustomWallpaper throw parameter error.
      * @tc.type:      FUNC test
-     * @tc.require:
+     * @tc.require:   issueI7AAMU
      */
     it('setCustomWallpaperPromiseThrowErrorTest008', 0, async function (done) {
         try {

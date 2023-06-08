@@ -1128,7 +1128,7 @@ HWTEST_F(WallpaperTest, SetVideo008, TestSize.Level0)
  * @tc.name:    SetCustomWallpaper001
  * @tc.desc:    Set custom wallpaper
  * @tc.type:    FUNC
- * @tc.require:
+ * @tc.require: issueI7AAMU
  */
 HWTEST_F(WallpaperTest, SetCustomWallpaper001, TestSize.Level0)
 {
