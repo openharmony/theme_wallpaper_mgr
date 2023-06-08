@@ -56,6 +56,7 @@ public:
         GET_WALLPAPER_MIN_WIDTH_V9,
         RESET_WALLPAPER_V9,
         SET_VIDEO,
+        SET_CUSTOM,
         SEND_EVENT,
         SET_OFFSET
     };
@@ -144,7 +145,7 @@ public:
 
     virtual ErrorCode SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length) = 0;
     virtual ErrorCode GetPixelMapV9(int32_t wallpaperType, FdInfo &fdInfo) = 0;
-    virtual ErrorCode GetColorsV9(int wallpaperType, std::vector<uint64_t> &colors) = 0;
+    virtual ErrorCode GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors) = 0;
     virtual ErrorCode GetWallpaperMinHeightV9(int32_t &minHeight) = 0;
     virtual ErrorCode GetWallpaperMinWidthV9(int32_t &minWidth) = 0;
     virtual ErrorCode ResetWallpaperV9(int32_t wallpaperType) = 0;
@@ -162,6 +163,11 @@ public:
      * @return ErrorCode
      */
     virtual ErrorCode SetVideo(int32_t fd, int32_t wallpaperType, int32_t length) = 0;
+
+    /**
+     * Sets the custom wallpaper.
+     */
+    virtual ErrorCode SetCustomWallpaper(const std::string &uri, int32_t wallpaperType) = 0;
 
     /**
      * @brief The application sends the event to the wallpaper service.

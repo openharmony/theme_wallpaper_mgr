@@ -45,8 +45,9 @@ int32_t WallpaperEventListenerStub::OnRemoteRequest(uint32_t code, MessageParcel
         case ON_WALLPAPER_CHANGE: {
             int32_t wallpaperType = data.ReadInt32();
             int32_t resouceType = data.ReadInt32();
+            std::string uri = data.ReadString();
             OnWallpaperChange(static_cast<WallpaperType>(wallpaperType),
-                static_cast<WallpaperResourceType>(resouceType));
+                static_cast<WallpaperResourceType>(resouceType), uri);
             HILOG_DEBUG("WallpaperEventListenerStub::OnRemoteRequest End");
             return 0;
         }

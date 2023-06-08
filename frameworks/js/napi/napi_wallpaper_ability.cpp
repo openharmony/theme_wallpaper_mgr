@@ -768,6 +768,47 @@ void NapiWallpaperAbility::SetOffsetInner(std::shared_ptr<SetContextInfo> contex
     context->SetExecution(std::move(exec));
 }
 
+napi_value NAPI_SetCustomWallpaper(napi_env env, napi_callback_info info)
+{
+    auto context = std::make_shared<SetContextInfo>();
+    NapiWallpaperAbility::SetCustomWallpaper(context);
+    Call call(env, info, context, TWO, true);
+    return call.AsyncCall(env);
+}
+
+void NapiWallpaperAbility::SetCustomWallpaper(std::shared_ptr<SetContextInfo> context)
+{
+    auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
+        if (argc < TWO || !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string) ||
+            !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_number)) {
+            HILOG_ERROR("Input argc: %{public}zu", argc);
+            context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);
+            return napi_invalid_arg;
+        }
+        context->uri = WallpaperJSUtil::Convert2String(env, argv[0]);
+        napi_get_value_int32(env, argv[1], &context->wallpaperType);
+        HILOG_DEBUG("Input wallpaperType: %{public}d", context->wallpaperType);
+        return napi_ok;
+    };
+
+    auto exec = [context](Call::Context *ctx) {
+        ErrorCode wallpaperErrorCode =
+            WallpaperMgrService::WallpaperManagerkits::GetInstance().SetCustomWallpaper(context->uri,
+                context->wallpaperType);
+        if (wallpaperErrorCode == E_OK) {
+            context->status = napi_ok;
+        } else {
+            JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(wallpaperErrorCode);
+            if (jsErrorInfo.code != 0) {
+                context->SetErrInfo(jsErrorInfo.code, jsErrorInfo.message);
+            }
+        }
+        HILOG_DEBUG("Exec context status:[%{public}d]", context->status);
+    };
+    context->SetAction(std::move(input), nullptr);
+    context->SetExecution(std::move(exec));
+}
+
 NapiWallpaperAbility::NapiWallpaperAbility(napi_env env, napi_value callback) : env_(env)
 {
     napi_create_reference(env, callback, 1, &callback_);
@@ -840,11 +881,11 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
         });
 }
 
-void NapiWallpaperAbility::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType)
+void NapiWallpaperAbility::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
+    const std::string &uri)
 {
-    HILOG_ERROR("NapiWallpaperAbility::OnWallpaperChange start!");
     WallpaperChangedData *data = new (std::nothrow)
-        WallpaperChangedData(this->shared_from_this(), wallpaperType, resourceType);
+        WallpaperChangedData(this->shared_from_this(), wallpaperType, resourceType, uri);
     if (data == nullptr) {
         return;
     }
@@ -871,10 +912,13 @@ void NapiWallpaperAbility::OnWallpaperChange(WallpaperType wallpaperType, Wallpa
             }
             napi_value jsWallpaperType = nullptr;
             napi_value jsResourceType = nullptr;
+            napi_value jsResourceUri = nullptr;
             napi_create_int32(dataInner->listener->env_, dataInner->wallpaperType, &jsWallpaperType);
             napi_create_int32(dataInner->listener->env_, dataInner->resourceType, &jsResourceType);
+            napi_create_string_utf8(dataInner->listener->env_, dataInner->uri.c_str(), dataInner->uri.length(),
+                &jsResourceUri);
             napi_value callback = nullptr;
-            napi_value args[2] = { jsWallpaperType, jsResourceType };
+            napi_value args[3] = { jsWallpaperType, jsResourceType, jsResourceUri };
             napi_get_reference_value(dataInner->listener->env_, dataInner->listener->callback_, &callback);
             napi_value global = nullptr;
             napi_get_global(dataInner->listener->env_, &global);

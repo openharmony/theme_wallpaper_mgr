@@ -41,11 +41,11 @@ void WallpaperEventListenerClient::OnColorsChange(const std::vector<uint64_t> &c
     }
 }
 
-void WallpaperEventListenerClient::OnWallpaperChange(WallpaperType wallpaperType,
-    WallpaperResourceType resourceType)
+void WallpaperEventListenerClient::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
+    const std::string &uri)
 {
     if (wallpaperEventListener_ != nullptr) {
-        wallpaperEventListener_->OnWallpaperChange(wallpaperType, resourceType);
+        wallpaperEventListener_->OnWallpaperChange(wallpaperType, resourceType, uri);
     }
 }
 

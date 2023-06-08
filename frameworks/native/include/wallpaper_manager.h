@@ -141,6 +141,15 @@ public:
     ErrorCode SetVideo(const std::string &uri, const int32_t wallpaperType) final;
 
     /**
+     * Sets custom wallpaper of the specified type based on the uri path.
+     * @param uri Indicates the uri path.
+     * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
+     * @return ErrorCode
+     * @permission ohos.permission.SET_WALLPAPER
+     */
+    ErrorCode SetCustomWallpaper(const std::string &uri, int32_t wallpaperType) final;
+
+    /**
      * The application sends the event to the wallpaper service.
      * @param eventType Event type, values for SHOW_SYSTEMSCREEN or SHOW_LOCKSCREEN
      * @return ErrorCode

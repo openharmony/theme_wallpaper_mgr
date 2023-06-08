@@ -90,6 +90,7 @@ public:
     ErrorCode GetWallpaperMinWidthV9(int32_t &minWidth) override;
     ErrorCode ResetWallpaperV9(int32_t wallpaperType) override;
     ErrorCode SetVideo(int32_t fd, int32_t wallpaperType, int32_t length) override;
+    ErrorCode SetCustomWallpaper(const std::string &uri, int32_t wallpaperType) override;
     ErrorCode SendEvent(const std::string &eventType) override;
 
 public:
@@ -114,13 +115,12 @@ private:
     void InitResources(int32_t userId, WallpaperType wallpaperType);
     void InitQueryUserId(int32_t times);
     bool InitUsersOnBoot();
-    void InitWallpaperConfig();
     bool CompareColor(const uint64_t &localColor, const ColorManager::Color &color);
     bool SaveColor(int32_t userId, WallpaperType wallpaperType);
     void LoadSettingsLocked(int32_t userId, bool keepDimensionHints);
     std::string GetWallpaperDir(int32_t userId, WallpaperType wallpaperType);
-    bool GetFileNameFromMap(int32_t userId, WallpaperType wallpaperType, FileType fileType, bool getWithType,
-        std::string &fileName);
+    bool GetFileNameFromMap(int32_t userId, WallpaperType wallpaperType, std::string &fileName);
+    bool GetPictureFileName(int32_t userId, WallpaperType wallpaperType, std::string &fileName);
     bool GetWallpaperSafeLocked(int32_t userId, WallpaperType wallpaperType, WallpaperData &wallpaperData);
     void ClearWallpaperLocked(int32_t userId, WallpaperType wallpaperType);
     ErrorCode SetDefaultDataForWallpaper(int32_t userId, WallpaperType wallpaperType);
@@ -131,7 +131,7 @@ private:
         const std::string &uriOrPixelMap, WallpaperType wallpaperType);
     int32_t ConnectExtensionAbility(const OHOS::AAFwk::Want &want);
     bool IsSystemApp();
-    ErrorCode GetImageFd(int32_t userId, WallpaperType wallpaperType, bool getWithType, int32_t &fd);
+    ErrorCode GetImageFd(int32_t userId, WallpaperType wallpaperType, int32_t &fd);
     ErrorCode GetImageSize(int32_t userId, WallpaperType wallpaperType, int32_t &size);
     bool RestoreUserResources(const WallpaperData &wallpaperData, WallpaperType wallpaperType);
     bool InitUserDir(int32_t userId);
@@ -139,18 +139,19 @@ private:
     int32_t QueryActiveUserId();
     bool CheckUserPermissionById(int32_t userId);
 
-    bool ReadWallpaperState(int32_t userId);
-    bool SendWallpaperState();
+    bool SendWallpaperChangeEvent(int32_t userId, WallpaperType wallpaperType);
     ErrorCode checkSetOffsetPermission();
-    bool SaveWallpaperState(WallpaperType wallpaperType, WallpaperResourceType resourceType);
     ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length, WallpaperResourceType resourceType);
     void OnColorsChange(WallpaperType wallpaperType, const ColorManager::Color &color);
     ErrorCode CheckValid(int32_t wallpaperType, int32_t length, WallpaperResourceType resourceType);
-    bool WallpaperChanged(WallpaperType wallpaperType, WallpaperResourceType resType);
+    bool WallpaperChanged(WallpaperType wallpaperType, WallpaperResourceType resType, const std::string &uri);
     void NotifyColorChange(const std::vector<uint64_t> &colors, const WallpaperType &wallpaperType);
-    void StoreResType();
-    void LoadResType();
+    bool SaveWallpaperState(int32_t userId, WallpaperType wallpaperType);
+    void LoadWallpaperState();
+    WallpaperResourceType GetResType(int32_t userId, WallpaperType wallpaperType);
+    void GrantUriPermissionByUserId(int32_t userId);
     int32_t GrantUriPermission(const std::string &path, const std::string &bundleName);
+    void InitBundleNameParameter();
 
 private:
     int32_t Init();
@@ -188,8 +189,7 @@ private:
     std::mutex listenerMapMutex_;
     int32_t pictureWidth_ = 0;
     int32_t pictureHeight_ = 0;
-    std::mutex resTypeMapMutex_;
-    std::map<std::string, WallpaperResourceType> resTypeMap_;
+    std::string appBundleName_;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

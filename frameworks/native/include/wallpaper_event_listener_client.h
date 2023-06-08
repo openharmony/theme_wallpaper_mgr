@@ -32,7 +32,8 @@ public:
     ~WallpaperEventListenerClient();
 
     void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType) override;
-    void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType) override;
+    void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
+        const std::string &uri) override;
     const std::shared_ptr<WallpaperEventListener> GetEventListener() const;
 
 private:

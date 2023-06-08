@@ -47,11 +47,12 @@ void WallpaperCommonEventManager::SendWallpaperLockSettingMessage(WallpaperResou
     PublishEvent(want, eventCode, eventData);
 }
 
-void WallpaperCommonEventManager::SendWallpaperSystemSettingMessage()
+void WallpaperCommonEventManager::SendWallpaperSystemSettingMessage(WallpaperResourceType resType)
 {
     OHOS::AAFwk::Want want;
     int32_t eventCode = SYSTEM_WALLPAPER_SETTING_SUCCESS_CODE;
     want.SetParam("WallpaperSystemSettingMessage", true);
+    want.SetParam("WallpaperSystemResourceType", static_cast<int>(resType));
     want.SetAction(SYSTEM_WALLPAPER_SETTING_SUCCESS_EVENT);
     std::string eventData("WallpaperSystemSettingMessage");
     PublishEvent(want, eventCode, eventData);

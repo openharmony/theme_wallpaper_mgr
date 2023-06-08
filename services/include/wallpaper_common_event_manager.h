@@ -26,7 +26,7 @@ namespace WallpaperMgrService {
 class WallpaperCommonEventManager {
 public:
     void SendWallpaperLockSettingMessage(WallpaperResourceType resType);
-    void SendWallpaperSystemSettingMessage();
+    void SendWallpaperSystemSettingMessage(WallpaperResourceType resType);
 
 private:
     bool PublishEvent(const OHOS::AAFwk::Want &want, int eventCode, const std::string &eventData);

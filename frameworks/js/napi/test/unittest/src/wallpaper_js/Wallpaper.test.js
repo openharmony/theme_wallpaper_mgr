@@ -16,6 +16,7 @@
 import wallpaper from '@ohos.wallpaper'
 import image from '@ohos.multimedia.image'
 import fileio from '@ohos.fileio'
+import bundleManager from "@ohos.bundle.bundleManager"
 
 import {describe, beforeAll, beforeEach, afterEach, afterAll, it, expect} from 'deccjsunit/index'
 
@@ -31,6 +32,8 @@ const URI_30FPS_3S_MOV = "/system/etc/30fps_3s.mov";
 
 const SHOW_SYSTEM_SCREEN = "SHOW_SYSTEMSCREEN";
 const SHOW_LOCK_SCREEN = "SHOW_LOCKSCREEN";
+const BUNDLE_NAME = "com.ohos.sceneboard";
+
 describe('WallpaperJSTest', function () {
     beforeAll(async function () {
         // input testsuite setup step，setup invoked before all testcases
@@ -45,9 +48,11 @@ describe('WallpaperJSTest', function () {
         // input testcase teardown step，teardown invoked after each testcases
         console.info('afterEach called')
     })
-    afterAll(function () {
+    afterAll(async function () {
         // input testsuite teardown step，teardown invoked after all testcases
         console.info('afterAll called')
+        await wallpaper.restore(WALLPAPER_SYSTEM);
+        await wallpaper.restore(WALLPAPER_LOCKSCREEN);
     })
 
     async function createTempImage() {
@@ -71,6 +76,24 @@ describe('WallpaperJSTest', function () {
         let opts = {editable: true, pixelFormat: 3, size: {height: 4, width: 6}};
         let pixelMap = await image.createPixelMap(color, opts);
         return pixelMap;
+    }
+
+    function isBundleNameExists() {
+        try {
+            bundleManager.getBundleInfo(BUNDLE_NAME, bundleManager.BundleFlag.GET_BUNDLE_INFO_DEFAULT, (e) => {
+                if (e) {
+                    console.info(`getBundleInfo error ${e.code}`);
+                    return false;
+                } else {
+                    console.info(`Wallpaper : getBundleInfo is success`);
+                    return true;
+                }
+            })
+        } catch (error) {
+            console.info(`getBundleInfo error ${error.code}`);
+            return false;
+        }
+
     }
 
     /**
@@ -1687,6 +1710,38 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
+     * @tc.name:      onCallbackTest004
+     * @tc.desc:      Test on_wallpaperChange to registers a listener for wallpaper changes to
+     *                    receive notifications about the changes.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI7AAMU
+     */
+    it('onCallbackTest004', 0, async function (done) {
+        await wallpaper.restore(WALLPAPER_SYSTEM);
+        try {
+            wallpaper.on('wallpaperChange', async (wallpaperType, resourceType, uri) => {
+                expect(wallpaperType != null).assertTrue();
+                expect(resourceType != null).assertTrue();
+                expect(uri !== "").assertTrue();
+                wallpaper.off('wallpaperChange');
+                done();
+                await wallpaper.restore(WALLPAPER_SYSTEM);
+            })
+            if (isBundleNameExists()) {
+                await wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM);
+            } else {
+                wallpaper.off('wallpaperChange');
+                expect(true).assertTrue();
+                done();
+            }
+        } catch (error) {
+            console.info(`onCallbackTest004 error : ${error.message}`);
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
      * @tc.name:      offCallbackTest001
      * @tc.desc:      Test off_colorChange to log off a listener for wallpaper color changes to
      *                    receive notifications about the changes.
@@ -1969,66 +2024,206 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:      sendEventTest001
-     * @tc.desc:      Display lockScreen in system.
+     * @tc.name:      setCustomWallpaperCallbackTest001
+     * @tc.desc:      Test setCustomWallpaper to set a custom system wallpaper.
      * @tc.type:      FUNC test
-     * @tc.require:   issueI6R07J
+     * @tc.require:   issueI7AAMU
      */
-    it('sendEventTest001', 0, async function (done) {
+    it('setCustomWallpaperTest001', 0, async function (done) {
         try {
-            wallpaper.sendEvent(SHOW_LOCK_SCREEN, '', (error) => {
-                if (error != undefined) {
-                    console.info(`sendEventTest001 error : ${error}`);
-                    expect(null).assertFail();
+            wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM, (error) => {
+                if (isBundleNameExists()) {
+                    if (error !== undefined) {
+                        console.info(`setCustomWallpaperTest001 error : ${error}`);
+                        expect(null).assertFail();
+                    } else {
+                        expect(true).assertTrue();
+                        wallpaper.reset(WALLPAPER_SYSTEM);
+                    }
                 } else {
                     expect(true).assertTrue();
                 }
                 done();
             })
         } catch (error) {
-            console.info(`sendEventTest001 error : ${error}`);
+            console.info(`setCustomWallpaperTest001 error : ${error}`);
             expect(null).assertFail();
             done();
         }
     })
 
     /**
-     * @tc.name:      sendEventTest002
-     * @tc.desc:      Display system in lockScreen.
+     * @tc.name:      setCustomWallpaperPromiseTest002
+     * @tc.desc:      Test setCustomWallpaper to sets a custom system wallpaper.
      * @tc.type:      FUNC test
-     * @tc.require:   issueI6R07J
+     * @tc.require:   issueI7AAMU
      */
-    it('sendEventTest002', 0, async function (done) {
+    it('setCustomWallpaperPromiseTest002', 0, async function (done) {
         try {
-            wallpaper.sendEvent(SHOW_SYSTEM_SCREEN, '', (error) => {
-                if (error != undefined) {
-                    console.info(`sendEventTest001 error : ${error}`);
+            wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM).then(async () => {
+                expect(true).assertTrue();
+                done();
+                await wallpaper.restore(WALLPAPER_SYSTEM);
+            }).catch((err) => {
+                if (isBundleNameExists()) {
+                    console.info(`setCustomWallpaperPromiseTest002 err : ${err}`);
                     expect(null).assertFail();
+                    done();
+                } else {
+                    expect(true).assertTrue();
+                    done();
+                }
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setCustomWallpaperCallbackTest003
+     * @tc.desc:      Test setCustomWallpaper to sets a custom lockscreen wallpaper.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI7AAMU
+     */
+    it('setCustomWallpaperCallbackTest003', 0, async function (done) {
+        try {
+            wallpaper.setCustomWallpaper(URI, WALLPAPER_LOCKSCREEN, (error) => {
+                if (isBundleNameExists()) {
+                    if (error !== undefined) {
+                        console.info(`setCustomWallpaperCallbackTest003 error : ${error}`);
+                        expect(null).assertFail();
+                    } else {
+                        expect(true).assertTrue();
+                        wallpaper.reset(WALLPAPER_SYSTEM);
+                    }
                 } else {
                     expect(true).assertTrue();
                 }
                 done();
             })
         } catch (error) {
-            console.info(`sendEventTest001 error : ${error}`);
+            console.info(`setCustomWallpaperCallbackTest003 error : ${error}`);
             expect(null).assertFail();
             done();
         }
     })
 
     /**
-     * @tc.name:      setOffsetTest001
-     * @tc.desc:      Offset wallpaper.
+     * @tc.name:      setCustomWallpaperPromiseTest004
+     * @tc.desc:      Test setCustomWallpaper to sets a custom lockscreen wallpaper.
      * @tc.type:      FUNC test
-     * @tc.require:   issueI6R07J
+     * @tc.require:   issueI7AAMU
      */
-    it('setOffsetTest001', 0, async function (done) {
-        let ret = wallpaper.setOffset(10, 10)
-        if (ret) {
-            expect(true).assertTrue();
-        } else {
+    it('setCustomWallpaperPromiseTest004', 0, async function (done) {
+        try {
+            wallpaper.setCustomWallpaper(URI, WALLPAPER_LOCKSCREEN).then(async () => {
+                expect(true).assertTrue();
+                done();
+                await wallpaper.restore(WALLPAPER_LOCKSCREEN);
+            }).catch((err) => {
+                if (isBundleNameExists()) {
+                    console.info(`setCustomWallpaperPromiseTest004 err : ${err}`);
+                    expect(null).assertFail();
+                    done();
+                } else {
+                    expect(true).assertTrue();
+                    done();
+                }
+            });
+        } catch (error) {
             expect(null).assertFail();
+            done();
         }
-        done();
+    })
+
+    /**
+     * @tc.name:      setCustomWallpaperCallbackThrowErrorTest005
+     * @tc.desc:      Test setCustomWallpaper throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI7AAMU
+     */
+    it('setCustomCallbackThrowErrorTest005', 0, async function (done) {
+        try {
+            wallpaper.setCustomWallpaper(URI, INVALID_WALLPAPER_TYPE, function (err) {
+                if (err) {
+                    console.info(`setCustomCallbackThrowErrorTest005 err : ${err}`);
+                    expect(err.code === PARAMETER_ERROR).assertTrue()
+                } else {
+                    expect(null).assertFail();
+                }
+                done();
+            })
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setCustomWallpaperCallbackThrowErrorTest006
+     * @tc.desc:      Test setImage() throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI7AAMU
+     */
+    it('setCustomWallpaperCallbackThrowErrorTest006', 0, async function (done) {
+        try {
+            wallpaper.setCustomWallpaper(URI, function (err) {
+                if (err) {
+                    console.info(`setCustomWallpaperCallbackThrowErrorTest006 err : ${err}`);
+                    expect(null).assertFail();
+                } else {
+                    expect(null).assertFail();
+                }
+                done();
+            })
+        } catch (error) {
+            expect(error.code === PARAMETER_ERROR).assertTrue()
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setCustomWallpaperPromiseThrowErrorTest007
+     * @tc.desc:      Test setCustomWallpaper throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI7AAMU
+     */
+    it('setCustomWallpaperPromiseThrowErrorTest007', 0, async function (done) {
+        try {
+            wallpaper.setCustomWallpaper(URI, INVALID_WALLPAPER_TYPE).then(() => {
+                expect(null).assertFail();
+                done();
+            }).catch((err) => {
+                console.info(`setCustomWallpaperPromiseThrowErrorTest007 err : ${err}`);
+                expect(err.code === PARAMETER_ERROR).assertTrue()
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setCustomWallpaperPromiseThrowErrorTest008
+     * @tc.desc:      Test setCustomWallpaper throw parameter error.
+     * @tc.type:      FUNC test
+     * @tc.require:   issueI7AAMU
+     */
+    it('setCustomWallpaperPromiseThrowErrorTest008', 0, async function (done) {
+        try {
+            wallpaper.setCustomWallpaper().then(() => {
+                expect(null).assertFail();
+                done();
+            }).catch((err) => {
+                console.info(`setCustomWallpaperPromiseThrowErrorTest008 err : ${err}`);
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            expect(error.code === PARAMETER_ERROR).assertTrue()
+            done();
+        }
     })
 })

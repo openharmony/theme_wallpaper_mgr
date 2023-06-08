@@ -292,6 +292,24 @@ ErrorCode WallpaperManager::SetVideo(const std::string &uri, const int32_t wallp
     return wallpaperErrorCode;
 }
 
+ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int32_t wallpaperType)
+{
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
+        HILOG_ERROR("Get proxy failed");
+        return E_DEAL_FAILED;
+    }
+    std::string fileRealPath;
+    if (!FileDeal::GetRealPath(uri, fileRealPath)) {
+        HILOG_ERROR("Get real path failed, uri: %{public}s", uri.c_str());
+        return E_FILE_ERROR;
+    }
+    StartAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
+    ErrorCode wallpaperErrorCode = wallpaperServerProxy->SetCustomWallpaper(uri, wallpaperType);
+    FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
+    return wallpaperErrorCode;
+}
+
 int64_t WallpaperManager::WritePixelMapToStream(std::ostream &outputStream,
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap)
 {

@@ -52,6 +52,7 @@ WallpaperServiceStub::WallpaperServiceStub()
     memberFuncMap_[GET_WALLPAPER_MIN_WIDTH_V9] = &WallpaperServiceStub::OnGetWallpaperMinWidthV9;
     memberFuncMap_[RESET_WALLPAPER_V9] = &WallpaperServiceStub::OnResetWallpaperV9;
     memberFuncMap_[SET_VIDEO] = &WallpaperServiceStub::OnSetVideo;
+    memberFuncMap_[SET_CUSTOM] = &WallpaperServiceStub::OnSetCustomWallpaper;
     memberFuncMap_[SEND_EVENT] = &WallpaperServiceStub::OnSendEvent;
     memberFuncMap_[SET_OFFSET] = &WallpaperServiceStub::OnSetOffset;
 }
@@ -135,6 +136,19 @@ int32_t WallpaperServiceStub::OnSetVideo(MessageParcel &data, MessageParcel &rep
     int32_t length = data.ReadInt32();
     ErrorCode wallpaperErrorCode = SetVideo(fd, wallpaperType, length);
     close(fd);
+    if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
+        HILOG_ERROR("Write int is failed");
+        return IPC_STUB_WRITE_PARCEL_ERR;
+    }
+    return ERR_NONE;
+}
+
+int32_t WallpaperServiceStub::OnSetCustomWallpaper(MessageParcel &data, MessageParcel &reply)
+{
+    HILOG_DEBUG("WallpaperServiceStub::SetCustomWallpaper start.");
+    std::string uri = data.ReadString();
+    int32_t wallpaperType = data.ReadInt32();
+    ErrorCode wallpaperErrorCode = SetCustomWallpaper(uri, wallpaperType);
     if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
         HILOG_ERROR("Write int is failed");
         return IPC_STUB_WRITE_PARCEL_ERR;
@@ -385,6 +399,7 @@ int32_t WallpaperServiceStub::OnWallpaperOn(MessageParcel &data, MessageParcel &
         HILOG_ERROR("OnWallpaperOn nullptr after ipc");
         return IPC_STUB_INVALID_DATA_ERR;
     }
+
     sptr<IWallpaperEventListener> wallpaperListenerProxy = iface_cast<IWallpaperEventListener>(remote);
     ErrorCode errorCode = On(type, std::move(wallpaperListenerProxy));
     int32_t ret = static_cast<int32_t>(errorCode);

@@ -48,8 +48,8 @@ enum WallpaperResourceType {
     // video wallpaper resource.
     VIDEO,
 
-    // packge wallpaper resource.
-    PACKGE
+    // package wallpaper resource.
+    PACKAGE
 };
 
 #endif

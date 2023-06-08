@@ -30,6 +30,9 @@
       },
       {
         "name": "ohos.permission.GET_WALLPAPER"
+      },
+      {
+        "name": "ohos.permission.GET_BUNDLE_INFO_PRIVILEGED"
       }
     ],
     "abilities": [

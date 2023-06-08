@@ -46,6 +46,7 @@ public:
     ErrorCode Off(const std::string &type, sptr<IWallpaperEventListener> listener) override;
     bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) override;
     ErrorCode SetVideo(int32_t fd, int32_t wallpaperType, int32_t length) override;
+    ErrorCode SetCustomWallpaper(const std::string &uri, int32_t wallpaperType) override;
     ErrorCode SendEvent(const std::string &eventType) override;
     ErrorCode ConvertIntToErrorCode(int32_t errorCode);
     ErrorCode SetOffset(int32_t xOffset, int32_t yOffset) override;

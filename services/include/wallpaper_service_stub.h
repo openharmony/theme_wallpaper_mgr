@@ -32,7 +32,6 @@ public:
 
 private:
     int32_t OnSetWallpaper(MessageParcel &data, MessageParcel &reply);
-    int32_t OnGetPixelMapFile(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetPixelMap(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetColors(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetFile(MessageParcel &data, MessageParcel &reply);
@@ -60,6 +59,7 @@ private:
     int32_t OnGetWallpaperMinWidthInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
     int32_t OnResetWallpaperInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
     int32_t OnSetVideo(MessageParcel &data, MessageParcel &reply);
+    int32_t OnSetCustomWallpaper(MessageParcel &data, MessageParcel &reply);
     int32_t OnSendEvent(MessageParcel &data, MessageParcel &reply);
     int32_t OnSetOffset(MessageParcel &data, MessageParcel &reply);
 

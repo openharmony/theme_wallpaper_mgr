@@ -127,7 +127,6 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
             HILOG_INFO("Finalizer for weak_ptr wallpaper extension context is called");
             delete static_cast<std::weak_ptr<AbilityRuntime::Context> *>(data);
         }, nullptr);
-    HILOG_INFO("JsWallpaperExtension::Init end.");
 }
 
 void JsWallpaperExtension::OnStart(const AAFwk::Want &want)

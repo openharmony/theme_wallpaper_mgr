@@ -26,8 +26,8 @@
 #include "napi/native_node_api.h"
 #include "pixel_map.h"
 #include "pixel_map_napi.h"
-#include "wallpaper_event_listener.h"
 #include "wallpaper_common.h"
+#include "wallpaper_event_listener.h"
 #include "wallpaper_js_util.h"
 #include "wallpaper_manager_common_info.h"
 
@@ -171,7 +171,8 @@ public:
     NapiWallpaperAbility(napi_env env, napi_value callback);
     virtual ~NapiWallpaperAbility();
     void OnColorsChange(const std::vector<uint64_t> &color, int32_t wallpaperType) override;
-    void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType) override;
+    void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
+        const std::string &uri) override;
     static bool IsValidArgCount(size_t argc, size_t expectationSize);
     static bool IsValidArgType(napi_env env, napi_value argValue, napi_valuetype expectationType);
     static bool IsValidArgRange(napi_env env, napi_value argValue);
@@ -191,17 +192,19 @@ public:
     static void SetVideoInner(std::shared_ptr<SetContextInfo> context);
     static void SendEventInner(std::shared_ptr<GetContextInfo> context);
     static void SetOffsetInner(std::shared_ptr<SetContextInfo> context);
+    static void SetCustomWallpaper(std::shared_ptr<SetContextInfo> context);
 
 private:
     struct WallpaperChangedData {
         WallpaperChangedData(const std::shared_ptr<NapiWallpaperAbility> &listenerIn, const WallpaperType &type,
-            const WallpaperResourceType &resType)
-            : listener(listenerIn), wallpaperType(type), resourceType(resType)
+            const WallpaperResourceType &resType, const std::string &uri)
+            : listener(listenerIn), wallpaperType(type), resourceType(resType), uri(uri)
         {
         }
         const std::shared_ptr<NapiWallpaperAbility> listener = nullptr;
         WallpaperType wallpaperType;
         WallpaperResourceType resourceType;
+        std::string uri;
     };
 
     struct EventDataWorker {
@@ -244,6 +247,7 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info);
 napi_value NAPI_SetVideo(napi_env env, napi_callback_info info);
 napi_value NAPI_SendEvent(napi_env env, napi_callback_info info);
 napi_value NAPI_SetOffset(napi_env env, napi_callback_info info);
+napi_value NAPI_SetCustomWallpaper(napi_env env, napi_callback_info info);
 } // namespace WallpaperNAPI
 } // namespace OHOS
 #endif //  NAPI_WALLPAPER_ABILITY_H

@@ -15,9 +15,10 @@
 
 #define LOG_TAG "WallpaperEventListenerProxy"
 
+#include "wallpaper_event_listener_proxy.h"
+
 #include "hilog_wrapper.h"
 #include "message_parcel.h"
-#include "wallpaper_event_listener_proxy.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -50,8 +51,8 @@ void WallpaperEventListenerProxy::OnColorsChange(const std::vector<uint64_t> &co
     HILOG_DEBUG("WallpaperEventListenerProxy::OnColorsChange End");
 }
 
-void WallpaperEventListenerProxy::OnWallpaperChange(WallpaperType wallpaperType,
-    WallpaperResourceType resourceType)
+void WallpaperEventListenerProxy::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
+    const std::string &uri)
 {
     HILOG_DEBUG("WallpaperEventListenerProxy::OnWallpaperChange Start");
     MessageParcel data;
@@ -70,6 +71,10 @@ void WallpaperEventListenerProxy::OnWallpaperChange(WallpaperType wallpaperType,
         HILOG_ERROR("write resourceType failed");
         return;
     }
+    if (!data.WriteString(uri)) {
+        HILOG_ERROR("write uri failed");
+        return;
+    }
 
     int32_t error = Remote()->SendRequest(ON_WALLPAPER_CHANGE, data, reply, option);
     if (error != 0) {
@@ -78,5 +83,5 @@ void WallpaperEventListenerProxy::OnWallpaperChange(WallpaperType wallpaperType,
     HILOG_DEBUG("WallpaperEventListenerProxy::OnWallpaperChange End");
 }
 
-}  // namespace WallpaperMgrService
-}  // namespace OHOS
+} // namespace WallpaperMgrService
+} // namespace OHOS
