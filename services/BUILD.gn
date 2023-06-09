@@ -68,6 +68,7 @@ ohos_shared_library("wallpaper_service") {
     "preferences:native_preferences",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
+    "window_manager:libwsutils",
   ]
 
   subsystem_name = "theme"

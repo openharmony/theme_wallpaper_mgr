@@ -51,6 +51,7 @@
 #include "nlohmann/json.hpp"
 #include "parameter.h"
 #include "pixel_map.h"
+#include "scene_board_judgement.h"
 #include "surface.h"
 #include "system_ability_definition.h"
 #include "tokenid_kit.h"
@@ -256,7 +257,7 @@ void WallpaperService::InitBundleNameParameter()
     char value[CONFIG_LEN] = "";
     if (GetParameter(BUNDLE_NAME_KEY, "", value, CONFIG_LEN) < 0 || strlen(value) == 0) {
         HILOG_ERROR("No found bundle name from system parameter.");
-        return ;
+        return;
     }
     appBundleName_ = value;
     HILOG_INFO("get appBundleName_ :%{public}s", appBundleName_.c_str());
@@ -836,9 +837,12 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
     }
     wallpaperData.customPackageUri = "file://" + hapInfo.bundleName + uri;
     wallpaperData.wallpaperId = MakeWallpaperIdLocked();
+    if (!Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
+        HILOG_ERROR("SceneBoard is not Enabled");
+        return E_NOT_FOUND;
+    }
     if (GrantUriPermission(wallpaperData.customPackageUri, appBundleName_) != ERR_OK) {
         HILOG_ERROR("Grant uri permission failed! Scene board may not exist");
-        return E_NOT_FOUND;
     }
     if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
