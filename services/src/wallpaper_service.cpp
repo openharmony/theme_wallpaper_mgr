@@ -822,28 +822,18 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
     StartAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
     int32_t userId = QueryActiveUserId();
     WallpaperType wallpaperType = static_cast<WallpaperType>(type);
-
     WallpaperData wallpaperData;
     if (!GetWallpaperSafeLocked(userId, wallpaperType, wallpaperData)) {
         HILOG_ERROR("GetWallpaper data failed!");
         return E_DEAL_FAILED;
     }
-    wallpaperData.resourceType = PACKAGE;
-    Security::AccessToken::HapTokenInfo hapInfo;
-    if (Security::AccessToken::AccessTokenKit::GetHapTokenInfo(IPCSkeleton::GetCallingTokenID(), hapInfo) !=
-        Security::AccessToken::AccessTokenKitRet::RET_SUCCESS) {
-        HILOG_ERROR("Get bundle info by tokenID error");
-        return E_DEAL_FAILED;
-    }
-    wallpaperData.customPackageUri = "file://" + hapInfo.bundleName + uri;
-    wallpaperData.wallpaperId = MakeWallpaperIdLocked();
     if (!Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
         HILOG_ERROR("SceneBoard is not Enabled");
         return E_NOT_FOUND;
     }
-    if (GrantUriPermission(wallpaperData.customPackageUri, appBundleName_) != ERR_OK) {
-        HILOG_ERROR("Grant uri permission failed! Scene board may not exist");
-    }
+    wallpaperData.resourceType = PACKAGE;
+    wallpaperData.customPackageUri = uri;
+    wallpaperData.wallpaperId = MakeWallpaperIdLocked();
     if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
