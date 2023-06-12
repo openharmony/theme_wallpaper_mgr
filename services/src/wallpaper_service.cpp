@@ -79,6 +79,8 @@ constexpr const char *WALLPAPER_SYSTEM_ORIG = "wallpaper_system_orig";
 constexpr const char *WALLPAPER_LOCK_ORIG = "wallpaper_lock_orig";
 constexpr const char *LIVE_WALLPAPER_SYSTEM_ORIG = "live_wallpaper_system_orig";
 constexpr const char *LIVE_WALLPAPER_LOCK_ORIG = "live_wallpaper_lock_orig";
+constexpr const char *CUSTOM_WALLPAPER_LOCK = "custom_wallpaper_lock";
+constexpr const char *CUSTOM_WALLPAPER_SYSTEM = "custom_wallpaper_system";
 constexpr const char *OHOS_WALLPAPER_BUNDLE_NAME = "com.ohos.launcher";
 constexpr const char *SHOW_SYSTEM_SCREEN = "SHOW_SYSTEMSCREEN";
 constexpr const char *SHOW_LOCK_SCREEN = "SHOW_LOCKSCREEN";
@@ -86,8 +88,6 @@ constexpr const char *SYSTEM_RES_TYPE = "SystemResType";
 constexpr const char *LOCKSCREEN_RES_TYPE = "LockScreenResType";
 constexpr const char *WALLPAPER_CHANGE = "wallpaperChange";
 constexpr const char *COLOR_CHANGE = "colorChange";
-constexpr const char *CUSTOM_SYSTEM_URI = "CustomSystemUri";
-constexpr const char *CUSTOM_LOCKSCREEN_URI = "CustomLockscreenUri";
 constexpr const char *BUNDLE_NAME_KEY = "persist.wallpaper_mgr.bundleName";
 constexpr const char *SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
 
@@ -556,6 +556,7 @@ void WallpaperService::LoadSettingsLocked(int32_t userId, bool keepDimensionHint
         std::string wallpaperSystemFilePath = GetWallpaperDir(userId, WALLPAPER_SYSTEM);
         WallpaperData wallpaperSystem(userId, wallpaperSystemFilePath + "/" + WALLPAPER_SYSTEM_ORIG);
         wallpaperSystem.liveWallpaperFile = wallpaperSystemFilePath + "/" + LIVE_WALLPAPER_SYSTEM_ORIG;
+        wallpaperSystem.customPackageUri = wallpaperSystemFilePath + "/" + CUSTOM_WALLPAPER_SYSTEM;
         wallpaperSystem.allowBackup = true;
         wallpaperSystem.resourceType = PICTURE;
         wallpaperSystem.wallpaperId = DEFAULT_WALLPAPER_ID;
@@ -566,6 +567,7 @@ void WallpaperService::LoadSettingsLocked(int32_t userId, bool keepDimensionHint
         std::string wallpaperLockScreenFilePath = GetWallpaperDir(userId, WALLPAPER_LOCKSCREEN);
         WallpaperData wallpaperLock(userId, wallpaperLockScreenFilePath + "/" + WALLPAPER_LOCK_ORIG);
         wallpaperLock.liveWallpaperFile = wallpaperLockScreenFilePath + "/" + LIVE_WALLPAPER_LOCK_ORIG;
+        wallpaperLock.customPackageUri = wallpaperLockScreenFilePath + "/" + CUSTOM_WALLPAPER_LOCK;
         wallpaperLock.allowBackup = true;
         wallpaperLock.resourceType = PICTURE;
         wallpaperLock.wallpaperId = DEFAULT_WALLPAPER_ID;
@@ -786,10 +788,6 @@ bool WallpaperService::SendWallpaperChangeEvent(int32_t userId, WallpaperType wa
         callbackProxy_->OnCall(wallpaperType);
     }
     std::string uri;
-    GetFileNameFromMap(userId, wallpaperType, uri);
-    if (wallpaperData.resourceType != PACKAGE) {
-        uri = "";
-    }
     WallpaperChanged(wallpaperType, wallpaperData.resourceType, uri);
     return true;
 }
@@ -829,10 +827,9 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
     }
     if (!Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
         HILOG_ERROR("SceneBoard is not Enabled");
-        return E_NOT_FOUND;
+        return E_NO_PERMISSION;
     }
     wallpaperData.resourceType = PACKAGE;
-    wallpaperData.customPackageUri = uri;
     wallpaperData.wallpaperId = MakeWallpaperIdLocked();
     if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
@@ -1516,9 +1513,7 @@ bool WallpaperService::SaveWallpaperState(int32_t userId, WallpaperType wallpape
     }
     nlohmann::json root;
     root[SYSTEM_RES_TYPE] = static_cast<int32_t>(systemData.resourceType);
-    root[CUSTOM_SYSTEM_URI] = systemData.customPackageUri;
     root[LOCKSCREEN_RES_TYPE] = static_cast<int32_t>(lockScreenData.resourceType);
-    root[CUSTOM_LOCKSCREEN_URI] = lockScreenData.customPackageUri;
     std::string json = root.dump();
     if (json.empty()) {
         HILOG_ERROR("write user config file failed. because json content is empty.");
@@ -1573,11 +1568,9 @@ void WallpaperService::LoadWallpaperState()
     auto root = nlohmann::json::parse(buf);
     if (root.contains(SYSTEM_RES_TYPE)) {
         systemData.resourceType = static_cast<WallpaperResourceType>(root[SYSTEM_RES_TYPE].get<int>());
-        systemData.customPackageUri = root[CUSTOM_SYSTEM_URI].get<string>();
     }
     if (root.contains(LOCKSCREEN_RES_TYPE)) {
         lockScreenData.resourceType = static_cast<WallpaperResourceType>(root[LOCKSCREEN_RES_TYPE].get<int>());
-        lockScreenData.customPackageUri = root[CUSTOM_LOCKSCREEN_URI].get<string>();
     }
 }
 
