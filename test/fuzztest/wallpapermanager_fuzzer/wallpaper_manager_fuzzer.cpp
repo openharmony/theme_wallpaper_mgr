@@ -220,6 +220,19 @@ void SetOffsetFuzzTest(const uint8_t *data, size_t size)
     GrantNativePermission();
     WallpaperMgrService::WallpaperManagerkits::GetInstance().SetOffset(xOffsetValue, yOffsetValue);
 }
+
+void SetCustomWallpaperFuzzTest(const uint8_t *data, size_t size)
+{
+    uint32_t wallpaperType = ConvertToUint32(data);
+    data = data + OFFSET;
+    size = size - OFFSET;
+    GrantNativePermission();
+    std::string uri(reinterpret_cast<const char *>(data), size);
+    if (size < LENGTH) {
+        return;
+    }
+    WallpaperMgrService::WallpaperManagerkits::GetInstance().SetCustomWallpaper(uri, wallpaperType);
+}
 } // namespace OHOS
 
 /* Fuzzer entry point */
@@ -240,5 +253,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::SetOffsetFuzzTest(data, size);
     OHOS::SendEventFuzzTest(data, size);
     OHOS::SetVideoFuzzTest(data, size);
+    OHOS::SetCustomWallpaperFuzzTest(data, size);
     return 0;
 }
