@@ -253,5 +253,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::SetOffsetFuzzTest(data, size);
     OHOS::SendEventFuzzTest(data, size);
     OHOS::SetVideoFuzzTest(data, size);
+    OHOS::SetCustomWallpaperFuzzTest(data, size);
     return 0;
 }
