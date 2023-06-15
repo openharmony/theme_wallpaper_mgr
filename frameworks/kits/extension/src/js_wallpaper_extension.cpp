@@ -70,6 +70,7 @@ JsWallpaperExtension::JsWallpaperExtension(JsRuntime &jsRuntime) : jsRuntime_(js
 JsWallpaperExtension::~JsWallpaperExtension()
 {
     jsRuntime_.FreeNativeReference(std::move(jsObj_));
+    jsWallpaperExtension = nullptr;
 }
 
 void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &record,
@@ -126,7 +127,8 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
         [](NativeEngine *, void *data, void *) {
             HILOG_INFO("Finalizer for weak_ptr wallpaper extension context is called");
             delete static_cast<std::weak_ptr<AbilityRuntime::Context> *>(data);
-        }, nullptr);
+        },
+        nullptr);
 }
 
 void JsWallpaperExtension::OnStart(const AAFwk::Want &want)
@@ -247,6 +249,9 @@ void JsWallpaperExtension::RegisterWallpaperCallback()
     WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterWallpaperCallback(
         [](int32_t wallpaperType) -> bool {
             HILOG_INFO("jsWallpaperExtension->CallObjectMethod");
+            if (jsWallpaperExtension == nullptr) {
+                return false;
+            }
             NativeEngine *nativeEng = &(JsWallpaperExtension::jsWallpaperExtension->jsRuntime_).GetNativeEngine();
             WorkData *workData = new (std::nothrow) WorkData(nativeEng, wallpaperType);
             if (workData == nullptr) {
@@ -285,6 +290,9 @@ void JsWallpaperExtension::RegisterOffsetCallback()
     WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterOffsetCallback([](int32_t xOffset,
                                                                                         int32_t yOffset) -> bool {
         HILOG_DEBUG("RegisterOffset start");
+        if (jsWallpaperExtension == nullptr) {
+            return false;
+        }
         NativeEngine *nativeEng = &(JsWallpaperExtension::jsWallpaperExtension->jsRuntime_).GetNativeEngine();
         OffsetWorkData *workData = new (std::nothrow) OffsetWorkData(nativeEng, xOffset, yOffset);
         if (workData == nullptr) {
