@@ -16,6 +16,8 @@
 #ifndef FOUNDATION_ABILITYRUNTIME_OHOS_JS_WALLPAPER_EXTENSION_H
 #define FOUNDATION_ABILITYRUNTIME_OHOS_JS_WALLPAPER_EXTENSION_H
 
+#include <mutex>
+
 #include "wallpaper_extension.h"
 
 class NativeReference;
@@ -34,6 +36,8 @@ public:
     JsWallpaperExtension(JsRuntime &jsRuntime);
     virtual ~JsWallpaperExtension() override;
     static JsWallpaperExtension *jsWallpaperExtension;
+    static std::mutex mtx;
+
     /**
      * @brief Create JsWallpaperExtension.
      *
