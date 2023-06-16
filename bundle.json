@@ -44,7 +44,8 @@
           "bundle_framework",
           "os_account",
           "window_manager",
-          "multimedia_image_framework"
+          "multimedia_image_framework",
+          "player_framework"
         ],
         "third_party": [
           "libuv"
