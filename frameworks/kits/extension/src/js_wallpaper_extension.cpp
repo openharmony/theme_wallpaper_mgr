@@ -130,7 +130,8 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
         [](NativeEngine *, void *data, void *) {
             HILOG_INFO("Finalizer for weak_ptr wallpaper extension context is called");
             delete static_cast<std::weak_ptr<AbilityRuntime::Context> *>(data);
-        }, nullptr);
+        },
+        nullptr);
 }
 
 void JsWallpaperExtension::OnStart(const AAFwk::Want &want)
@@ -252,7 +253,7 @@ void JsWallpaperExtension::RegisterWallpaperCallback()
         [](int32_t wallpaperType) -> bool {
             HILOG_INFO("jsWallpaperExtension->CallObjectMethod");
             std::lock_guard<std::mutex> lock(mtx);
-            if (jsWallpaperExtension == nullptr) {
+            if (JsWallpaperExtension::jsWallpaperExtension == nullptr) {
                 return false;
             }
             NativeEngine *nativeEng = &(JsWallpaperExtension::jsWallpaperExtension->jsRuntime_).GetNativeEngine();
@@ -278,7 +279,10 @@ void JsWallpaperExtension::RegisterWallpaperCallback()
 
                 NativeValue *nativeType = reinterpret_cast<NativeValue *>(type);
                 NativeValue *arg[] = { nativeType };
-                JsWallpaperExtension::jsWallpaperExtension->CallObjectMethod("onWallpaperChanged", arg, ARGC_ONE);
+                std::lock_guard<std::mutex> lock(mtx);
+                if (JsWallpaperExtension::jsWallpaperExtension != nullptr) {
+                    JsWallpaperExtension::jsWallpaperExtension->CallObjectMethod("onWallpaperChanged", arg, ARGC_ONE);
+                }
                 napi_close_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng), scope);
                 delete workData;
                 delete work;
@@ -294,7 +298,7 @@ void JsWallpaperExtension::RegisterOffsetCallback()
                                                                                         int32_t yOffset) -> bool {
         HILOG_DEBUG("RegisterOffset start");
         std::lock_guard<std::mutex> lock(mtx);
-        if (jsWallpaperExtension == nullptr) {
+        if (JsWallpaperExtension::jsWallpaperExtension == nullptr) {
             return false;
         }
         NativeEngine *nativeEng = &(JsWallpaperExtension::jsWallpaperExtension->jsRuntime_).GetNativeEngine();
@@ -322,7 +326,10 @@ void JsWallpaperExtension::RegisterOffsetCallback()
             NativeValue *nativeX = reinterpret_cast<NativeValue *>(xOffset);
             NativeValue *nativeY = reinterpret_cast<NativeValue *>(yOffset);
             NativeValue *arg[] = { nativeX, nativeY };
-            JsWallpaperExtension::jsWallpaperExtension->CallObjectMethod("onOffset", arg, ARGC_TWO);
+            std::lock_guard<std::mutex> lock(mtx);
+            if (JsWallpaperExtension::jsWallpaperExtension != nullptr) {
+                JsWallpaperExtension::jsWallpaperExtension->CallObjectMethod("onOffset", arg, ARGC_TWO);
+            }
             napi_close_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng), scope);
             delete workData;
             delete work;
