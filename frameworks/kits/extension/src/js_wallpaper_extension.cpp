@@ -55,11 +55,13 @@ struct OffsetWorkData {
 };
 
 JsWallpaperExtension *JsWallpaperExtension::jsWallpaperExtension = NULL;
+std::mutex JsWallpaperExtension::mtx;
 using namespace OHOS::AppExecFwk;
 using namespace OHOS::MiscServices;
 JsWallpaperExtension *JsWallpaperExtension::Create(const std::unique_ptr<Runtime> &runtime)
 {
     HILOG_INFO("jws JsWallpaperExtension begin Create");
+    std::lock_guard<std::mutex> lock(mtx);
     jsWallpaperExtension = new JsWallpaperExtension(static_cast<JsRuntime &>(*runtime));
     return jsWallpaperExtension;
 }
@@ -70,6 +72,8 @@ JsWallpaperExtension::JsWallpaperExtension(JsRuntime &jsRuntime) : jsRuntime_(js
 JsWallpaperExtension::~JsWallpaperExtension()
 {
     jsRuntime_.FreeNativeReference(std::move(jsObj_));
+    std::lock_guard<std::mutex> lock(mtx);
+    jsWallpaperExtension = nullptr;
 }
 
 void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &record,
@@ -89,7 +93,6 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
     HILOG_INFO("JsWallpaperExtension::Init module:%{public}s,srcPath:%{public}s.", moduleName.c_str(), srcPath.c_str());
     HandleScope handleScope(jsRuntime_);
     auto &engine = jsRuntime_.GetNativeEngine();
-
     jsObj_ = jsRuntime_.LoadModule(moduleName, srcPath, abilityInfo_->hapPath,
         Extension::abilityInfo_->compileMode == CompileMode::ES_MODULE);
     if (jsObj_ == nullptr) {
@@ -115,7 +118,6 @@ void JsWallpaperExtension::Init(const std::shared_ptr<AbilityLocalRecord> &recor
     context->Bind(jsRuntime_, shellContextRef.release());
     HILOG_INFO("JsWallpaperExtension::SetProperty.");
     obj->SetProperty("context", contextObj);
-
     auto nativeObj = ConvertNativeValueTo<NativeObject>(contextObj);
     if (nativeObj == nullptr) {
         HILOG_ERROR("Failed to get wallpaper extension native object");
@@ -247,6 +249,10 @@ void JsWallpaperExtension::RegisterWallpaperCallback()
     WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterWallpaperCallback(
         [](int32_t wallpaperType) -> bool {
             HILOG_INFO("jsWallpaperExtension->CallObjectMethod");
+            std::lock_guard<std::mutex> lock(mtx);
+            if (JsWallpaperExtension::jsWallpaperExtension == nullptr) {
+                return false;
+            }
             NativeEngine *nativeEng = &(JsWallpaperExtension::jsWallpaperExtension->jsRuntime_).GetNativeEngine();
             WorkData *workData = new (std::nothrow) WorkData(nativeEng, wallpaperType);
             if (workData == nullptr) {
@@ -270,7 +276,10 @@ void JsWallpaperExtension::RegisterWallpaperCallback()
 
                 NativeValue *nativeType = reinterpret_cast<NativeValue *>(type);
                 NativeValue *arg[] = { nativeType };
-                JsWallpaperExtension::jsWallpaperExtension->CallObjectMethod("onWallpaperChanged", arg, ARGC_ONE);
+                std::lock_guard<std::mutex> lock(mtx);
+                if (JsWallpaperExtension::jsWallpaperExtension != nullptr) {
+                    JsWallpaperExtension::jsWallpaperExtension->CallObjectMethod("onWallpaperChanged", arg, ARGC_ONE);
+                }
                 napi_close_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng), scope);
                 delete workData;
                 delete work;
@@ -285,6 +294,10 @@ void JsWallpaperExtension::RegisterOffsetCallback()
     WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterOffsetCallback([](int32_t xOffset,
                                                                                         int32_t yOffset) -> bool {
         HILOG_DEBUG("RegisterOffset start");
+        std::lock_guard<std::mutex> lock(mtx);
+        if (JsWallpaperExtension::jsWallpaperExtension == nullptr) {
+            return false;
+        }
         NativeEngine *nativeEng = &(JsWallpaperExtension::jsWallpaperExtension->jsRuntime_).GetNativeEngine();
         OffsetWorkData *workData = new (std::nothrow) OffsetWorkData(nativeEng, xOffset, yOffset);
         if (workData == nullptr) {
@@ -310,7 +323,10 @@ void JsWallpaperExtension::RegisterOffsetCallback()
             NativeValue *nativeX = reinterpret_cast<NativeValue *>(xOffset);
             NativeValue *nativeY = reinterpret_cast<NativeValue *>(yOffset);
             NativeValue *arg[] = { nativeX, nativeY };
-            JsWallpaperExtension::jsWallpaperExtension->CallObjectMethod("onOffset", arg, ARGC_TWO);
+            std::lock_guard<std::mutex> lock(mtx);
+            if (JsWallpaperExtension::jsWallpaperExtension != nullptr) {
+                JsWallpaperExtension::jsWallpaperExtension->CallObjectMethod("onOffset", arg, ARGC_TWO);
+            }
             napi_close_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng), scope);
             delete workData;
             delete work;
