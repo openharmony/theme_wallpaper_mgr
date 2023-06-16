@@ -251,13 +251,11 @@ void JsWallpaperExtension::RegisterWallpaperCallback()
     WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterWallpaperCallback(
         [](int32_t wallpaperType) -> bool {
             HILOG_INFO("jsWallpaperExtension->CallObjectMethod");
-            {
-                std::lock_guard<std::mutex> lock(mtx);
-                if (jsWallpaperExtension == nullptr) {
-                    return false;
-                }
-                NativeEngine *nativeEng = &(JsWallpaperExtension::jsWallpaperExtension->jsRuntime_).GetNativeEngine();
+            std::lock_guard<std::mutex> lock(mtx);
+            if (jsWallpaperExtension == nullptr) {
+                return false;
             }
+            NativeEngine *nativeEng = &(JsWallpaperExtension::jsWallpaperExtension->jsRuntime_).GetNativeEngine();
             WorkData *workData = new (std::nothrow) WorkData(nativeEng, wallpaperType);
             if (workData == nullptr) {
                 return false;
@@ -295,13 +293,11 @@ void JsWallpaperExtension::RegisterOffsetCallback()
     WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterOffsetCallback([](int32_t xOffset,
                                                                                         int32_t yOffset) -> bool {
         HILOG_DEBUG("RegisterOffset start");
-        {
-            std::lock_guard<std::mutex> lock(mtx);
-            if (jsWallpaperExtension == nullptr) {
-                return false;
-            }
-            NativeEngine *nativeEng = &(JsWallpaperExtension::jsWallpaperExtension->jsRuntime_).GetNativeEngine();
+        std::lock_guard<std::mutex> lock(mtx);
+        if (jsWallpaperExtension == nullptr) {
+            return false;
         }
+        NativeEngine *nativeEng = &(JsWallpaperExtension::jsWallpaperExtension->jsRuntime_).GetNativeEngine();
         OffsetWorkData *workData = new (std::nothrow) OffsetWorkData(nativeEng, xOffset, yOffset);
         if (workData == nullptr) {
             return false;
