@@ -44,7 +44,8 @@
           "bundle_framework",
           "os_account",
           "window_manager",
-          "multimedia_image_framework"
+          "multimedia_image_framework",
+          "player_framework"
         ],
         "third_party": [
           "libuv"
@@ -55,9 +56,9 @@
           "base_group": [],
           "fwk_group": [
             "//base/theme/wallpaper_mgr/frameworks/native:wallpapermanager",
-            "//base/theme/wallpaper_mgr/frameworks/kits/extension:wallpaperextension",
+            "//base/theme/wallpaper_mgr/frameworks/kits/extension:wallpaperextensionability",
             "//base/theme/wallpaper_mgr/frameworks/kits/extension:wallpaper_extension_module",
-            "//base/theme/wallpaper_mgr/frameworks/js/napi/wallpaperextension:wallpaperextension_napi",
+            "//base/theme/wallpaper_mgr/frameworks/js/napi/wallpaperextensionability:wallpaperextensionability_napi",
             "//base/theme/wallpaper_mgr/frameworks/js/napi/wallpaper_extension_context:wallpaperextensioncontext_napi",
             "//base/theme/wallpaper_mgr/frameworks/js/napi:wallpaper",
             "//base/theme/wallpaper_mgr/utils:wallpaper_utils",

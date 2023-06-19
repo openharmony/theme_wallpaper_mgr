@@ -20,7 +20,7 @@ let windowsCreated = false;
 let WIDTH = 480;
 let HEIGHT = 960;
 
-class WallpaperExtension {
+class WallpaperExtensionAbility {
   createWallpaperWin() {
     console.log(`${WindowName} createWallpaperWin`);
 
@@ -42,7 +42,7 @@ class WallpaperExtension {
   }
 
   onCreated(want) {
-    console.log(`${WindowName} onWallpaperExtensionCreated`);
+    console.log(`${WindowName} onWallpaperExtensionAbilityCreated`);
   }
 
   setUiContent(uri) {
@@ -71,7 +71,7 @@ class WallpaperExtension {
   }
 
   onDestroy() {
-    console.log(`${WindowName} onWallpaperExtensionDestroy`);
+    console.log(`${WindowName} onWallpaperExtensionAbilityDestroy`);
   }
 
   onOffset(xOffset, yOffset) {
@@ -79,4 +79,4 @@ class WallpaperExtension {
   }
 }
 
-export default WallpaperExtension;
+export default WallpaperExtensionAbility;
