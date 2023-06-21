@@ -24,8 +24,7 @@
 using namespace OHOS::WallpaperMgrService;
 
 namespace OHOS {
-constexpr size_t THRESHOLD = 10;
-constexpr int32_t OFFSET = 4;
+constexpr size_t THRESHOLD = 4;
 const std::u16string WALLPAPERSERVICES_INTERFACE_TOKEN = u"ohos.Wallpaper.IWallpaperService";
 
 using namespace OHOS::Security::AccessToken;
@@ -41,10 +40,8 @@ uint32_t ConvertToUint32(const uint8_t *ptr)
 
 bool FuzzWallpaperService(const uint8_t *rawData, size_t size)
 {
-    uint32_t code = ConvertToUint32(rawData);
-    rawData = rawData + OFFSET;
-    size = size - OFFSET;
-
+    uint32_t code =
+        ConvertToUint32(rawData) % (static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_OFFSET) + 1);
     MessageParcel data;
     data.WriteInterfaceToken(WALLPAPERSERVICES_INTERFACE_TOKEN);
     data.WriteBuffer(rawData, size);
@@ -53,7 +50,6 @@ bool FuzzWallpaperService(const uint8_t *rawData, size_t size)
     MessageOption option;
     std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
     wallpaperService->OnRemoteRequest(code, data, reply, option);
-
     return true;
 }
 } // namespace OHOS
