@@ -76,8 +76,8 @@ ohos_static_library("wallpapermanager_static") {
   deps = [ "${utils_path}:wallpaper_utils" ]
   external_deps = [
     "c_utils:utils",
-    "hitrace:hitrace_meter",
     "hilog:libhilog",
+    "hitrace:hitrace_meter",
     "ipc:ipc_single",
     "multimedia_image_framework:image_native",
     "napi:ace_napi",
