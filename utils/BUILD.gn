@@ -32,8 +32,8 @@ ohos_shared_library("wallpaper_utils") {
     "include",
   ]
   external_deps = [
-    "hisysevent:libhisysevent",
     "hilog:libhilog",
+    "hisysevent:libhisysevent",
   ]
   subsystem_name = "theme"
   innerapi_tags = [ "platformsdk_indirect" ]
