@@ -65,8 +65,8 @@ ohos_shared_library("wallpaperextension") {
     "ability_runtime:napi_common",
     "ability_runtime:runtime",
     "c_utils:utils",
-    "hitrace_native:hitrace_meter",
-    "hiviewdfx_hilog_native:libhilog",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
     "ipc:ipc_napi_common",
     "ipc:ipc_single",
     "napi:ace_napi",
@@ -95,7 +95,7 @@ ohos_shared_library("wallpaper_extension_module") {
   external_deps = [
     "ability_runtime:abilitykit_native",
     "ability_runtime:runtime",
-    "hiviewdfx_hilog_native:libhilog",
+    "hilog:libhilog",
   ]
 
   relative_install_dir = "extensionability/"

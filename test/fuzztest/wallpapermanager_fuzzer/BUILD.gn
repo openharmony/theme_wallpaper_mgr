@@ -51,7 +51,7 @@ ohos_fuzztest("WallpaperManagerFuzzTest") {
     "access_token:libnativetoken",
     "access_token:libtoken_setproc",
     "graphic_standard:surface",
-    "hiviewdfx_hilog_native:libhilog",
+    "hilog:libhilog",
     "ipc:ipc_single",
     "os_account:os_account_innerkits",
     "player_framework:media_client",
