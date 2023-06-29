@@ -13,9 +13,9 @@
 
 import("//build/ohos.gni")
 import(
-    "../../../../../../../arkcompiler/ets_frontend/ts2panda/ts2abc_config.gni")
+    "../../../../../../../arkcompiler/ets_frontend/es2panda/es2abc_config.gni")
 
-ts2abc_gen_abc("gen_wallpaper_extension_ability_abc") {
+es2abc_gen_abc("gen_wallpaper_extension_ability_abc") {
   src_js = rebase_path("wallpaper_extension_ability.js")
   dst_file = rebase_path(target_out_dir + "/wallpaper_extension_ability.abc")
   in_puts = [ "wallpaper_extension_ability.js" ]

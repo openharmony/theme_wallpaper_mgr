@@ -20,6 +20,7 @@
 
 #include "i_wallpaper_service.h"
 #include "iremote_proxy.h"
+#include "wallpaper_service_ipc_interface_code.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -59,12 +60,15 @@ public:
     ErrorCode ResetWallpaperV9(int wallpaperType) override;
 
 private:
-    ErrorCode SetWallpaperInner(int32_t fd, int32_t wallpaperType, int32_t length, uint32_t code);
-    ErrorCode GetPixelMapInner(int32_t wallpaperType, uint32_t code, IWallpaperService::FdInfo &fdInfo);
-    ErrorCode GetColorsInner(int32_t wallpaperType, uint32_t code, std::vector<uint64_t> &colors);
-    ErrorCode GetWallpaperMinHeightInner(uint32_t code, int32_t &minHeight);
-    ErrorCode GetWallpaperMinWidthInner(uint32_t code, int32_t &minWidth);
-    ErrorCode ResetWallpaperInner(int wallpaperType, uint32_t code);
+    ErrorCode SetWallpaperInner(
+        int32_t fd, int32_t wallpaperType, int32_t length, WallpaperServiceIpcInterfaceCode code);
+    ErrorCode GetPixelMapInner(
+        int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code, IWallpaperService::FdInfo &fdInfo);
+    ErrorCode GetColorsInner(
+        int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code, std::vector<uint64_t> &colors);
+    ErrorCode GetWallpaperMinHeightInner(WallpaperServiceIpcInterfaceCode code, int32_t &minHeight);
+    ErrorCode GetWallpaperMinWidthInner(WallpaperServiceIpcInterfaceCode code, int32_t &minWidth);
+    ErrorCode ResetWallpaperInner(int wallpaperType, WallpaperServiceIpcInterfaceCode code);
     bool StartSocket(std::string uri, std::string name);
     static inline BrokerDelegator<WallpaperServiceProxy> delegator_;
     sptr<OHOS::Media::PixelMap> pixelMapData_;

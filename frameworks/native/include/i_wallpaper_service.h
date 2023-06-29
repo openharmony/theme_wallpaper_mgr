@@ -34,32 +34,6 @@ namespace WallpaperMgrService {
 class IWallpaperService : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.Wallpaper.IWallpaperService");
-    enum {
-        SET_WALLPAPER,
-        GET_PIXELMAP,
-        GET_PIXELMAPFILE,
-        GET_COLORS,
-        GET_WALLPAPER_ID,
-        GET_FILE,
-        GET_WALLPAPER_MIN_HEIGHT,
-        GET_WALLPAPER_MIN_WIDTH,
-        RESET_WALLPAPER,
-        ON,
-        OFF,
-        IS_CHANGE_PERMITTED,
-        IS_OPERATION_ALLOWED,
-        REGISTER_CALLBACK,
-        SET_WALLPAPER_V9,
-        GET_PIXELMAP_V9,
-        GET_COLORS_V9,
-        GET_WALLPAPER_MIN_HEIGHT_V9,
-        GET_WALLPAPER_MIN_WIDTH_V9,
-        RESET_WALLPAPER_V9,
-        SET_VIDEO,
-        SET_CUSTOM,
-        SEND_EVENT,
-        SET_OFFSET
-    };
     struct getPixelMap {
         std::string result;
         int fileLen;

@@ -34,7 +34,6 @@
 #include "ipc_skeleton.h"
 #include "os_account_manager.h"
 #include "pixel_map.h"
-#include "preferences.h"
 #include "statistic_reporter.h"
 #include "surface_buffer.h"
 #include "system_ability.h"
