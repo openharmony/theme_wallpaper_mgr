@@ -41,8 +41,8 @@ class WallpaperExtensionAbility {
     });
   }
 
-  onCreated(want) {
-    console.log(`${WindowName} onWallpaperExtensionAbilityCreated`);
+  onCreate(want) {
+    console.log(`${WindowName} onWallpaperExtensionAbilityCreate`);
   }
 
   setUiContent(uri) {
@@ -66,8 +66,8 @@ class WallpaperExtensionAbility {
     });
   }
 
-  onWallpaperChanged(wallpaperType) {
-    console.log(`${WindowName} onWallpaperChanged ${wallpaperType}`);
+  onWallpaperChange(wallpaperType) {
+    console.log(`${WindowName} onWallpaperChange ${wallpaperType}`);
   }
 
   onDestroy() {

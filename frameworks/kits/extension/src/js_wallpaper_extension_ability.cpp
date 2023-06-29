@@ -143,14 +143,14 @@ void JsWallpaperExtensionAbility::OnStart(const AAFwk::Want &want)
     napi_value napiWant = OHOS::AppExecFwk::WrapWant(reinterpret_cast<napi_env>(nativeEngine), want);
     NativeValue *nativeWant = reinterpret_cast<NativeValue *>(napiWant);
     NativeValue *argv[] = { nativeWant };
-    StartAsyncTrace(HITRACE_TAG_MISC, "onCreated", static_cast<int32_t>(TraceTaskId::ONCREATE_EXTENSION));
-    CallObjectMethod("onCreated", argv, ARGC_ONE);
-    FinishAsyncTrace(HITRACE_TAG_MISC, "onCreated", static_cast<int32_t>(TraceTaskId::ONCREATE_EXTENSION));
+    StartAsyncTrace(HITRACE_TAG_MISC, "onCreate", static_cast<int32_t>(TraceTaskId::ONCREATE_EXTENSION));
+    CallObjectMethod("onCreate", argv, ARGC_ONE);
+    FinishAsyncTrace(HITRACE_TAG_MISC, "onCreate", static_cast<int32_t>(TraceTaskId::ONCREATE_EXTENSION));
     CallObjectMethod("createWallpaperWin");
     RegisterWallpaperCallback();
     RegisterOffsetCallback();
     HILOG_INFO("%{public}s end.", __func__);
-    FinishAsyncTrace(HITRACE_TAG_MISC, "onCreated", static_cast<int32_t>(TraceTaskId::ONSTART_EXTENSION));
+    FinishAsyncTrace(HITRACE_TAG_MISC, "onCreate", static_cast<int32_t>(TraceTaskId::ONSTART_EXTENSION));
 }
 
 void JsWallpaperExtensionAbility::OnStop()
@@ -279,7 +279,7 @@ void JsWallpaperExtensionAbility::RegisterWallpaperCallback()
                 std::lock_guard<std::mutex> lock(mtx);
                 if (JsWallpaperExtensionAbility::jsWallpaperExtensionAbility != nullptr) {
                     JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->CallObjectMethod(
-                        "onWallpaperChanged", arg, ARGC_ONE);
+                        "onWallpaperChange", arg, ARGC_ONE);
                 }
                 napi_close_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng), scope);
                 delete workData;
