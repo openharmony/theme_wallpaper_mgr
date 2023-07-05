@@ -128,7 +128,6 @@ WallpaperService::~WallpaperService()
 
 int32_t WallpaperService::Init()
 {
-    //InitQueryUserId(QUERY_USER_MAX_RETRY_TIMES);
     std::function<bool()> function = [this]() -> bool { return InitUsersOnBoot(); };
     BlockRetry(QUERY_USER_ID_INTERVAL, QUERY_USER_MAX_RETRY_TIMES, function);
     bool ret = Publish(this);
