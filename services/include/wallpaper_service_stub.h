@@ -21,6 +21,7 @@
 #include "i_wallpaper_service.h"
 #include "ipc_skeleton.h"
 #include "iremote_stub.h"
+#include "wallpaper_service_ipc_interface_code.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -64,7 +65,7 @@ private:
     int32_t OnSetOffset(MessageParcel &data, MessageParcel &reply);
 
     using WallpaperServiceFunc = int32_t (WallpaperServiceStub::*)(MessageParcel &data, MessageParcel &reply);
-    std::map<uint32_t, WallpaperServiceFunc> memberFuncMap_;
+    std::map<WallpaperServiceIpcInterfaceCode, WallpaperServiceFunc> memberFuncMap_;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

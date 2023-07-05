@@ -32,29 +32,35 @@ using namespace OHOS::Media;
 
 WallpaperServiceStub::WallpaperServiceStub()
 {
-    memberFuncMap_[SET_WALLPAPER] = &WallpaperServiceStub::OnSetWallpaper;
-    memberFuncMap_[GET_PIXELMAP] = &WallpaperServiceStub::OnGetPixelMap;
-    memberFuncMap_[GET_COLORS] = &WallpaperServiceStub::OnGetColors;
-    memberFuncMap_[GET_WALLPAPER_ID] = &WallpaperServiceStub::OnGetWallpaperId;
-    memberFuncMap_[GET_FILE] = &WallpaperServiceStub::OnGetFile;
-    memberFuncMap_[GET_WALLPAPER_MIN_HEIGHT] = &WallpaperServiceStub::OnGetWallpaperMinHeight;
-    memberFuncMap_[GET_WALLPAPER_MIN_WIDTH] = &WallpaperServiceStub::OnGetWallpaperMinWidth;
-    memberFuncMap_[ON] = &WallpaperServiceStub::OnWallpaperOn;
-    memberFuncMap_[OFF] = &WallpaperServiceStub::OnWallpaperOff;
-    memberFuncMap_[IS_CHANGE_PERMITTED] = &WallpaperServiceStub::OnIsChangePermitted;
-    memberFuncMap_[IS_OPERATION_ALLOWED] = &WallpaperServiceStub::OnIsOperationAllowed;
-    memberFuncMap_[RESET_WALLPAPER] = &WallpaperServiceStub::OnResetWallpaper;
-    memberFuncMap_[REGISTER_CALLBACK] = &WallpaperServiceStub::OnRegisterWallpaperCallback;
-    memberFuncMap_[SET_WALLPAPER_V9] = &WallpaperServiceStub::OnSetWallpaperV9;
-    memberFuncMap_[GET_PIXELMAP_V9] = &WallpaperServiceStub::OnGetPixelMapV9;
-    memberFuncMap_[GET_COLORS_V9] = &WallpaperServiceStub::OnGetColorsV9;
-    memberFuncMap_[GET_WALLPAPER_MIN_HEIGHT_V9] = &WallpaperServiceStub::OnGetWallpaperMinHeightV9;
-    memberFuncMap_[GET_WALLPAPER_MIN_WIDTH_V9] = &WallpaperServiceStub::OnGetWallpaperMinWidthV9;
-    memberFuncMap_[RESET_WALLPAPER_V9] = &WallpaperServiceStub::OnResetWallpaperV9;
-    memberFuncMap_[SET_VIDEO] = &WallpaperServiceStub::OnSetVideo;
-    memberFuncMap_[SET_CUSTOM] = &WallpaperServiceStub::OnSetCustomWallpaper;
-    memberFuncMap_[SEND_EVENT] = &WallpaperServiceStub::OnSendEvent;
-    memberFuncMap_[SET_OFFSET] = &WallpaperServiceStub::OnSetOffset;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_WALLPAPER] = &WallpaperServiceStub::OnSetWallpaper;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_PIXELMAP] = &WallpaperServiceStub::OnGetPixelMap;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_COLORS] = &WallpaperServiceStub::OnGetColors;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_WALLPAPER_ID] = &WallpaperServiceStub::OnGetWallpaperId;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_FILE] = &WallpaperServiceStub::OnGetFile;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_WALLPAPER_MIN_HEIGHT] =
+        &WallpaperServiceStub::OnGetWallpaperMinHeight;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_WALLPAPER_MIN_WIDTH] =
+        &WallpaperServiceStub::OnGetWallpaperMinWidth;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::ON] = &WallpaperServiceStub::OnWallpaperOn;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::OFF] = &WallpaperServiceStub::OnWallpaperOff;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::IS_CHANGE_PERMITTED] = &WallpaperServiceStub::OnIsChangePermitted;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::IS_OPERATION_ALLOWED] =
+        &WallpaperServiceStub::OnIsOperationAllowed;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::RESET_WALLPAPER] = &WallpaperServiceStub::OnResetWallpaper;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::REGISTER_CALLBACK] =
+        &WallpaperServiceStub::OnRegisterWallpaperCallback;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_WALLPAPER_V9] = &WallpaperServiceStub::OnSetWallpaperV9;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_PIXELMAP_V9] = &WallpaperServiceStub::OnGetPixelMapV9;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_COLORS_V9] = &WallpaperServiceStub::OnGetColorsV9;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_WALLPAPER_MIN_HEIGHT_V9] =
+        &WallpaperServiceStub::OnGetWallpaperMinHeightV9;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_WALLPAPER_MIN_WIDTH_V9] =
+        &WallpaperServiceStub::OnGetWallpaperMinWidthV9;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::RESET_WALLPAPER_V9] = &WallpaperServiceStub::OnResetWallpaperV9;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_VIDEO] = &WallpaperServiceStub::OnSetVideo;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_CUSTOM] = &WallpaperServiceStub::OnSetCustomWallpaper;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::SEND_EVENT] = &WallpaperServiceStub::OnSendEvent;
+    memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_OFFSET] = &WallpaperServiceStub::OnSetOffset;
 }
 
 WallpaperServiceStub::~WallpaperServiceStub()
@@ -76,11 +82,14 @@ int32_t WallpaperServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data
     pid_t p = IPCSkeleton::GetCallingPid();
     pid_t p1 = IPCSkeleton::GetCallingUid();
     HILOG_INFO("CallingPid = %{public}d, CallingUid = %{public}d, code = %{public}u", p, p1, code);
-    auto itFunc = memberFuncMap_.find(code);
-    if (itFunc != memberFuncMap_.end()) {
-        auto memberFunc = itFunc->second;
-        if (memberFunc != nullptr) {
-            return (this->*memberFunc)(data, reply);
+    if (code >= static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_WALLPAPER) &&
+        code <= static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_OFFSET)) {
+        auto itFunc = memberFuncMap_.find(static_cast<WallpaperServiceIpcInterfaceCode>(code));
+        if (itFunc != memberFuncMap_.end()) {
+            auto memberFunc = itFunc->second;
+            if (memberFunc != nullptr) {
+                return (this->*memberFunc)(data, reply);
+            }
         }
     }
     int32_t ret = IPCObjectStub::OnRemoteRequest(code, data, reply, option);

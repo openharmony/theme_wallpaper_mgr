@@ -45,27 +45,24 @@ ohos_shared_library("wallpaper_service") {
     "${graphic_2d_path}/rosen/modules/effect/color_picker/include",
     "${graphic_2d_path}/utils/color_manager",
   ]
-  deps = [
-    "${ability_runtime_inner_api_path}/uri_permission:uri_permission_mgr",
-    "${graphic_2d_path}/rosen/modules/effect/color_picker:color_picker",
-    "${graphic_2d_path}/utils/color_manager:color_manager",
-    "${utils_path}:wallpaper_utils",
-  ]
+  deps = [ "${utils_path}:wallpaper_utils" ]
   external_deps = [
     "ability_base:want",
     "ability_base:zuri",
     "ability_runtime:ability_manager",
     "ability_runtime:abilitykit_native",
+    "ability_runtime:uri_permission_mgr",
     "access_token:libaccesstoken_sdk",
     "access_token:libtokenid_sdk",
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
-    "hitrace_native:hitrace_meter",
-    "hiviewdfx_hilog_native:libhilog",
+    "graphic_standard:color_manager",
+    "graphic_standard:color_picker",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
     "ipc:ipc_single",
     "os_account:os_account_innerkits",
-    "preferences:native_preferences",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libwsutils",
