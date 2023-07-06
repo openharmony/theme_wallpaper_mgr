@@ -44,9 +44,7 @@
           "multimedia_image_framework",
           "player_framework"
         ],
-        "third_party": [
-          "libuv"
-        ]
+        "third_party": []
       },
       "build": {
         "group_type": {
