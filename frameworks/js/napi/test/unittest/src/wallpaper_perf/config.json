@@ -16,7 +16,9 @@
     "package": "ohos.acts.theme.wallpaperPerfJSTest",
     "name": ".MyApplication",
     "deviceType": [
-      "phone"
+      "default",
+      "tablet",
+      "2in1"
     ],
     "distro": {
       "deliveryWithInstall": true,
