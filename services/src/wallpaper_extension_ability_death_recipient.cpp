@@ -22,7 +22,7 @@ void OHOS::WallpaperMgrService::WallpaperExtensionAbilityDeathRecipient::OnRemot
     const OHOS::wptr<OHOS::IRemoteObject> &remote)
 {
     HILOG_INFO("On remote died");
-    wallpaperService_.StartWallpaperExtension();
+    wallpaperService_.StartWallpaperExtensionAbility();
 }
 
 } // namespace WallpaperMgrService

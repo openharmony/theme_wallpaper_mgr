@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef FOUNDATION_ABILITYRUNTIME_OHOS_WALLPAPER_EXTENSION_H
-#define FOUNDATION_ABILITYRUNTIME_OHOS_WALLPAPER_EXTENSION_H
+#ifndef FOUNDATION_ABILITYRUNTIME_OHOS_WALLPAPER_EXTENSION_ABILITY_H
+#define FOUNDATION_ABILITYRUNTIME_OHOS_WALLPAPER_EXTENSION_ABILITY_H
 
 #include "extension_base.h"
 #include "visibility.h"
@@ -26,11 +26,11 @@ class Runtime;
 /**
  * @brief Basic wallpaper components.
  */
-class WallpaperExtension : public ExtensionBase<WallpaperExtensionContext>,
-                           public std::enable_shared_from_this<WallpaperExtension> {
+class WallpaperExtensionAbility : public ExtensionBase<WallpaperExtensionContext>,
+                           public std::enable_shared_from_this<WallpaperExtensionAbility> {
 public:
-    WallpaperExtension() = default;
-    virtual ~WallpaperExtension() = default;
+    WallpaperExtensionAbility() = default;
+    virtual ~WallpaperExtensionAbility() = default;
 
     /**
      * @brief Create and init context.
@@ -62,10 +62,10 @@ public:
      * @brief Create Extension.
      *
      * @param runtime The runtime.
-     * @return The WallpaperExtension instance.
+     * @return The WallpaperExtensionAbility instance.
      */
-    WALLPAPER_API static WallpaperExtension *Create(const std::unique_ptr<Runtime> &runtime);
+    WALLPAPER_API static WallpaperExtensionAbility *Create(const std::unique_ptr<Runtime> &runtime);
 };
 } // namespace AbilityRuntime
 } // namespace OHOS
-#endif // FOUNDATION_ABILITYRUNTIME_OHOS_WALLPAPER_EXTENSION_H
+#endif // FOUNDATION_ABILITYRUNTIME_OHOS_WALLPAPER_EXTENSION_ABILITY_H

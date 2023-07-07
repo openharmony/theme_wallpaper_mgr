@@ -15,7 +15,7 @@
 
 #include "wallpaper_extension_module_loader.h"
 
-#include "wallpaper_extension.h"
+#include "wallpaper_extension_ability.h"
 
 namespace OHOS::AbilityRuntime {
 WallpaperExtensionModuleLoader::WallpaperExtensionModuleLoader() = default;
@@ -23,15 +23,15 @@ WallpaperExtensionModuleLoader::~WallpaperExtensionModuleLoader() = default;
 
 Extension *WallpaperExtensionModuleLoader::Create(const std::unique_ptr<Runtime> &runtime) const
 {
-    HILOG_INFO("jws WallpaperExtension::Create runtime");
-    return WallpaperExtension::Create(runtime);
+    HILOG_INFO("jws WallpaperExtensionAbility::Create runtime");
+    return WallpaperExtensionAbility::Create(runtime);
 }
 
 std::map<std::string, std::string> WallpaperExtensionModuleLoader::GetParams()
 {
     std::map<std::string, std::string> params;
     params.insert(std::pair<std::string, std::string>("type", "8"));
-    params.insert(std::pair<std::string, std::string>("name", "WallpaperExtension"));
+    params.insert(std::pair<std::string, std::string>("name", "WallpaperExtensionAbility"));
     return params;
 }
 
