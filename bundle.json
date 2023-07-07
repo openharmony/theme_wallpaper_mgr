@@ -24,7 +24,7 @@
       "ram":"2895KB",
       "deps": {
         "components": [
-          "graphic_standard",
+          "graphic_2d",
           "libuv",
           "samgr",
           "common_event_service",
