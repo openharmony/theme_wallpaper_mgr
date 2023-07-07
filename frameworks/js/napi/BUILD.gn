@@ -34,8 +34,8 @@ ohos_shared_library("wallpaper") {
     "c_utils:utils",
     "graphic_standard:libgraphic_utils",
     "hilog:libhilog",
-    "multimedia_image_framework:image",
-    "multimedia_image_framework:image_native",
+    "image_framework:image",
+    "image_framework:image_native",
     "napi:ace_napi",
     "player_framework:media_client",
   ]
