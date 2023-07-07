@@ -100,7 +100,7 @@ public:
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
     void ReporterUsageTimeStatistic();
     void RegisterSubscriber(int32_t times);
-    void StartWallpaperExtension();
+    void StartWallpaperExtensionAbility();
     void AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObject> &remoteObject);
 
 protected:

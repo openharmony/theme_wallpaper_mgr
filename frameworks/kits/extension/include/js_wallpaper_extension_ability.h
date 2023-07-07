@@ -13,38 +13,39 @@
  * limitations under the License.
  */
 
-#ifndef FOUNDATION_ABILITYRUNTIME_OHOS_JS_WALLPAPER_EXTENSION_H
-#define FOUNDATION_ABILITYRUNTIME_OHOS_JS_WALLPAPER_EXTENSION_H
+#ifndef FOUNDATION_ABILITYRUNTIME_OHOS_JS_WALLPAPER_EXTENSION_ABILITY_H
+#define FOUNDATION_ABILITYRUNTIME_OHOS_JS_WALLPAPER_EXTENSION_ABILITY_H
 
 #include <mutex>
 
-#include "wallpaper_extension.h"
+#include "wallpaper_extension_ability.h"
 
 class NativeReference;
 class NativeValue;
 
 namespace OHOS {
 namespace AbilityRuntime {
-class WallpaperExtension;
+class WallpaperExtensionAbility;
 class JsRuntime;
 
 /**
  * @brief Basic wallpaper components.
  */
-class JsWallpaperExtension : public WallpaperExtension, public std::enable_shared_from_this<JsWallpaperExtension> {
+class JsWallpaperExtensionAbility : public WallpaperExtensionAbility,
+                                    public std::enable_shared_from_this<JsWallpaperExtensionAbility> {
 public:
-    JsWallpaperExtension(JsRuntime &jsRuntime);
-    virtual ~JsWallpaperExtension() override;
-    static JsWallpaperExtension *jsWallpaperExtension;
+    JsWallpaperExtensionAbility(JsRuntime &jsRuntime);
+    virtual ~JsWallpaperExtensionAbility() override;
+    static JsWallpaperExtensionAbility *jsWallpaperExtensionAbility;
     static std::mutex mtx;
 
     /**
-     * @brief Create JsWallpaperExtension.
+     * @brief Create JsWallpaperExtensionAbility.
      *
      * @param runtime The runtime.
-     * @return The JsWallpaperExtension instance.
+     * @return The JsWallpaperExtensionAbility instance.
      */
-    static JsWallpaperExtension *Create(const std::unique_ptr<Runtime> &runtime);
+    static JsWallpaperExtensionAbility *Create(const std::unique_ptr<Runtime> &runtime);
 
     /**
      * @brief Init the extension.
@@ -113,7 +114,7 @@ private:
     void RegisterOffsetCallback();
 
 private:
-    NativeValue *CallObjectMethod(const char *name, NativeValue *const *argv = nullptr, size_t argc = 0);
+    NativeValue *CallObjectMethod(const std::string &name, NativeValue *const *argv = nullptr, size_t argc = 0);
 
     void GetSrcPath(std::string &srcPath);
 
@@ -122,4 +123,4 @@ private:
 };
 } // namespace AbilityRuntime
 } // namespace OHOS
-#endif // FOUNDATION_ABILITYRUNTIME_OHOS_JS_WALLPAPER_EXTENSION_H
+#endif // FOUNDATION_ABILITYRUNTIME_OHOS_JS_WALLPAPER_EXTENSION_ABILITY_H
