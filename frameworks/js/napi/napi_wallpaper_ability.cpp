@@ -932,8 +932,7 @@ void NapiWallpaperAbility::OnWallpaperChange(WallpaperType wallpaperType, Wallpa
             napi_close_handle_scope(dataInner->listener->env_, scope);
             delete dataInner;
             delete work;
-        },
-        uv_qos_user_initiated);
+        }, uv_qos_user_initiated);
 }
 
 bool NapiWallpaperAbility::IsValidArgCount(size_t argc, size_t expectationSize)
