@@ -84,7 +84,7 @@ napi_value Call::AsyncCall(napi_env env, const std::string &resourceName)
     napi_create_async_work(env, nullptr, resource, Call::OnExecute, Call::OnComplete, context_, &work);
     context_->work = work;
     context_ = nullptr;
-    napi_queue_async_work(env, work);
+    napi_queue_async_work_with_qos(env, work, napi_qos_user_initiated);
     HILOG_DEBUG("async call exec");
     return promise;
 }

@@ -845,7 +845,7 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
         return;
     }
     work->data = eventDataWorker;
-    uv_queue_work(
+    uv_queue_work_with_qos(
         loop_, work, [](uv_work_t *work) {},
         [](uv_work_t *work, int status) {
             EventDataWorker *eventDataInner = reinterpret_cast<EventDataWorker *>(work->data);
@@ -878,7 +878,8 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
             napi_close_handle_scope(eventDataInner->listener->env_, scope);
             delete eventDataInner;
             delete work;
-        });
+        },
+        uv_qos_user_initiated);
 }
 
 void NapiWallpaperAbility::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
@@ -895,7 +896,7 @@ void NapiWallpaperAbility::OnWallpaperChange(WallpaperType wallpaperType, Wallpa
         return;
     }
     work->data = data;
-    uv_queue_work(
+    uv_queue_work_with_qos(
         loop_, work, [](uv_work_t *work) {},
         [](uv_work_t *work, int status) {
             WallpaperChangedData *dataInner = reinterpret_cast<WallpaperChangedData *>(work->data);
@@ -931,7 +932,8 @@ void NapiWallpaperAbility::OnWallpaperChange(WallpaperType wallpaperType, Wallpa
             napi_close_handle_scope(dataInner->listener->env_, scope);
             delete dataInner;
             delete work;
-        });
+        },
+        uv_qos_user_initiated);
 }
 
 bool NapiWallpaperAbility::IsValidArgCount(size_t argc, size_t expectationSize)

@@ -27,8 +27,8 @@ bool UvQueue::Call(napi_env env, void *data, uv_after_work_cb afterCallback)
         return false;
     }
     work->data = data;
-    uv_queue_work(
-        loop, work, [](uv_work_t *work) {}, afterCallback);
+    uv_queue_work_with_qos(
+        loop, work, [](uv_work_t *work) {}, afterCallback, uv_qos_user_initiated);
     return true;
 }
 } // namespace OHOS::MiscServices
