@@ -96,6 +96,7 @@ ohos_shared_library("wallpaper_extension_module") {
     "ability_runtime:abilitykit_native",
     "ability_runtime:runtime",
     "hilog:libhilog",
+    "napi:ace_napi",
   ]
 
   relative_install_dir = "extensionability/"
