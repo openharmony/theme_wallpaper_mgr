@@ -42,7 +42,9 @@
           "os_account",
           "window_manager",
           "multimedia_image_framework",
-          "player_framework"
+          "player_framework",
+          "eventhandler",
+          "init"
         ],
         "third_party": []
       },
