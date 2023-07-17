@@ -13,17 +13,17 @@
 * limitations under the License.
 */
 
-#ifndef I_WALLPAPER_EXTENSION_H
-#define I_WALLPAPER_EXTENSION_H
+#ifndef I_WALLPAPER_EXTENSION_ABILITY_H
+#define I_WALLPAPER_EXTENSION_ABILITY_H
 
 #include "iremote_broker.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
-class IWallpaperExtension : public IRemoteBroker {
+class IWallpaperExtensionAbility : public IRemoteBroker {
 public:
-    DECLARE_INTERFACE_DESCRIPTOR(u"ohos.Wallpaper.IWallpaperExtension");
+    DECLARE_INTERFACE_DESCRIPTOR(u"ohos.Wallpaper.IWallpaperExtensionAbility");
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
-#endif // I_WALLPAPER_EXTENSION_H
+#endif // I_WALLPAPER_EXTENSION_ABILITY_H

@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2023 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -32,7 +32,7 @@ config("ability_config") {
   ]
 }
 
-ohos_shared_library("wallpaperextension") {
+ohos_shared_library("wallpaperextensionability") {
   cflags = [
     "-fdata-sections",
     "-ffunction-sections",
@@ -46,9 +46,9 @@ ohos_shared_library("wallpaperextension") {
   ]
 
   sources = [
-    "${wallpaper_path}/frameworks/kits/extension/src/js_wallpaper_extension.cpp",
+    "${wallpaper_path}/frameworks/kits/extension/src/js_wallpaper_extension_ability.cpp",
     "${wallpaper_path}/frameworks/kits/extension/src/js_wallpaper_extension_context.cpp",
-    "${wallpaper_path}/frameworks/kits/extension/src/wallpaper_extension.cpp",
+    "${wallpaper_path}/frameworks/kits/extension/src/wallpaper_extension_ability.cpp",
     "${wallpaper_path}/frameworks/kits/extension/src/wallpaper_extension_context.cpp",
   ]
 
@@ -65,6 +65,7 @@ ohos_shared_library("wallpaperextension") {
     "ability_runtime:napi_common",
     "ability_runtime:runtime",
     "c_utils:utils",
+    "eventhandler:libeventhandler",
     "hilog:libhilog",
     "hitrace:hitrace_meter",
     "ipc:ipc_napi_common",
@@ -90,12 +91,13 @@ ohos_shared_library("wallpaper_extension_module") {
 
   configs = [ ":ability_config" ]
 
-  deps = [ ":wallpaperextension" ]
+  deps = [ ":wallpaperextensionability" ]
 
   external_deps = [
     "ability_runtime:abilitykit_native",
     "ability_runtime:runtime",
     "hilog:libhilog",
+    "napi:ace_napi",
   ]
 
   relative_install_dir = "extensionability/"

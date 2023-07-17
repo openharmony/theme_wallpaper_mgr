@@ -13,14 +13,14 @@
 * limitations under the License.
 */
 
-#ifndef WALLPAPER_EXTENSION_STUB_H
-#define WALLPAPER_EXTENSION_STUB_H
-#include "i_wallpaper_extension.h"
+#ifndef WALLPAPER_EXTENSION_ABILITY_STUB_H
+#define WALLPAPER_EXTENSION_ABILITY_STUB_H
+#include "i_wallpaper_extension_ability.h"
 #include "iremote_stub.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
-class WallpaperExtensionStub : public IRemoteStub<IWallpaperExtension> {};
+class WallpaperExtensionAbilityStub : public IRemoteStub<IWallpaperExtensionAbility> {};
 } // namespace WallpaperMgrService
 } // namespace OHOS
-#endif // WALLPAPER_EXTENSION_STUB_H
+#endif // WALLPAPER_EXTENSION_ABILITY_STUB_H

@@ -1,4 +1,4 @@
-# Copyright (C) 2022 Huawei Device Co., Ltd.
+# Copyright (C) 2022-2023 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -57,10 +57,12 @@ ohos_shared_library("wallpaper_service") {
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
     "common_event_service:cesfwk_innerkits",
-    "graphic_standard:color_manager",
-    "graphic_standard:color_picker",
+    "eventhandler:libeventhandler",
+    "graphic_2d:color_manager",
+    "graphic_2d:color_picker",
     "hilog:libhilog",
     "hitrace:hitrace_meter",
+    "init:libbegetutil",
     "ipc:ipc_single",
     "os_account:os_account_innerkits",
     "safwk:system_ability_fwk",

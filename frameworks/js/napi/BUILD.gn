@@ -32,7 +32,7 @@ ohos_shared_library("wallpaper") {
 
   external_deps = [
     "c_utils:utils",
-    "graphic_standard:libgraphic_utils",
+    "graphic_2d:libgraphic_utils",
     "hilog:libhilog",
     "multimedia_image_framework:image",
     "multimedia_image_framework:image_native",

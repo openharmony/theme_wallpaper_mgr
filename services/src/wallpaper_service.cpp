@@ -152,7 +152,7 @@ void WallpaperService::OnStart()
     InitData();
     InitServiceHandler();
     AddSystemAbilityListener(COMMON_EVENT_SERVICE_ID);
-    std::thread(&WallpaperService::StartWallpaperExtension, this).detach();
+    std::thread(&WallpaperService::StartWallpaperExtensionAbility, this).detach();
     auto cmd = std::make_shared<Command>(std::vector<std::string>({ "-all" }), "Show all",
         [this](const std::vector<std::string> &input, std::string &output) -> bool {
             int32_t height = 0;
@@ -162,7 +162,7 @@ void WallpaperService::OnStart()
             std::string bundleName(OHOS_WALLPAPER_BUNDLE_NAME);
             output.append("height\t\t\t: " + std::to_string(height) + "\n")
                 .append("width\t\t\t: " + std::to_string(width) + "\n")
-                .append("WallpaperExtension\t: ExtensionInfo{" + bundleName + "}\n");
+                .append("WallpaperExtensionAbility\t: ExtensionInfo{" + bundleName + "}\n");
             return true;
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
@@ -277,11 +277,11 @@ void WallpaperService::AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObj
     }
 }
 
-void WallpaperService::StartWallpaperExtension()
+void WallpaperService::StartWallpaperExtensionAbility()
 {
     MemoryGuard cacheGuard;
-    HILOG_INFO("WallpaperService StartWallpaperExtension");
-    prctl(PR_SET_NAME, "WallpaperExtensionThread");
+    HILOG_INFO("WallpaperService StartWallpaperExtensionAbility");
+    prctl(PR_SET_NAME, "WallpaperExtensionAbilityThread");
     int32_t time = 0;
     ErrCode ret = 0;
     AAFwk::Want want;
