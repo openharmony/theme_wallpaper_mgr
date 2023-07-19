@@ -41,7 +41,7 @@
           "bundle_framework",
           "os_account",
           "window_manager",
-          "multimedia_image_framework",
+          "image_framework",
           "player_framework",
           "eventhandler",
           "init"
