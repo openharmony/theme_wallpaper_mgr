@@ -151,6 +151,7 @@ private:
     void GrantUriPermissionByUserId(int32_t userId);
     int32_t GrantUriPermission(const std::string &path, const std::string &bundleName);
     void InitBundleNameParameter();
+    void RemoveExtensionDeathRecipient();
 
 private:
     int32_t Init();
@@ -179,6 +180,7 @@ private:
     std::shared_ptr<WallpaperCommonEventSubscriber> subscriber_;
     sptr<WallpaperExtensionAbilityConnection> connection_;
     sptr<IRemoteObject::DeathRecipient> recipient_;
+    sptr<IRemoteObject> extensionRemoteObject_;
 
     std::string name_;
     std::mutex mtx_;

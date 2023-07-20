@@ -152,7 +152,6 @@ void WallpaperService::OnStart()
     InitData();
     InitServiceHandler();
     AddSystemAbilityListener(COMMON_EVENT_SERVICE_ID);
-    std::thread(&WallpaperService::StartWallpaperExtensionAbility, this).detach();
     auto cmd = std::make_shared<Command>(std::vector<std::string>({ "-all" }), "Show all",
         [this](const std::vector<std::string> &input, std::string &output) -> bool {
             int32_t height = 0;
@@ -274,6 +273,15 @@ void WallpaperService::AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObj
             HILOG_INFO("get remoteObject succeed");
             proxy->AddDeathRecipient(recipient_);
         }
+    }
+}
+
+void WallpaperService::RemoveExtensionDeathRecipient()
+{
+    if (extensionRemoteObject_ != nullptr && recipient_ != nullptr) {
+        extensionRemoteObject_->RemoveDeathRecipient(recipient_);
+        recipient_ = nullptr;
+        extensionRemoteObject_ = nullptr;
     }
 }
 
@@ -438,9 +446,8 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
         HILOG_ERROR("userId error, userId = %{public}d", userId);
         return;
     }
-    AAFwk::Want want;
-    want.SetElementName(OHOS_WALLPAPER_BUNDLE_NAME, "WallpaperExtAbility");
-    ConnectExtensionAbility(want);
+    RemoveExtensionDeathRecipient();
+    std::thread(&WallpaperService::StartWallpaperExtensionAbility, this).detach();
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     LoadSettingsLocked(userId, true);
     if (!FileDeal::IsFileExist(userDir)) {
