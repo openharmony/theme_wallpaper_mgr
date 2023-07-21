@@ -93,8 +93,8 @@ constexpr const char *SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
 constexpr int64_t INIT_INTERVAL = 10000L;
 constexpr int64_t DELAY_TIME = 1000L;
 constexpr int64_t QUERY_USER_ID_INTERVAL = 300L;
-constexpr int32_t CONNECT_EXTENSION_INTERVAL = 500000;
-constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 360;
+constexpr int32_t CONNECT_EXTENSION_INTERVAL = 100;
+constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 50;
 constexpr int32_t FOO_MAX_LEN = 52428800;
 constexpr int32_t MAX_RETRY_TIMES = 20;
 constexpr int32_t QUERY_USER_MAX_RETRY_TIMES = 100;
@@ -138,6 +138,7 @@ int32_t WallpaperService::Init()
     }
     HILOG_INFO("Publish success.");
     state_ = ServiceRunningState::STATE_RUNNING;
+    StartExtensionAbility(CONNECT_EXTENSION_MAX_RETRY_TIMES);
     return E_OK;
 }
 
@@ -285,33 +286,6 @@ void WallpaperService::RemoveExtensionDeathRecipient()
     }
 }
 
-void WallpaperService::StartWallpaperExtensionAbility()
-{
-    MemoryGuard cacheGuard;
-    HILOG_INFO("WallpaperService StartWallpaperExtensionAbility");
-    prctl(PR_SET_NAME, "WallpaperExtensionAbilityThread");
-    int32_t time = 0;
-    ErrCode ret = 0;
-    AAFwk::Want want;
-    want.SetElementName(OHOS_WALLPAPER_BUNDLE_NAME, "WallpaperExtAbility");
-    AAFwk::AbilityManagerClient::GetInstance()->Connect();
-    HILOG_INFO("WallpaperService::Startwhile");
-    while (1) {
-        HILOG_INFO("WallpaperService::StartAbility");
-        time++;
-        ret = ConnectExtensionAbility(want);
-        if (ret == 0 || time >= CONNECT_EXTENSION_MAX_RETRY_TIMES) {
-            break;
-        }
-        usleep(CONNECT_EXTENSION_INTERVAL);
-        HILOG_INFO("WallpaperService::StartAbility %{public}d", time);
-    }
-    if (ret != 0) {
-        HILOG_ERROR("WallpaperService::StartAbility --> failed ");
-        ReporterFault(FaultType::SERVICE_FAULT, FaultCode::SF_STARTABILITY_FAILED);
-    }
-}
-
 void WallpaperService::InitQueryUserId(int32_t times)
 {
     times--;
@@ -330,7 +304,7 @@ void WallpaperService::StartExtensionAbility(int32_t times)
     if (!ret && times > 0) {
         HILOG_ERROR("StartExtensionAbilty failed");
         auto callback = [this, times]() { StartExtensionAbility(times); };
-        serviceHandler_->PostTask(callback, QUERY_USER_ID_INTERVAL);
+        serviceHandler_->PostTask(callback, CONNECT_EXTENSION_INTERVAL);
     }
 }
 
@@ -458,7 +432,7 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
         return;
     }
     RemoveExtensionDeathRecipient();
-    StartExtensionAbility(QUERY_USER_MAX_RETRY_TIMES);
+    StartExtensionAbility(CONNECT_EXTENSION_MAX_RETRY_TIMES);
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     LoadSettingsLocked(userId, true);
     if (!FileDeal::IsFileExist(userDir)) {
@@ -1250,7 +1224,7 @@ bool WallpaperService::ConnectExtensionAbility()
         connection_ = new WallpaperExtensionAbilityConnection(*this);
     }
     auto ret = AAFwk::AbilityManagerClient::GetInstance()->ConnectExtensionAbility(want, connection_, DEFAULT_VALUE);
-    if(ret != ERR_OK){
+    if (ret != ERR_OK) {
         HILOG_ERROR("ConnectExtensionAbility errCode=%{public}d", ret);
         return false;
     }

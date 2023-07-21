@@ -18,11 +18,13 @@
 #include "hilog_wrapper.h"
 namespace OHOS {
 namespace WallpaperMgrService {
+constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 10;
+
 void OHOS::WallpaperMgrService::WallpaperExtensionAbilityDeathRecipient::OnRemoteDied(
     const OHOS::wptr<OHOS::IRemoteObject> &remote)
 {
     HILOG_INFO("On remote died");
-    wallpaperService_.StartWallpaperExtensionAbility();
+    wallpaperService_.StartExtensionAbility(CONNECT_EXTENSION_MAX_RETRY_TIMES);
 }
 
 } // namespace WallpaperMgrService

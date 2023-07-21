@@ -100,8 +100,8 @@ public:
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
     void ReporterUsageTimeStatistic();
     void RegisterSubscriber(int32_t times);
-    void StartWallpaperExtensionAbility();
     void AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObject> &remoteObject);
+    void StartExtensionAbility(int32_t times);
 
 protected:
     void OnStart() override;
@@ -152,7 +152,6 @@ private:
     int32_t GrantUriPermission(const std::string &path, const std::string &bundleName);
     void InitBundleNameParameter();
     void RemoveExtensionDeathRecipient();
-    void StartExtensionAbility(int32_t times);
 
 private:
     int32_t Init();
