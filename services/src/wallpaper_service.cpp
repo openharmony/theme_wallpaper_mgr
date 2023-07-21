@@ -323,6 +323,17 @@ void WallpaperService::InitQueryUserId(int32_t times)
     }
 }
 
+void WallpaperService::StartExtensionAbility(int32_t times)
+{
+    times--;
+    bool ret = ConnectExtensionAbility();
+    if (!ret && times > 0) {
+        HILOG_ERROR("StartExtensionAbilty failed");
+        auto callback = [this, times]() { StartExtensionAbility(times); };
+        serviceHandler_->PostTask(callback, QUERY_USER_ID_INTERVAL);
+    }
+}
+
 bool WallpaperService::InitUsersOnBoot()
 {
     std::vector<int32_t> userIds;
@@ -447,7 +458,7 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
         return;
     }
     RemoveExtensionDeathRecipient();
-    std::thread(&WallpaperService::StartWallpaperExtensionAbility, this).detach();
+    StartExtensionAbility(QUERY_USER_MAX_RETRY_TIMES);
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     LoadSettingsLocked(userId, true);
     if (!FileDeal::IsFileExist(userDir)) {
@@ -1225,20 +1236,25 @@ int32_t WallpaperService::Dump(int32_t fd, const std::vector<std::u16string> &ar
     return 1;
 }
 
-int32_t WallpaperService::ConnectExtensionAbility(const AAFwk::Want &want)
+bool WallpaperService::ConnectExtensionAbility()
 {
     HILOG_DEBUG("ConnectAdapter");
+    AAFwk::Want want;
+    want.SetElementName(OHOS_WALLPAPER_BUNDLE_NAME, "WallpaperExtAbility");
     ErrCode errCode = AAFwk::AbilityManagerClient::GetInstance()->Connect();
     if (errCode != ERR_OK) {
         HILOG_ERROR("connect ability server failed errCode=%{public}d", errCode);
-        return errCode;
+        return false;
     }
     if (connection_ == nullptr) {
         connection_ = new WallpaperExtensionAbilityConnection(*this);
     }
     auto ret = AAFwk::AbilityManagerClient::GetInstance()->ConnectExtensionAbility(want, connection_, DEFAULT_VALUE);
-    HILOG_INFO("ConnectExtensionAbility errCode=%{public}d", ret);
-    return ret;
+    if(ret != ERR_OK){
+        HILOG_ERROR("ConnectExtensionAbility errCode=%{public}d", ret);
+        return false;
+    }
+    return true;
 }
 
 bool WallpaperService::IsSystemApp()

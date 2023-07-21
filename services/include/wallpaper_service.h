@@ -128,7 +128,7 @@ private:
     bool GetBundleNameByUid(std::int32_t uid, std::string &bname);
     ErrorCode SetWallpaperBackupData(int32_t userId, WallpaperResourceType resourceType,
         const std::string &uriOrPixelMap, WallpaperType wallpaperType);
-    int32_t ConnectExtensionAbility(const OHOS::AAFwk::Want &want);
+    bool ConnectExtensionAbility();
     bool IsSystemApp();
     ErrorCode GetImageFd(int32_t userId, WallpaperType wallpaperType, int32_t &fd);
     ErrorCode GetImageSize(int32_t userId, WallpaperType wallpaperType, int32_t &size);
@@ -152,6 +152,7 @@ private:
     int32_t GrantUriPermission(const std::string &path, const std::string &bundleName);
     void InitBundleNameParameter();
     void RemoveExtensionDeathRecipient();
+    void StartExtensionAbility(int32_t times);
 
 private:
     int32_t Init();
