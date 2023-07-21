@@ -219,6 +219,7 @@ void WallpaperService::OnStop()
     serviceHandler_ = nullptr;
     connection_ = nullptr;
     recipient_ = nullptr;
+    extensionRemoteObject_ = nullptr;
     if (subscriber_ != nullptr) {
         bool unSubscribeResult = OHOS::EventFwk::CommonEventManager::UnSubscribeCommonEvent(subscriber_);
         subscriber_ = nullptr;
@@ -273,6 +274,7 @@ void WallpaperService::AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObj
         if (proxy != nullptr && !proxy->IsObjectDead()) {
             HILOG_INFO("get remoteObject succeed");
             proxy->AddDeathRecipient(recipient_);
+            extensionRemoteObject_ = remoteObject;
         }
     }
 }
@@ -280,6 +282,7 @@ void WallpaperService::AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObj
 void WallpaperService::RemoveExtensionDeathRecipient()
 {
     if (extensionRemoteObject_ != nullptr && recipient_ != nullptr) {
+        HILOG_INFO("Remove Extension DeathRecipient");
         extensionRemoteObject_->RemoveDeathRecipient(recipient_);
         recipient_ = nullptr;
         extensionRemoteObject_ = nullptr;
@@ -299,6 +302,7 @@ void WallpaperService::InitQueryUserId(int32_t times)
 
 void WallpaperService::StartExtensionAbility(int32_t times)
 {
+    MemoryGuard cacheGuard;
     times--;
     bool ret = ConnectExtensionAbility();
     if (!ret && times > 0) {
