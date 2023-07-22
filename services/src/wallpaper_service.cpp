@@ -782,7 +782,7 @@ bool WallpaperService::SendWallpaperChangeEvent(int32_t userId, WallpaperType wa
         wallpaperCommonEventManager->SendWallpaperLockSettingMessage(wallpaperData.resourceType);
     }
     HILOG_INFO("SetWallpaperBackupData callbackProxy_->OnCall start");
-    if (callbackProxy_ != nullptr && wallpaperData.resourceType == PICTURE) {
+    if (callbackProxy_ != nullptr && (wallpaperData.resourceType == PICTURE || wallpaperData.resourceType == DEFAULT)) {
         callbackProxy_->OnCall(wallpaperType);
     }
     std::string uri;
@@ -879,7 +879,7 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
     // current user's wallpaper is live video, not image
     WallpaperResourceType resType = GetResType(userId, type);
-    if (resType != PICTURE) {
+    if (resType != PICTURE && resType != DEFAULT) {
         HILOG_ERROR("Current user's wallpaper is live video, not image");
         fdInfo.size = 0; // 0: empty file size
         fdInfo.fd = -1;  // -1: invalid file description
