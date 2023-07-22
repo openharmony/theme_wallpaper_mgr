@@ -22,7 +22,7 @@ ohos_unittest("wallpaper_test") {
   sources = [ "unittest/wallpaper_test.cpp" ]
 
   include_dirs = [
-    "${wallpaper_path}/services/include"
+    "${wallpaper_path}/services/include",
   ]
   deps = [
     "${utils_path}:wallpaper_utils",
