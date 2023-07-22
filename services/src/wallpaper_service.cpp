@@ -304,7 +304,6 @@ void WallpaperService::InitQueryUserId(int32_t times)
 
 void WallpaperService::StartExtensionAbility(int32_t times)
 {
-    MemoryGuard cacheGuard;
     times--;
     bool ret = ConnectExtensionAbility();
     if (!ret && times > 0) {
@@ -1219,6 +1218,7 @@ int32_t WallpaperService::Dump(int32_t fd, const std::vector<std::u16string> &ar
 bool WallpaperService::ConnectExtensionAbility()
 {
     HILOG_DEBUG("ConnectAdapter");
+    MemoryGuard cacheGuard;
     AAFwk::Want want;
     want.SetElementName(OHOS_WALLPAPER_BUNDLE_NAME, "WallpaperExtAbility");
     ErrCode errCode = AAFwk::AbilityManagerClient::GetInstance()->Connect();
