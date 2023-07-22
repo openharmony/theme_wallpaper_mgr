@@ -19,12 +19,11 @@ ohos_unittest("wallpaper_test") {
   resource_config_file =
       "${wallpaper_path}/test/unittest/resource/ohos_test.xml"
   module_out_path = "wallpaper_mgr/wallpaper_test"
-  sources = [
-    "unittest/wallpaper_test.cpp",
-    "${wallpaper_path}/services/src/wallpaper_service.cpp"
-  ]
+  sources = [ "unittest/wallpaper_test.cpp" ]
 
-  include_dirs = []
+  include_dirs = [
+    "${wallpaper_path}/services/include"
+  ]
   deps = [
     "${utils_path}:wallpaper_utils",
     "${wallpaper_path}/frameworks/native:wallpapermanager_static",

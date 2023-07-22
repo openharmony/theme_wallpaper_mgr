@@ -248,8 +248,6 @@ void WallpaperService::InitData()
     InitResources(userId, WALLPAPER_SYSTEM);
     InitResources(userId, WALLPAPER_LOCKSCREEN);
     LoadWallpaperState();
-    SaveColor(userId, WALLPAPER_SYSTEM);
-    SaveColor(userId, WALLPAPER_LOCKSCREEN);
     HILOG_INFO("WallpaperService::initData --> end ");
 }
 
