@@ -181,6 +181,7 @@ private:
     sptr<WallpaperExtensionAbilityConnection> connection_;
     sptr<IRemoteObject::DeathRecipient> recipient_;
     sptr<IRemoteObject> extensionRemoteObject_;
+    std::mutex remoteObjectMutex_;
 
     std::string name_;
     std::mutex mtx_;
