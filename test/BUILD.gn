@@ -21,9 +21,7 @@ ohos_unittest("wallpaper_test") {
   module_out_path = "wallpaper_mgr/wallpaper_test"
   sources = [ "unittest/wallpaper_test.cpp" ]
 
-  include_dirs = [
-    "${wallpaper_path}/services/include",
-  ]
+  include_dirs = [ "${wallpaper_path}/services/include" ]
   deps = [
     "${utils_path}:wallpaper_utils",
     "${wallpaper_path}/frameworks/native:wallpapermanager_static",
