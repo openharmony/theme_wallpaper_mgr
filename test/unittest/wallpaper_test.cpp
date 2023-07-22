@@ -12,6 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#define private public
+#define protected public
+#include "wallpaper_service.h"
+#undef private
+#undef protected
 
 #include <ctime>
 #include <gtest/gtest.h>
@@ -947,6 +952,7 @@ HWTEST_F(WallpaperTest, RemovedUserDeal001, TestSize.Level0)
 HWTEST_F(WallpaperTest, SwitchedUserIdDeal001, TestSize.Level0)
 {
     std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
+    wallpaperService->InitServiceHandler();
     ASSERT_EQ(WallpaperTest::SubscribeCommonEvent(wallpaperService), true);
     ApiInfo apiInfo{ false, false };
     std::vector<int32_t> ids;
