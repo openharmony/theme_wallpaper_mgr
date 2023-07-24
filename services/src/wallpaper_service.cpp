@@ -304,7 +304,7 @@ void WallpaperService::StartExtensionAbility(int32_t times)
     times--;
     bool ret = ConnectExtensionAbility();
     if (!ret && times > 0 && serviceHandler_ != nullptr) {
-        HILOG_ERROR("StartExtensionAbilty failed");
+        HILOG_ERROR("StartExtensionAbilty failed, remainder of the times: %{public}d", times);
         auto callback = [this, times]() { StartExtensionAbility(times); };
         serviceHandler_->PostTask(callback, CONNECT_EXTENSION_INTERVAL);
     }
@@ -1227,11 +1227,8 @@ bool WallpaperService::ConnectExtensionAbility()
         connection_ = new WallpaperExtensionAbilityConnection(*this);
     }
     auto ret = AAFwk::AbilityManagerClient::GetInstance()->ConnectExtensionAbility(want, connection_, DEFAULT_VALUE);
-    if (ret != ERR_OK) {
-        HILOG_ERROR("ConnectExtensionAbility errCode=%{public}d", ret);
-        return false;
-    }
-    return true;
+    HILOG_INFO("ConnectExtensionAbility errCode=%{public}d", ret);
+    return ret;
 }
 
 bool WallpaperService::IsSystemApp()
