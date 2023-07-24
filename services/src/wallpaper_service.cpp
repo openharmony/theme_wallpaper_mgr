@@ -128,8 +128,7 @@ WallpaperService::~WallpaperService()
 
 int32_t WallpaperService::Init()
 {
-    std::function<bool()> function = [this]() -> bool { return InitUsersOnBoot(); };
-    BlockRetry(QUERY_USER_ID_INTERVAL, QUERY_USER_MAX_RETRY_TIMES, function);
+    InitQueryUserId(QUERY_USER_MAX_RETRY_TIMES);
     bool ret = Publish(this);
     if (!ret) {
         HILOG_ERROR("Publish failed.");
@@ -304,7 +303,7 @@ void WallpaperService::StartExtensionAbility(int32_t times)
 {
     times--;
     bool ret = ConnectExtensionAbility();
-    if (!ret && times > 0) {
+    if (!ret && times > 0 && serviceHandler_ != nullptr) {
         HILOG_ERROR("StartExtensionAbilty failed");
         auto callback = [this, times]() { StartExtensionAbility(times); };
         serviceHandler_->PostTask(callback, CONNECT_EXTENSION_INTERVAL);
@@ -435,7 +434,7 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
         return;
     }
     RemoveExtensionDeathRecipient();
-    StartExtensionAbility(CONNECT_EXTENSION_MAX_RETRY_TIMES);
+    ConnectExtensionAbility();
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     LoadSettingsLocked(userId, true);
     if (!FileDeal::IsFileExist(userDir)) {

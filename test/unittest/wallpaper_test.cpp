@@ -1007,6 +1007,7 @@ HWTEST_F(WallpaperTest, SwitchedUserIdDeal001, TestSize.Level0)
 HWTEST_F(WallpaperTest, InvalidUserIdDeal001, TestSize.Level0)
 {
     std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
+    wallpaperService->InitServiceHandler();
     ASSERT_EQ(WallpaperTest::SubscribeCommonEvent(wallpaperService), true);
     std::string commonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED;
     WallpaperTest::TriggerEvent(INVALID_USERID, commonEvent);
