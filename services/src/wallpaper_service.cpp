@@ -93,8 +93,8 @@ constexpr const char *SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
 constexpr int64_t INIT_INTERVAL = 10000L;
 constexpr int64_t DELAY_TIME = 1000L;
 constexpr int64_t QUERY_USER_ID_INTERVAL = 300L;
-constexpr int32_t CONNECT_EXTENSION_INTERVAL = 500000;
-constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 360;
+constexpr int32_t CONNECT_EXTENSION_INTERVAL = 100;
+constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 50;
 constexpr int32_t FOO_MAX_LEN = 52428800;
 constexpr int32_t MAX_RETRY_TIMES = 20;
 constexpr int32_t QUERY_USER_MAX_RETRY_TIMES = 100;
@@ -137,6 +137,7 @@ int32_t WallpaperService::Init()
     }
     HILOG_INFO("Publish success.");
     state_ = ServiceRunningState::STATE_RUNNING;
+    StartExtensionAbility(CONNECT_EXTENSION_MAX_RETRY_TIMES);
     return E_OK;
 }
 
@@ -151,7 +152,6 @@ void WallpaperService::OnStart()
     InitData();
     InitServiceHandler();
     AddSystemAbilityListener(COMMON_EVENT_SERVICE_ID);
-    std::thread(&WallpaperService::StartWallpaperExtensionAbility, this).detach();
     auto cmd = std::make_shared<Command>(std::vector<std::string>({ "-all" }), "Show all",
         [this](const std::vector<std::string> &input, std::string &output) -> bool {
             int32_t height = 0;
@@ -218,6 +218,7 @@ void WallpaperService::OnStop()
     serviceHandler_ = nullptr;
     connection_ = nullptr;
     recipient_ = nullptr;
+    extensionRemoteObject_ = nullptr;
     if (subscriber_ != nullptr) {
         bool unSubscribeResult = OHOS::EventFwk::CommonEventManager::UnSubscribeCommonEvent(subscriber_);
         subscriber_ = nullptr;
@@ -246,8 +247,6 @@ void WallpaperService::InitData()
     InitResources(userId, WALLPAPER_SYSTEM);
     InitResources(userId, WALLPAPER_LOCKSCREEN);
     LoadWallpaperState();
-    SaveColor(userId, WALLPAPER_SYSTEM);
-    SaveColor(userId, WALLPAPER_LOCKSCREEN);
     HILOG_INFO("WallpaperService::initData --> end ");
 }
 
@@ -265,6 +264,7 @@ void WallpaperService::InitBundleNameParameter()
 void WallpaperService::AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObject> &remoteObject)
 {
     if (remoteObject != nullptr) {
+        std::lock_guard<std::mutex> lock(remoteObjectMutex_);
         IPCObjectProxy *proxy = reinterpret_cast<IPCObjectProxy *>(remoteObject.GetRefPtr());
         if (recipient_ == nullptr) {
             recipient_ = sptr<IRemoteObject::DeathRecipient>(new WallpaperExtensionAbilityDeathRecipient(*this));
@@ -272,34 +272,19 @@ void WallpaperService::AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObj
         if (proxy != nullptr && !proxy->IsObjectDead()) {
             HILOG_INFO("get remoteObject succeed");
             proxy->AddDeathRecipient(recipient_);
+            extensionRemoteObject_ = remoteObject;
         }
     }
 }
 
-void WallpaperService::StartWallpaperExtensionAbility()
+void WallpaperService::RemoveExtensionDeathRecipient()
 {
-    MemoryGuard cacheGuard;
-    HILOG_INFO("WallpaperService StartWallpaperExtensionAbility");
-    prctl(PR_SET_NAME, "WallpaperExtensionAbilityThread");
-    int32_t time = 0;
-    ErrCode ret = 0;
-    AAFwk::Want want;
-    want.SetElementName(OHOS_WALLPAPER_BUNDLE_NAME, "WallpaperExtAbility");
-    AAFwk::AbilityManagerClient::GetInstance()->Connect();
-    HILOG_INFO("WallpaperService::Startwhile");
-    while (1) {
-        HILOG_INFO("WallpaperService::StartAbility");
-        time++;
-        ret = ConnectExtensionAbility(want);
-        if (ret == 0 || time >= CONNECT_EXTENSION_MAX_RETRY_TIMES) {
-            break;
-        }
-        usleep(CONNECT_EXTENSION_INTERVAL);
-        HILOG_INFO("WallpaperService::StartAbility %{public}d", time);
-    }
-    if (ret != 0) {
-        HILOG_ERROR("WallpaperService::StartAbility --> failed ");
-        ReporterFault(FaultType::SERVICE_FAULT, FaultCode::SF_STARTABILITY_FAILED);
+    if (extensionRemoteObject_ != nullptr && recipient_ != nullptr) {
+        HILOG_INFO("Remove Extension DeathRecipient");
+        std::lock_guard<std::mutex> lock(remoteObjectMutex_);
+        extensionRemoteObject_->RemoveDeathRecipient(recipient_);
+        recipient_ = nullptr;
+        extensionRemoteObject_ = nullptr;
     }
 }
 
@@ -311,6 +296,17 @@ void WallpaperService::InitQueryUserId(int32_t times)
         HILOG_INFO("InitQueryUserId failed");
         auto callback = [this, times]() { InitQueryUserId(times); };
         serviceHandler_->PostTask(callback, QUERY_USER_ID_INTERVAL);
+    }
+}
+
+void WallpaperService::StartExtensionAbility(int32_t times)
+{
+    times--;
+    bool ret = ConnectExtensionAbility();
+    if (!ret && times > 0 && serviceHandler_ != nullptr) {
+        HILOG_ERROR("StartExtensionAbilty failed, remainder of the times: %{public}d", times);
+        auto callback = [this, times]() { StartExtensionAbility(times); };
+        serviceHandler_->PostTask(callback, CONNECT_EXTENSION_INTERVAL);
     }
 }
 
@@ -437,9 +433,8 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
         HILOG_ERROR("userId error, userId = %{public}d", userId);
         return;
     }
-    AAFwk::Want want;
-    want.SetElementName(OHOS_WALLPAPER_BUNDLE_NAME, "WallpaperExtAbility");
-    ConnectExtensionAbility(want);
+    RemoveExtensionDeathRecipient();
+    ConnectExtensionAbility();
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     LoadSettingsLocked(userId, true);
     if (!FileDeal::IsFileExist(userDir)) {
@@ -783,7 +778,7 @@ bool WallpaperService::SendWallpaperChangeEvent(int32_t userId, WallpaperType wa
         wallpaperCommonEventManager->SendWallpaperLockSettingMessage(wallpaperData.resourceType);
     }
     HILOG_INFO("SetWallpaperBackupData callbackProxy_->OnCall start");
-    if (callbackProxy_ != nullptr && wallpaperData.resourceType == PICTURE) {
+    if (callbackProxy_ != nullptr && (wallpaperData.resourceType == PICTURE || wallpaperData.resourceType == DEFAULT)) {
         callbackProxy_->OnCall(wallpaperType);
     }
     std::string uri;
@@ -880,7 +875,7 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
     // current user's wallpaper is live video, not image
     WallpaperResourceType resType = GetResType(userId, type);
-    if (resType != PICTURE) {
+    if (resType != PICTURE && resType != DEFAULT) {
         HILOG_ERROR("Current user's wallpaper is live video, not image");
         fdInfo.size = 0; // 0: empty file size
         fdInfo.fd = -1;  // -1: invalid file description
@@ -1217,13 +1212,16 @@ int32_t WallpaperService::Dump(int32_t fd, const std::vector<std::u16string> &ar
     return 1;
 }
 
-int32_t WallpaperService::ConnectExtensionAbility(const AAFwk::Want &want)
+bool WallpaperService::ConnectExtensionAbility()
 {
     HILOG_DEBUG("ConnectAdapter");
+    MemoryGuard cacheGuard;
+    AAFwk::Want want;
+    want.SetElementName(OHOS_WALLPAPER_BUNDLE_NAME, "WallpaperExtAbility");
     ErrCode errCode = AAFwk::AbilityManagerClient::GetInstance()->Connect();
     if (errCode != ERR_OK) {
         HILOG_ERROR("connect ability server failed errCode=%{public}d", errCode);
-        return errCode;
+        return false;
     }
     if (connection_ == nullptr) {
         connection_ = new WallpaperExtensionAbilityConnection(*this);
