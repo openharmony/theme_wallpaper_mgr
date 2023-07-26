@@ -100,8 +100,8 @@ public:
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
     void ReporterUsageTimeStatistic();
     void RegisterSubscriber(int32_t times);
-    void StartWallpaperExtensionAbility();
     void AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObject> &remoteObject);
+    void StartExtensionAbility(int32_t times);
 
 protected:
     void OnStart() override;
@@ -128,7 +128,7 @@ private:
     bool GetBundleNameByUid(std::int32_t uid, std::string &bname);
     ErrorCode SetWallpaperBackupData(int32_t userId, WallpaperResourceType resourceType,
         const std::string &uriOrPixelMap, WallpaperType wallpaperType);
-    int32_t ConnectExtensionAbility(const OHOS::AAFwk::Want &want);
+    bool ConnectExtensionAbility();
     bool IsSystemApp();
     ErrorCode GetImageFd(int32_t userId, WallpaperType wallpaperType, int32_t &fd);
     ErrorCode GetImageSize(int32_t userId, WallpaperType wallpaperType, int32_t &size);
@@ -151,6 +151,7 @@ private:
     void GrantUriPermissionByUserId(int32_t userId);
     int32_t GrantUriPermission(const std::string &path, const std::string &bundleName);
     void InitBundleNameParameter();
+    void RemoveExtensionDeathRecipient();
 
 private:
     int32_t Init();
@@ -179,6 +180,8 @@ private:
     std::shared_ptr<WallpaperCommonEventSubscriber> subscriber_;
     sptr<WallpaperExtensionAbilityConnection> connection_;
     sptr<IRemoteObject::DeathRecipient> recipient_;
+    sptr<IRemoteObject> extensionRemoteObject_;
+    std::mutex remoteObjectMutex_;
 
     std::string name_;
     std::mutex mtx_;
