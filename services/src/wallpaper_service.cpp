@@ -90,6 +90,16 @@ constexpr const char *COLOR_CHANGE = "colorChange";
 constexpr const char *BUNDLE_NAME_KEY = "persist.wallpaper_mgr.bundleName";
 constexpr const char *SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
 
+constexpr const char *WALLPAPER_USERID_PATH = "/data/service/el1/public/wallpaper/";
+constexpr const char *WALLPAPER_SYSTEM_DIRNAME = "system";
+constexpr const char *WALLPAPER_TMP_DIRNAME = "fwsettmp";
+constexpr const char *WALLPAPER_LOCKSCREEN_DIRNAME = "lockscreen";
+constexpr const char *WALLPAPER_DEFAULT_FILEFULLPATH = "/system/etc/wallpaperdefault.jpeg";
+constexpr const char *WALLPAPER_DEFAULT_LOCK_FILEFULLPATH = "/system/etc/wallpaperlockdefault.jpeg";
+constexpr const char *WALLPAPER_PREFABRICATE_FILEFULLPATH = "/sys_prod/media/themes/wallpaperdefault.jpeg";
+constexpr const char *WALLPAPER_PREFABRICATE_LOCK_FILEFULLPATH = "/sys_prod/media/themes/wallpaperlockdefault.jpeg";
+constexpr const char *WALLPAPER_CROP_PICTURE = "crop_file";
+
 constexpr int64_t INIT_INTERVAL = 10000L;
 constexpr int64_t DELAY_TIME = 1000L;
 constexpr int64_t QUERY_USER_ID_INTERVAL = 300L;
@@ -235,8 +245,8 @@ void WallpaperService::InitData()
     int32_t userId = DEFAULT_USER_ID;
     systemWallpaperMap_.Clear();
     lockWallpaperMap_.Clear();
-    wallpaperTmpFullPath_ = WALLPAPER_USERID_PATH + WALLPAPER_TMP_DIRNAME;
-    wallpaperCropPath_ = WALLPAPER_USERID_PATH + WALLPAPER_CROP_PICTURE;
+    wallpaperTmpFullPath_ = std::string(WALLPAPER_USERID_PATH) + std::string(WALLPAPER_TMP_DIRNAME);
+    wallpaperCropPath_ = std::string(WALLPAPER_USERID_PATH) + std::string(WALLPAPER_CROP_PICTURE);
     systemWallpaperColor_ = 0;
     lockWallpaperColor_ = 0;
     wallpaperEventMap_.clear();
@@ -380,13 +390,13 @@ bool WallpaperService::InitUserDir(int32_t userId)
     std::string wallpaperSystemFilePath = userDir + "/" + WALLPAPER_SYSTEM_DIRNAME;
     if (!FileDeal::Mkdir(wallpaperSystemFilePath)) {
         HILOG_ERROR("Failed to create destination wallpaper system path, userId:%{public}d, type:%{public}s", userId,
-            WALLPAPER_SYSTEM_DIRNAME.c_str());
+            WALLPAPER_SYSTEM_DIRNAME);
         return false;
     }
     std::string wallpaperLockScreenFilePath = userDir + "/" + WALLPAPER_LOCKSCREEN_DIRNAME;
     if (!FileDeal::Mkdir(wallpaperLockScreenFilePath)) {
         HILOG_ERROR("Failed to create destination wallpaper lockscreen path, userId:%{public}d, type:%{public}s",
-            userId, WALLPAPER_LOCKSCREEN_DIRNAME.c_str());
+            userId, WALLPAPER_LOCKSCREEN_DIRNAME);
         return false;
     }
     return true;
