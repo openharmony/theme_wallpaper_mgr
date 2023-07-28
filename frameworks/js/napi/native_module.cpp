@@ -76,7 +76,6 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("off", NAPI_Off),
         DECLARE_NAPI_FUNCTION("setVideo", NAPI_SetVideo),
         DECLARE_NAPI_FUNCTION("sendEvent", NAPI_SendEvent),
-        DECLARE_NAPI_FUNCTION("setOffset", NAPI_SetOffset),
         DECLARE_NAPI_FUNCTION("setCustomWallpaper", NAPI_SetCustomWallpaper),
         DECLARE_NAPI_STATIC_PROPERTY("WallpaperType", wallpaperType),
         DECLARE_NAPI_STATIC_PROPERTY("WallpaperResourceType", wallpaperResourceType),

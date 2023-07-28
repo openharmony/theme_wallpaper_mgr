@@ -191,7 +191,6 @@ public:
     static void GetImageInner(std::shared_ptr<GetContextInfo> context, const ApiInfo &apiInfo);
     static void SetVideoInner(std::shared_ptr<SetContextInfo> context);
     static void SendEventInner(std::shared_ptr<GetContextInfo> context);
-    static void SetOffsetInner(std::shared_ptr<SetContextInfo> context);
     static void SetCustomWallpaper(std::shared_ptr<SetContextInfo> context);
 
 private:
@@ -246,7 +245,6 @@ napi_value NAPI_On(napi_env env, napi_callback_info info);
 napi_value NAPI_Off(napi_env env, napi_callback_info info);
 napi_value NAPI_SetVideo(napi_env env, napi_callback_info info);
 napi_value NAPI_SendEvent(napi_env env, napi_callback_info info);
-napi_value NAPI_SetOffset(napi_env env, napi_callback_info info);
 napi_value NAPI_SetCustomWallpaper(napi_env env, napi_callback_info info);
 } // namespace WallpaperNAPI
 } // namespace OHOS

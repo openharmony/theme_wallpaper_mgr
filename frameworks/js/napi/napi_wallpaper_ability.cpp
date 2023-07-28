@@ -724,50 +724,6 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info)
     return result;
 }
 
-napi_value NAPI_SetOffset(napi_env env, napi_callback_info info)
-{
-    auto context = std::make_shared<SetContextInfo>();
-    NapiWallpaperAbility::SetOffsetInner(context);
-    Call call(env, info, context, TWO, true);
-    return call.AsyncCall(env);
-}
-
-void NapiWallpaperAbility::SetOffsetInner(std::shared_ptr<SetContextInfo> context)
-{
-    auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
-        if (!NapiWallpaperAbility::IsValidArgCount(argc, TWO) ||
-            !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_number) ||
-            !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_number)) {
-            HILOG_ERROR("input argc invalid: %{public}zu", argc);
-            context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, PARAMETERERRORMESSAGE);
-            return napi_invalid_arg;
-        }
-        napi_get_value_int32(env, argv[0], &context->xOffset);
-        napi_get_value_int32(env, argv[1], &context->yOffset);
-        HILOG_DEBUG("input xOffset: %{public}d, yOffset: %{public}d", context->xOffset, context->yOffset);
-        return napi_ok;
-    };
-
-    auto output = [context](napi_env env, napi_value *result) -> napi_status {
-        napi_status status = napi_get_boolean(env, context->isSetOffset, result);
-        HILOG_DEBUG("output napi_get_boolean [%{public}d]", status);
-        return status;
-    };
-
-    auto exec = [context](Call::Context *ctx) {
-        ErrorCode wallpaperErrorCode =
-            WallpaperMgrService::WallpaperManagerkits::GetInstance().SetOffset(context->xOffset, context->yOffset);
-        if (wallpaperErrorCode == E_OK) {
-            context->isSetOffset = true;
-        }
-        HILOG_DEBUG("exec SetOffset xOffset: %{public}d, yOffset: %{public}d", context->xOffset, context->yOffset);
-        context->status = napi_ok;
-    };
-
-    context->SetAction(std::move(input), std::move(output));
-    context->SetExecution(std::move(exec));
-}
-
 napi_value NAPI_SetCustomWallpaper(napi_env env, napi_callback_info info)
 {
     auto context = std::make_shared<SetContextInfo>();

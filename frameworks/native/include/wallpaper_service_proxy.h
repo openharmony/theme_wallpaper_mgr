@@ -50,7 +50,6 @@ public:
     ErrorCode SetCustomWallpaper(const std::string &uri, int32_t wallpaperType) override;
     ErrorCode SendEvent(const std::string &eventType) override;
     ErrorCode ConvertIntToErrorCode(int32_t errorCode);
-    ErrorCode SetOffset(int32_t xOffset, int32_t yOffset) override;
 
     ErrorCode SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode GetPixelMapV9(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo) override;

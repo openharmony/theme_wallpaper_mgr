@@ -213,14 +213,6 @@ void SendEventFuzzTest(const uint8_t *data, size_t size)
     WallpaperMgrService::WallpaperManagerkits::GetInstance().SendEvent(eventType);
 }
 
-void SetOffsetFuzzTest(const uint8_t *data, size_t size)
-{
-    int32_t xOffsetValue = *(reinterpret_cast<const int32_t *>(data));
-    int32_t yOffsetValue = *(reinterpret_cast<const int32_t *>(data));
-    GrantNativePermission();
-    WallpaperMgrService::WallpaperManagerkits::GetInstance().SetOffset(xOffsetValue, yOffsetValue);
-}
-
 void SetCustomWallpaperFuzzTest(const uint8_t *data, size_t size)
 {
     uint32_t wallpaperType = ConvertToUint32(data);
@@ -250,7 +242,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::GetFileFuzzTest(data, size);
     OHOS::WallpaperManagerFuzzTest(data, size);
     OHOS::GetPixelMapFuzzTest(data, size);
-    OHOS::SetOffsetFuzzTest(data, size);
     OHOS::SendEventFuzzTest(data, size);
     OHOS::SetVideoFuzzTest(data, size);
     OHOS::SetCustomWallpaperFuzzTest(data, size);

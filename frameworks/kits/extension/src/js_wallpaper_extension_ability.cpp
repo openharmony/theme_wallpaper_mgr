@@ -34,22 +34,11 @@ namespace OHOS {
 namespace AbilityRuntime {
 namespace {
 constexpr size_t ARGC_ONE = 1;
-constexpr size_t ARGC_TWO = 2;
 } // namespace
 struct WorkData {
     NativeEngine *nativeEng;
     int32_t wallpaperType;
     WorkData(NativeEngine *nativeEng, int32_t wallpaperType) : nativeEng(nativeEng), wallpaperType(wallpaperType)
-    {
-    }
-};
-
-struct OffsetWorkData {
-    NativeEngine *nativeEng;
-    int32_t xOffset;
-    int32_t yOffset;
-    OffsetWorkData(NativeEngine *nativeEng, int32_t xOffset, int32_t yOffset)
-        : nativeEng(nativeEng), xOffset(xOffset), yOffset(yOffset)
     {
     }
 };
@@ -148,7 +137,6 @@ void JsWallpaperExtensionAbility::OnStart(const AAFwk::Want &want)
     FinishAsyncTrace(HITRACE_TAG_MISC, "onCreate", static_cast<int32_t>(TraceTaskId::ONCREATE_EXTENSION));
     CallObjectMethod("createWallpaperWin");
     RegisterWallpaperCallback();
-    RegisterOffsetCallback();
     HILOG_INFO("%{public}s end.", __func__);
     FinishAsyncTrace(HITRACE_TAG_MISC, "onCreate", static_cast<int32_t>(TraceTaskId::ONSTART_EXTENSION));
 }
@@ -288,54 +276,6 @@ void JsWallpaperExtensionAbility::RegisterWallpaperCallback()
             UvQueue::Call(reinterpret_cast<napi_env>(nativeEng), workData, afterCallback);
             return true;
         });
-}
-
-void JsWallpaperExtensionAbility::RegisterOffsetCallback()
-{
-    WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterOffsetCallback([](int32_t xOffset,
-                                                                                        int32_t yOffset) -> bool {
-        HILOG_DEBUG("RegisterOffset start");
-        std::lock_guard<std::mutex> lock(mtx);
-        if (JsWallpaperExtensionAbility::jsWallpaperExtensionAbility == nullptr) {
-            return false;
-        }
-        NativeEngine *nativeEng =
-            &(JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->jsRuntime_).GetNativeEngine();
-        OffsetWorkData *workData = new (std::nothrow) OffsetWorkData(nativeEng, xOffset, yOffset);
-        if (workData == nullptr) {
-            return false;
-        }
-        uv_after_work_cb afterCallback = [](uv_work_t *work, int32_t status) {
-            OffsetWorkData *workData = reinterpret_cast<OffsetWorkData *>(work->data);
-            if (workData == nullptr) {
-                delete work;
-                return;
-            }
-            napi_handle_scope scope = nullptr;
-            napi_open_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng), &scope);
-            if (scope == nullptr) {
-                delete workData;
-                delete work;
-                return;
-            }
-            napi_value xOffset =
-                OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng), workData->xOffset);
-            napi_value yOffset =
-                OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng), workData->yOffset);
-            NativeValue *nativeX = reinterpret_cast<NativeValue *>(xOffset);
-            NativeValue *nativeY = reinterpret_cast<NativeValue *>(yOffset);
-            NativeValue *arg[] = { nativeX, nativeY };
-            std::lock_guard<std::mutex> lock(mtx);
-            if (JsWallpaperExtensionAbility::jsWallpaperExtensionAbility != nullptr) {
-                JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->CallObjectMethod("onOffset", arg, ARGC_TWO);
-            }
-            napi_close_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng), scope);
-            delete workData;
-            delete work;
-        };
-        UvQueue::Call(reinterpret_cast<napi_env>(nativeEng), workData, afterCallback);
-        return true;
-    });
 }
 
 } // namespace AbilityRuntime

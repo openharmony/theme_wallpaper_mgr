@@ -102,9 +102,6 @@ constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
 constexpr int32_t DEFAULT_USER_ID = 0;
 constexpr int32_t DEFAULT_VALUE = -1;
 constexpr int32_t MAX_VIDEO_SIZE = 104857600;
-constexpr int32_t MIN_OFFSET = -50;
-constexpr int32_t MAX_OFFSET = 50;
-constexpr double OFFSET_UNIT = 0.01;
 const int CONFIG_LEN = 30;
 
 std::mutex WallpaperService::instanceLock_;
@@ -1382,59 +1379,6 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
         SaveColor(userId, type);
     }
     return wallpaperErrorCode;
-}
-
-ErrorCode WallpaperService::checkSetOffsetPermission()
-{
-    if (!IsSystemApp()) {
-        HILOG_ERROR("current app is not SystemApp");
-        return E_NOT_SYSTEM_APP;
-    }
-    return E_OK;
-}
-
-ErrorCode WallpaperService::SetOffset(int32_t xOffset, int32_t yOffset)
-{
-    HILOG_DEBUG("Current xOffset: %{public}d, yOffset: %{public}d", xOffset, yOffset);
-    if (!IsSystemApp()) {
-        HILOG_ERROR("current app is not SystemApp");
-        return E_NOT_SYSTEM_APP;
-    }
-
-    int32_t userId = QueryActiveUserId();
-    WallpaperData data;
-    if (!GetWallpaperSafeLocked(userId, WALLPAPER_SYSTEM, data)) {
-        HILOG_ERROR("Get wallpaper safe locked failed!");
-        return E_NOT_FOUND;
-    }
-
-    if (data.resourceType != PICTURE) {
-        HILOG_ERROR("Live wallpaper not support offset.");
-        return E_NOT_FOUND;
-    }
-
-    if ((xOffset < MIN_OFFSET || xOffset > MAX_OFFSET) || (yOffset < MIN_OFFSET || yOffset > MAX_OFFSET)) {
-        HILOG_ERROR("Current xOffset %{public}d or yOffset %{public}d is invalid value, must be between -50 and 50",
-            xOffset, yOffset);
-        return E_PARAMETERS_INVALID;
-    }
-    int32_t pyScrWidth = 0;
-    GetWallpaperMinWidth(pyScrWidth);
-    int32_t pyScrHeight = 0;
-    GetWallpaperMinHeight(pyScrHeight);
-    int remainWidthSize = pictureWidth_ - pyScrWidth;
-    int remainHeightSize = pictureHeight_ - pyScrHeight;
-    HILOG_DEBUG("pictureWidth: %{public}d, pyScrWidth: %{public}d, remainWidthSize: %{public}d, remainHeightSize: "
-                "%{public}d",
-        pictureWidth_, pyScrWidth, remainWidthSize, remainHeightSize);
-    int32_t xOffsetPixel = static_cast<int32_t>(remainWidthSize * xOffset * OFFSET_UNIT);
-    int32_t yOffsetPixel = static_cast<int32_t>(remainHeightSize * yOffset * OFFSET_UNIT);
-
-    if (callbackProxy_ != nullptr) {
-        HILOG_DEBUG("Set callbackProxy OnOffsetCall start %{public}d, %{public}d", xOffsetPixel, yOffsetPixel);
-        callbackProxy_->OnOffsetCall(xOffsetPixel, yOffsetPixel);
-    }
-    return E_OK;
 }
 
 void WallpaperService::OnColorsChange(WallpaperType wallpaperType, const ColorManager::Color &color)

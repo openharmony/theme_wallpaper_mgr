@@ -166,19 +166,6 @@ public:
 
     void CloseWallpaperFd(int32_t wallpaperType);
 
-    /**
-     * Sets the wallpaper offset.
-     * @param xOffset Indicates the offset ratio of the X axis.
-     * @param yOffset Indicates the offset ratio of the Y axis.
-     */
-    ErrorCode SetOffset(int32_t xOffset, int32_t yOffset) final;
-
-    JsCallbackOffset GetOffsetCallback() final;
-
-    void SetOffsetCallback(bool (*cb)(int32_t, int32_t)) final;
-
-    bool RegisterOffsetCallback(bool (*offsetCallback)(int32_t, int32_t)) final;
-
 private:
     class DeathRecipient final : public IRemoteObject::DeathRecipient {
     public:
@@ -203,7 +190,6 @@ private:
     std::map<int32_t, int32_t> wallpaperFdMap_;
     std::mutex wallpaperProxyLock_;
     bool (*callback)(int32_t);
-    bool (*offsetCallback)(int32_t, int32_t);
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
