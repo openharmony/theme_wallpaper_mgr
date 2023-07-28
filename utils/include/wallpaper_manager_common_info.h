@@ -18,15 +18,6 @@
 
 #include <string>
 
-static const std::string WALLPAPER_USERID_PATH = "/data/service/el1/public/wallpaper/";
-static const std::string WALLPAPER_LOCKSCREEN_KVFILENAME = "wallpaper_lockscreen";
-static const std::string WALLPAPER_SYSTEM_KVFILENAME = "wallpaper_system";
-static const std::string WALLPAPER_SYSTEM_DIRNAME = "system";
-static const std::string WALLPAPER_TMP_DIRNAME = "fwsettmp";
-static const std::string WALLPAPER_LOCKSCREEN_DIRNAME = "lockscreen";
-static const std::string WALLPAPER_DEFAULT_FILEFULLPATH = "/system/etc/wallpaperdefault.jpeg";
-static const std::string WALLPAPER_DEFAULT_LOCK_FILEFULLPATH = "/system/etc/wallpaperlockdefault.jpeg";
-static const std::string WALLPAPER_CROP_PICTURE = "crop_file";
 enum WallpaperType {
     /**
      * Indicates the home screen wallpaper.
