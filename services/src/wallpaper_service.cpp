@@ -399,7 +399,7 @@ bool WallpaperService::RestoreUserResources(const WallpaperData &wallpaperData, 
                                            : WALLPAPER_DEFAULT_LOCK_FILEFULLPATH;
     if (wallpaperType == WallpaperType::WALLPAPER_SYSTEM) {
         if (FileDeal::IsFileExist(WALLPAPER_PREFABRICATE_FILEFULLPATH)) {
-            wallpaperDefaultPath = WALLPAPER_DEFAULT_FILEFULLPATH;
+            wallpaperDefaultPath = WALLPAPER_PREFABRICATE_FILEFULLPATH;
         }
     } else {
         if (FileDeal::IsFileExist(WALLPAPER_PREFABRICATE_LOCK_FILEFULLPATH)) {
