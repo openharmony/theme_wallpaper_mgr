@@ -26,6 +26,8 @@ static const std::string WALLPAPER_TMP_DIRNAME = "fwsettmp";
 static const std::string WALLPAPER_LOCKSCREEN_DIRNAME = "lockscreen";
 static const std::string WALLPAPER_DEFAULT_FILEFULLPATH = "/system/etc/wallpaperdefault.jpeg";
 static const std::string WALLPAPER_DEFAULT_LOCK_FILEFULLPATH = "/system/etc/wallpaperlockdefault.jpeg";
+static const std::string WALLPAPER_PREFABRICATE_FILEFULLPATH = "/sys_prod/media/themes/wallpaperdefault.jpeg";
+static const std::string WALLPAPER_PREFABRICATE_LOCK_FILEFULLPATH = "/sys_prod/media/themes/wallpaperlockdefault.jpeg";
 static const std::string WALLPAPER_CROP_PICTURE = "crop_file";
 enum WallpaperType {
     /**
