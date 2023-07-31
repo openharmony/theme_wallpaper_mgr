@@ -80,7 +80,6 @@ public:
     ErrorCode Off(const std::string &type, sptr<IWallpaperEventListener> listener) override;
     bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) override;
     int32_t Dump(int32_t fd, const std::vector<std::u16string> &args) override;
-    ErrorCode SetOffset(int32_t xOffset, int32_t yOffset) override;
 
     ErrorCode SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode GetPixelMapV9(int32_t wallpaperType, FdInfo &fdInfo) override;
@@ -139,7 +138,6 @@ private:
     bool CheckUserPermissionById(int32_t userId);
 
     bool SendWallpaperChangeEvent(int32_t userId, WallpaperType wallpaperType);
-    ErrorCode checkSetOffsetPermission();
     ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length, WallpaperResourceType resourceType);
     void OnColorsChange(WallpaperType wallpaperType, const ColorManager::Color &color);
     ErrorCode CheckValid(int32_t wallpaperType, int32_t length, WallpaperResourceType resourceType);

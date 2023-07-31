@@ -43,7 +43,6 @@ enum class WallpaperServiceIpcInterfaceCode {
     SET_VIDEO,
     SET_CUSTOM,
     SEND_EVENT,
-    SET_OFFSET
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

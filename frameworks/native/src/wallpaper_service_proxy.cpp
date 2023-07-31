@@ -555,33 +555,5 @@ ErrorCode WallpaperServiceProxy::ConvertIntToErrorCode(int32_t errorCode)
     }
     return wallpaperErrorCode;
 }
-
-ErrorCode WallpaperServiceProxy::SetOffset(int32_t xOffset, int32_t yOffset)
-{
-    MessageParcel data;
-    MessageParcel reply;
-    MessageOption option;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        HILOG_ERROR("Failed to write parcelable");
-        return E_WRITE_PARCEL_ERROR;
-    }
-
-    if (!data.WriteInt32(xOffset)) {
-        HILOG_ERROR("Failed to WriteInt32 xOffset");
-        return E_WRITE_PARCEL_ERROR;
-    }
-
-    if (!data.WriteInt32(yOffset)) {
-        HILOG_ERROR("Failed to WriteInt32 yOffset");
-        return E_WRITE_PARCEL_ERROR;
-    }
-    int32_t result = Remote()->SendRequest(
-        static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_OFFSET), data, reply, option);
-    if (result != ERR_NONE) {
-        HILOG_ERROR("Set offset failed, result= %{public}d ", result);
-        return E_DEAL_FAILED;
-    }
-    return ConvertIntToErrorCode(reply.ReadInt32());
-}
 } // namespace WallpaperMgrService
 } // namespace OHOS

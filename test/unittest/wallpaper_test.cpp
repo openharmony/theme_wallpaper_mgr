@@ -44,6 +44,7 @@ constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
 constexpr int32_t FOO_MAX_LEN = 60000000;
 constexpr int32_t TEST_USERID = 99;
 constexpr int32_t INVALID_USERID = -1;
+uint64_t selfTokenID_ = 0;
 constexpr const char *URI = "/data/test/theme/wallpaper/wallpaper_test.JPG";
 constexpr const char *URI_30FPS_3S_MP4 = "/data/test/theme/wallpaper/30fps_3s.mp4";
 constexpr const char *URI_15FPS_7S_MP4 = "/data/test/theme/wallpaper/15fps_7s.mp4";
@@ -61,30 +62,66 @@ using namespace OHOS::HiviewDFX;
 using namespace OHOS::MiscServices;
 using namespace OHOS::Security::AccessToken;
 
+static HapPolicyParams policyParams = { .apl = APL_SYSTEM_CORE,
+    .domain = "test.domain",
+    .permList = { { .permissionName = "ohos.permission.GET_WALLPAPER",
+                      .bundleName = "ohos.wallpaper_test.demo",
+                      .grantMode = 1,
+                      .availableLevel = APL_NORMAL,
+                      .label = "label",
+                      .labelId = 1,
+                      .description = "test",
+                      .descriptionId = 1 },
+        { .permissionName = "ohos.permission.SET_WALLPAPER",
+            .bundleName = "ohos.wallpaper_test.demo",
+            .grantMode = 1,
+            .availableLevel = APL_NORMAL,
+            .label = "label",
+            .labelId = 1,
+            .description = "test",
+            .descriptionId = 1 },
+        { .permissionName = "ohos.permission.MANAGE_LOCAL_ACCOUNTS",
+            .bundleName = "ohos.wallpaper_test.demo",
+            .grantMode = 1,
+            .availableLevel = APL_NORMAL,
+            .label = "label",
+            .labelId = 1,
+            .description = "test",
+            .descriptionId = 1 } },
+    .permStateList = { { .permissionName = "ohos.permission.GET_WALLPAPER",
+                           .isGeneral = true,
+                           .resDeviceID = { "local" },
+                           .grantStatus = { PermissionState::PERMISSION_GRANTED },
+                           .grantFlags = { 1 } },
+        { .permissionName = "ohos.permission.SET_WALLPAPER",
+            .isGeneral = true,
+            .resDeviceID = { "local" },
+            .grantStatus = { PermissionState::PERMISSION_GRANTED },
+            .grantFlags = { 1 } },
+        { .permissionName = "ohos.permission.MANAGE_LOCAL_ACCOUNTS",
+            .isGeneral = true,
+            .resDeviceID = { "local" },
+            .grantStatus = { PermissionState::PERMISSION_GRANTED },
+            .grantFlags = { 1 } } } };
+
+HapInfoParams infoParams = { .userID = 1,
+    .bundleName = "wallpaper_service",
+    .instIndex = 0,
+    .appIDDesc = "test",
+    .apiVersion = 9,
+    .isSystemApp = true };
+
 void GrantNativePermission()
 {
-    const char **perms = new const char *[3] {
-        "ohos.permission.GET_WALLPAPER", "ohos.permission.SET_WALLPAPER", "ohos.permission.MANAGE_LOCAL_ACCOUNTS"
-    };
-    TokenInfoParams infoInstance = {
-        .dcapsNum = 0,
-        .permsNum = 3,
-        .aclsNum = 0,
-        .dcaps = nullptr,
-        .perms = perms,
-        .acls = nullptr,
-        .processName = "wallpaper_service",
-        .aplStr = "system_core",
-    };
-    uint64_t tokenId = GetAccessTokenId(&infoInstance);
-    int res = SetSelfTokenID(tokenId);
-    if (res == 0) {
+    selfTokenID_ = GetSelfTokenID();
+    AccessTokenIDEx tokenIdEx = { 0 };
+    tokenIdEx = AccessTokenKit::AllocHapToken(infoParams, policyParams);
+    int32_t ret = SetSelfTokenID(tokenIdEx.tokenIDEx);
+    if (ret == 0) {
         HILOG_INFO("SetSelfTokenID success!");
     } else {
         HILOG_ERROR("SetSelfTokenID fail!");
     }
-    AccessTokenKit::ReloadNativeTokenInfo();
-    delete[] perms;
 }
 
 class WallpaperTest : public testing::Test {
@@ -121,6 +158,8 @@ void WallpaperTest::TearDownTestCase(void)
     ApiInfo apiInfo{ false, false };
     WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
     WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
+    auto ret = SetSelfTokenID(selfTokenID_);
+    HILOG_INFO("SetSelfTokenID ret = %{public}d", ret);
 }
 
 void WallpaperTest::SetUp(void)
@@ -147,8 +186,8 @@ public:
 
     // callback function will be called when the db data is changed.
     void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType) override;
-    void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
-        const std::string &uri) override;
+    void OnWallpaperChange(
+        WallpaperType wallpaperType, WallpaperResourceType resourceType, const std::string &uri) override;
     // reset the callCount_ to zero.
     void ResetToZero();
 
@@ -167,8 +206,8 @@ void WallpaperEventListenerTestImpl::OnColorsChange(const std::vector<uint64_t> 
     wallpaperType_ = wallpaperType;
 }
 
-void WallpaperEventListenerTestImpl::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
-    const std::string &uri)
+void WallpaperEventListenerTestImpl::OnWallpaperChange(
+    WallpaperType wallpaperType, WallpaperResourceType resourceType, const std::string &uri)
 {
     HILOG_INFO("wallpaperType: %{public}d, resourceType: %{public}d, uri: %{public}s",
         static_cast<int32_t>(wallpaperType), static_cast<int32_t>(resourceType), uri.c_str());
@@ -342,9 +381,9 @@ HWTEST_F(WallpaperTest, Reset006, TestSize.Level1)
     HILOG_INFO("Reset006 begin.");
     ApiInfo apiInfo{ true, true };
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
-    EXPECT_EQ(wallpaperErrorCode, E_NOT_SYSTEM_APP) << "Failed to throw permission error";
+    EXPECT_EQ(wallpaperErrorCode, E_OK);
     wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
-    EXPECT_EQ(wallpaperErrorCode, E_NOT_SYSTEM_APP) << "Failed to throw permission error";
+    EXPECT_EQ(wallpaperErrorCode, E_OK);
 }
 /*********************   ResetWallpaper   *********************/
 
@@ -411,9 +450,9 @@ HWTEST_F(WallpaperTest, On002, TestSize.Level1)
     HILOG_INFO("On002 begin");
     auto listener = std::make_shared<WallpaperEventListenerTestImpl>();
     auto status = WallpaperManagerkits::GetInstance().On("wallpaperChange", listener);
-    EXPECT_EQ(status, E_NOT_SYSTEM_APP) << "subscribe wallpaper change.";
+    EXPECT_EQ(status, E_OK);
     auto offSubStatus = WallpaperManagerkits::GetInstance().Off("wallpaperChange", listener);
-    EXPECT_EQ(offSubStatus, E_NOT_SYSTEM_APP) << "unsubscribe wallpaper change.";
+    EXPECT_EQ(offSubStatus, E_OK);
 }
 
 /*********************   On & Off   *********************/
@@ -466,9 +505,9 @@ HWTEST_F(WallpaperTest, GetColors003, TestSize.Level0)
     std::vector<uint64_t> colors;
     ApiInfo apiInfo{ true, true };
     ErrorCode errorCode = WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN, apiInfo, colors);
-    EXPECT_EQ(errorCode, E_NOT_SYSTEM_APP) << "Failed to throw permission error";
+    EXPECT_EQ(errorCode, E_OK);
     errorCode = WallpaperManagerkits::GetInstance().GetColors(SYSTYEM, apiInfo, colors);
-    EXPECT_EQ(errorCode, E_NOT_SYSTEM_APP) << "Failed to throw permission error";
+    EXPECT_EQ(errorCode, E_OK);
 }
 /*********************   GetColors   *********************/
 
@@ -630,7 +669,7 @@ HWTEST_F(WallpaperTest, getMinHeight002, TestSize.Level0)
     int height = 0;
     ApiInfo apiInfo{ true, true };
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetWallpaperMinHeight(apiInfo, height);
-    EXPECT_EQ(wallpaperErrorCode, E_NOT_SYSTEM_APP) << "Failed to throw permission error";
+    EXPECT_EQ(wallpaperErrorCode, E_OK);
 }
 /*********************   GetWallpaperMinHeight   *********************/
 
@@ -663,7 +702,7 @@ HWTEST_F(WallpaperTest, getMinWidth002, TestSize.Level0)
     int width = 0;
     ApiInfo apiInfo{ true, true };
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetWallpaperMinWidth(apiInfo, width);
-    EXPECT_EQ(wallpaperErrorCode, E_NOT_SYSTEM_APP) << "Failed to throw permission error";
+    EXPECT_EQ(wallpaperErrorCode, E_OK);
 }
 /*********************   GetWallpaperMinWidth   *********************/
 
@@ -680,7 +719,7 @@ HWTEST_F(WallpaperTest, GetPixelMap001, TestSize.Level0)
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetPixelMap(SYSTYEM, apiInfo, pixelMap);
-    EXPECT_NE(wallpaperErrorCode, E_OK) << "Normal applications cannot call system APIs";
+    EXPECT_EQ(wallpaperErrorCode, E_OK);
 }
 
 /**
@@ -695,7 +734,7 @@ HWTEST_F(WallpaperTest, GetPixelMap002, TestSize.Level0)
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetPixelMap(LOCKSCREEN, apiInfo, pixelMap);
-    EXPECT_NE(wallpaperErrorCode, E_OK) << "Normal applications cannot call system APIs";
+    EXPECT_EQ(wallpaperErrorCode, E_OK);
 }
 
 /**
@@ -710,9 +749,9 @@ HWTEST_F(WallpaperTest, GetPixelMap003, TestSize.Level0)
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     ApiInfo apiInfo{ true, true };
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetPixelMap(LOCKSCREEN, apiInfo, pixelMap);
-    EXPECT_EQ(wallpaperErrorCode, E_NOT_SYSTEM_APP) << "Failed to throw permission error";
+    EXPECT_EQ(wallpaperErrorCode, E_OK);
     wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetPixelMap(SYSTYEM, apiInfo, pixelMap);
-    EXPECT_EQ(wallpaperErrorCode, E_NOT_SYSTEM_APP) << "Failed to throw permission error";
+    EXPECT_EQ(wallpaperErrorCode, E_OK);
 }
 /*********************   GetPixelMap   *********************/
 
@@ -849,9 +888,9 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri006, TestSize.Level0)
     HILOG_INFO("SetWallpaperByUri006  begin");
     ApiInfo apiInfo{ true, true };
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
-    EXPECT_EQ(wallpaperErrorCode, E_NOT_SYSTEM_APP) << "Failed to throw permission error";
+    EXPECT_EQ(wallpaperErrorCode, E_OK);
     wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, SYSTYEM, apiInfo);
-    EXPECT_EQ(wallpaperErrorCode, E_NOT_SYSTEM_APP) << "Failed to throw permission error";
+    EXPECT_EQ(wallpaperErrorCode, E_OK);
 }
 /*********************   SetWallpaperByUri   *********************/
 
@@ -1061,7 +1100,7 @@ HWTEST_F(WallpaperTest, SetVideo003, TestSize.Level0)
 {
     HILOG_INFO("SetVideo003 begin");
     ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(URI_30FPS_3S_MP4, SYSTYEM);
-    EXPECT_EQ(ret, E_NOT_SYSTEM_APP);
+    EXPECT_EQ(ret, E_OK);
 }
 
 /**
@@ -1114,7 +1153,7 @@ HWTEST_F(WallpaperTest, SetVideo007, TestSize.Level0)
 {
     HILOG_INFO("SetVideo007 begin");
     ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(URI_30FPS_3S_MP4, LOCKSCREEN);
-    EXPECT_EQ(ret, E_NOT_SYSTEM_APP);
+    EXPECT_EQ(ret, E_OK);
 }
 
 /**
@@ -1141,9 +1180,9 @@ HWTEST_F(WallpaperTest, SetCustomWallpaper001, TestSize.Level0)
 {
     HILOG_INFO("SetCustomWallpaper001 begin");
     ErrorCode ret = WallpaperManagerkits::GetInstance().SetCustomWallpaper(URI, SYSTYEM);
-    EXPECT_EQ(ret, E_NOT_SYSTEM_APP);
+    EXPECT_EQ(ret, E_NO_PERMISSION);
     ret = WallpaperManagerkits::GetInstance().SetCustomWallpaper(URI, LOCKSCREEN);
-    EXPECT_EQ(ret, E_NOT_SYSTEM_APP);
+    EXPECT_EQ(ret, E_NO_PERMISSION);
 }
 
 /*********************   SendEvent    *********************/
@@ -1188,39 +1227,19 @@ HWTEST_F(WallpaperTest, SendEvent003, TestSize.Level0)
     EXPECT_EQ(ret, E_OK);
 }
 
-/*********************   SetOffset   *********************/
 /**
- * @tc.name:    SetOffset_Normal_001
- * @tc.desc:    SetOffset nomral test xOffset.
+ * @tc.name:    WallpaperTest_001
+ * @tc.desc:    Test Onstop and OnStart.
  * @tc.type:    FUNC
- * @tc.require: issueI6R07J
+ * @tc.require: issueI7OUB6
  */
-HWTEST_F(WallpaperTest, SetOffset_Normal_001, TestSize.Level0)
+HWTEST_F(WallpaperTest, WallpaperTest_001, TestSize.Level0)
 {
-    HILOG_INFO("SetOffset_001 begin");
-    ErrorCode ret = WallpaperManagerkits::GetInstance().SetOffset(10, 0);
-    EXPECT_EQ(ret, E_NOT_SYSTEM_APP);
-    WallpaperManagerkits::GetInstance().SetOffset(-10, 0);
-    ret = WallpaperManagerkits::GetInstance().SetOffset(50, 0);
-    EXPECT_EQ(ret, E_NOT_SYSTEM_APP);
+    HILOG_INFO("Test Onstop");
+    std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
+    wallpaperService->state_ = WallpaperService::ServiceRunningState::STATE_RUNNING;
+    wallpaperService->OnStop();
+    EXPECT_EQ(wallpaperService->state_, WallpaperService::ServiceRunningState::STATE_NOT_START);
 }
-
-/**
- * @tc.name:    SetOffset_Abnomral_001
- * @tc.desc:    SetOffset abnomral test yOffset.
- * @tc.type:    FUNC
- * @tc.require: issueI6R07J
- */
-HWTEST_F(WallpaperTest, SetOffset_Abnomral_001, TestSize.Level0)
-{
-    HILOG_INFO("SetOffset_002 begin");
-    ErrorCode ret = WallpaperManagerkits::GetInstance().SetOffset(0, 10);
-    EXPECT_EQ(ret, E_NOT_SYSTEM_APP);
-    WallpaperManagerkits::GetInstance().SetOffset(0, -10);
-    ret = WallpaperManagerkits::GetInstance().SetOffset(0, 60);
-    EXPECT_EQ(ret, E_NOT_SYSTEM_APP);
-}
-
-/*********************   SetOffset   *********************/
 } // namespace WallpaperMgrService
 } // namespace OHOS

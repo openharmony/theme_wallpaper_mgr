@@ -60,7 +60,6 @@ WallpaperServiceStub::WallpaperServiceStub()
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_VIDEO] = &WallpaperServiceStub::OnSetVideo;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_CUSTOM] = &WallpaperServiceStub::OnSetCustomWallpaper;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::SEND_EVENT] = &WallpaperServiceStub::OnSendEvent;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_OFFSET] = &WallpaperServiceStub::OnSetOffset;
 }
 
 WallpaperServiceStub::~WallpaperServiceStub()
@@ -83,7 +82,7 @@ int32_t WallpaperServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data
     pid_t p1 = IPCSkeleton::GetCallingUid();
     HILOG_INFO("CallingPid = %{public}d, CallingUid = %{public}d, code = %{public}u", p, p1, code);
     if (code >= static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_WALLPAPER) &&
-        code <= static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_OFFSET)) {
+        code <= static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SEND_EVENT)) {
         auto itFunc = memberFuncMap_.find(static_cast<WallpaperServiceIpcInterfaceCode>(code));
         if (itFunc != memberFuncMap_.end()) {
             auto memberFunc = itFunc->second;
@@ -471,19 +470,6 @@ int32_t WallpaperServiceStub::OnRegisterWallpaperCallback(MessageParcel &data, M
     status = RegisterWallpaperCallback(callbackProxy);
     int32_t ret = status ? static_cast<int32_t>(E_OK) : static_cast<int32_t>(E_DEAL_FAILED);
     if (!reply.WriteInt32(ret)) {
-        HILOG_ERROR("WriteInt32 failed");
-        return IPC_STUB_WRITE_PARCEL_ERR;
-    }
-    return ERR_NONE;
-}
-
-int32_t WallpaperServiceStub::OnSetOffset(MessageParcel &data, MessageParcel &reply)
-{
-    HILOG_DEBUG("WallpaperServiceStub::OnSetOffset start.");
-    int32_t xOffset = data.ReadInt32();
-    int32_t yOffset = data.ReadInt32();
-    ErrorCode ret = SetOffset(xOffset, yOffset);
-    if (!reply.WriteInt32(static_cast<int32_t>(ret))) {
         HILOG_ERROR("WriteInt32 failed");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
