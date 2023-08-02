@@ -69,18 +69,6 @@ public:
     virtual int GetWallpaperId(int32_t wallpaperType) = 0;
 
     /**
-     * Obtains the minimum height of the wallpaper.
-     * @return number type of callback function
-     */
-    virtual ErrorCode GetWallpaperMinHeight(int32_t &minHeight) = 0;
-
-    /**
-     * Obtains the minimum width of the wallpaper.
-     * @return number type of callback function
-     */
-    virtual ErrorCode GetWallpaperMinWidth(int32_t &minWidth) = 0;
-
-    /**
      * Checks whether to allow the application to change the wallpaper for the current user.
      * @return boolean type of callback function
      */

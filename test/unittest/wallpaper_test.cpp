@@ -649,7 +649,7 @@ HWTEST_F(WallpaperTest, GetFile004, TestSize.Level0)
 */
 HWTEST_F(WallpaperTest, getMinHeight001, TestSize.Level0)
 {
-    HILOG_INFO("WallpaperReset001  begin");
+    HILOG_INFO("getMinHeight001  begin");
     int height = 0;
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetWallpaperMinHeight(apiInfo, height);
