@@ -48,10 +48,6 @@ WallpaperServiceStub::WallpaperServiceStub()
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_WALLPAPER_V9] = &WallpaperServiceStub::OnSetWallpaperV9;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_PIXELMAP_V9] = &WallpaperServiceStub::OnGetPixelMapV9;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_COLORS_V9] = &WallpaperServiceStub::OnGetColorsV9;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_WALLPAPER_MIN_HEIGHT_V9] =
-        &WallpaperServiceStub::OnGetWallpaperMinHeightV9;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_WALLPAPER_MIN_WIDTH_V9] =
-        &WallpaperServiceStub::OnGetWallpaperMinWidthV9;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::RESET_WALLPAPER_V9] = &WallpaperServiceStub::OnResetWallpaperV9;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_VIDEO] = &WallpaperServiceStub::OnSetVideo;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_CUSTOM] = &WallpaperServiceStub::OnSetCustomWallpaper;
