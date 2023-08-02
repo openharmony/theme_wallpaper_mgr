@@ -73,10 +73,6 @@ class WallpaperExtensionAbility {
   onDestroy() {
     console.log(`${WindowName} onWallpaperExtensionAbilityDestroy`);
   }
-
-  onOffset(xOffset, yOffset) {
-    console.log(`${WindowName} onOffset ${xOffset}, ${yOffset} `);
-  }
 }
 
 export default WallpaperExtensionAbility;

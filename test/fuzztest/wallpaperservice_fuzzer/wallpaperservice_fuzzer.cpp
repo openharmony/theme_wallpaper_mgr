@@ -41,7 +41,7 @@ uint32_t ConvertToUint32(const uint8_t *ptr)
 bool FuzzWallpaperService(const uint8_t *rawData, size_t size)
 {
     uint32_t code =
-        ConvertToUint32(rawData) % (static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_OFFSET) + 1);
+        ConvertToUint32(rawData) % (static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SEND_EVENT) + 1);
     MessageParcel data;
     data.WriteInterfaceToken(WALLPAPERSERVICES_INTERFACE_TOKEN);
     data.WriteBuffer(rawData, size);

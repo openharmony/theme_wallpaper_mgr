@@ -56,7 +56,6 @@ private:
     int32_t OnSetVideo(MessageParcel &data, MessageParcel &reply);
     int32_t OnSetCustomWallpaper(MessageParcel &data, MessageParcel &reply);
     int32_t OnSendEvent(MessageParcel &data, MessageParcel &reply);
-    int32_t OnSetOffset(MessageParcel &data, MessageParcel &reply);
 
     using WallpaperServiceFunc = int32_t (WallpaperServiceStub::*)(MessageParcel &data, MessageParcel &reply);
     std::map<WallpaperServiceIpcInterfaceCode, WallpaperServiceFunc> memberFuncMap_;

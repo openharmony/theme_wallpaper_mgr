@@ -669,46 +669,5 @@ ErrorCode WallpaperManager::CheckWallpaperFormat(const std::string &realPath, bo
     return E_OK;
 }
 
-ErrorCode WallpaperManager::SetOffset(int32_t xOffset, int32_t yOffset)
-{
-    auto wallpaperServerProxy = GetService();
-    if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
-        return E_DEAL_FAILED;
-    }
-    return wallpaperServerProxy->SetOffset(xOffset, yOffset);
-}
-
-JsCallbackOffset WallpaperManager::GetOffsetCallback()
-{
-    return offsetCallback;
-}
-
-void WallpaperManager::SetOffsetCallback(bool (*cb)(int32_t, int32_t))
-{
-    offsetCallback = cb;
-}
-
-bool WallpaperManager::RegisterOffsetCallback(bool (*offsetCallback)(int32_t, int32_t))
-{
-    if (offsetCallback == nullptr) {
-        HILOG_ERROR("offsetCallback is nullptr.");
-        return false;
-    }
-
-    SetOffsetCallback(offsetCallback);
-    auto wallpaperServerProxy = GetService();
-    if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
-        return false;
-    }
-
-    bool status = wallpaperServerProxy->RegisterWallpaperCallback(new WallpaperServiceCbStub());
-    if (!status) {
-        HILOG_ERROR("Set offset failed code=%d.", ERR_NONE);
-        return false;
-    }
-    return true;
-}
 } // namespace WallpaperMgrService
 } // namespace OHOS

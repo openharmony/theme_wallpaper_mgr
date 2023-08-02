@@ -111,7 +111,6 @@ public:
 
 private:
     void RegisterWallpaperCallback();
-    void RegisterOffsetCallback();
 
 private:
     NativeValue *CallObjectMethod(const std::string &name, NativeValue *const *argv = nullptr, size_t argc = 0);

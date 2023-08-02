@@ -37,32 +37,5 @@ int32_t WallpaperServiceCbProxy::OnCall(const int32_t wallpaperType)
     Remote()->SendRequest(ONCALL, data, reply, option);
     return 0;
 }
-
-int32_t WallpaperServiceCbProxy::OnOffsetCall(const int32_t xOffset, const int32_t yOffset)
-{
-    HILOG_INFO("WallpaperServiceCbProxy::OnOffsetCall start");
-    MessageParcel data;
-    MessageParcel reply;
-    MessageOption option;
-
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        HILOG_ERROR("Failed to write parcelable ");
-        return E_WRITE_PARCEL_ERROR;
-    }
-    if (!data.WriteInt32(xOffset)) {
-        HILOG_ERROR("Failed to WriteInt32 xOffset");
-        return E_WRITE_PARCEL_ERROR;
-    }
-    if (!data.WriteInt32(yOffset)) {
-        HILOG_ERROR("Failed to WriteInt32 yOffset");
-        return E_WRITE_PARCEL_ERROR;
-    }
-    int32_t ret = Remote()->SendRequest(ON_OFFSET_CALL, data, reply, option);
-    if (ret != ERR_NONE) {
-        HILOG_ERROR("OnLiveCall, rpc error code = %{public}d", ret);
-        return E_DEAL_FAILED;
-    }
-    return ret;
-}
 } // namespace WallpaperMgrService
 } // namespace OHOS

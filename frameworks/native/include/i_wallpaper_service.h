@@ -152,13 +152,6 @@ public:
      * @return ErrorCode
      */
     virtual ErrorCode SendEvent(const std::string &eventType) = 0;
-
-    /**
-     * Sets the wallpaper offset.
-     * @param xOffset Indicates the offset ratio of the X axis.
-     * @param yOffset Indicates the offset ratio of the Y axis.
-     */
-    virtual ErrorCode SetOffset(int32_t xOffset, int32_t yOffset) = 0;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
