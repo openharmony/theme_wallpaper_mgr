@@ -25,7 +25,6 @@
 #include "accesstoken_kit.h"
 #include "component_name.h"
 #include "concurrent_map.h"
-#include "display_manager.h"
 #include "event_handler.h"
 #include "fault_reporter.h"
 #include "file_deal.h"
@@ -71,8 +70,6 @@ public:
     ErrorCode GetColors(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
     ErrorCode GetFile(int32_t wallpaperType, int32_t &wallpaperFd) override;
     int32_t GetWallpaperId(int32_t wallpaperType) override;
-    ErrorCode GetWallpaperMinHeight(int32_t &minHeight) override;
-    ErrorCode GetWallpaperMinWidth(int32_t &minWidth) override;
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
     ErrorCode ResetWallpaper(int32_t wallpaperType) override;
@@ -85,8 +82,6 @@ public:
     ErrorCode SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode GetPixelMapV9(int32_t wallpaperType, FdInfo &fdInfo) override;
     ErrorCode GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
-    ErrorCode GetWallpaperMinHeightV9(int32_t &minHeight) override;
-    ErrorCode GetWallpaperMinWidthV9(int32_t &minWidth) override;
     ErrorCode ResetWallpaperV9(int32_t wallpaperType) override;
     ErrorCode SetVideo(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode SetCustomWallpaper(const std::string &uri, int32_t wallpaperType) override;
@@ -109,7 +104,6 @@ protected:
     void OnAddSystemAbility(int32_t systemAbilityId, const std::string &deviceId) override;
 
 private:
-    int32_t GetDisplayId();
     void InitData();
     void InitResources(int32_t userId, WallpaperType wallpaperType);
     void InitQueryUserId(int32_t times);

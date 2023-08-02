@@ -39,8 +39,10 @@
 #include "image_type.h"
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
+#include "tokenid_kit.h"
 #include "wallpaper_service_cb_stub.h"
 #include "wallpaper_service_proxy.h"
+#include "display_manager.h"
 
 namespace OHOS {
 using namespace MiscServices;
@@ -49,6 +51,9 @@ constexpr int32_t OPTION_QUALITY = 100;
 constexpr int32_t MIN_TIME = 0;
 constexpr int32_t MAX_TIME = 5000;
 constexpr int32_t MAX_VIDEO_SIZE = 104857600;
+
+using namespace OHOS::Security::AccessToken;
+using namespace OHOS::Media;
 
 WallpaperManager::WallpaperManager()
 {
@@ -391,28 +396,38 @@ int32_t WallpaperManager::GetWallpaperId(int32_t wallpaperType)
 
 ErrorCode WallpaperManager::GetWallpaperMinHeight(const ApiInfo &apiInfo, int32_t &minHeight)
 {
-    auto wallpaperServerProxy = GetService();
-    if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+    if (apiInfo.isSystemApi) {
+        uint64_t tokenId = IPCSkeleton::GetCallingFullTokenID();
+        if (!TokenIdKit::IsSystemAppByFullTokenID(tokenId)) {
+            HILOG_ERROR("current app is not SystemApp");
+            return E_NOT_SYSTEM_APP;
+        }
+    }
+    auto display = Rosen::DisplayManager::GetInstance().GetDefaultDisplay();
+    if (display == nullptr) {
+        HILOG_ERROR("GetDefaultDisplay is nullptr");
         return E_DEAL_FAILED;
     }
-    if (apiInfo.isSystemApi) {
-        return wallpaperServerProxy->GetWallpaperMinHeightV9(minHeight);
-    }
-    return wallpaperServerProxy->GetWallpaperMinHeight(minHeight);
+    minHeight = display->GetHeight();
+    return E_OK;
 }
 
 ErrorCode WallpaperManager::GetWallpaperMinWidth(const ApiInfo &apiInfo, int32_t &minWidth)
 {
-    auto wallpaperServerProxy = GetService();
-    if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+    if (apiInfo.isSystemApi) {
+        uint64_t tokenId = IPCSkeleton::GetCallingFullTokenID();
+        if (!TokenIdKit::IsSystemAppByFullTokenID(tokenId)) {
+            HILOG_ERROR("current app is not SystemApp");
+            return E_NOT_SYSTEM_APP;
+        }
+    }
+    auto display = Rosen::DisplayManager::GetInstance().GetDefaultDisplay();
+    if (display == nullptr) {
+        HILOG_ERROR("GetDefaultDisplay is nullptr");
         return E_DEAL_FAILED;
     }
-    if (apiInfo.isSystemApi) {
-        return wallpaperServerProxy->GetWallpaperMinWidthV9(minWidth);
-    }
-    return wallpaperServerProxy->GetWallpaperMinWidth(minWidth);
+    minWidth = display->GetWidth();
+    return E_OK;
 }
 
 bool WallpaperManager::IsChangePermitted()
