@@ -108,8 +108,6 @@ public:
     virtual ErrorCode SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length) = 0;
     virtual ErrorCode GetPixelMapV9(int32_t wallpaperType, FdInfo &fdInfo) = 0;
     virtual ErrorCode GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors) = 0;
-    virtual ErrorCode GetWallpaperMinHeightV9(int32_t &minHeight) = 0;
-    virtual ErrorCode GetWallpaperMinWidthV9(int32_t &minWidth) = 0;
     virtual ErrorCode ResetWallpaperV9(int32_t wallpaperType) = 0;
 
     /**
