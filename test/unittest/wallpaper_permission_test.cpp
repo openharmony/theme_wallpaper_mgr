@@ -20,7 +20,6 @@
 #include "hilog_wrapper.h"
 #include "image_packer.h"
 #include "pixel_map.h"
-#include "tokenid_kit.h"
 #include "wallpaper_manager.h"
 #include "wallpaper_manager_kits.h"
 
