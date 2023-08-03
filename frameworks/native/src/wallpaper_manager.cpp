@@ -28,6 +28,7 @@
 #include <unistd.h>
 
 #include "dfx_types.h"
+#include "display_manager.h"
 #include "file_deal.h"
 #include "file_ex.h"
 #include "hilog_wrapper.h"
@@ -42,7 +43,6 @@
 #include "tokenid_kit.h"
 #include "wallpaper_service_cb_stub.h"
 #include "wallpaper_service_proxy.h"
-#include "display_manager.h"
 
 namespace OHOS {
 using namespace MiscServices;
