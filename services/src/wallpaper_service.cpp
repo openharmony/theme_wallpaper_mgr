@@ -160,8 +160,8 @@ void WallpaperService::OnStart()
     AddSystemAbilityListener(COMMON_EVENT_SERVICE_ID);
     auto cmd = std::make_shared<Command>(std::vector<std::string>({ "-all" }), "Show all",
         [this](const std::vector<std::string> &input, std::string &output) -> bool {
-            std::string bundleName(OHOS_WALLPAPER_BUNDLE_NAME);
-            output.append("WallpaperExtensionAbility\t: ExtensionInfo{" + bundleName + "}\n");
+            output.append(
+                "WallpaperExtensionAbility\t: ExtensionInfo{" + std::string(OHOS_WALLPAPER_BUNDLE_NAME) + "}\n");
             return true;
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
