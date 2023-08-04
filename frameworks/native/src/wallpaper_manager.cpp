@@ -40,7 +40,6 @@
 #include "image_type.h"
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
-#include "tokenid_kit.h"
 #include "wallpaper_service_cb_stub.h"
 #include "wallpaper_service_proxy.h"
 
@@ -396,13 +395,6 @@ int32_t WallpaperManager::GetWallpaperId(int32_t wallpaperType)
 
 ErrorCode WallpaperManager::GetWallpaperMinHeight(const ApiInfo &apiInfo, int32_t &minHeight)
 {
-    if (apiInfo.isSystemApi) {
-        uint64_t tokenId = IPCSkeleton::GetCallingFullTokenID();
-        if (!TokenIdKit::IsSystemAppByFullTokenID(tokenId)) {
-            HILOG_ERROR("current app is not SystemApp");
-            return E_NOT_SYSTEM_APP;
-        }
-    }
     auto display = Rosen::DisplayManager::GetInstance().GetDefaultDisplay();
     if (display == nullptr) {
         HILOG_ERROR("GetDefaultDisplay is nullptr");
@@ -414,13 +406,6 @@ ErrorCode WallpaperManager::GetWallpaperMinHeight(const ApiInfo &apiInfo, int32_
 
 ErrorCode WallpaperManager::GetWallpaperMinWidth(const ApiInfo &apiInfo, int32_t &minWidth)
 {
-    if (apiInfo.isSystemApi) {
-        uint64_t tokenId = IPCSkeleton::GetCallingFullTokenID();
-        if (!TokenIdKit::IsSystemAppByFullTokenID(tokenId)) {
-            HILOG_ERROR("current app is not SystemApp");
-            return E_NOT_SYSTEM_APP;
-        }
-    }
     auto display = Rosen::DisplayManager::GetInstance().GetDefaultDisplay();
     if (display == nullptr) {
         HILOG_ERROR("GetDefaultDisplay is nullptr");

@@ -46,7 +46,6 @@ ohos_shared_library("wallpapermanager") {
   public_configs = [ ":wallpaper_manager_config" ]
   deps = [ "${utils_path}:wallpaper_utils" ]
   external_deps = [
-    "access_token:libtokenid_sdk",
     "c_utils:utils",
     "hilog:libhilog",
     "hitrace:hitrace_meter",
@@ -77,7 +76,6 @@ ohos_static_library("wallpapermanager_static") {
   public_configs = [ ":wallpaper_manager_config" ]
   deps = [ "${utils_path}:wallpaper_utils" ]
   external_deps = [
-    "access_token:libaccesstoken_sdk",
     "c_utils:utils",
     "hilog:libhilog",
     "hitrace:hitrace_meter",
