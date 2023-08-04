@@ -51,7 +51,6 @@ constexpr int32_t MIN_TIME = 0;
 constexpr int32_t MAX_TIME = 5000;
 constexpr int32_t MAX_VIDEO_SIZE = 104857600;
 
-using namespace OHOS::Security::AccessToken;
 using namespace OHOS::Media;
 
 WallpaperManager::WallpaperManager()
