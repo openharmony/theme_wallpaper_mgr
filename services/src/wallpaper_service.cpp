@@ -18,7 +18,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <display_type.h>
 #include <fcntl.h>
 #include <iostream>
 #include <sys/prctl.h>
@@ -161,14 +160,8 @@ void WallpaperService::OnStart()
     AddSystemAbilityListener(COMMON_EVENT_SERVICE_ID);
     auto cmd = std::make_shared<Command>(std::vector<std::string>({ "-all" }), "Show all",
         [this](const std::vector<std::string> &input, std::string &output) -> bool {
-            int32_t height = 0;
-            int32_t width = 0;
-            GetWallpaperMinHeight(height);
-            GetWallpaperMinWidth(width);
-            std::string bundleName(OHOS_WALLPAPER_BUNDLE_NAME);
-            output.append("height\t\t\t: " + std::to_string(height) + "\n")
-                .append("width\t\t\t: " + std::to_string(width) + "\n")
-                .append("WallpaperExtensionAbility\t: ExtensionInfo{" + bundleName + "}\n");
+            output.append(
+                "WallpaperExtensionAbility\t: ExtensionInfo{" + std::string(OHOS_WALLPAPER_BUNDLE_NAME) + "}\n");
             return true;
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
@@ -487,12 +480,6 @@ void WallpaperService::GrantUriPermissionByUserId(int32_t userId)
 void WallpaperService::OnBootPhase()
 {
     HILOG_INFO("WallpaperService OnBootPhase");
-}
-
-int32_t WallpaperService::GetDisplayId()
-{
-    int32_t displayid = 0;
-    return displayid;
 }
 
 std::string WallpaperService::GetWallpaperDir(int32_t userId, WallpaperType wallpaperType)
@@ -934,48 +921,6 @@ int32_t WallpaperService::GetWallpaperId(int32_t wallpaperType)
     }
     HILOG_INFO("WallpaperService::GetWallpaperId --> end ID[%{public}d]", iWallpaperId);
     return iWallpaperId;
-}
-
-ErrorCode WallpaperService::GetWallpaperMinHeight(int32_t &minHeight)
-{
-    HILOG_INFO("WallpaperService::GetWallpaperMinHeight --> start ");
-    auto display = Rosen::DisplayManager::GetInstance().GetDefaultDisplay();
-    if (display == nullptr) {
-        HILOG_ERROR("GetDefaultDisplay is nullptr");
-        return E_DEAL_FAILED;
-    }
-    minHeight = display->GetHeight();
-    return E_OK;
-}
-
-ErrorCode WallpaperService::GetWallpaperMinHeightV9(int32_t &minHeight)
-{
-    if (!IsSystemApp()) {
-        HILOG_INFO("CallingApp is not SystemApp");
-        return E_NOT_SYSTEM_APP;
-    }
-    return GetWallpaperMinHeight(minHeight);
-}
-
-ErrorCode WallpaperService::GetWallpaperMinWidth(int32_t &minWidth)
-{
-    HILOG_INFO("WallpaperService::GetWallpaperMinWidth --> start ");
-    auto display = Rosen::DisplayManager::GetInstance().GetDefaultDisplay();
-    if (display == nullptr) {
-        HILOG_ERROR("GetDefaultDisplay is nullptr");
-        return E_DEAL_FAILED;
-    }
-    minWidth = display->GetWidth();
-    return E_OK;
-}
-
-ErrorCode WallpaperService::GetWallpaperMinWidthV9(int32_t &minWidth)
-{
-    if (!IsSystemApp()) {
-        HILOG_INFO("CallingApp is not SystemApp");
-        return E_NOT_SYSTEM_APP;
-    }
-    return GetWallpaperMinWidth(minWidth);
 }
 
 bool WallpaperService::IsChangePermitted()

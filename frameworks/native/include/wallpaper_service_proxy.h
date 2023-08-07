@@ -38,8 +38,6 @@ public:
     ErrorCode GetColors(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
     ErrorCode GetFile(int32_t wallpaperType, int32_t &wallpaperFd) override;
     int32_t GetWallpaperId(int32_t wallpaperType) override;
-    ErrorCode GetWallpaperMinHeight(int32_t &minHeight) override;
-    ErrorCode GetWallpaperMinWidth(int32_t &minWidth) override;
     bool IsChangePermitted() override;
     bool IsOperationAllowed() override;
     ErrorCode ResetWallpaper(int wallpaperType) override;
@@ -54,8 +52,6 @@ public:
     ErrorCode SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode GetPixelMapV9(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo) override;
     ErrorCode GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
-    ErrorCode GetWallpaperMinHeightV9(int32_t &minHeight) override;
-    ErrorCode GetWallpaperMinWidthV9(int32_t &minWidth) override;
     ErrorCode ResetWallpaperV9(int wallpaperType) override;
 
 private:
@@ -65,8 +61,6 @@ private:
         int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code, IWallpaperService::FdInfo &fdInfo);
     ErrorCode GetColorsInner(
         int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code, std::vector<uint64_t> &colors);
-    ErrorCode GetWallpaperMinHeightInner(WallpaperServiceIpcInterfaceCode code, int32_t &minHeight);
-    ErrorCode GetWallpaperMinWidthInner(WallpaperServiceIpcInterfaceCode code, int32_t &minWidth);
     ErrorCode ResetWallpaperInner(int wallpaperType, WallpaperServiceIpcInterfaceCode code);
     bool StartSocket(std::string uri, std::string name);
     static inline BrokerDelegator<WallpaperServiceProxy> delegator_;

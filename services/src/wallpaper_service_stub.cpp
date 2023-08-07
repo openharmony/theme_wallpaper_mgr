@@ -37,10 +37,6 @@ WallpaperServiceStub::WallpaperServiceStub()
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_COLORS] = &WallpaperServiceStub::OnGetColors;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_WALLPAPER_ID] = &WallpaperServiceStub::OnGetWallpaperId;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_FILE] = &WallpaperServiceStub::OnGetFile;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_WALLPAPER_MIN_HEIGHT] =
-        &WallpaperServiceStub::OnGetWallpaperMinHeight;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_WALLPAPER_MIN_WIDTH] =
-        &WallpaperServiceStub::OnGetWallpaperMinWidth;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::ON] = &WallpaperServiceStub::OnWallpaperOn;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::OFF] = &WallpaperServiceStub::OnWallpaperOff;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::IS_CHANGE_PERMITTED] = &WallpaperServiceStub::OnIsChangePermitted;
@@ -52,10 +48,6 @@ WallpaperServiceStub::WallpaperServiceStub()
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_WALLPAPER_V9] = &WallpaperServiceStub::OnSetWallpaperV9;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_PIXELMAP_V9] = &WallpaperServiceStub::OnGetPixelMapV9;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_COLORS_V9] = &WallpaperServiceStub::OnGetColorsV9;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_WALLPAPER_MIN_HEIGHT_V9] =
-        &WallpaperServiceStub::OnGetWallpaperMinHeightV9;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_WALLPAPER_MIN_WIDTH_V9] =
-        &WallpaperServiceStub::OnGetWallpaperMinWidthV9;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::RESET_WALLPAPER_V9] = &WallpaperServiceStub::OnResetWallpaperV9;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_VIDEO] = &WallpaperServiceStub::OnSetVideo;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_CUSTOM] = &WallpaperServiceStub::OnSetCustomWallpaper;
@@ -274,74 +266,6 @@ int32_t WallpaperServiceStub::OnGetWallpaperId(MessageParcel &data, MessageParce
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     HILOG_INFO("End. Id[%{public}d]", wallpaperId);
-    return ERR_NONE;
-}
-
-int32_t WallpaperServiceStub::OnGetWallpaperMinHeight(MessageParcel &data, MessageParcel &reply)
-{
-    return OnGetWallpaperMinHeightInner(data, reply, false);
-}
-
-int32_t WallpaperServiceStub::OnGetWallpaperMinHeightV9(MessageParcel &data, MessageParcel &reply)
-{
-    return OnGetWallpaperMinHeightInner(data, reply, true);
-}
-
-int32_t WallpaperServiceStub::OnGetWallpaperMinHeightInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi)
-{
-    HILOG_INFO("WallpaperServiceStub::OnGetWallpaperMinHeight start.");
-    int32_t wallpaperMinHeight = 0;
-    ErrorCode wallpaperErrorCode = E_UNKNOWN;
-    if (isSystemApi) {
-        wallpaperErrorCode = GetWallpaperMinHeightV9(wallpaperMinHeight);
-    } else {
-        wallpaperErrorCode = GetWallpaperMinHeight(wallpaperMinHeight);
-    }
-    if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
-        HILOG_ERROR("WriteInt32 fail");
-        return IPC_STUB_WRITE_PARCEL_ERR;
-    }
-    if (wallpaperErrorCode == E_OK) {
-        if (!reply.WriteInt32(wallpaperMinHeight)) {
-            HILOG_ERROR("Write result data failed");
-            return IPC_STUB_WRITE_PARCEL_ERR;
-        }
-    }
-    HILOG_INFO("End. height[%{public}d]", wallpaperMinHeight);
-    return ERR_NONE;
-}
-
-int32_t WallpaperServiceStub::OnGetWallpaperMinWidth(MessageParcel &data, MessageParcel &reply)
-{
-    return OnGetWallpaperMinWidthInner(data, reply, false);
-}
-
-int32_t WallpaperServiceStub::OnGetWallpaperMinWidthV9(MessageParcel &data, MessageParcel &reply)
-{
-    return OnGetWallpaperMinWidthInner(data, reply, true);
-}
-
-int32_t WallpaperServiceStub::OnGetWallpaperMinWidthInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi)
-{
-    HILOG_INFO("WallpaperServiceStub::OnGetWallpaperMinWidth start.");
-    int32_t wallpaperMinWidth = 0;
-    ErrorCode wallpaperErrorCode = E_UNKNOWN;
-    if (isSystemApi) {
-        wallpaperErrorCode = GetWallpaperMinWidthV9(wallpaperMinWidth);
-    } else {
-        wallpaperErrorCode = GetWallpaperMinWidth(wallpaperMinWidth);
-    }
-    if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
-        HILOG_ERROR("WriteInt32 fail");
-        return IPC_STUB_WRITE_PARCEL_ERR;
-    }
-    if (wallpaperErrorCode == E_OK) {
-        if (!reply.WriteInt32(wallpaperMinWidth)) {
-            HILOG_ERROR("Write result data failed");
-            return IPC_STUB_WRITE_PARCEL_ERR;
-        }
-    }
-    HILOG_INFO("End. width[%{public}d]", wallpaperMinWidth);
     return ERR_NONE;
 }
 
