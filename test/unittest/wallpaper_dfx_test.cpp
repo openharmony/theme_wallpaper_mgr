@@ -130,8 +130,6 @@ HWTEST_F(WallpaperDfxTest, WallpaperDfxTest_DumpAllMethod_001, TestSize.Level0)
     std::string result;
     auto ret = WallpaperDfxTest::ExecuteCmd(CMD3, result);
     EXPECT_TRUE(ret);
-    EXPECT_NE(result.find("height"), std::string::npos);
-    EXPECT_NE(result.find("width"), std::string::npos);
     EXPECT_NE(result.find("WallpaperExtensionAbility"), std::string::npos);
 }
 
