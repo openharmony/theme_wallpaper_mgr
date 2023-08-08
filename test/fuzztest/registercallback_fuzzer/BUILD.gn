@@ -1,0 +1,68 @@
+# Copyright (c) 2023 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("../../../wallpaper.gni")
+
+#####################hydra-fuzz###################
+import("//build/config/features.gni")
+import("//build/ohos.gni")
+import("//build/test.gni")
+
+##############################fuzztest##########################################
+ohos_fuzztest("RegisterCallbackServiceFuzzTest") {
+  module_out_path = "theme/wallpaper"
+
+  fuzz_config_file = "${wallpaper_path}/test/fuzztest/registercallback_fuzzer"
+
+  include_dirs = [
+    "${wallpaper_path}/services/include",
+    "${wallpaper_path}/frameworks/native/include",
+    "${wallpaper_path}/utils/include",
+  ]
+
+  cflags = [
+    "-g",
+    "-O0",
+    "-Wno-unused-variable",
+    "-fno-omit-frame-pointer",
+  ]
+
+  sources = [ "registercallback_fuzzer.cpp" ]
+
+  deps = [
+    "${utils_path}:wallpaper_utils",
+    "${wallpaper_path}/services:wallpaper_service",
+  ]
+
+  external_deps = [
+    "ability_runtime:abilitykit_native",
+    "access_token:libaccesstoken_sdk",
+    "access_token:libtoken_setproc",
+    "graphic_2d:surface",
+    "hilog:libhilog",
+    "ipc:ipc_single",
+    "os_account:os_account_innerkits",
+    "window_manager:libwm",
+  ]
+}
+
+###############################################################################
+group("fuzztest") {
+  testonly = true
+  deps = []
+  deps += [
+    # deps file
+    ":RegisterCallbackServiceFuzzTest",
+  ]
+}
+###############################################################################
