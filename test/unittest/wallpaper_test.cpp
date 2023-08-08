@@ -28,6 +28,7 @@
 #include "image_packer.h"
 #include "nativetoken_kit.h"
 #include "pixel_map.h"
+#include "scene_board_judgement.h"
 #include "token_setproc.h"
 #include "wallpaper_common_event_subscriber.h"
 #include "wallpaper_manager.h"
@@ -186,8 +187,8 @@ public:
 
     // callback function will be called when the db data is changed.
     void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType) override;
-    void OnWallpaperChange(
-        WallpaperType wallpaperType, WallpaperResourceType resourceType, const std::string &uri) override;
+    void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
+        const std::string &uri) override;
     // reset the callCount_ to zero.
     void ResetToZero();
 
@@ -206,8 +207,8 @@ void WallpaperEventListenerTestImpl::OnColorsChange(const std::vector<uint64_t> 
     wallpaperType_ = wallpaperType;
 }
 
-void WallpaperEventListenerTestImpl::OnWallpaperChange(
-    WallpaperType wallpaperType, WallpaperResourceType resourceType, const std::string &uri)
+void WallpaperEventListenerTestImpl::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
+    const std::string &uri)
 {
     HILOG_INFO("wallpaperType: %{public}d, resourceType: %{public}d, uri: %{public}s",
         static_cast<int32_t>(wallpaperType), static_cast<int32_t>(resourceType), uri.c_str());
@@ -649,7 +650,7 @@ HWTEST_F(WallpaperTest, GetFile004, TestSize.Level0)
 */
 HWTEST_F(WallpaperTest, getMinHeight001, TestSize.Level0)
 {
-    HILOG_INFO("WallpaperReset001  begin");
+    HILOG_INFO("getMinHeight001  begin");
     int height = 0;
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetWallpaperMinHeight(apiInfo, height);
@@ -1172,17 +1173,21 @@ HWTEST_F(WallpaperTest, SetVideo008, TestSize.Level0)
 
 /**
  * @tc.name:    SetCustomWallpaper001
- * @tc.desc:    Set custom wallpaper
+ * @tc.desc:    Set a custom wallpaper in the Sceneborad scene
  * @tc.type:    FUNC
  * @tc.require: issueI7AAMU
  */
 HWTEST_F(WallpaperTest, SetCustomWallpaper001, TestSize.Level0)
 {
     HILOG_INFO("SetCustomWallpaper001 begin");
+    ErrorCode testErrorCode = E_OK;
+    if (!Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
+        testErrorCode = E_NO_PERMISSION;
+    }
     ErrorCode ret = WallpaperManagerkits::GetInstance().SetCustomWallpaper(URI, SYSTYEM);
-    EXPECT_EQ(ret, E_NO_PERMISSION);
+    EXPECT_EQ(ret, testErrorCode);
     ret = WallpaperManagerkits::GetInstance().SetCustomWallpaper(URI, LOCKSCREEN);
-    EXPECT_EQ(ret, E_NO_PERMISSION);
+    EXPECT_EQ(ret, testErrorCode);
 }
 
 /*********************   SendEvent    *********************/

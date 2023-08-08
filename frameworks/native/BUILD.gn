@@ -54,6 +54,7 @@ ohos_shared_library("wallpapermanager") {
     "napi:ace_napi",
     "player_framework:media_client",
     "samgr:samgr_proxy",
+    "window_manager:libdm",
   ]
   subsystem_name = "theme"
   innerapi_tags = [ "platformsdk" ]
@@ -83,6 +84,7 @@ ohos_static_library("wallpapermanager_static") {
     "napi:ace_napi",
     "player_framework:media_client",
     "samgr:samgr_proxy",
+    "window_manager:libdm",
   ]
   subsystem_name = "theme"
   part_name = "wallpaper_mgr"
