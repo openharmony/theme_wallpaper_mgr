@@ -61,7 +61,7 @@ group("fuzztest") {
   testonly = true
   deps = []
   deps += [
-    # deps file
+  # deps file
     ":GetColorsServiceFuzzTest",
   ]
 }
