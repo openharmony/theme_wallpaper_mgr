@@ -11,7 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("../../../wallpaper.gni")
+import("../../../../wallpaper.gni")
 
 #####################hydra-fuzz###################
 import("//build/config/features.gni")
@@ -61,7 +61,7 @@ group("fuzztest") {
   testonly = true
   deps = []
   deps += [
-  # deps file
+    # deps file
     ":GetColorsServiceFuzzTest",
   ]
 }
