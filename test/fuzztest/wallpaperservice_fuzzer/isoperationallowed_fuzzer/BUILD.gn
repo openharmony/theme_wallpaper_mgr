@@ -19,7 +19,7 @@ import("//build/ohos.gni")
 import("//build/test.gni")
 
 ##############################fuzztest##########################################
-ohos_fuzztest("IsOperationAllowedServiceFuzzTest") {
+ohos_fuzztest("IsOperationAllowedFuzzTest") {
   module_out_path = "theme/wallpaper"
 
   fuzz_config_file =
@@ -63,7 +63,7 @@ group("fuzztest") {
   deps = []
   deps += [
     # deps file
-    ":IsOperationAllowedServiceFuzzTest",
+    ":IsOperationAllowedFuzzTest",
   ]
 }
 ###############################################################################

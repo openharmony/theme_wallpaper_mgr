@@ -19,7 +19,7 @@ import("//build/ohos.gni")
 import("//build/test.gni")
 
 ##############################fuzztest##########################################
-ohos_fuzztest("GetPixelMapV9ServiceFuzzTest") {
+ohos_fuzztest("GetPixelMapV9FuzzTest") {
   module_out_path = "theme/wallpaper"
 
   fuzz_config_file =
@@ -63,7 +63,7 @@ group("fuzztest") {
   deps = []
   deps += [
     # deps file
-    ":GetPixelMapV9ServiceFuzzTest",
+    ":GetPixelMapV9FuzzTest",
   ]
 }
 ###############################################################################
