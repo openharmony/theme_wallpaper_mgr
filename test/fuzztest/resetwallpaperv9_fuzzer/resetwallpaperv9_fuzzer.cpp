@@ -13,7 +13,7 @@
 * limitations under the License.
 */
 
-#include "wallpaperservice_fuzzer.h"
+#include "resetwallpaperv9_fuzzer.h"
 
 #include <cstddef>
 #include <cstdint>

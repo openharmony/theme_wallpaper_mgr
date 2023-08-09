@@ -17,7 +17,6 @@ group("fuzztest") {
   testonly = true
 
   deps = [
-    "wallpapermanager_fuzzer:fuzztest",
     "boundarycode_fuzzer:fuzztest",
     "getcolors_fuzzer:fuzztest",
     "getcolorsv9_fuzzer:fuzztest",
@@ -37,6 +36,6 @@ group("fuzztest") {
     "setvideo_fuzzer:fuzztest",
     "setwallpaper_fuzzer:fuzztest",
     "setwallpaperv9_fuzzer:fuzztest",
-
+    "wallpapermanager_fuzzer:fuzztest",
   ]
 }
