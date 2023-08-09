@@ -22,8 +22,7 @@ import("//build/test.gni")
 ohos_fuzztest("SetWallpaperFuzzTest") {
   module_out_path = "theme/wallpaper"
 
-  fuzz_config_file =
-      "${wallpaper_path}/test/fuzztest/wallpaperservice_fuzzer/setwallpaper_fuzzer"
+  fuzz_config_file = "${wallpaper_path}/test/fuzztest/wallpaperservice_fuzzer/setwallpaper_fuzzer"
 
   include_dirs = [
     "${wallpaper_path}/services/include",
