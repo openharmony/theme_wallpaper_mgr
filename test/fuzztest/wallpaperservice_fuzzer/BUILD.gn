@@ -122,7 +122,7 @@ foreach(item, wallpaper_fuzztests) {
     module_out_path = "theme/wallpaper"
 
     fuzz_config_file =
-        "${wallpaper_path}/test/fuzztest/wallpaperservice_fuzzer/"
+        "${wallpaper_path}/test/fuzztest/wallpaperservice_fuzzer"
 
     include_dirs = [
       "${wallpaper_path}/services/include",
