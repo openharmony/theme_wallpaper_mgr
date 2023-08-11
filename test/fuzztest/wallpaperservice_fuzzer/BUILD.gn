@@ -1,0 +1,191 @@
+# Copyright (c) 2023 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("../../../wallpaper.gni")
+
+#####################hydra-fuzz###################
+import("//build/config/features.gni")
+import("//build/ohos.gni")
+import("//build/test.gni")
+
+##############################fuzztest##########################################
+boundarycode_test = {
+  targetName = "BoundaryCodeFuzzTest"
+  source = "src/boundarycode_fuzzer.cpp"
+}
+getcolors_test = {
+  targetName = "GetColorsFuzzTest"
+  source = "src/getcolors_fuzzer.cpp"
+}
+getcolorsv9_test = {
+  targetName = "GetColorsV9FuzzTest"
+  source = "src/getcolorsv9_fuzzer.cpp"
+}
+getfile_test = {
+  targetName = "GetFileFuzzTest"
+  source = "src/getfile_fuzzer.cpp"
+}
+getpixelmap_test = {
+  targetName = "GetPixelMapFuzzTest"
+  source = "src/getpixelmap_fuzzer.cpp"
+}
+getpixelmapv9_test = {
+  targetName = "GetPixelMapV9FuzzTest"
+  source = "src/getpixelmapv9_fuzzer.cpp"
+}
+getwallpaperid_test = {
+  targetName = "GetWallpaperIdFuzzTest"
+  source = "src/getwallpaperid_fuzzer.cpp"
+}
+ischangepermitted_test = {
+  targetName = "IsChangePermittedFuzzTest"
+  source = "src/ischangepermitted_fuzzer.cpp"
+}
+isoperationallowed_test = {
+  targetName = "IsOperationAllowedFuzzTest"
+  source = "src/isoperationallowed_fuzzer.cpp"
+}
+off_test = {
+  targetName = "OffFuzzTest"
+  source = "src/off.cpp"
+}
+on_test = {
+  targetName = "OnFuzzTest"
+  source = "src/on_fuzzer.cpp"
+}
+registercallback_test = {
+  targetName = "RegisterCallbackFuzzTest"
+  source = "src/registercallback_fuzzer.cpp"
+}
+resetwallpaper_test = {
+  targetName = "ResetWallpaperFuzzTest"
+  source = "src/resetwallpaper_fuzzer.cpp"
+}
+resetwallpaperv9_test = {
+  targetName = "ResetWallpaperV9FuzzTest"
+  source = "src/resetwallpaperv9.cpp"
+}
+sendevent_test = {
+  targetName = "SendEventFuzzTest"
+  source = "src/sendevent_fuzzer.cpp"
+}
+setcustom_test = {
+  targetName = "SetCustomFuzzTest"
+  source = "src/setcustom_fuzzer.cpp"
+}
+setvideo_test = {
+  targetName = "SetVideoFuzzTest"
+  source = "src/setvideo_fuzzer.cpp"
+}
+setwallpaper_test = {
+  targetName = "SetWallpaperFuzzTest"
+  source = "src/setwallpaper_fuzzer.cpp"
+}
+setwallpaperv9_test = {
+  targetName = "SetWallpaperV9FuzzTest"
+  source = "src/setwallpaperv9_fuzzer.cpp"
+}
+
+wallpaper_fuzztests = [
+  boundarycode_test,
+  getcolors_test,
+  getcolorsv9_test,
+  getfile_test,
+  getpixelmap_test,
+  getpixelmapv9_test,
+  getwallpaperid_test,
+  ischangepermitted_test,
+  isoperationallowed_test,
+  off_test,
+  on_test,
+  registercallback_test,
+  resetwallpaper_test,
+  resetwallpaperv9_test,
+  sendevent_test,
+  setcustom_test,
+  setvideo_test,
+  setwallpaper_test,
+  setwallpaperv9_test,
+]
+foreach(item, wallpaper_fuzztests) {
+  ohos_fuzztest(item.targetName) {
+    module_out_path = "theme/wallpaper"
+
+    fuzz_config_file =
+    "${wallpaper_path}/test/fuzztest/wallpaperservice_fuzzer/"
+
+    include_dirs = [
+      "${wallpaper_path}/services/include",
+      "${wallpaper_path}/frameworks/native/include",
+      "${wallpaper_path}/utils/include",
+      "${wallpaper_path}/test/fuzztest/wallpaperservice_fuzzer/include",
+    ]
+
+    cflags = [
+      "-g",
+      "-O0",
+      "-Wno-unused-variable",
+      "-fno-omit-frame-pointer",
+    ]
+
+    sources = [
+      "src/fuzztest_utils.cpp",
+      item.source,
+    ]
+
+    deps = [
+      "${utils_path}:wallpaper_utils",
+      "${wallpaper_path}/services:wallpaper_service",
+    ]
+
+    external_deps = [
+      "ability_runtime:abilitykit_native",
+      "access_token:libaccesstoken_sdk",
+      "access_token:libtoken_setproc",
+      "graphic_2d:surface",
+      "hilog:libhilog",
+      "ipc:ipc_single",
+      "os_account:os_account_innerkits",
+      "window_manager:libwm",
+    ]
+  }
+}
+
+###############################################################################
+group("fuzztest") {
+  testonly = true
+  deps = []
+  deps += [
+  # deps file
+    ":BoundaryCodeFuzzTest",
+    ":GetColorsFuzzTest",
+    ":GetColorsV9FuzzTest",
+    ":GetFileFuzzTest",
+    ":GetPixelMapFuzzTest",
+    ":GetPixelMapV9FuzzTest",
+    ":GetWallpaperIdFuzzTest",
+    ":IsChangePermittedFuzzTest",
+    ":IsOperationAllowedFuzzTest",
+    ":OffFuzzTest",
+    ":OnFuzzTest",
+    ":RegisterCallbackFuzzTest",
+    ":ResetWallpaperFuzzTest",
+    ":ResetWallpaperV9FuzzTest",
+    ":SendEventFuzzTest",
+    ":SetCustomFuzzTest",
+    ":SetVideoFuzzTest",
+    ":SetWallpaperFuzzTest",
+    ":SetWallpaperV9FuzzTest",
+  ]
+}
+###############################################################################
