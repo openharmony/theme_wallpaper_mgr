@@ -18,24 +18,6 @@ group("fuzztest") {
 
   deps = [
     "wallpapermanager_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/boundarycode_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/getcolors_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/getcolorsv9_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/getfile_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/getpixelmap_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/getpixelmapv9_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/getwallpaperid_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/ischangepermitted_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/isoperationallowed_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/off_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/on_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/registercallback_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/resetwallpaper_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/resetwallpaperv9_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/sendevent_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/setcustom_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/setvideo_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/setwallpaper_fuzzer:fuzztest",
-    "wallpaperservice_fuzzer/setwallpaperv9_fuzzer:fuzztest",
+    "wallpaperservice_fuzzer:fuzztest",
   ]
 }
