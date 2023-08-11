@@ -18,6 +18,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "fuzztest_utils.h"
 #include "message_parcel.h"
 #include "wallpaper_service.h"
 

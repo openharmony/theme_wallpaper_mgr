@@ -20,6 +20,7 @@
 
 #include "message_parcel.h"
 #include "wallpaper_service.h"
+#include "fuzztest_utils.h"
 
 using namespace OHOS::WallpaperMgrService;
 constexpr size_t THRESHOLD = 4;
