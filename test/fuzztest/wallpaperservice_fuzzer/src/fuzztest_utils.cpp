@@ -17,6 +17,7 @@
 
 #include "message_parcel.h"
 #include "wallpaper_service.h"
+using namespace OHOS::WallpaperMgrService;
 namespace OHOS {
 const std::u16string WALLPAPERSERVICES_INTERFACE_TOKEN = u"ohos.Wallpaper.IWallpaperService";
 void FuzzTestUtils::FuzzTestRemoteRequest(const uint8_t *rawData, size_t size, uint32_t code)
