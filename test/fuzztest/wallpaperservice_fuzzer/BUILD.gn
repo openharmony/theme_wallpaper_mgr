@@ -57,7 +57,7 @@ isoperationallowed_test = {
 }
 off_test = {
   targetName = "WallpaperOffFuzzTest"
-  source = "src/off.cpp"
+  source = "src/off_fuzzer.cpp"
 }
 on_test = {
   targetName = "WallpaperOnFuzzTest"
@@ -73,7 +73,7 @@ resetwallpaper_test = {
 }
 resetwallpaperv9_test = {
   targetName = "WallpaperResetWallpaperV9FuzzTest"
-  source = "src/resetwallpaperv9.cpp"
+  source = "src/resetwallpaperv9_fuzzer.cpp"
 }
 sendevent_test = {
   targetName = "WallpaperSendEventFuzzTest"
