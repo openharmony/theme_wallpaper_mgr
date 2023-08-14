@@ -20,79 +20,79 @@ import("//build/test.gni")
 
 ##############################fuzztest##########################################
 boundarycode_test = {
-  targetName = "BoundaryCodeFuzzTest"
+  targetName = "WallpaperBoundaryCodeFuzzTest"
   source = "src/boundarycode_fuzzer.cpp"
 }
 getcolors_test = {
-  targetName = "GetColorsFuzzTest"
+  targetName = "WallpaperGetColorsFuzzTest"
   source = "src/getcolors_fuzzer.cpp"
 }
 getcolorsv9_test = {
-  targetName = "GetColorsV9FuzzTest"
+  targetName = "WallpaperGetColorsV9FuzzTest"
   source = "src/getcolorsv9_fuzzer.cpp"
 }
 getfile_test = {
-  targetName = "GetFileFuzzTest"
+  targetName = "WallpaperGetFileFuzzTest"
   source = "src/getfile_fuzzer.cpp"
 }
 getpixelmap_test = {
-  targetName = "GetPixelMapFuzzTest"
+  targetName = "WallpaperGetPixelMapFuzzTest"
   source = "src/getpixelmap_fuzzer.cpp"
 }
 getpixelmapv9_test = {
-  targetName = "GetPixelMapV9FuzzTest"
+  targetName = "WallpaperGetPixelMapV9FuzzTest"
   source = "src/getpixelmapv9_fuzzer.cpp"
 }
 getwallpaperid_test = {
-  targetName = "GetWallpaperIdFuzzTest"
+  targetName = "WallpaperGetWallpaperIdFuzzTest"
   source = "src/getwallpaperid_fuzzer.cpp"
 }
 ischangepermitted_test = {
-  targetName = "IsChangePermittedFuzzTest"
+  targetName = "WallpaperIsChangePermittedFuzzTest"
   source = "src/ischangepermitted_fuzzer.cpp"
 }
 isoperationallowed_test = {
-  targetName = "IsOperationAllowedFuzzTest"
+  targetName = "WallpaperIsOperationAllowedFuzzTest"
   source = "src/isoperationallowed_fuzzer.cpp"
 }
 off_test = {
-  targetName = "OffFuzzTest"
+  targetName = "WallpaperOffFuzzTest"
   source = "src/off.cpp"
 }
 on_test = {
-  targetName = "OnFuzzTest"
+  targetName = "WallpaperOnFuzzTest"
   source = "src/on_fuzzer.cpp"
 }
 registercallback_test = {
-  targetName = "RegisterCallbackFuzzTest"
+  targetName = "WallpaperRegisterCallbackFuzzTest"
   source = "src/registercallback_fuzzer.cpp"
 }
 resetwallpaper_test = {
-  targetName = "ResetWallpaperFuzzTest"
+  targetName = "WallpaperResetWallpaperFuzzTest"
   source = "src/resetwallpaper_fuzzer.cpp"
 }
 resetwallpaperv9_test = {
-  targetName = "ResetWallpaperV9FuzzTest"
+  targetName = "WallpaperResetWallpaperV9FuzzTest"
   source = "src/resetwallpaperv9.cpp"
 }
 sendevent_test = {
-  targetName = "SendEventFuzzTest"
+  targetName = "WallpaperSendEventFuzzTest"
   source = "src/sendevent_fuzzer.cpp"
 }
 setcustom_test = {
-  targetName = "SetCustomFuzzTest"
+  targetName = "WallpaperSetCustomFuzzTest"
   source = "src/setcustom_fuzzer.cpp"
 }
 setvideo_test = {
-  targetName = "SetVideoFuzzTest"
+  targetName = "WallpaperSetVideoFuzzTest"
   source = "src/setvideo_fuzzer.cpp"
 }
 setwallpaper_test = {
-  targetName = "SetWallpaperFuzzTest"
+  targetName = "WallpaperSetWallpaperFuzzTest"
   source = "src/setwallpaper_fuzzer.cpp"
 }
 setwallpaperv9_test = {
-  targetName = "SetWallpaperV9FuzzTest"
+  targetName = "WallpaperSetWallpaperV9FuzzTest"
   source = "src/setwallpaperv9_fuzzer.cpp"
 }
 
@@ -167,25 +167,25 @@ group("fuzztest") {
   deps = []
   deps += [
     # deps file
-    ":BoundaryCodeFuzzTest",
-    ":GetColorsFuzzTest",
-    ":GetColorsV9FuzzTest",
-    ":GetFileFuzzTest",
-    ":GetPixelMapFuzzTest",
-    ":GetPixelMapV9FuzzTest",
-    ":GetWallpaperIdFuzzTest",
-    ":IsChangePermittedFuzzTest",
-    ":IsOperationAllowedFuzzTest",
-    ":OffFuzzTest",
-    ":OnFuzzTest",
-    ":RegisterCallbackFuzzTest",
-    ":ResetWallpaperFuzzTest",
-    ":ResetWallpaperV9FuzzTest",
-    ":SendEventFuzzTest",
-    ":SetCustomFuzzTest",
-    ":SetVideoFuzzTest",
-    ":SetWallpaperFuzzTest",
-    ":SetWallpaperV9FuzzTest",
+    ":WallpaperBoundaryCodeFuzzTest",
+    ":WallpaperGetColorsFuzzTest",
+    ":WallpaperGetColorsV9FuzzTest",
+    ":WallpaperGetFileFuzzTest",
+    ":WallpaperGetPixelMapFuzzTest",
+    ":WallpaperGetPixelMapV9FuzzTest",
+    ":WallpaperGetWallpaperIdFuzzTest",
+    ":WallpaperIsChangePermittedFuzzTest",
+    ":WallpaperIsOperationAllowedFuzzTest",
+    ":WallpaperOffFuzzTest",
+    ":WallpaperOnFuzzTest",
+    ":WallpaperRegisterCallbackFuzzTest",
+    ":WallpaperResetWallpaperFuzzTest",
+    ":WallpaperResetWallpaperV9FuzzTest",
+    ":WallpaperSendEventFuzzTest",
+    ":WallpaperSetCustomFuzzTest",
+    ":WallpaperSetVideoFuzzTest",
+    ":WallpaperSetWallpaperFuzzTest",
+    ":WallpaperSetWallpaperV9FuzzTest",
   ]
 }
 ###############################################################################
