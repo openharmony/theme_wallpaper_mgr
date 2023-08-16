@@ -21,78 +21,97 @@ import("//build/test.gni")
 ##############################fuzztest##########################################
 boundarycode_test = {
   targetName = "WallpaperBoundaryCodeFuzzTest"
+  configFuzzer = "wallpaperboundarycode_fuzzer"
   source = "src/boundarycode_fuzzer.cpp"
 }
 getcolors_test = {
   targetName = "WallpaperGetColorsFuzzTest"
+  configFuzzer = "wallpapergetcolors_fuzzer"
   source = "src/getcolors_fuzzer.cpp"
 }
 getcolorsv9_test = {
   targetName = "WallpaperGetColorsV9FuzzTest"
+  configFuzzer = "wallpapergetcolorsv9_fuzzer"
   source = "src/getcolorsv9_fuzzer.cpp"
 }
 getfile_test = {
   targetName = "WallpaperGetFileFuzzTest"
+  configFuzzer = "wallpapergetfile_fuzzer"
   source = "src/getfile_fuzzer.cpp"
 }
 getpixelmap_test = {
   targetName = "WallpaperGetPixelMapFuzzTest"
+  configFuzzer = "wallpapergetpixelmap_fuzzer"
   source = "src/getpixelmap_fuzzer.cpp"
 }
 getpixelmapv9_test = {
   targetName = "WallpaperGetPixelMapV9FuzzTest"
+  configFuzzer = "wallpapergetpixelmapv9_fuzzer"
   source = "src/getpixelmapv9_fuzzer.cpp"
 }
 getwallpaperid_test = {
   targetName = "WallpaperGetWallpaperIdFuzzTest"
+  configFuzzer = "wallpapergetwallpaperid_fuzzer"
   source = "src/getwallpaperid_fuzzer.cpp"
 }
 ischangepermitted_test = {
   targetName = "WallpaperIsChangePermittedFuzzTest"
+  configFuzzer = "wallpaperischangepermitted_fuzzer"
   source = "src/ischangepermitted_fuzzer.cpp"
 }
 isoperationallowed_test = {
   targetName = "WallpaperIsOperationAllowedFuzzTest"
+  configFuzzer = "wallpaperisoperationallowed_fuzzer"
   source = "src/isoperationallowed_fuzzer.cpp"
 }
 off_test = {
   targetName = "WallpaperOffFuzzTest"
+  configFuzzer = "wallpaperoff_fuzzer"
   source = "src/off_fuzzer.cpp"
 }
 on_test = {
   targetName = "WallpaperOnFuzzTest"
+  configFuzzer = "wallpaperon_fuzzer"
   source = "src/on_fuzzer.cpp"
 }
 registercallback_test = {
   targetName = "WallpaperRegisterCallbackFuzzTest"
+  configFuzzer = "wallpaperregistercallback_fuzzer"
   source = "src/registercallback_fuzzer.cpp"
 }
 resetwallpaper_test = {
   targetName = "WallpaperResetWallpaperFuzzTest"
+  configFuzzer = "wallpaperresetwallpaper_fuzzer"
   source = "src/resetwallpaper_fuzzer.cpp"
 }
 resetwallpaperv9_test = {
   targetName = "WallpaperResetWallpaperV9FuzzTest"
+  configFuzzer = "wallpaperresetwallpaperv9_fuzzer"
   source = "src/resetwallpaperv9_fuzzer.cpp"
 }
 sendevent_test = {
   targetName = "WallpaperSendEventFuzzTest"
+  configFuzzer = "wallpapersendevent_fuzzer"
   source = "src/sendevent_fuzzer.cpp"
 }
 setcustom_test = {
   targetName = "WallpaperSetCustomFuzzTest"
+  configFuzzer = "wallpapersetcustom_fuzzer"
   source = "src/setcustom_fuzzer.cpp"
 }
 setvideo_test = {
   targetName = "WallpaperSetVideoFuzzTest"
+  configFuzzer = "wallpapersetvideo_fuzzer"
   source = "src/setvideo_fuzzer.cpp"
 }
 setwallpaper_test = {
   targetName = "WallpaperSetWallpaperFuzzTest"
+  configFuzzer = "wallpapersetwallpaper_fuzzer"
   source = "src/setwallpaper_fuzzer.cpp"
 }
 setwallpaperv9_test = {
   targetName = "WallpaperSetWallpaperV9FuzzTest"
+  configFuzzer = "wallpapersetwallpaperv9_fuzzer"
   source = "src/setwallpaperv9_fuzzer.cpp"
 }
 
@@ -121,7 +140,7 @@ foreach(item, wallpaper_fuzztests) {
   ohos_fuzztest(item.targetName) {
     module_out_path = "theme/wallpaper"
 
-    fuzz_config_file = "${wallpaper_path}/test/fuzztest/wallpaperservice_fuzzer"
+    fuzz_config_file = "${wallpaper_path}/test/fuzztest/wallpaperservice_fuzzer/${item.configFuzzer}"
 
     include_dirs = [
       "${wallpaper_path}/services/include",
