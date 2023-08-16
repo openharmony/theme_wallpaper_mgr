@@ -13,35 +13,15 @@
  * limitations under the License.
  */
 
-#include "wallpaperservice_fuzzer.h"
-
-#include <cstddef>
-#include <cstdint>
+#include "fuzztest_utils.h"
 
 #include "message_parcel.h"
 #include "wallpaper_service.h"
-
 using namespace OHOS::WallpaperMgrService;
-
 namespace OHOS {
-constexpr size_t THRESHOLD = 4;
 const std::u16string WALLPAPERSERVICES_INTERFACE_TOKEN = u"ohos.Wallpaper.IWallpaperService";
-
-using namespace OHOS::Security::AccessToken;
-
-uint32_t ConvertToUint32(const uint8_t *ptr)
+void FuzzTestUtils::FuzzTestRemoteRequest(const uint8_t *rawData, size_t size, uint32_t code)
 {
-    if (ptr == nullptr) {
-        return 0;
-    }
-    uint32_t bigVar = (ptr[0] << 24) | (ptr[1] << 16) | (ptr[2] << 8) | (ptr[3]);
-    return bigVar;
-}
-
-bool FuzzWallpaperService(const uint8_t *rawData, size_t size)
-{
-    uint32_t code =
-        ConvertToUint32(rawData) % (static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SEND_EVENT) + 1);
     MessageParcel data;
     data.WriteInterfaceToken(WALLPAPERSERVICES_INTERFACE_TOKEN);
     data.WriteBuffer(rawData, size);
@@ -50,18 +30,5 @@ bool FuzzWallpaperService(const uint8_t *rawData, size_t size)
     MessageOption option;
     std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
     wallpaperService->OnRemoteRequest(code, data, reply, option);
-    return true;
 }
 } // namespace OHOS
-
-/* Fuzzer entry point */
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
-{
-    if (size < OHOS::THRESHOLD) {
-        return 0;
-    }
-
-    /* Run your code on data */
-    OHOS::FuzzWallpaperService(data, size);
-    return 0;
-}
