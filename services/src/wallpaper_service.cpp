@@ -970,6 +970,9 @@ ErrorCode WallpaperService::SetDefaultDataForWallpaper(int32_t userId, Wallpaper
     } else if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
     }
+    if (!SaveWallpaperState(userId, wallpaperType)) {
+        HILOG_ERROR("Save wallpaper state failed!");
+    }
     if (!SendWallpaperChangeEvent(userId, wallpaperType)) {
         HILOG_ERROR("Send wallpaper state failed!");
         return E_DEAL_FAILED;
