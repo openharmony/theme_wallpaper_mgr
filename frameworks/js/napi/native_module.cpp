@@ -27,9 +27,8 @@ namespace OHOS {
 namespace WallpaperNAPI {
 
 EXTERN_C_START
-static napi_value Init(napi_env env, napi_value exports)
+static napi_value InitWallpaperType(napi_env &env)
 {
-    HILOG_INFO("napi_module Init start...");
     napi_value wallpaperType = nullptr;
     napi_value systemType = nullptr;
     napi_value lockscreenType = nullptr;
@@ -38,8 +37,11 @@ static napi_value Init(napi_env env, napi_value exports)
     NAPI_CALL(env, napi_create_object(env, &wallpaperType));
     NAPI_CALL(env, napi_set_named_property(env, wallpaperType, "WALLPAPER_SYSTEM", systemType));
     NAPI_CALL(env, napi_set_named_property(env, wallpaperType, "WALLPAPER_LOCKSCREEN", lockscreenType));
+    return wallpaperType;
+}
 
-    // WallpaperResourceType
+static napi_value InitWallpaperResourceType(napi_env &env)
+{
     napi_value wallpaperResourceType = nullptr;
     napi_value wallpaperResDefault = nullptr;
     napi_value wallpaperResPicture = nullptr;
@@ -54,6 +56,14 @@ static napi_value Init(napi_env env, napi_value exports)
     NAPI_CALL(env, napi_set_named_property(env, wallpaperResourceType, "PICTURE", wallpaperResPicture));
     NAPI_CALL(env, napi_set_named_property(env, wallpaperResourceType, "VIDEO", wallpaperResVideo));
     NAPI_CALL(env, napi_set_named_property(env, wallpaperResourceType, "PACKAGE", wallpaperResPackage));
+    return wallpaperResourceType;
+}
+
+static napi_value Init(napi_env env, napi_value exports)
+{
+    HILOG_INFO("napi_module Init start...");
+    napi_value wallpaperType = InitWallpaperType(env);
+    napi_value wallpaperResourceType = InitWallpaperResourceType(env);
 
     napi_property_descriptor desc[] = {
         DECLARE_NAPI_FUNCTION("getColors", NAPI_GetColors),

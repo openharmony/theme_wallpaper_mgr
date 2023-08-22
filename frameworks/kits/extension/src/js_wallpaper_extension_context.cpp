@@ -149,7 +149,6 @@ private:
 
     NativeValue *OnStartAbilityWithAccount(NativeEngine &engine, NativeCallbackInfo &info)
     {
-        HILOG_INFO("OnStartAbilityWithAccount is called");
         // only support two or three or four params
         if (info.argc != ARGC_TWO && info.argc != ARGC_THREE && info.argc != ARGC_FOUR) {
             HILOG_ERROR("Not enough params");
@@ -183,7 +182,6 @@ private:
 
         AsyncTask::CompleteCallback complete = [weak = context_, want, accountId, startOptions,
                                                    unwrapArgc](NativeEngine &engine, AsyncTask &task, int32_t status) {
-            HILOG_INFO("startAbility begin");
             auto context = weak.lock();
             if (!context) {
                 HILOG_WARN("context is released");
