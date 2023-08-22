@@ -700,13 +700,13 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, WallpaperReso
     if (!FileDeal::DeleteFile(uriOrPixelMap)) {
         return E_DEAL_FAILED;
     }
-    if (!SaveWallpaperState(userId, wallpaperType)) {
-        HILOG_ERROR("Save wallpaper state failed!");
-    }
     if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
+    }
+    if (!SaveWallpaperState(userId, wallpaperType)) {
+        HILOG_ERROR("Save wallpaper state failed!");
     }
     if (!SendWallpaperChangeEvent(userId, wallpaperType)) {
         HILOG_ERROR("Send wallpaper state failed!");
@@ -964,6 +964,7 @@ ErrorCode WallpaperService::SetDefaultDataForWallpaper(int32_t userId, Wallpaper
         return E_DEAL_FAILED;
     }
     wallpaperData.wallpaperId = DEFAULT_WALLPAPER_ID;
+    wallpaperData.resourceType = DEFAULT;
     wallpaperData.allowBackup = true;
     if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
