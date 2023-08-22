@@ -700,13 +700,14 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, WallpaperReso
     if (!FileDeal::DeleteFile(uriOrPixelMap)) {
         return E_DEAL_FAILED;
     }
+    if (!SaveWallpaperState(userId, wallpaperType, resourceType)) {
+        HILOG_ERROR("Save wallpaper state failed!");
+        return E_DEAL_FAILED;
+    }
     if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-    }
-    if (!SaveWallpaperState(userId, wallpaperType)) {
-        HILOG_ERROR("Save wallpaper state failed!");
     }
     if (!SendWallpaperChangeEvent(userId, wallpaperType)) {
         HILOG_ERROR("Send wallpaper state failed!");
@@ -822,15 +823,16 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
         HILOG_ERROR("SceneBoard is not Enabled");
         return E_NO_PERMISSION;
     }
+    if (!SaveWallpaperState(userId, wallpaperType, PACKAGE)) {
+        HILOG_ERROR("Save wallpaper state failed!");
+        return E_DEAL_FAILED;
+    }
     wallpaperData.resourceType = PACKAGE;
     wallpaperData.wallpaperId = MakeWallpaperIdLocked();
     if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-    }
-    if (!SaveWallpaperState(userId, wallpaperType)) {
-        HILOG_ERROR("Save wallpaper state failed!");
     }
     if (!SendWallpaperChangeEvent(userId, wallpaperType)) {
         HILOG_ERROR("Send wallpaper state failed!");
@@ -963,6 +965,10 @@ ErrorCode WallpaperService::SetDefaultDataForWallpaper(int32_t userId, Wallpaper
         HILOG_ERROR("RestoreUserResources error");
         return E_DEAL_FAILED;
     }
+    if (!SaveWallpaperState(userId, wallpaperType, DEFAULT)) {
+        HILOG_ERROR("Save wallpaper state failed!");
+        return E_DEAL_FAILED;
+    }
     wallpaperData.wallpaperId = DEFAULT_WALLPAPER_ID;
     wallpaperData.resourceType = DEFAULT;
     wallpaperData.allowBackup = true;
@@ -970,9 +976,6 @@ ErrorCode WallpaperService::SetDefaultDataForWallpaper(int32_t userId, Wallpaper
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
     } else if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-    }
-    if (!SaveWallpaperState(userId, wallpaperType)) {
-        HILOG_ERROR("Save wallpaper state failed!");
     }
     if (!SendWallpaperChangeEvent(userId, wallpaperType)) {
         HILOG_ERROR("Send wallpaper state failed!");
@@ -1394,7 +1397,8 @@ void WallpaperService::NotifyColorChange(const std::vector<uint64_t> &colors, co
     }
 }
 
-bool WallpaperService::SaveWallpaperState(int32_t userId, WallpaperType wallpaperType)
+bool WallpaperService::SaveWallpaperState(int32_t userId, WallpaperType wallpaperType,
+    WallpaperResourceType resourceType)
 {
     WallpaperData systemData;
     WallpaperData lockScreenData;
@@ -1403,8 +1407,13 @@ bool WallpaperService::SaveWallpaperState(int32_t userId, WallpaperType wallpape
         return false;
     }
     nlohmann::json root;
-    root[SYSTEM_RES_TYPE] = static_cast<int32_t>(systemData.resourceType);
-    root[LOCKSCREEN_RES_TYPE] = static_cast<int32_t>(lockScreenData.resourceType);
+    if (wallpaperType == WALLPAPER_SYSTEM) {
+        root[SYSTEM_RES_TYPE] = static_cast<int32_t>(resourceType);
+        root[LOCKSCREEN_RES_TYPE] = static_cast<int32_t>(lockScreenData.resourceType);
+    } else {
+        root[LOCKSCREEN_RES_TYPE] = static_cast<int32_t>(resourceType);
+        root[SYSTEM_RES_TYPE] = static_cast<int32_t>(systemData.resourceType);
+    }
     std::string json = root.dump();
     if (json.empty()) {
         HILOG_ERROR("write user config file failed. because json content is empty.");
