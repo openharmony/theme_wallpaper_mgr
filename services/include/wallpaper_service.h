@@ -135,7 +135,7 @@ private:
     ErrorCode CheckValid(int32_t wallpaperType, int32_t length, WallpaperResourceType resourceType);
     bool WallpaperChanged(WallpaperType wallpaperType, WallpaperResourceType resType, const std::string &uri);
     void NotifyColorChange(const std::vector<uint64_t> &colors, const WallpaperType &wallpaperType);
-    bool SaveWallpaperState(int32_t userId, WallpaperType wallpaperType);
+    bool SaveWallpaperState(int32_t userId, WallpaperType wallpaperType, WallpaperResourceType resourceType);
     void LoadWallpaperState();
     WallpaperResourceType GetResType(int32_t userId, WallpaperType wallpaperType);
     void GrantUriPermissionByUserId(int32_t userId);
