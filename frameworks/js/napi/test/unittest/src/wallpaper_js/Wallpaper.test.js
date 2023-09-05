@@ -1848,11 +1848,11 @@ describe('WallpaperJSTest', function () {
     it('offCallbackTest005', 0, async function (done) {
         try {
             wallpaper.off('wallpaperChange', 'other');
-            expect(true).assertTrue();
+            expect(null).assertFail();
             done();
         } catch (error) {
             console.info(`offCallbackTest005 error : ${error.message}`);
-            expect(null).assertFail();
+            expect(error.code === PARAMETER_ERROR).assertTrue();
             done();
         }
     })

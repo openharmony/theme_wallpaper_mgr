@@ -1466,10 +1466,10 @@ void WallpaperService::LoadWallpaperState()
         return;
     }
     auto root = nlohmann::json::parse(buf);
-    if (root.contains(SYSTEM_RES_TYPE)) {
+    if (root.contains(SYSTEM_RES_TYPE) && root[SYSTEM_RES_TYPE].is_number()) {
         systemData.resourceType = static_cast<WallpaperResourceType>(root[SYSTEM_RES_TYPE].get<int>());
     }
-    if (root.contains(LOCKSCREEN_RES_TYPE)) {
+    if (root.contains(LOCKSCREEN_RES_TYPE) && root[SYSTEM_RES_TYPE].is_number()) {
         lockScreenData.resourceType = static_cast<WallpaperResourceType>(root[LOCKSCREEN_RES_TYPE].get<int>());
     }
 }
