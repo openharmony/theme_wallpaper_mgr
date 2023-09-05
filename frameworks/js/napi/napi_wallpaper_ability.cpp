@@ -707,6 +707,11 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info)
     if (argc >= TWO) {
         if (NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_function)) {
             listener = std::make_shared<NapiWallpaperAbility>(env, argv[1]);
+        } else if (!NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_undefined) &&
+                   !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_null)) {
+            JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(E_PARAMETERS_INVALID);
+            JsError::ThrowError(env, jsErrorInfo.code, jsErrorInfo.message);
+            return nullptr;
         }
     }
     ErrorCode errorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().Off(type, listener);
