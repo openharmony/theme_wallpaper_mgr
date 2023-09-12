@@ -845,13 +845,13 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
 ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
     HILOG_INFO("WallpaperService::getPixelMap start ");
-    if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER)) {
-        HILOG_INFO("GetPixelMap no get permission!");
-        return E_NO_PERMISSION;
-    }
     if (!IsSystemApp()) {
-        HILOG_INFO("CallingApp is not SystemApp");
+        HILOG_ERROR("CallingApp is not SystemApp");
         return E_NOT_SYSTEM_APP;
+    }
+    if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER)) {
+        HILOG_ERROR("GetPixelMap no get permission!");
+        return E_NO_PERMISSION;
     }
     if (wallpaperType != static_cast<int32_t>(WALLPAPER_LOCKSCREEN) &&
         wallpaperType != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
