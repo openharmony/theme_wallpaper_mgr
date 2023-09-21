@@ -166,6 +166,7 @@ public:
 
     void CloseWallpaperFd(int32_t wallpaperType);
 
+    bool RegisterWallpaperListener();
 private:
     class DeathRecipient final : public IRemoteObject::DeathRecipient {
     public:
@@ -189,6 +190,8 @@ private:
     std::mutex wallpaperFdLock_;
     std::map<int32_t, int32_t> wallpaperFdMap_;
     std::mutex wallpaperProxyLock_;
+    std::mutex listenerMapLock_;
+    std::map<std::string, sptr<WallpaperEventListenerClient>> listenerMap_;
     bool (*callback)(int32_t);
 };
 } // namespace WallpaperMgrService
