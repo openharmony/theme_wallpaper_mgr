@@ -50,83 +50,77 @@ public:
     }
     ~JsWallpaperExtensionContext() = default;
 
-    static void Finalizer(NativeEngine *engine, void *data, void *hint)
+    static void Finalizer(napi_env env, void *data, void *hint)
     {
         HILOG_INFO("JsAbilityContext::Finalizer is called");
         std::unique_ptr<JsWallpaperExtensionContext>(static_cast<JsWallpaperExtensionContext *>(data));
     }
 
-    static NativeValue *StartAbility(NativeEngine *engine, NativeCallbackInfo *info)
+    static napi_value StartAbility(napi_env env, napi_callback_info info)
     {
-        JsWallpaperExtensionContext *me = CheckParamsAndGetThis<JsWallpaperExtensionContext>(engine, info);
-        return (me != nullptr) ? me->OnStartAbility(*engine, *info) : nullptr;
+        GET_CB_INFO_AND_CALL(env, info, JsWallpaperExtensionContext, OnStartAbility);
     }
 
-    static NativeValue *StartAbilityWithAccount(NativeEngine *engine, NativeCallbackInfo *info)
+    static napi_value StartAbilityWithAccount(napi_env env, napi_callback_info info)
     {
-        JsWallpaperExtensionContext *me = CheckParamsAndGetThis<JsWallpaperExtensionContext>(engine, info);
-        return (me != nullptr) ? me->OnStartAbilityWithAccount(*engine, *info) : nullptr;
+        GET_CB_INFO_AND_CALL(env, info, JsWallpaperExtensionContext, OnStartAbilityWithAccount);
     }
 
-    static NativeValue *ConnectAbilityWithAccount(NativeEngine *engine, NativeCallbackInfo *info)
+    static napi_value ConnectAbilityWithAccount(napi_env env, napi_callback_info info)
     {
-        JsWallpaperExtensionContext *me = CheckParamsAndGetThis<JsWallpaperExtensionContext>(engine, info);
-        return (me != nullptr) ? me->OnConnectAbilityWithAccount(*engine, *info) : nullptr;
+        GET_CB_INFO_AND_CALL(env, info, JsWallpaperExtensionContext, OnConnectAbilityWithAccount);
     }
 
-    static NativeValue *TerminateAbility(NativeEngine *engine, NativeCallbackInfo *info)
+    static napi_value TerminateAbility(napi_env env, napi_callback_info info)
     {
-        JsWallpaperExtensionContext *me = CheckParamsAndGetThis<JsWallpaperExtensionContext>(engine, info);
-        return (me != nullptr) ? me->OnTerminateAbility(*engine, *info) : nullptr;
+        GET_CB_INFO_AND_CALL(env, info, JsWallpaperExtensionContext, OnTerminateAbility);
     }
 
-    static NativeValue *ConnectAbility(NativeEngine *engine, NativeCallbackInfo *info)
+    static napi_value ConnectAbility(napi_env env, napi_callback_info info)
     {
-        JsWallpaperExtensionContext *me = CheckParamsAndGetThis<JsWallpaperExtensionContext>(engine, info);
-        return (me != nullptr) ? me->OnConnectAbility(*engine, *info) : nullptr;
+        GET_CB_INFO_AND_CALL(env, info, JsWallpaperExtensionContext, OnConnectAbility);
     }
 
-    static NativeValue *DisconnectAbility(NativeEngine *engine, NativeCallbackInfo *info)
+    static napi_value DisconnectAbility(napi_env env, napi_callback_info info)
     {
-        JsWallpaperExtensionContext *me = CheckParamsAndGetThis<JsWallpaperExtensionContext>(engine, info);
-        return (me != nullptr) ? me->OnDisconnectAbility(*engine, *info) : nullptr;
+        GET_CB_INFO_AND_CALL(env, info, JsWallpaperExtensionContext, OnDisconnectAbility);
     }
 
 private:
     std::weak_ptr<WallpaperExtensionContext> context_;
 
-    NativeValue *OnStartAbility(NativeEngine &engine, NativeCallbackInfo &info)
+    napi_value OnStartAbility(napi_env env, size_t argc, napi_value *argv)
     {
         HILOG_INFO("OnStartAbility is called");
         // only support one or two or three params
-        if (info.argc != ARGC_ONE && info.argc != ARGC_TWO && info.argc != ARGC_THREE) {
+        if (argc != ARGC_ONE && argc != ARGC_TWO && argc != ARGC_THREE) {
             HILOG_ERROR("Not enough params");
-            return engine.CreateUndefined();
+            return CreateJsUndefined(env);
         }
 
-        decltype(info.argc) unwrapArgc = 0;
+        decltype(argc) unwrapArgc = 0;
         AAFwk::Want want;
-        OHOS::AppExecFwk::UnwrapWant(reinterpret_cast<napi_env>(&engine),
-            reinterpret_cast<napi_value>(info.argv[INDEX_ZERO]), want);
+        OHOS::AppExecFwk::UnwrapWant(env, argv[INDEX_ZERO], want);
         HILOG_INFO("%{public}s bundlename:%{public}s abilityname:%{public}s", __func__, want.GetBundle().c_str(),
             want.GetElement().GetAbilityName().c_str());
         unwrapArgc++;
 
         AAFwk::StartOptions startOptions;
-        if (info.argc > ARGC_ONE && info.argv[INDEX_ONE]->TypeOf() == NATIVE_OBJECT) {
+        napi_valuetype  valueType = napi_undefined;
+        napi_typeof(env, argv[INDEX_ONE],  &valueType);
+        if (argc > ARGC_ONE && valueType == napi_object) {
             HILOG_INFO("OnStartAbility start options is used.");
-            AppExecFwk::UnwrapStartOptions(reinterpret_cast<napi_env>(&engine),
-                reinterpret_cast<napi_value>(info.argv[INDEX_ONE]), startOptions);
+            AppExecFwk::UnwrapStartOptions(env, argv[INDEX_ONE], startOptions);
             unwrapArgc++;
         }
 
-        AsyncTask::CompleteCallback complete = [weak = context_, want, startOptions, unwrapArgc](NativeEngine &engine,
-                                                   AsyncTask &task, int32_t status) {
+        NapiAsyncTask::CompleteCallback complete = [weak = context_, want, startOptions, unwrapArgc](napi_env env,
+                                                   NapiAsyncTask &task, int32_t status) {
             HILOG_INFO("startAbility begin");
             auto context = weak.lock();
             if (!context) {
                 HILOG_WARN("context is released");
-                task.Reject(engine, CreateJsError(engine, ERROR_CODE_ONE, "Context is released"));
+                task.Reject(env, CreateJsError(env, ERROR_CODE_ONE, "Context is released"));
                 return;
             }
 
@@ -134,58 +128,57 @@ private:
             (unwrapArgc == 1) ? errcode = context->StartAbility(want)
                               : errcode = context->StartAbility(want, startOptions);
             if (errcode == 0) {
-                task.Resolve(engine, engine.CreateUndefined());
+                task.Resolve(env, CreateJsUndefined(env));
             } else {
-                task.Reject(engine, CreateJsError(engine, errcode, "Start Ability failed."));
+                task.Reject(env, CreateJsError(env, errcode, "Start Ability failed."));
             }
         };
 
-        NativeValue *lastParam = (info.argc == unwrapArgc) ? nullptr : info.argv[unwrapArgc];
-        NativeValue *result = nullptr;
-        AsyncTask::Schedule("WallpaperExtensionContext::OnStartAbility", engine,
-            CreateAsyncTaskWithLastParam(engine, lastParam, nullptr, std::move(complete), &result));
+        napi_value lastParam = argc > unwrapArgc ? argv[unwrapArgc] : nullptr;
+        napi_value result = nullptr;
+        NapiAsyncTask::Schedule("WallpaperExtensionContext::OnStartAbility", env,
+            CreateAsyncTaskWithLastParam(env, lastParam, nullptr, std::move(complete), &result));
         return result;
     }
 
-    NativeValue *OnStartAbilityWithAccount(NativeEngine &engine, NativeCallbackInfo &info)
+    napi_value OnStartAbilityWithAccount(napi_env env, size_t argc, napi_value *argv)
     {
         // only support two or three or four params
-        if (info.argc != ARGC_TWO && info.argc != ARGC_THREE && info.argc != ARGC_FOUR) {
+        if (argc != ARGC_TWO && argc != ARGC_THREE && argc != ARGC_FOUR) {
             HILOG_ERROR("Not enough params");
-            return engine.CreateUndefined();
+            return CreateJsUndefined(env);
         }
 
-        decltype(info.argc) unwrapArgc = 0;
+        decltype(argc) unwrapArgc = 0;
         AAFwk::Want want;
-        OHOS::AppExecFwk::UnwrapWant(reinterpret_cast<napi_env>(&engine),
-            reinterpret_cast<napi_value>(info.argv[INDEX_ZERO]), want);
+        OHOS::AppExecFwk::UnwrapWant(env, argv[INDEX_ZERO], want);
         HILOG_INFO("%{public}s bundlename:%{public}s abilityname:%{public}s", __func__, want.GetBundle().c_str(),
             want.GetElement().GetAbilityName().c_str());
         unwrapArgc++;
 
         int32_t accountId = 0;
-        if (!OHOS::AppExecFwk::UnwrapInt32FromJS2(reinterpret_cast<napi_env>(&engine),
-            reinterpret_cast<napi_value>(info.argv[INDEX_ONE]), accountId)) {
+        if (!OHOS::AppExecFwk::UnwrapInt32FromJS2(env, argv[INDEX_ONE], accountId)) {
             HILOG_INFO("%{public}s called, the second parameter is invalid.", __func__);
-            return engine.CreateUndefined();
+            return CreateJsUndefined(env);
         }
         HILOG_INFO("%{public}d accountId:", accountId);
         unwrapArgc++;
 
         AAFwk::StartOptions startOptions;
-        if (info.argc > ARGC_TWO && info.argv[INDEX_TWO]->TypeOf() == NATIVE_OBJECT) {
+        napi_valuetype  valueType = napi_undefined;
+        napi_typeof(env, argv[INDEX_ONE],  &valueType);
+        if (argc > ARGC_TWO && valueType == napi_object) {
             HILOG_INFO("OnStartAbilityWithAccount start options is used.");
-            AppExecFwk::UnwrapStartOptions(reinterpret_cast<napi_env>(&engine),
-                reinterpret_cast<napi_value>(info.argv[INDEX_TWO]), startOptions);
+            AppExecFwk::UnwrapStartOptions(env, argv[INDEX_TWO], startOptions);
             unwrapArgc++;
         }
 
-        AsyncTask::CompleteCallback complete = [weak = context_, want, accountId, startOptions,
-                                                   unwrapArgc](NativeEngine &engine, AsyncTask &task, int32_t status) {
+        NapiAsyncTask::CompleteCallback complete = [weak = context_, want, accountId, startOptions,
+                                                   unwrapArgc](napi_env env, NapiAsyncTask &task, int32_t status) {
             auto context = weak.lock();
             if (!context) {
                 HILOG_WARN("context is released");
-                task.Reject(engine, CreateJsError(engine, ERROR_CODE_ONE, "Context is released"));
+                task.Reject(env, CreateJsError(env, ERROR_CODE_ONE, "Context is released"));
                 return;
             }
 
@@ -193,71 +186,70 @@ private:
             (unwrapArgc == ARGC_TWO) ? errcode = context->StartAbilityWithAccount(want, accountId)
                                      : errcode = context->StartAbilityWithAccount(want, accountId, startOptions);
             if (errcode == 0) {
-                task.Resolve(engine, engine.CreateUndefined());
+                task.Resolve(env, CreateJsUndefined(env));
             } else {
-                task.Reject(engine, CreateJsError(engine, errcode, "Start Ability failed."));
+                task.Reject(env, CreateJsError(env, errcode, "Start Ability failed."));
             }
         };
 
-        NativeValue *lastParam = (info.argc == unwrapArgc) ? nullptr : info.argv[unwrapArgc];
-        NativeValue *result = nullptr;
-        AsyncTask::Schedule("WallpaperExtensionContext::OnStartAbilityWithAccount", engine,
-            CreateAsyncTaskWithLastParam(engine, lastParam, nullptr, std::move(complete), &result));
+        napi_value lastParam = argc == unwrapArgc ? nullptr : argv[unwrapArgc];
+        napi_value result = nullptr;
+        NapiAsyncTask::Schedule("WallpaperExtensionContext::OnStartAbilityWithAccount", env,
+            CreateAsyncTaskWithLastParam(env, lastParam, nullptr, std::move(complete), &result));
         return result;
     }
 
-    NativeValue *OnTerminateAbility(NativeEngine &engine, const NativeCallbackInfo &info)
+    napi_value OnTerminateAbility(napi_env env, size_t argc, napi_value *argv)
     {
         HILOG_INFO("OnTerminateAbility is called");
         // only support one or zero params
-        if (info.argc != ARGC_ZERO && info.argc != ARGC_ONE) {
+        if (argc != ARGC_ZERO && argc != ARGC_ONE) {
             HILOG_ERROR("Not enough params");
-            return engine.CreateUndefined();
+            return CreateJsUndefined(env);
         }
 
-        AsyncTask::CompleteCallback complete = [weak = context_](
-            NativeEngine &engine, AsyncTask &task, int32_t status) {
+        NapiAsyncTask::CompleteCallback complete = [weak = context_](
+            napi_env env, NapiAsyncTask &task, int32_t status) {
             HILOG_INFO("TerminateAbility begin");
             auto context = weak.lock();
             if (!context) {
                 HILOG_WARN("context is released");
-                task.Reject(engine, CreateJsError(engine, ERROR_CODE_ONE, "Context is released"));
+                task.Reject(env, CreateJsError(env, ERROR_CODE_ONE, "Context is released"));
                 return;
             }
 
             auto errcode = context->TerminateAbility();
             if (errcode == 0) {
-                task.Resolve(engine, engine.CreateUndefined());
+                task.Resolve(env, CreateJsUndefined(env));
             } else {
-                task.Reject(engine, CreateJsError(engine, errcode, "Terminate Ability failed."));
+                task.Reject(env, CreateJsError(env, errcode, "Terminate Ability failed."));
             }
         };
 
-        NativeValue *lastParam = (info.argc == ARGC_ZERO) ? nullptr : info.argv[INDEX_ZERO];
-        NativeValue *result = nullptr;
-        AsyncTask::Schedule("WallpaperExtensionContext::OnTerminateAbility", engine,
-            CreateAsyncTaskWithLastParam(engine, lastParam, nullptr, std::move(complete), &result));
+        napi_value lastParam = (argc == ARGC_ZERO) ? nullptr : argv[INDEX_ZERO];
+        napi_value result = nullptr;
+        NapiAsyncTask::Schedule("WallpaperExtensionContext::OnTerminateAbility", env,
+            CreateAsyncTaskWithLastParam(env, lastParam, nullptr, std::move(complete), &result));
         return result;
     }
 
-    NativeValue *OnConnectAbility(NativeEngine &engine, NativeCallbackInfo &info)
+    napi_value OnConnectAbility(napi_env env, size_t argc, napi_value *argv)
     {
         HILOG_INFO("OnConnectAbility is called");
         // only support two params
-        if (info.argc != ARGC_TWO) {
+        if (argc != ARGC_TWO) {
             HILOG_ERROR("Not enough params");
-            return engine.CreateUndefined();
+            return CreateJsUndefined(env);
         }
 
         // unwrap want
         AAFwk::Want want;
-        OHOS::AppExecFwk::UnwrapWant(reinterpret_cast<napi_env>(&engine),
-            reinterpret_cast<napi_value>(info.argv[INDEX_ZERO]), want);
+        OHOS::AppExecFwk::UnwrapWant(env, argv[INDEX_ZERO], want);
         HILOG_INFO("%{public}s bundlename:%{public}s abilityname:%{public}s", __func__, want.GetBundle().c_str(),
             want.GetElement().GetAbilityName().c_str());
         // unwarp connection
-        sptr<JSWallpaperExtensionConnection> connection = new JSWallpaperExtensionConnection(engine);
-        connection->SetJsConnectionObject(info.argv[1]);
+        sptr<JSWallpaperExtensionConnection> connection = new JSWallpaperExtensionConnection(env);
+        connection->SetJsConnectionObject(argv[1]);
         int64_t connectId = serialNumber_;
         ConnecttionKey key;
         key.id = serialNumber_;
@@ -269,53 +261,53 @@ private:
             serialNumber_ = 0;
         }
         HILOG_INFO("%{public}s not find connection, make new one.", __func__);
-        AsyncTask::CompleteCallback complete = [weak = context_, want, connection, connectId](NativeEngine &engine,
-                                                   AsyncTask &task, int32_t status) {
+        NapiAsyncTask::CompleteCallback complete = [weak = context_, want, connection, connectId](napi_env env,
+                                                   NapiAsyncTask &task, int32_t status) {
             HILOG_INFO("OnConnectAbility begin");
             auto context = weak.lock();
             if (!context) {
                 HILOG_WARN("context is released");
-                task.Reject(engine, CreateJsError(engine, ERROR_CODE_ONE, "Context is released"));
+                task.Reject(env, CreateJsError(env, ERROR_CODE_ONE, "Context is released"));
                 return;
             }
             HILOG_INFO("context->ConnectAbility connection:%{public}d", (int32_t)connectId);
             if (!context->ConnectAbility(want, connection)) {
                 connection->CallJsFailed(ERROR_CODE_ONE);
             }
-            task.Resolve(engine, engine.CreateUndefined());
+            task.Resolve(env, CreateJsUndefined(env));
         };
-        NativeValue *result = nullptr;
-        AsyncTask::Schedule("WallpaperExtensionContext::OnConnectAbility", engine,
-            CreateAsyncTaskWithLastParam(engine, nullptr, nullptr, std::move(complete), &result));
-        return engine.CreateNumber(connectId);
+        napi_value result = nullptr;
+        NapiAsyncTask::Schedule("WallpaperExtensionContext::OnConnectAbility", env,
+            CreateAsyncTaskWithLastParam(env, nullptr, nullptr, std::move(complete), &result));
+        napi_value connectResult =  nullptr;
+        napi_create_int64(env, connectId, &connectResult);
+        return connectResult;
     }
 
-    NativeValue *OnConnectAbilityWithAccount(NativeEngine &engine, NativeCallbackInfo &info)
+    napi_value OnConnectAbilityWithAccount(napi_env env, size_t argc, napi_value *argv)
     {
         HILOG_INFO("OnConnectAbilityWithAccount is called");
         // only support three params
-        if (info.argc != ARGC_THREE) {
+        if (argc != ARGC_THREE) {
             HILOG_ERROR("Not enough params");
-            return engine.CreateUndefined();
+            return CreateJsUndefined(env);
         }
 
         // unwrap want
         AAFwk::Want want;
-        OHOS::AppExecFwk::UnwrapWant(reinterpret_cast<napi_env>(&engine),
-            reinterpret_cast<napi_value>(info.argv[INDEX_ZERO]), want);
+        OHOS::AppExecFwk::UnwrapWant(env, argv[INDEX_ZERO], want);
         HILOG_INFO("%{public}s bundlename:%{public}s abilityname:%{public}s", __func__, want.GetBundle().c_str(),
             want.GetElement().GetAbilityName().c_str());
 
         int32_t accountId = 0;
-        if (!OHOS::AppExecFwk::UnwrapInt32FromJS2(reinterpret_cast<napi_env>(&engine),
-            reinterpret_cast<napi_value>(info.argv[INDEX_ONE]), accountId)) {
+        if (!OHOS::AppExecFwk::UnwrapInt32FromJS2(env, argv[INDEX_ONE], accountId)) {
             HILOG_INFO("%{public}s called, the second parameter is invalid.", __func__);
-            return engine.CreateUndefined();
+            return CreateJsUndefined(env);
         }
 
         // unwarp connection
-        sptr<JSWallpaperExtensionConnection> connection = new JSWallpaperExtensionConnection(engine);
-        connection->SetJsConnectionObject(info.argv[1]);
+        sptr<JSWallpaperExtensionConnection> connection = new JSWallpaperExtensionConnection(env);
+        connection->SetJsConnectionObject(argv[1]);
         int64_t connectId = serialNumber_;
         ConnecttionKey key;
         key.id = serialNumber_;
@@ -327,34 +319,36 @@ private:
             serialNumber_ = 0;
         }
         HILOG_INFO("%{public}s not find connection, make new one.", __func__);
-        AsyncTask::CompleteCallback complete = [weak = context_, want, accountId, connection, connectId](
-            NativeEngine &engine, AsyncTask &task, int32_t status) {
+        NapiAsyncTask::CompleteCallback complete = [weak = context_, want, accountId, connection, connectId](
+            napi_env env, NapiAsyncTask &task, int32_t status) {
             HILOG_INFO("OnConnectAbilityWithAccount begin");
             auto context = weak.lock();
             if (!context) {
                 HILOG_WARN("context is released");
-                task.Reject(engine, CreateJsError(engine, ERROR_CODE_ONE, "Context is released"));
+                task.Reject(env, CreateJsError(env, ERROR_CODE_ONE, "Context is released"));
                 return;
             }
             HILOG_INFO("context->ConnectAbilityWithAccount connection:%{public}d", (int32_t)connectId);
             if (!context->ConnectAbilityWithAccount(want, accountId, connection)) {
                 connection->CallJsFailed(ERROR_CODE_ONE);
             }
-            task.Resolve(engine, engine.CreateUndefined());
+            task.Resolve(env, CreateJsUndefined(env));
         };
-        NativeValue *result = nullptr;
-        AsyncTask::Schedule("WallpaperExtensionContext::OnConnectAbilityWithAccount", engine,
-            CreateAsyncTaskWithLastParam(engine, nullptr, nullptr, std::move(complete), &result));
-        return engine.CreateNumber(connectId);
+        napi_value result = nullptr;
+        NapiAsyncTask::Schedule("WallpaperExtensionContext::OnConnectAbilityWithAccount", env,
+            CreateAsyncTaskWithLastParam(env, nullptr, nullptr, std::move(complete), &result));
+        napi_value connectResult =  nullptr;
+        napi_create_int64(env, connectId, &connectResult);
+        return connectResult;
     }
 
-    NativeValue *OnDisconnectAbility(NativeEngine &engine, NativeCallbackInfo &info)
+    napi_value OnDisconnectAbility(napi_env env, size_t argc, napi_value *argv)
     {
         HILOG_INFO("OnDisconnectAbility is called");
         // only support one or two params
-        if (info.argc != ARGC_ONE && info.argc != ARGC_TWO) {
+        if (argc != ARGC_ONE && argc != ARGC_TWO) {
             HILOG_ERROR("Not enough params");
-            return engine.CreateUndefined();
+            return CreateJsUndefined(env);
         }
 
         // unwrap want
@@ -362,7 +356,7 @@ private:
         // unwrap connectId
         int64_t connectId = -1;
         sptr<JSWallpaperExtensionConnection> connection = nullptr;
-        napi_get_value_int64(reinterpret_cast<napi_env>(&engine), reinterpret_cast<napi_value>(info.argv[INDEX_ZERO]),
+        napi_get_value_int64(reinterpret_cast<napi_env>(env), reinterpret_cast<napi_value>(argv[INDEX_ZERO]),
             &connectId);
         HILOG_INFO("OnDisconnectAbility connection:%{public}d", static_cast<int32_t>(connectId));
         auto item = std::find_if(connects_.begin(), connects_.end(),
@@ -378,110 +372,112 @@ private:
             HILOG_INFO("%{public}s not find conn exist.", __func__);
         }
         // begin disconnect
-        AsyncTask::CompleteCallback complete = [weak = context_, want, connection](NativeEngine &engine,
-                                                   AsyncTask &task, int32_t status) {
+        NapiAsyncTask::CompleteCallback complete = [weak = context_, want, connection](napi_env env,
+                                                   NapiAsyncTask &task, int32_t status) {
             HILOG_INFO("OnDisconnectAbility begin");
             auto context = weak.lock();
             if (!context) {
                 HILOG_WARN("context is released");
-                task.Reject(engine, CreateJsError(engine, ERROR_CODE_ONE, "Context is released"));
+                task.Reject(env, CreateJsError(env, ERROR_CODE_ONE, "Context is released"));
                 return;
             }
             if (connection == nullptr) {
                 HILOG_WARN("connection nullptr");
-                task.Reject(engine, CreateJsError(engine, ERROR_CODE_TWO, "not found connection"));
+                task.Reject(env, CreateJsError(env, ERROR_CODE_TWO, "not found connection"));
                 return;
             }
             HILOG_INFO("context->DisconnectAbility");
             auto errcode = context->DisconnectAbility(want, connection);
-            errcode == 0 ? task.Resolve(engine, engine.CreateUndefined())
-                         : task.Reject(engine, CreateJsError(engine, errcode, "Disconnect Ability failed."));
+            errcode == 0 ? task.Resolve(env, CreateJsUndefined(env))
+                         : task.Reject(env, CreateJsError(env, errcode, "Disconnect Ability failed."));
         };
 
-        NativeValue *lastParam = (info.argc == ARGC_ONE) ? nullptr : info.argv[INDEX_ONE];
-        NativeValue *result = nullptr;
-        AsyncTask::Schedule("WallpaperExtensionContext::OnDisconnectAbility", engine,
-            CreateAsyncTaskWithLastParam(engine, lastParam, nullptr, std::move(complete), &result));
+        napi_value lastParam = (argc == ARGC_ONE) ? nullptr : argv[INDEX_ONE];
+        napi_value result = nullptr;
+        NapiAsyncTask::Schedule("WallpaperExtensionContext::OnDisconnectAbility", env,
+            CreateAsyncTaskWithLastParam(env, lastParam, nullptr, std::move(complete), &result));
         return result;
     }
 };
 } // namespace
 
-NativeValue *CreateJsMetadata(NativeEngine &engine, const AppExecFwk::Metadata &Info)
+napi_value CreateJsMetadata(napi_env env, const AppExecFwk::Metadata &Info)
 {
     HILOG_INFO("CreateJsMetadata");
-    NativeValue *objValue = engine.CreateObject();
-    NativeObject *object = ConvertNativeValueTo<NativeObject>(objValue);
+    napi_value objValue = nullptr;
+    napi_create_object(env, &objValue);
 
-    object->SetProperty("name", CreateJsValue(engine, Info.name));
-    object->SetProperty("value", CreateJsValue(engine, Info.value));
-    object->SetProperty("resource", CreateJsValue(engine, Info.resource));
+    napi_set_named_property(env, objValue, "name", CreateJsValue(env, Info.name));
+    napi_set_named_property(env, objValue, "value", CreateJsValue(env, Info.value));
+    napi_set_named_property(env, objValue, "resource", CreateJsValue(env, Info.resource));
     return objValue;
 }
 
-NativeValue *CreateJsMetadataArray(NativeEngine &engine, const std::vector<AppExecFwk::Metadata> &info)
+napi_value CreateJsMetadataArray(napi_env env, const std::vector<AppExecFwk::Metadata> &info)
 {
     HILOG_INFO("CreateJsMetadataArray");
-    NativeValue *arrayValue = engine.CreateArray(info.size());
-    NativeArray *array = ConvertNativeValueTo<NativeArray>(arrayValue);
+    napi_value arrayValue = nullptr;
+    napi_create_array_with_length(env, info.size(), &arrayValue);
     uint32_t index = 0;
     for (const auto &item : info) {
-        array->SetElement(index++, CreateJsMetadata(engine, item));
+        napi_set_element(env, arrayValue, index++, CreateJsMetadata(env, item));
     }
     return arrayValue;
 }
 
-NativeValue *CreateJsExtensionAbilityInfo(NativeEngine &engine, const AppExecFwk::ExtensionAbilityInfo &info)
+napi_value CreateJsExtensionAbilityInfo(napi_env env, const AppExecFwk::ExtensionAbilityInfo &info)
 {
     HILOG_INFO("CreateJsExtensionAbilityInfo");
-    NativeValue *objValue = engine.CreateObject();
-    NativeObject *object = ConvertNativeValueTo<NativeObject>(objValue);
-    object->SetProperty("bundleName", CreateJsValue(engine, info.bundleName));
-    object->SetProperty("moduleName", CreateJsValue(engine, info.moduleName));
-    object->SetProperty("name", CreateJsValue(engine, info.name));
-    object->SetProperty("labelId", CreateJsValue(engine, info.labelId));
-    object->SetProperty("descriptionId", CreateJsValue(engine, info.descriptionId));
-    object->SetProperty("iconId", CreateJsValue(engine, info.iconId));
-    object->SetProperty("isVisible", CreateJsValue(engine, info.visible));
-    object->SetProperty("extensionAbilityType", CreateJsValue(engine, info.type));
-    NativeValue *permissionArrayValue = engine.CreateArray(info.permissions.size());
-    NativeArray *permissionArray = ConvertNativeValueTo<NativeArray>(permissionArrayValue);
-    if (permissionArray != nullptr) {
+    napi_value objValue = nullptr;
+    napi_create_object(env, &objValue);
+
+    napi_set_named_property(env, objValue, "bundleName", CreateJsValue(env, info.bundleName));
+    napi_set_named_property(env, objValue, "moduleName", CreateJsValue(env, info.moduleName));
+    napi_set_named_property(env, objValue, "name", CreateJsValue(env, info.name));
+    napi_set_named_property(env, objValue, "labelId", CreateJsValue(env, info.labelId));
+    napi_set_named_property(env, objValue, "descriptionId", CreateJsValue(env, info.descriptionId));
+    napi_set_named_property(env, objValue, "iconId", CreateJsValue(env, info.iconId));
+    napi_set_named_property(env, objValue, "isVisible", CreateJsValue(env, info.visible));
+    napi_set_named_property(env, objValue, "extensionAbilityType", CreateJsValue(env, info.type));
+
+    napi_value permissionArrayValue = nullptr;
+    napi_create_array_with_length(env, info.permissions.size(), &permissionArrayValue);
+
+    if (permissionArrayValue != nullptr) {
         int32_t index = 0;
         for (auto permission : info.permissions) {
-            permissionArray->SetElement(index++, CreateJsValue(engine, permission));
+           napi_set_element(env, permissionArrayValue, index++, CreateJsValue(env, permission));
         }
     }
-    object->SetProperty("permissions", permissionArrayValue);
-    object->SetProperty("applicationInfo", CreateJsApplicationInfo(engine, info.applicationInfo));
-    object->SetProperty("metadata", CreateJsMetadataArray(engine, info.metadata));
-    object->SetProperty("enabled", CreateJsValue(engine, info.enabled));
-    object->SetProperty("readPermission", CreateJsValue(engine, info.readPermission));
-    object->SetProperty("writePermission", CreateJsValue(engine, info.writePermission));
+    napi_set_named_property(env, objValue, "permissions", permissionArrayValue);
+    napi_set_named_property(env, objValue, "applicationInfo", CreateJsApplicationInfo(env, info.applicationInfo));
+    napi_set_named_property(env, objValue, "metadata", CreateJsMetadataArray(env, info.metadata));
+    napi_set_named_property(env, objValue, "enabled", CreateJsValue(env, info.enabled));
+    napi_set_named_property(env, objValue, "readPermission", CreateJsValue(env, info.readPermission));
+    napi_set_named_property(env, objValue, "writePermission", CreateJsValue(env, info.writePermission));
     return objValue;
 }
 
-NativeValue *CreateJsWallpaperExtensionContext(NativeEngine &engine, std::shared_ptr<WallpaperExtensionContext> context)
+napi_value CreateJsWallpaperExtensionContext(napi_env env, std::shared_ptr<WallpaperExtensionContext> context)
 {
     HILOG_INFO("CreateJsWallpaperExtensionContext begin");
-    NativeValue *objValue = CreateJsExtensionContext(engine, context);
-    NativeObject *object = ConvertNativeValueTo<NativeObject>(objValue);
+    napi_value objValue = CreateJsExtensionContext(env, context);
 
     std::unique_ptr<JsWallpaperExtensionContext> jsContext = std::make_unique<JsWallpaperExtensionContext>(context);
-    object->SetNativePointer(jsContext.release(), JsWallpaperExtensionContext::Finalizer, nullptr);
+    napi_wrap(env, objValue, jsContext.release(), JsWallpaperExtensionContext::Finalizer, nullptr, nullptr);
 
     // make handler
     handler_ = std::make_shared<AppExecFwk::EventHandler>(AppExecFwk::EventRunner::GetMainEventRunner());
 
     const char *moduleName = "JsWallpaperExtensionContext";
-    BindNativeFunction(engine, *object, "startAbility", moduleName, JsWallpaperExtensionContext::StartAbility);
-    BindNativeFunction(engine, *object, "terminateSelf", moduleName, JsWallpaperExtensionContext::TerminateAbility);
-    BindNativeFunction(engine, *object, "connectAbility", moduleName, JsWallpaperExtensionContext::ConnectAbility);
-    BindNativeFunction(engine, *object, "disconnectAbility", moduleName,
+    BindNativeFunction(env, objValue, "startAbility", moduleName, JsWallpaperExtensionContext::StartAbility);
+    BindNativeFunction(env, objValue, "terminateSelf", moduleName, JsWallpaperExtensionContext::TerminateAbility);
+    BindNativeFunction(env, objValue, "connectAbility", moduleName, JsWallpaperExtensionContext::ConnectAbility);
+    BindNativeFunction(env, objValue, "disconnectAbility", moduleName,
         JsWallpaperExtensionContext::DisconnectAbility);
-    BindNativeFunction(engine, *object, "startAbilityWithAccount", moduleName,
+    BindNativeFunction(env, objValue, "startAbilityWithAccount", moduleName,
         JsWallpaperExtensionContext::StartAbilityWithAccount);
-    BindNativeFunction(engine, *object, "connectAbilityWithAccount", moduleName,
+    BindNativeFunction(env, objValue, "connectAbilityWithAccount", moduleName,
         JsWallpaperExtensionContext::ConnectAbilityWithAccount);
 
     if (context) {
@@ -499,14 +495,14 @@ NativeValue *CreateJsWallpaperExtensionContext(NativeEngine &engine, std::shared
                 HILOG_INFO("Get target fail.");
                 return objValue;
             }
-            object->SetProperty("extensionAbilityInfo", CreateJsExtensionAbilityInfo(engine, *infoIter));
+            napi_set_named_property(env, objValue, "extensionAbilityInfo", CreateJsExtensionAbilityInfo(env, *infoIter));
         }
     }
 
     return objValue;
 }
 
-JSWallpaperExtensionConnection::JSWallpaperExtensionConnection(NativeEngine &engine) : engine_(engine)
+JSWallpaperExtensionConnection::JSWallpaperExtensionConnection(napi_env env) : env(env)
 {
 }
 
@@ -537,32 +533,32 @@ void JSWallpaperExtensionConnection::HandleOnAbilityConnectDone(const AppExecFwk
 {
     HILOG_INFO("HandleOnAbilityConnectDone begin, resultCode:%{public}d", resultCode);
     // wrap ElementName
-    napi_value napiElementName = OHOS::AppExecFwk::WrapElementName(reinterpret_cast<napi_env>(&engine_), element);
-    NativeValue *nativeElementName = reinterpret_cast<NativeValue *>(napiElementName);
+    napi_value napiElementName = OHOS::AppExecFwk::WrapElementName(env, element);
 
     // wrap RemoteObject
     HILOG_INFO("OnAbilityConnectDone begin NAPI_ohos_rpc_CreateJsRemoteObject");
     napi_value napiRemoteObject =
-        NAPI_ohos_rpc_CreateJsRemoteObject(reinterpret_cast<napi_env>(&engine_), remoteObject);
-    NativeValue *nativeRemoteObject = reinterpret_cast<NativeValue *>(napiRemoteObject);
-    NativeValue *argv[] = { nativeElementName, nativeRemoteObject };
+        NAPI_ohos_rpc_CreateJsRemoteObject(env, remoteObject);
+    napi_value argv[] = { napiElementName, napiRemoteObject };
+
     if (jsConnectionObject_ == nullptr) {
         HILOG_ERROR("jsConnectionObject_ nullptr");
         return;
     }
-    NativeValue *value = jsConnectionObject_->Get();
-    NativeObject *obj = ConvertNativeValueTo<NativeObject>(value);
+    napi_value obj = jsConnectionObject_->GetNapiValue();
     if (obj == nullptr) {
         HILOG_ERROR("Failed to get object");
         return;
     }
-    NativeValue *methodOnConnect = obj->GetProperty("onConnect");
+    napi_value methodOnConnect = nullptr;
+    napi_get_named_property(env, obj, "onConnect", &methodOnConnect);
     if (methodOnConnect == nullptr) {
         HILOG_ERROR("Failed to get onConnect from object");
         return;
     }
-    HILOG_INFO("JSWallpaperExtensionConnection::CallFunction onConnect, success");
-    engine_.CallFunction(value, methodOnConnect, argv, ARGC_TWO);
+    HILOG_INFO("JSWallpaperExtensionConnection::napi_call_function onConnect, success");
+    napi_value callResult = nullptr;
+    napi_call_function(env, obj, methodOnConnect, ARGC_TWO, argv, &callResult);
     HILOG_INFO("OnAbilityConnectDone end");
 }
 
@@ -589,21 +585,20 @@ void JSWallpaperExtensionConnection::HandleOnAbilityDisconnectDone(const AppExec
     int32_t resultCode)
 {
     HILOG_INFO("HandleOnAbilityDisconnectDone begin, resultCode:%{public}d", resultCode);
-    napi_value napiElementName = OHOS::AppExecFwk::WrapElementName(reinterpret_cast<napi_env>(&engine_), element);
-    NativeValue *nativeElementName = reinterpret_cast<NativeValue *>(napiElementName);
-    NativeValue *argv[] = { nativeElementName };
+    napi_value napiElementName = OHOS::AppExecFwk::WrapElementName(env, element);
+    napi_value argv[] = { napiElementName };
     if (jsConnectionObject_ == nullptr) {
         HILOG_ERROR("jsConnectionObject_ nullptr");
         return;
     }
-    NativeValue *value = jsConnectionObject_->Get();
-    NativeObject *obj = ConvertNativeValueTo<NativeObject>(value);
+    napi_value obj = jsConnectionObject_->GetNapiValue();
     if (obj == nullptr) {
         HILOG_ERROR("Failed to get object");
         return;
     }
 
-    NativeValue *method = obj->GetProperty("onDisconnect");
+    napi_value method = nullptr;
+    napi_get_named_property(env, obj, "onDisconnect", &method);
     if (method == nullptr) {
         HILOG_ERROR("Failed to get onDisconnect from object");
         return;
@@ -624,13 +619,16 @@ void JSWallpaperExtensionConnection::HandleOnAbilityDisconnectDone(const AppExec
         connects_.erase(item);
         HILOG_INFO("OnAbilityDisconnectDone erase connects_.size:%{public}zu", connects_.size());
     }
-    HILOG_INFO("OnAbilityDisconnectDone CallFunction success");
-    engine_.CallFunction(value, method, argv, ARGC_ONE);
+    HILOG_INFO("OnAbilityDisconnectDone napi_call_function success");
+    napi_value callResult = nullptr;
+    napi_call_function(env, obj, method, ARGC_TWO, argv, &callResult);
 }
 
-void JSWallpaperExtensionConnection::SetJsConnectionObject(NativeValue *jsConnectionObject)
+void JSWallpaperExtensionConnection::SetJsConnectionObject(napi_value jsConnectionObject)
 {
-    jsConnectionObject_ = std::unique_ptr<NativeReference>(engine_.CreateReference(jsConnectionObject, 1));
+    napi_ref value = nullptr;
+    napi_create_reference(env, jsConnectionObject, 1, &value);
+    jsConnectionObject_ = std::unique_ptr<NativeReference>(reinterpret_cast<NativeReference*>(value));
 }
 
 void JSWallpaperExtensionConnection::CallJsFailed(int32_t errorCode)
@@ -640,21 +638,25 @@ void JSWallpaperExtensionConnection::CallJsFailed(int32_t errorCode)
         HILOG_ERROR("jsConnectionObject_ nullptr");
         return;
     }
-    NativeValue *value = jsConnectionObject_->Get();
-    NativeObject *obj = ConvertNativeValueTo<NativeObject>(value);
+    napi_value obj = jsConnectionObject_->GetNapiValue();
     if (obj == nullptr) {
         HILOG_ERROR("Failed to get object");
         return;
     }
 
-    NativeValue *method = obj->GetProperty("onFailed");
+    napi_value method = nullptr;
+    napi_get_named_property(env, obj, "onFailed", &method);
     if (method == nullptr) {
         HILOG_ERROR("Failed to get onFailed from object");
         return;
     }
-    NativeValue *argv[] = { engine_.CreateNumber(errorCode) };
+    napi_value result =  nullptr;
+    napi_create_int32(env, errorCode, &result);
+    napi_value argv[] = { result };
+
     HILOG_INFO("CallJsFailed CallFunction success");
-    engine_.CallFunction(value, method, argv, ARGC_ONE);
+    napi_value callResult = nullptr;
+    napi_call_function(env, obj, method, ARGC_ONE, argv, &callResult);
     HILOG_INFO("CallJsFailed end");
 }
 } // namespace AbilityRuntime

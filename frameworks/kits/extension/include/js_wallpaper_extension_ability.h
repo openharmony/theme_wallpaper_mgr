@@ -21,7 +21,6 @@
 #include "wallpaper_extension_ability.h"
 
 class NativeReference;
-class NativeValue;
 
 namespace OHOS {
 namespace AbilityRuntime {
@@ -113,7 +112,7 @@ private:
     void RegisterWallpaperCallback();
 
 private:
-    NativeValue *CallObjectMethod(const std::string &name, NativeValue *const *argv = nullptr, size_t argc = 0);
+    napi_value CallObjectMethod(const std::string &name, napi_value const *argv = nullptr, size_t argc = 0);
 
     void GetSrcPath(std::string &srcPath);
 

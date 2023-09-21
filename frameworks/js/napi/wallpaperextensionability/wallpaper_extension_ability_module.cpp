@@ -20,15 +20,15 @@ extern const char _binary_wallpaper_extension_ability_js_end[];
 extern const char _binary_wallpaper_extension_ability_abc_start[];
 extern const char _binary_wallpaper_extension_ability_abc_end[];
 
-extern "C" __attribute__((constructor)) void NAPI_WallpaperExtensionAbility_AutoRegister()
-{
-    auto moduleManager = NativeModuleManager::GetInstance();
-    NativeModule newModuleInfo = {
-        .name = "WallpaperExtensionAbility",
-        .fileName = "libwallpaperextensionability_napi.so/wallpaper_extension_ability.js",
-    };
+static napi_module _module = {
+        .nm_version = 0,
+        .nm_modname = "WallpaperExtensionAbility",
+        .nm_filename = "libwallpaperextensionability_napi.so/wallpaper_extension_ability.js",
+};
 
-    moduleManager->Register(&newModuleInfo);
+extern "C" __attribute__((constructor)) void NAPI_WallpaperExtensionAbility_AutoRegister(void)
+{
+    napi_module_register(&_module);
 }
 
 extern "C" __attribute__((visibility("default"))) void NAPI_WallpaperExtensionAbility_GetJSCode(
