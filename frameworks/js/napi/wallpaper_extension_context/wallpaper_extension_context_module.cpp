@@ -20,20 +20,18 @@ extern const char _binary_wallpaper_extension_context_js_end[];
 extern const char _binary_wallpaper_extension_context_abc_start[];
 extern const char _binary_wallpaper_extension_context_abc_end[];
 
-extern "C" __attribute__((constructor)) void NAPI_WallpaperExtensionContext_AutoRegister()
-{
-    auto moduleManager = NativeModuleManager::GetInstance();
-    NativeModule newModuleInfo = {
-        .name = "WallpaperExtensionContext",
-        .fileName = "libwallpaperextensioncontext_napi.so/wallpaper_extension_context.js",
-    };
+static napi_module _module = {
+        .nm_version = 0,
+        .nm_modname = "WallpaperExtensionContext",
+        .nm_filename = "libwallpaperextensioncontext_napi.so/wallpaper_extension_context.js",
+};
 
-    moduleManager->Register(&newModuleInfo);
+extern "C" __attribute__((constructor)) void NAPI_WallpaperExtensionContext_AutoRegister(void) {
+    napi_module_register(&_module);
 }
 
 extern "C" __attribute__((visibility("default"))) void NAPI_WallpaperExtensionContext_GetJSCode(const char **buf,
-    int *bufLen)
-{
+                                                                                                int *bufLen) {
     if (buf != nullptr) {
         *buf = _binary_wallpaper_extension_context_js_start;
     }
@@ -45,8 +43,7 @@ extern "C" __attribute__((visibility("default"))) void NAPI_WallpaperExtensionCo
 
 // ability_context JS register
 extern "C" __attribute__((visibility("default"))) void NAPI_WallpaperExtensionContext_GetABCCode(const char **buf,
-    int *buflen)
-{
+                                                                                                 int *buflen) {
     if (buf != nullptr) {
         *buf = _binary_wallpaper_extension_context_abc_start;
     }
