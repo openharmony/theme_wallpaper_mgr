@@ -22,8 +22,9 @@
 #include "ability_connect_callback.h"
 #include "event_handler.h"
 #include "wallpaper_extension_context.h"
-#include "native_engine/native_engine.h"
-#include "native_engine/native_value.h"
+#include "napi/native_api.h"
+
+class NativeReference;
 
 namespace OHOS {
 namespace AbilityRuntime {

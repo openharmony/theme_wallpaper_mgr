@@ -26,7 +26,8 @@ static napi_module _module = {
         .nm_filename = "libwallpaperextensioncontext_napi.so/wallpaper_extension_context.js",
 };
 
-extern "C" __attribute__((constructor)) void NAPI_WallpaperExtensionContext_AutoRegister(void) {
+extern "C" __attribute__((constructor)) void NAPI_WallpaperExtensionContext_AutoRegister(void)
+{
     napi_module_register(&_module);
 }
 
