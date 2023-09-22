@@ -81,7 +81,7 @@ void JsWallpaperExtensionAbility::Init(const std::shared_ptr<AbilityLocalRecord>
     moduleName.append("::").append(abilityInfo_->name);
     HILOG_INFO("JsWallpaperExtension::Init module:%{public}s,srcPath:%{public}s.", moduleName.c_str(), srcPath.c_str());
     HandleScope handleScope(jsRuntime_);
-    napi_env env = (napi_env)jsRuntime_.GetNativeEnginePointer();
+    napi_env env = jsRuntime_.GetNapiEnv();
     jsObj_ = jsRuntime_.LoadModule(moduleName, srcPath, abilityInfo_->hapPath,
         Extension::abilityInfo_->compileMode == CompileMode::ES_MODULE);
     if (jsObj_ == nullptr) {
@@ -191,7 +191,7 @@ napi_value JsWallpaperExtensionAbility::CallObjectMethod(
     }
 
     HandleScope handleScope(jsRuntime_);
-    napi_env env = (napi_env)jsRuntime_.GetNativeEnginePointer();
+    napi_env env = jsRuntime_.GetNapiEnv();
     napi_value obj = jsObj_->GetNapiValue();
     if (obj == nullptr) {
         HILOG_ERROR("Failed to get WallpaperExtensionAbility object");
@@ -206,7 +206,7 @@ napi_value JsWallpaperExtensionAbility::CallObjectMethod(
     }
 
     HILOG_INFO("JsWallpaperExtensionAbility::CallFunction(%{public}s), success", name.c_str());
-    napi_value remoteNapi;
+    napi_value remoteNapi = nullptr;
     napi_status status = napi_call_function(env, nullptr, method, argc, argv, &remoteNapi);
     if(status != napi_ok) {
         return nullptr;
