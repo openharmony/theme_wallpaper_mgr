@@ -246,7 +246,7 @@ void JsWallpaperExtensionAbility::RegisterWallpaperCallback()
                 return false;
             }
             napi_env napiEng =
-                &(JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->jsRuntime_).GetNapiEnv();
+                (JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->jsRuntime_).GetNapiEnv();
             WorkData *workData = new (std::nothrow) WorkData(napiEng, wallpaperType);
             if (workData == nullptr) {
                 return false;
