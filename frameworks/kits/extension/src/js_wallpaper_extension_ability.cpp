@@ -112,9 +112,7 @@ void JsWallpaperExtensionAbility::Init(const std::shared_ptr<AbilityLocalRecord>
         HILOG_ERROR("Failed to get wallpaper extension native object");
         return;
     }
-    napi_wrap(
-        env, contextObj, workContext,
-        [](napi_env, void *data, void *) {
+    napi_wrap(env, contextObj, workContext, [](napi_env, void *data, void *) {
             HILOG_INFO("Finalizer for weak_ptr wallpaper extension context is called");
             delete static_cast<std::weak_ptr<AbilityRuntime::Context> *>(data);
         }, nullptr, nullptr);
