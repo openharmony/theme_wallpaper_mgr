@@ -209,7 +209,8 @@ private:
             return CreateJsUndefined(env);
         }
 
-        NapiAsyncTask::CompleteCallback complete = [weak = context_](napi_env env, NapiAsyncTask &task, int32_t status) {
+        NapiAsyncTask::CompleteCallback complete = [weak = context_](napi_env env, NapiAsyncTask &task, int32_t status)
+        {
             HILOG_INFO("TerminateAbility begin");
             auto context = weak.lock();
             if (!context) {
