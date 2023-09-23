@@ -117,7 +117,8 @@ void JsWallpaperExtensionAbility::Init(const std::shared_ptr<AbilityLocalRecord>
         [](napi_env, void *data, void *) {
             HILOG_INFO("Finalizer for weak_ptr wallpaper extension context is called");
             delete static_cast<std::weak_ptr<AbilityRuntime::Context> *>(data);
-        }, nullptr, nullptr);
+        },
+        nullptr, nullptr);
 }
 
 void JsWallpaperExtensionAbility::OnStart(const AAFwk::Want &want)
@@ -130,7 +131,7 @@ void JsWallpaperExtensionAbility::OnStart(const AAFwk::Want &want)
         static_cast<int32_t>(TraceTaskId::ONSTART_MIDDLE_EXTENSION));
     HILOG_INFO("jws JsWallpaperExtensionAbility OnStart begin..");
     HandleScope handleScope(jsRuntime_);
-    napi_env env = (napi_env)jsRuntime_.GetNativeEnginePointer();
+    napi_env env = jsRuntime_.GetNapiEnv();
     napi_value napiWant = OHOS::AppExecFwk::WrapWant(env, want);
     napi_value argv[] = { napiWant };
     StartAsyncTrace(HITRACE_TAG_MISC, "onCreate", static_cast<int32_t>(TraceTaskId::ONCREATE_EXTENSION));
@@ -207,8 +208,9 @@ napi_value JsWallpaperExtensionAbility::CallObjectMethod(const std::string &name
 
     HILOG_INFO("JsWallpaperExtensionAbility::CallFunction(%{public}s), success", name.c_str());
     napi_value remoteNapi = nullptr;
-    napi_status status = napi_call_function(env, nullptr, method, argc, argv, &remoteNapi);
+    napi_status status = napi_call_function(env, obj, method, argc, argv, &remoteNapi);
     if (status != napi_ok) {
+        HILOG_ERROR("JsWallpaperExtensionAbility::CallFunction(%{public}s), failed", name.c_str());
         return nullptr;
     }
     return remoteNapi;
@@ -257,27 +259,25 @@ void JsWallpaperExtensionAbility::RegisterWallpaperCallback()
                     return;
                 }
                 napi_handle_scope scope = nullptr;
-                napi_open_handle_scope(reinterpret_cast<napi_env>(workData->napiEnv), &scope);
+                napi_open_handle_scope(workData->napiEnv, &scope);
                 if (scope == nullptr) {
                     delete workData;
                     delete work;
                     return;
                 }
-                napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->napiEnv),
-                    workData->wallpaperType);
+                napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(workData->napiEnv, workData->wallpaperType);
 
-                napi_value nativeType = reinterpret_cast<napi_value>(type);
-                napi_value arg[] = { nativeType };
+                napi_value arg[] = { type };
                 std::lock_guard<std::mutex> lock(mtx);
                 if (JsWallpaperExtensionAbility::jsWallpaperExtensionAbility != nullptr) {
                     JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->CallObjectMethod("onWallpaperChange",
                         arg, ARGC_ONE);
                 }
-                napi_close_handle_scope(reinterpret_cast<napi_env>(workData->napiEnv), scope);
+                napi_close_handle_scope(workData->napiEnv, scope);
                 delete workData;
                 delete work;
             };
-            UvQueue::Call(reinterpret_cast<napi_env>(napiEnv), workData, afterCallback);
+            UvQueue::Call(napiEnv, workData, afterCallback);
             return true;
         });
 }

@@ -44,7 +44,7 @@ public:
     void CallJsFailed(int32_t errorCode);
 
 private:
-    napi_env env;
+    napi_env env_;
     std::unique_ptr<NativeReference> jsConnectionObject_ = nullptr;
 };
 
