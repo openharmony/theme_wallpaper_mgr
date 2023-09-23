@@ -17,23 +17,22 @@
 #define ABILITY_RUNTIME_JS_WALLPAPER_EXTENSION_CONTEXT_H
 
 #include <memory>
+#include <node_api.h>
 
 #include "ability_connect_callback.h"
 #include "event_handler.h"
+#include "napi/native_api.h"
 #include "wallpaper_extension_context.h"
 
-class NativeEngine;
-class NativeValue;
 class NativeReference;
 
 namespace OHOS {
 namespace AbilityRuntime {
-NativeValue *CreateJsWallpaperExtensionContext(NativeEngine &engine,
-    std::shared_ptr<WallpaperExtensionContext> context);
+napi_value CreateJsWallpaperExtensionContext(napi_env env, std::shared_ptr<WallpaperExtensionContext> context);
 
 class JSWallpaperExtensionConnection : public AbilityConnectCallback {
 public:
-    explicit JSWallpaperExtensionConnection(NativeEngine &engine);
+    explicit JSWallpaperExtensionConnection(napi_env env);
     ~JSWallpaperExtensionConnection();
     void OnAbilityConnectDone(const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject,
         int32_t resultCode) override;
@@ -41,11 +40,11 @@ public:
     void HandleOnAbilityConnectDone(const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject,
         int32_t resultCode);
     void HandleOnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int32_t resultCode);
-    void SetJsConnectionObject(NativeValue *jsConnectionObject);
+    void SetJsConnectionObject(napi_value jsConnectionObject);
     void CallJsFailed(int32_t errorCode);
 
 private:
-    NativeEngine &engine_;
+    napi_env env_;
     std::unique_ptr<NativeReference> jsConnectionObject_ = nullptr;
 };
 

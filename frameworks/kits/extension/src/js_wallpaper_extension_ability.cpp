@@ -36,9 +36,9 @@ namespace {
 constexpr size_t ARGC_ONE = 1;
 } // namespace
 struct WorkData {
-    NativeEngine *nativeEng;
+    napi_env napiEnv;
     int32_t wallpaperType;
-    WorkData(NativeEngine *nativeEng, int32_t wallpaperType) : nativeEng(nativeEng), wallpaperType(wallpaperType)
+    WorkData(napi_env napiEnv, int32_t wallpaperType) : napiEnv(napiEnv), wallpaperType(wallpaperType)
     {
     }
 };
@@ -81,15 +81,15 @@ void JsWallpaperExtensionAbility::Init(const std::shared_ptr<AbilityLocalRecord>
     moduleName.append("::").append(abilityInfo_->name);
     HILOG_INFO("JsWallpaperExtension::Init module:%{public}s,srcPath:%{public}s.", moduleName.c_str(), srcPath.c_str());
     HandleScope handleScope(jsRuntime_);
-    auto &engine = jsRuntime_.GetNativeEngine();
+    napi_env env = jsRuntime_.GetNapiEnv();
     jsObj_ = jsRuntime_.LoadModule(moduleName, srcPath, abilityInfo_->hapPath,
         Extension::abilityInfo_->compileMode == CompileMode::ES_MODULE);
     if (jsObj_ == nullptr) {
         HILOG_ERROR("Failed to get jsObj_");
         return;
     }
-    HILOG_INFO("JsWallpaperExtensionAbility::Init ConvertNativeValueTo.");
-    NativeObject *obj = ConvertNativeValueTo<NativeObject>(jsObj_->Get());
+    HILOG_INFO("JsWallpaperExtensionAbility::Init GetNapiValue.");
+    napi_value obj = jsObj_->GetNapiValue();
     if (obj == nullptr) {
         HILOG_ERROR("Failed to get JsWallpaperExtensionAbility object");
         return;
@@ -99,23 +99,23 @@ void JsWallpaperExtensionAbility::Init(const std::shared_ptr<AbilityLocalRecord>
         HILOG_ERROR("Failed to get context");
         return;
     }
+    auto workContext = new (std::nothrow) std::weak_ptr<WallpaperExtensionContext>(context);
     HILOG_INFO("JsWallpaperExtensionAbility::Init CreateJsWallpaperExtensionContext.");
-    NativeValue *contextObj = CreateJsWallpaperExtensionContext(engine, context);
+    napi_value contextObj = CreateJsWallpaperExtensionContext(env, context);
     auto shellContextRef = jsRuntime_.LoadSystemModule("WallpaperExtensionContext", &contextObj, ARGC_ONE);
-    contextObj = shellContextRef->Get();
+    contextObj = shellContextRef->GetNapiValue();
+    HILOG_INFO("JsWallpaperExtension::Init Bind.");
     context->Bind(jsRuntime_, shellContextRef.release());
-    obj->SetProperty("context", contextObj);
-    auto nativeObj = ConvertNativeValueTo<NativeObject>(contextObj);
-    if (nativeObj == nullptr) {
+    HILOG_INFO("JsWallpaperExtension::SetProperty.");
+    napi_set_named_property(env, obj, "context", contextObj);
+    if (contextObj == nullptr) {
         HILOG_ERROR("Failed to get wallpaper extension native object");
         return;
     }
-    nativeObj->SetNativePointer(
-        new std::weak_ptr<AbilityRuntime::Context>(context),
-        [](NativeEngine *, void *data, void *) {
+    napi_wrap(env, contextObj, workContext, [](napi_env, void *data, void *) {
             HILOG_INFO("Finalizer for weak_ptr wallpaper extension context is called");
             delete static_cast<std::weak_ptr<AbilityRuntime::Context> *>(data);
-        }, nullptr);
+        }, nullptr, nullptr);
 }
 
 void JsWallpaperExtensionAbility::OnStart(const AAFwk::Want &want)
@@ -128,10 +128,9 @@ void JsWallpaperExtensionAbility::OnStart(const AAFwk::Want &want)
         static_cast<int32_t>(TraceTaskId::ONSTART_MIDDLE_EXTENSION));
     HILOG_INFO("jws JsWallpaperExtensionAbility OnStart begin..");
     HandleScope handleScope(jsRuntime_);
-    NativeEngine *nativeEngine = &jsRuntime_.GetNativeEngine();
-    napi_value napiWant = OHOS::AppExecFwk::WrapWant(reinterpret_cast<napi_env>(nativeEngine), want);
-    NativeValue *nativeWant = reinterpret_cast<NativeValue *>(napiWant);
-    NativeValue *argv[] = { nativeWant };
+    napi_env env = jsRuntime_.GetNapiEnv();
+    napi_value napiWant = OHOS::AppExecFwk::WrapWant(env, want);
+    napi_value argv[] = { napiWant };
     StartAsyncTrace(HITRACE_TAG_MISC, "onCreate", static_cast<int32_t>(TraceTaskId::ONCREATE_EXTENSION));
     CallObjectMethod("onCreate", argv, ARGC_ONE);
     FinishAsyncTrace(HITRACE_TAG_MISC, "onCreate", static_cast<int32_t>(TraceTaskId::ONCREATE_EXTENSION));
@@ -180,8 +179,7 @@ void JsWallpaperExtensionAbility::OnCommand(const AAFwk::Want &want, bool restar
     HILOG_INFO("%{public}s end.", __func__);
 }
 
-NativeValue *JsWallpaperExtensionAbility::CallObjectMethod(
-    const std::string &name, NativeValue *const *argv, size_t argc)
+napi_value JsWallpaperExtensionAbility::CallObjectMethod(const std::string &name, napi_value const *argv, size_t argc)
 {
     HILOG_INFO("jws JsWallpaperExtensionAbility::CallObjectMethod(%{public}s), begin", name.c_str());
 
@@ -191,22 +189,28 @@ NativeValue *JsWallpaperExtensionAbility::CallObjectMethod(
     }
 
     HandleScope handleScope(jsRuntime_);
-    auto &nativeEngine = jsRuntime_.GetNativeEngine();
-
-    NativeValue *value = jsObj_->Get();
-    NativeObject *obj = ConvertNativeValueTo<NativeObject>(value);
+    napi_env env = jsRuntime_.GetNapiEnv();
+    napi_value obj = jsObj_->GetNapiValue();
     if (obj == nullptr) {
         HILOG_ERROR("Failed to get WallpaperExtensionAbility object");
         return nullptr;
     }
 
-    NativeValue *method = obj->GetProperty(name.c_str());
+    napi_value method = nullptr;
+    napi_get_named_property(env, obj, name.c_str(), &method);
     if (method == nullptr) {
         HILOG_ERROR("Failed to get '%{public}s' from WallpaperExtensionAbility object", name.c_str());
         return nullptr;
     }
+
     HILOG_INFO("JsWallpaperExtensionAbility::CallFunction(%{public}s), success", name.c_str());
-    return nativeEngine.CallFunction(value, method, argv, argc);
+    napi_value remoteNapi = nullptr;
+    napi_status status = napi_call_function(env, obj, method, argc, argv, &remoteNapi);
+    if (status != napi_ok) {
+        HILOG_ERROR("JsWallpaperExtensionAbility::CallFunction(%{public}s), failed", name.c_str());
+        return nullptr;
+    }
+    return remoteNapi;
 }
 
 void JsWallpaperExtensionAbility::GetSrcPath(std::string &srcPath)
@@ -240,9 +244,8 @@ void JsWallpaperExtensionAbility::RegisterWallpaperCallback()
             if (JsWallpaperExtensionAbility::jsWallpaperExtensionAbility == nullptr) {
                 return false;
             }
-            NativeEngine *nativeEng =
-                &(JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->jsRuntime_).GetNativeEngine();
-            WorkData *workData = new (std::nothrow) WorkData(nativeEng, wallpaperType);
+            napi_env napiEnv = (JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->jsRuntime_).GetNapiEnv();
+            WorkData *workData = new (std::nothrow) WorkData(napiEnv, wallpaperType);
             if (workData == nullptr) {
                 return false;
             }
@@ -253,27 +256,25 @@ void JsWallpaperExtensionAbility::RegisterWallpaperCallback()
                     return;
                 }
                 napi_handle_scope scope = nullptr;
-                napi_open_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng), &scope);
+                napi_open_handle_scope(workData->napiEnv, &scope);
                 if (scope == nullptr) {
                     delete workData;
                     delete work;
                     return;
                 }
-                napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(reinterpret_cast<napi_env>(workData->nativeEng),
-                    workData->wallpaperType);
+                napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(workData->napiEnv, workData->wallpaperType);
 
-                NativeValue *nativeType = reinterpret_cast<NativeValue *>(type);
-                NativeValue *arg[] = { nativeType };
+                napi_value arg[] = { type };
                 std::lock_guard<std::mutex> lock(mtx);
                 if (JsWallpaperExtensionAbility::jsWallpaperExtensionAbility != nullptr) {
-                    JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->CallObjectMethod(
-                        "onWallpaperChange", arg, ARGC_ONE);
+                    JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->CallObjectMethod("onWallpaperChange",
+                        arg, ARGC_ONE);
                 }
-                napi_close_handle_scope(reinterpret_cast<napi_env>(workData->nativeEng), scope);
+                napi_close_handle_scope(workData->napiEnv, scope);
                 delete workData;
                 delete work;
             };
-            UvQueue::Call(reinterpret_cast<napi_env>(nativeEng), workData, afterCallback);
+            UvQueue::Call(napiEnv, workData, afterCallback);
             return true;
         });
 }
