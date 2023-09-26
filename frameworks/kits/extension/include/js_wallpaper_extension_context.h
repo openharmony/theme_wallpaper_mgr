@@ -21,15 +21,14 @@
 
 #include "ability_connect_callback.h"
 #include "event_handler.h"
-#include "wallpaper_extension_context.h"
 #include "napi/native_api.h"
+#include "wallpaper_extension_context.h"
 
 class NativeReference;
 
 namespace OHOS {
 namespace AbilityRuntime {
-napi_value CreateJsWallpaperExtensionContext(napi_env env,
-    std::shared_ptr<WallpaperExtensionContext> context);
+napi_value CreateJsWallpaperExtensionContext(napi_env env, std::shared_ptr<WallpaperExtensionContext> context);
 
 class JSWallpaperExtensionConnection : public AbilityConnectCallback {
 public:
@@ -45,7 +44,7 @@ public:
     void CallJsFailed(int32_t errorCode);
 
 private:
-    napi_env env;
+    napi_env env_;
     std::unique_ptr<NativeReference> jsConnectionObject_ = nullptr;
 };
 
