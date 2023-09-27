@@ -101,7 +101,7 @@ EXTERN_C_END
 /*
  * Module define
  */
-static napi_module g_wallpaperExtensionNative = {
+static napi_module g_wallpaperExtensionModule = {
     .nm_version = 1,
     .nm_flags = 0,
     .nm_filename = nullptr,
@@ -113,7 +113,7 @@ static napi_module g_wallpaperExtensionNative = {
 
 extern "C" __attribute__((constructor)) void RegisterModule(void)
 {
-    napi_module_register(&g_wallpaperExtensionNative);
+    napi_module_register(&g_wallpaperExtensionModule);
 }
 } // namespace WallpaperNAPI
 } // namespace OHOS
