@@ -20,15 +20,15 @@ extern const char _binary_wallpaper_extension_context_js_end[];
 extern const char _binary_wallpaper_extension_context_abc_start[];
 extern const char _binary_wallpaper_extension_context_abc_end[];
 
-static napi_module g_WallpaperExtension = {
+static napi_module g_wallpaperExtensionContext = {
     .nm_version = 0,
-    .nm_modname = "WallpaperExtensionContext",
     .nm_filename = "libwallpaperextensioncontext_napi.so/wallpaper_extension_context.js",
+    .nm_modname = "WallpaperExtensionContext",
 };
 
 extern "C" __attribute__((constructor)) void NAPI_WallpaperExtensionContext_AutoRegister(void)
 {
-    napi_module_register(&g_WallpaperExtension);
+    napi_module_register(&g_wallpaperExtensionContext);
 }
 
 extern "C" __attribute__((visibility("default"))) void NAPI_WallpaperExtensionContext_GetJSCode(const char **buf,
