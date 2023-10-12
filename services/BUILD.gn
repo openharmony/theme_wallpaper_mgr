@@ -71,6 +71,7 @@ ohos_shared_library("wallpaper_service") {
     "window_manager:libwsutils",
   ]
   sanitize = {
+    cfi = true
     debug = false
     integer_overflow = true
     boundary_sanitize = true
