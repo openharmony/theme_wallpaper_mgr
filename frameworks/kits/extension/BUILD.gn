@@ -76,8 +76,7 @@ ohos_shared_library("wallpaperextensionability") {
   ]
 
   sanitize = {
-    cfi = true
-    debug = true
+    debug = false
     integer_overflow = true
     boundary_sanitize = true
     ubsan = true
@@ -109,8 +108,7 @@ ohos_shared_library("wallpaper_extension_module") {
     "napi:ace_napi",
   ]
   sanitize = {
-    cfi = true
-    debug = true
+    debug = false
     integer_overflow = true
     boundary_sanitize = true
     ubsan = true

@@ -45,8 +45,7 @@ ohos_shared_library("wallpaperextensioncontext_napi") {
 
   external_deps = [ "napi:ace_napi" ]
   sanitize = {
-    cfi = true
-    debug = true
+    debug = false
     integer_overflow = true
     boundary_sanitize = true
     ubsan = true
