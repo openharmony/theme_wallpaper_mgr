@@ -42,6 +42,7 @@ ohos_shared_library("wallpaper") {
 
   sanitize = {
     cfi = true
+    debug = true
     integer_overflow = true
     boundary_sanitize = true
     ubsan = true
