@@ -75,6 +75,15 @@ ohos_shared_library("wallpaperextensionability") {
     "window_manager:libwm",
   ]
 
+  sanitize = {
+    cif = true
+    debug = false
+    integer_overflow = true
+    boundary_sanitize = true
+    ubsan = true
+    stack_protector_ret = true
+  }
+
   subsystem_name = "theme"
   part_name = "wallpaper_mgr"
 }
@@ -99,7 +108,14 @@ ohos_shared_library("wallpaper_extension_module") {
     "hilog:libhilog",
     "napi:ace_napi",
   ]
-
+  sanitize = {
+    cfi = true
+    debug = false
+    integer_overflow = true
+    boundary_sanitize = true
+    ubsan = true
+    stack_protector_ret = true
+  }
   relative_install_dir = "extensionability/"
   subsystem_name = "theme"
   part_name = "wallpaper_mgr"

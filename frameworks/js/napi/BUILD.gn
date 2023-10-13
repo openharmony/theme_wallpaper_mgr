@@ -40,6 +40,15 @@ ohos_shared_library("wallpaper") {
     "player_framework:media_client",
   ]
 
+  sanitize = {
+    cfi = true
+    debug = false
+    integer_overflow = true
+    boundary_sanitize = true
+    ubsan = true
+    stack_protector_ret = true
+  }
+
   relative_install_dir = "module"
   subsystem_name = "theme"
   part_name = "wallpaper_mgr"
