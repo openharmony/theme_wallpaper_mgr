@@ -16,6 +16,7 @@
 #include "js_wallpaper_extension_context.h"
 
 #include <cstdint>
+#include <mutex>
 
 #include "hilog_wrapper.h"
 #include "js_data_struct_converter.h"
@@ -89,6 +90,7 @@ public:
 
 private:
     std::weak_ptr<WallpaperExtensionContext> context_;
+    std::mutex mtx;
 
     napi_value OnStartAbility(napi_env env, size_t argc, napi_value *argv)
     {
@@ -255,7 +257,10 @@ private:
         ConnecttionKey key;
         key.id = serialNumber_;
         key.want = want;
-        connects_.emplace(key, connection);
+        {
+            std::lock_guard<std::mutex> lock(mtx);
+            connects_.emplace(key, connection);
+        }
         if (serialNumber_ < INT64_MAX) {
             serialNumber_++;
         } else {
@@ -313,7 +318,10 @@ private:
         ConnecttionKey key;
         key.id = serialNumber_;
         key.want = want;
-        connects_.emplace(key, connection);
+        {
+            std::lock_guard<std::mutex> lock(mtx);
+            connects_.emplace(key, connection);
+        }
         if (serialNumber_ < INT64_MAX) {
             serialNumber_++;
         } else {
@@ -615,6 +623,7 @@ void JSWallpaperExtensionConnection::HandleOnAbilityDisconnectDone(const AppExec
         });
     if (item != connects_.end()) {
         // match bundlename && abilityname
+        std::lock_guard<std::mutex> lock(mtx);
         connects_.erase(item);
         HILOG_INFO("OnAbilityDisconnectDone erase connects_.size:%{public}zu", connects_.size());
     }
