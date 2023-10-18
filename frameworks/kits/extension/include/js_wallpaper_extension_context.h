@@ -64,6 +64,7 @@ struct key_compare {
 };
 
 static std::map<ConnecttionKey, sptr<JSWallpaperExtensionConnection>, key_compare> connects_;
+static std::mutex connectMapMtx_;
 static int64_t serialNumber_ = 0;
 static std::shared_ptr<AppExecFwk::EventHandler> handler_ = nullptr;
 } // namespace AbilityRuntime

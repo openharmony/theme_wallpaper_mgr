@@ -90,7 +90,6 @@ public:
 
 private:
     std::weak_ptr<WallpaperExtensionContext> context_;
-    std::mutex mtx;
 
     napi_value OnStartAbility(napi_env env, size_t argc, napi_value *argv)
     {
@@ -257,10 +256,7 @@ private:
         ConnecttionKey key;
         key.id = serialNumber_;
         key.want = want;
-        {
-            std::lock_guard<std::mutex> lock(mtx);
-            connects_.emplace(key, connection);
-        }
+        addToConnects(key, connection);
         if (serialNumber_ < INT64_MAX) {
             serialNumber_++;
         } else {
@@ -318,10 +314,7 @@ private:
         ConnecttionKey key;
         key.id = serialNumber_;
         key.want = want;
-        {
-            std::lock_guard<std::mutex> lock(mtx);
-            connects_.emplace(key, connection);
-        }
+        addToConnects(key, connection);
         if (serialNumber_ < INT64_MAX) {
             serialNumber_++;
         } else {
@@ -367,6 +360,7 @@ private:
         sptr<JSWallpaperExtensionConnection> connection = nullptr;
         napi_get_value_int64(env, reinterpret_cast<napi_value>(argv[INDEX_ZERO]), &connectId);
         HILOG_INFO("OnDisconnectAbility connection:%{public}d", static_cast<int32_t>(connectId));
+        std::lock_guard<std::mutex> lock(connectMapMtx_);
         auto item = std::find_if(connects_.begin(), connects_.end(),
             [&connectId](const std::map<ConnecttionKey, sptr<JSWallpaperExtensionConnection>>::value_type &obj) {
                 return connectId == obj.first.id;
@@ -405,6 +399,12 @@ private:
         NapiAsyncTask::Schedule("WallpaperExtensionContext::OnDisconnectAbility", env,
             CreateAsyncTaskWithLastParam(env, lastParam, nullptr, std::move(complete), &result));
         return result;
+    }
+
+    void addToConnects(const ConnecttionKey &key, const sptr<JSWallpaperExtensionConnection> &connection)
+    {
+        std::lock_guard<std::mutex> lock(connectMapMtx_);
+        connects_.emplace(key, connection);
     }
 };
 } // namespace
@@ -615,16 +615,15 @@ void JSWallpaperExtensionConnection::HandleOnAbilityDisconnectDone(const AppExec
     HILOG_INFO("OnAbilityDisconnectDone connects_.size:%{public}zu", connects_.size());
     std::string bundleName = element.GetBundleName();
     std::string abilityName = element.GetAbilityName();
+    std::lock_guard<std::mutex> lock(connectMapMtx_);
     auto item = std::find_if(connects_.begin(), connects_.end(),
         [bundleName, abilityName](
             const std::map<ConnecttionKey, sptr<JSWallpaperExtensionConnection>>::value_type &obj) {
             return (bundleName == obj.first.want.GetBundle()) &&
                    (abilityName == obj.first.want.GetElement().GetAbilityName());
         });
-    std::mutex mtx;
     if (item != connects_.end()) {
         // match bundlename && abilityname
-        std::lock_guard<std::mutex> lock(mtx);
         connects_.erase(item);
         HILOG_INFO("OnAbilityDisconnectDone erase connects_.size:%{public}zu", connects_.size());
     }
