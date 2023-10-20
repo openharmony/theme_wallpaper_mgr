@@ -16,6 +16,7 @@
 #include "js_wallpaper_extension_context.h"
 
 #include <cstdint>
+#include <mutex>
 
 #include "hilog_wrapper.h"
 #include "js_data_struct_converter.h"
@@ -28,6 +29,7 @@
 #include "napi_common_want.h"
 #include "napi_remote_object.h"
 #include "start_options.h"
+#include "want.h"
 
 namespace OHOS {
 namespace AbilityRuntime {
@@ -42,6 +44,11 @@ constexpr size_t ARGC_ONE = 1;
 constexpr size_t ARGC_TWO = 2;
 constexpr size_t ARGC_THREE = 3;
 constexpr size_t ARGC_FOUR = 4;
+
+static std::map<ConnecttionKey, sptr<JSWallpaperExtensionConnection>, key_compare> connects_;
+static std::mutex g_connectMapMtx;
+static int64_t g_serialNumber = 0;
+static std::shared_ptr<AppExecFwk::EventHandler> handler_ = nullptr;
 
 class JsWallpaperExtensionContext final {
 public:
@@ -250,18 +257,7 @@ private:
             want.GetElement().GetAbilityName().c_str());
         // unwarp connection
         sptr<JSWallpaperExtensionConnection> connection = new JSWallpaperExtensionConnection(env);
-        connection->SetJsConnectionObject(argv[1]);
-        int64_t connectId = serialNumber_;
-        ConnecttionKey key;
-        key.id = serialNumber_;
-        key.want = want;
-        connects_.emplace(key, connection);
-        if (serialNumber_ < INT64_MAX) {
-            serialNumber_++;
-        } else {
-            serialNumber_ = 0;
-        }
-        HILOG_INFO("%{public}s not find connection, make new one.", __func__);
+        int64_t connectId = GetConnectId(argv, want, connection);
         NapiAsyncTask::CompleteCallback complete = [weak = context_, want, connection, connectId](napi_env env,
                                                        NapiAsyncTask &task, int32_t status) {
             HILOG_INFO("OnConnectAbility begin");
@@ -288,38 +284,21 @@ private:
     napi_value OnConnectAbilityWithAccount(napi_env env, size_t argc, napi_value *argv)
     {
         HILOG_INFO("OnConnectAbilityWithAccount is called");
-        // only support three params
         if (argc != ARGC_THREE) {
             HILOG_ERROR("Not enough params");
             return CreateJsUndefined(env);
         }
-
-        // unwrap want
         AAFwk::Want want;
         OHOS::AppExecFwk::UnwrapWant(env, argv[INDEX_ZERO], want);
         HILOG_INFO("%{public}s bundlename:%{public}s abilityname:%{public}s", __func__, want.GetBundle().c_str(),
             want.GetElement().GetAbilityName().c_str());
-
         int32_t accountId = 0;
         if (!OHOS::AppExecFwk::UnwrapInt32FromJS2(env, argv[INDEX_ONE], accountId)) {
             HILOG_INFO("%{public}s called, the second parameter is invalid.", __func__);
             return CreateJsUndefined(env);
         }
-
-        // unwarp connection
         sptr<JSWallpaperExtensionConnection> connection = new JSWallpaperExtensionConnection(env);
-        connection->SetJsConnectionObject(argv[1]);
-        int64_t connectId = serialNumber_;
-        ConnecttionKey key;
-        key.id = serialNumber_;
-        key.want = want;
-        connects_.emplace(key, connection);
-        if (serialNumber_ < INT64_MAX) {
-            serialNumber_++;
-        } else {
-            serialNumber_ = 0;
-        }
-        HILOG_INFO("%{public}s not find connection, make new one.", __func__);
+        int64_t connectId = GetConnectId(argv, want, connection);
         NapiAsyncTask::CompleteCallback complete = [weak = context_, want, accountId, connection,
                                                        connectId](napi_env env, NapiAsyncTask &task, int32_t status) {
             HILOG_INFO("OnConnectAbilityWithAccount begin");
@@ -343,35 +322,54 @@ private:
         return connectResult;
     }
 
+    int64_t GetConnectId(const napi_value *argv, AAFwk::Want &want,
+        const sptr<JSWallpaperExtensionConnection> &connection) const
+    {
+        connection->SetJsConnectionObject(argv[1]);
+        int64_t connectId = g_serialNumber;
+        ConnecttionKey key;
+        key.id = g_serialNumber;
+        key.want = want;
+        {
+            std::lock_guard<std::mutex> lock(g_connectMapMtx);
+            connects_.emplace(key, connection);
+        }
+        if (g_serialNumber < INT64_MAX) {
+            g_serialNumber++;
+        } else {
+            g_serialNumber = 0;
+        }
+        HILOG_INFO("%{public}s not find connection, make new one.", __func__);
+        return connectId;
+    }
+
     napi_value OnDisconnectAbility(napi_env env, size_t argc, napi_value *argv)
     {
         HILOG_INFO("OnDisconnectAbility is called");
-        // only support one or two params
         if (argc != ARGC_ONE && argc != ARGC_TWO) {
             HILOG_ERROR("Not enough params");
             return CreateJsUndefined(env);
         }
 
-        // unwrap want
         AAFwk::Want want;
-        // unwrap connectId
         int64_t connectId = -1;
         sptr<JSWallpaperExtensionConnection> connection = nullptr;
         napi_get_value_int64(env, reinterpret_cast<napi_value>(argv[INDEX_ZERO]), &connectId);
         HILOG_INFO("OnDisconnectAbility connection:%{public}d", static_cast<int32_t>(connectId));
-        auto item = std::find_if(connects_.begin(), connects_.end(),
-            [&connectId](const std::map<ConnecttionKey, sptr<JSWallpaperExtensionConnection>>::value_type &obj) {
-                return connectId == obj.first.id;
-            });
-        if (item != connects_.end()) {
-            // match id
-            want = item->first.want;
-            connection = item->second;
-            HILOG_INFO("%{public}s find conn ability exist", __func__);
-        } else {
-            HILOG_INFO("%{public}s not find conn exist.", __func__);
+        {
+            std::lock_guard<std::mutex> lock(g_connectMapMtx);
+            auto item = std::find_if(connects_.begin(), connects_.end(),
+                [&connectId](const std::map<ConnecttionKey, sptr<JSWallpaperExtensionConnection>>::value_type &obj) {
+                    return connectId == obj.first.id;
+                });
+            if (item != connects_.end()) {
+                want = item->first.want;
+                connection = item->second;
+                HILOG_INFO("%{public}s find conn ability exist", __func__);
+            } else {
+                HILOG_INFO("%{public}s not find conn exist.", __func__);
+            }
         }
-        // begin disconnect
         NapiAsyncTask::CompleteCallback complete = [weak = context_, want, connection](napi_env env,
                                                        NapiAsyncTask &task, int32_t status) {
             HILOG_INFO("OnDisconnectAbility begin");
@@ -607,16 +605,19 @@ void JSWallpaperExtensionConnection::HandleOnAbilityDisconnectDone(const AppExec
     HILOG_INFO("OnAbilityDisconnectDone connects_.size:%{public}zu", connects_.size());
     std::string bundleName = element.GetBundleName();
     std::string abilityName = element.GetAbilityName();
-    auto item = std::find_if(connects_.begin(), connects_.end(),
-        [bundleName, abilityName](
-            const std::map<ConnecttionKey, sptr<JSWallpaperExtensionConnection>>::value_type &obj) {
-            return (bundleName == obj.first.want.GetBundle()) &&
-                   (abilityName == obj.first.want.GetElement().GetAbilityName());
-        });
-    if (item != connects_.end()) {
-        // match bundlename && abilityname
-        connects_.erase(item);
-        HILOG_INFO("OnAbilityDisconnectDone erase connects_.size:%{public}zu", connects_.size());
+    {
+        std::lock_guard<std::mutex> lock(g_connectMapMtx);
+        auto item = std::find_if(connects_.begin(), connects_.end(),
+            [bundleName, abilityName](
+                const std::map<ConnecttionKey, sptr<JSWallpaperExtensionConnection>>::value_type &obj) {
+                return (bundleName == obj.first.want.GetBundle()) &&
+                       (abilityName == obj.first.want.GetElement().GetAbilityName());
+            });
+        if (item != connects_.end()) {
+            // match bundlename && abilityname
+            connects_.erase(item);
+            HILOG_INFO("OnAbilityDisconnectDone erase connects_.size:%{public}zu", connects_.size());
+        }
     }
     HILOG_INFO("OnAbilityDisconnectDone napi_call_function success");
     napi_value callResult = nullptr;
