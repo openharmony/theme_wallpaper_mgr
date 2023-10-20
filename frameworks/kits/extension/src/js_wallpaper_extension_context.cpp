@@ -45,6 +45,11 @@ constexpr size_t ARGC_TWO = 2;
 constexpr size_t ARGC_THREE = 3;
 constexpr size_t ARGC_FOUR = 4;
 
+static std::map<ConnecttionKey, sptr<JSWallpaperExtensionConnection>, key_compare> connects_;
+static std::mutex connectMapMtx_;
+static int64_t serialNumber_ = 0;
+static std::shared_ptr<AppExecFwk::EventHandler> handler_ = nullptr;
+
 class JsWallpaperExtensionContext final {
 public:
     explicit JsWallpaperExtensionContext(const std::shared_ptr<WallpaperExtensionContext> &context) : context_(context)
