@@ -46,8 +46,8 @@ constexpr size_t ARGC_THREE = 3;
 constexpr size_t ARGC_FOUR = 4;
 
 static std::map<ConnecttionKey, sptr<JSWallpaperExtensionConnection>, key_compare> connects_;
-static std::mutex g_connectMapMtx_;
-static int64_t g_serialNumber_ = 0;
+static std::mutex g_connectMapMtx;
+static int64_t g_serialNumber = 0;
 static std::shared_ptr<AppExecFwk::EventHandler> handler_ = nullptr;
 
 class JsWallpaperExtensionContext final {
@@ -326,18 +326,18 @@ private:
         const sptr<JSWallpaperExtensionConnection> &connection) const
     {
         connection->SetJsConnectionObject(argv[1]);
-        int64_t connectId = g_serialNumber_;
+        int64_t connectId = g_serialNumber;
         ConnecttionKey key;
-        key.id = g_serialNumber_;
+        key.id = g_serialNumber;
         key.want = want;
         {
-            std::lock_guard<std::mutex> lock(g_connectMapMtx_);
+            std::lock_guard<std::mutex> lock(g_connectMapMtx);
             connects_.emplace(key, connection);
         }
-        if (g_serialNumber_ < INT64_MAX) {
-            g_serialNumber_++;
+        if (g_serialNumber < INT64_MAX) {
+            g_serialNumber++;
         } else {
-            g_serialNumber_ = 0;
+            g_serialNumber = 0;
         }
         HILOG_INFO("%{public}s not find connection, make new one.", __func__);
         return connectId;
@@ -357,7 +357,7 @@ private:
         napi_get_value_int64(env, reinterpret_cast<napi_value>(argv[INDEX_ZERO]), &connectId);
         HILOG_INFO("OnDisconnectAbility connection:%{public}d", static_cast<int32_t>(connectId));
         {
-            std::lock_guard<std::mutex> lock(g_connectMapMtx_);
+            std::lock_guard<std::mutex> lock(g_connectMapMtx);
             auto item = std::find_if(connects_.begin(), connects_.end(),
                 [&connectId](const std::map<ConnecttionKey, sptr<JSWallpaperExtensionConnection>>::value_type &obj) {
                     return connectId == obj.first.id;
@@ -606,7 +606,7 @@ void JSWallpaperExtensionConnection::HandleOnAbilityDisconnectDone(const AppExec
     std::string bundleName = element.GetBundleName();
     std::string abilityName = element.GetAbilityName();
     {
-        std::lock_guard<std::mutex> lock(g_connectMapMtx_);
+        std::lock_guard<std::mutex> lock(g_connectMapMtx);
         auto item = std::find_if(connects_.begin(), connects_.end(),
             [bundleName, abilityName](
                 const std::map<ConnecttionKey, sptr<JSWallpaperExtensionConnection>>::value_type &obj) {
