@@ -29,6 +29,7 @@
 #include "napi_common_want.h"
 #include "napi_remote_object.h"
 #include "start_options.h"
+#include "want.h"
 
 namespace OHOS {
 namespace AbilityRuntime {
@@ -251,21 +252,7 @@ private:
             want.GetElement().GetAbilityName().c_str());
         // unwarp connection
         sptr<JSWallpaperExtensionConnection> connection = new JSWallpaperExtensionConnection(env);
-        connection->SetJsConnectionObject(argv[1]);
-        int64_t connectId = serialNumber_;
-        ConnecttionKey key;
-        key.id = serialNumber_;
-        key.want = want;
-        {
-            std::lock_guard<std::mutex> lock(connectMapMtx_);
-            connects_.emplace(key, connection);
-        }
-        if (serialNumber_ < INT64_MAX) {
-            serialNumber_++;
-        } else {
-            serialNumber_ = 0;
-        }
-        HILOG_INFO("%{public}s not find connection, make new one.", __func__);
+        int64_t connectId = GetConnectId(argv, want, connection);
         NapiAsyncTask::CompleteCallback complete = [weak = context_, want, connection, connectId](napi_env env,
                                                        NapiAsyncTask &task, int32_t status) {
             HILOG_INFO("OnConnectAbility begin");
@@ -296,7 +283,6 @@ private:
             HILOG_ERROR("Not enough params");
             return CreateJsUndefined(env);
         }
-
         AAFwk::Want want;
         OHOS::AppExecFwk::UnwrapWant(env, argv[INDEX_ZERO], want);
         HILOG_INFO("%{public}s bundlename:%{public}s abilityname:%{public}s", __func__, want.GetBundle().c_str(),
@@ -306,23 +292,8 @@ private:
             HILOG_INFO("%{public}s called, the second parameter is invalid.", __func__);
             return CreateJsUndefined(env);
         }
-
         sptr<JSWallpaperExtensionConnection> connection = new JSWallpaperExtensionConnection(env);
-        connection->SetJsConnectionObject(argv[1]);
-        int64_t connectId = serialNumber_;
-        ConnecttionKey key;
-        key.id = serialNumber_;
-        key.want = want;
-        {
-            std::lock_guard<std::mutex> lock(connectMapMtx_);
-            connects_.emplace(key, connection);
-        }
-        if (serialNumber_ < INT64_MAX) {
-            serialNumber_++;
-        } else {
-            serialNumber_ = 0;
-        }
-        HILOG_INFO("%{public}s not find connection, make new one.", __func__);
+        int64_t connectId = GetConnectId(argv, want, connection);
         NapiAsyncTask::CompleteCallback complete = [weak = context_, want, accountId, connection,
                                                        connectId](napi_env env, NapiAsyncTask &task, int32_t status) {
             HILOG_INFO("OnConnectAbilityWithAccount begin");
@@ -344,6 +315,27 @@ private:
         napi_value connectResult = nullptr;
         napi_create_int64(env, connectId, &connectResult);
         return connectResult;
+    }
+
+    int64_t GetConnectId(const napi_value *argv, AAFwk::Want &want,
+        const sptr<JSWallpaperExtensionConnection> &connection) const
+    {
+        connection->SetJsConnectionObject(argv[1]);
+        int64_t connectId = serialNumber_;
+        ConnecttionKey key;
+        key.id = serialNumber_;
+        key.want = want;
+        {
+            std::lock_guard<std::mutex> lock(connectMapMtx_);
+            connects_.emplace(key, connection);
+        }
+        if (serialNumber_ < INT64_MAX) {
+            serialNumber_++;
+        } else {
+            serialNumber_ = 0;
+        }
+        HILOG_INFO("%{public}s not find connection, make new one.", __func__);
+        return connectId;
     }
 
     napi_value OnDisconnectAbility(napi_env env, size_t argc, napi_value *argv)
