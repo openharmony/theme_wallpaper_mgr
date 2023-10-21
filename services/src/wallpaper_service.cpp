@@ -1290,6 +1290,9 @@ bool WallpaperService::CheckUserPermissionById(int32_t userId)
 ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length,
     WallpaperResourceType resourceType)
 {
+#ifdef THEME_SERVICE
+    HILOG_INFO("theme_service setWallpaper success");
+#endif
     ErrorCode errCode = CheckValid(wallpaperType, length, resourceType);
     if (errCode != E_OK) {
         return errCode;
