@@ -138,7 +138,7 @@ wallpaper_fuzztests = [
 ]
 foreach(item, wallpaper_fuzztests) {
   ohos_fuzztest(item.targetName) {
-    module_out_path = "theme/wallpaper"
+    module_out_path = "wallpaper_mgr/wallpaper_mgr"
 
     fuzz_config_file = "${wallpaper_path}/test/fuzztest/wallpaperservice_fuzzer/${item.configFuzzer}"
 
