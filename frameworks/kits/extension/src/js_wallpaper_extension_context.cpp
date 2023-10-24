@@ -322,8 +322,8 @@ private:
         return connectResult;
     }
 
-    int64_t GetConnectId(const napi_value *argv, AAFwk::Want &want,
-        const sptr<JSWallpaperExtensionConnection> &connection) const
+    static int64_t GetConnectId(const napi_value *argv, const AAFwk::Want &want,
+        const sptr<JSWallpaperExtensionConnection> &connection)
     {
         connection->SetJsConnectionObject(argv[1]);
         int64_t connectId = g_serialNumber;
