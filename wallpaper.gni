@@ -28,12 +28,3 @@ wallpaper_path = "//base/theme/wallpaper_mgr"
 adapter_path = "${wallpaper_path}/adapter"
 
 utils_path = "${wallpaper_path}/utils"
-
-declare_args() {
-  theme_service = true
-  
-  if (defined(global_parts_info) &&
-    !defined(global_parts_info.theme_theme_mgr)) {
-        theme_service = false
-  }
-}
