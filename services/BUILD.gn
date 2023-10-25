@@ -70,7 +70,14 @@ ohos_shared_library("wallpaper_service") {
     "samgr:samgr_proxy",
     "window_manager:libwsutils",
   ]
-
+  sanitize = {
+    cfi = true
+    debug = false
+    integer_overflow = true
+    boundary_sanitize = true
+    ubsan = true
+    stack_protector_ret = true
+  }
   if (ability_runtime_graphics) {
     external_deps += [ "image_framework:image_native" ]
   }

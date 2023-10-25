@@ -50,6 +50,8 @@ constexpr int32_t OPTION_QUALITY = 100;
 constexpr int32_t MIN_TIME = 0;
 constexpr int32_t MAX_TIME = 5000;
 constexpr int32_t MAX_VIDEO_SIZE = 104857600;
+constexpr int32_t MAX_RETRY_TIMES = 10;
+constexpr int32_t TIME_INTERVAL = 500000;
 
 using namespace OHOS::Media;
 
@@ -115,6 +117,16 @@ sptr<IWallpaperService> WallpaperManager::GetService()
 void WallpaperManager::DeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &remote)
 {
     DelayedRefSingleton<WallpaperManager>::GetInstance().ResetService(remote);
+    int32_t times = 0;
+    bool result = false;
+    do {
+        times++;
+        result = DelayedRefSingleton<WallpaperManager>::GetInstance().RegisterWallpaperListener();
+        if (result != true) {
+            usleep(TIME_INTERVAL);
+        }
+    } while (result != true && times < MAX_RETRY_TIMES);
+    HILOG_INFO("Register WallpaperListener result:%{public}d.", result);
 }
 
 template<typename F, typename... Args>
@@ -469,6 +481,10 @@ ErrorCode WallpaperManager::On(const std::string &type, std::shared_ptr<Wallpape
         HILOG_ERROR("new WallpaperEventListenerClient failed");
         return E_NO_MEMORY;
     }
+    {
+        std::lock_guard<std::mutex> lock(listenerMapLock_);
+        listenerMap_.insert_or_assign(type, ipcListener);
+    }
     HILOG_DEBUG("WallpaperManager::On out");
     return wallpaperServerProxy->On(type, ipcListener);
 }
@@ -546,6 +562,25 @@ void WallpaperManager::CloseWallpaperFd(int32_t wallpaperType)
     }
 }
 
+bool WallpaperManager::RegisterWallpaperListener()
+{
+    auto service = GetService();
+    if (service == nullptr) {
+        HILOG_ERROR("Get proxy failed");
+        return false;
+    }
+
+    std::lock_guard<std::mutex> lock(listenerMapLock_);
+    for (const auto &iter : listenerMap_) {
+        auto ret = service->On(iter.first, iter.second);
+        if (ret != E_OK) {
+            HILOG_ERROR("Register WallpaperListener failed type:%{public}s,errcode:%{public}d", iter.first.c_str(),
+                ret);
+            return false;
+        }
+    }
+    return true;
+}
 ErrorCode WallpaperManager::SendEvent(const std::string &eventType)
 {
     auto wallpaperServerProxy = GetService();
