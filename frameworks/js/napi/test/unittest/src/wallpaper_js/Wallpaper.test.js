@@ -259,9 +259,8 @@ describe('WallpaperJSTest', function () {
         try {
             wallpaper.restore(WALLPAPER_LOCKSCREEN, function (err) {
                 if (err) {
-                    console.info(`restoreCallbackLockTest003 err : ${err}`);
                     expect(null).assertFail();
-                    console.info(`restoreCallbackLockTest003 fail : ${err}`);
+                    console.info(`restore CallbackLockTest003 fail : ${err}`);
                 } else {
                     expect(true).assertTrue();
                 }
@@ -269,7 +268,7 @@ describe('WallpaperJSTest', function () {
             })
         } catch (error) {
             expect(null).assertFail();
-            console.info(`restoreCallbackLockTest003 fail : ${error}`);
+            console.info(`restore CallbackLockTest003 fail : ${error}`);
             done();
         }
     })
@@ -306,9 +305,8 @@ describe('WallpaperJSTest', function () {
         try {
             wallpaper.restore(INVALID_WALLPAPER_TYPE, function (err) {
                 if (err) {
-                    console.info(`restoreCallbackThrowErrorTest005 err : ${err}`);
                     expect(err.code === PARAMETER_ERROR).assertTrue()
-                    console.info(`restoreCallbackThrowErrorTest005 fail : ${err}`);
+                    console.info(`restore CallbackThrowErrorTest005 fail : ${err}`);
                 } else {
                     expect(null).assertFail();
                 }
@@ -316,7 +314,7 @@ describe('WallpaperJSTest', function () {
             })
         } catch (error) {
             expect(null).assertFail();
-            console.info(`restoreCallbackThrowErrorTest005 fail : ${error}`);
+            console.info(`restore CallbackThrowErrorTest005 fail : ${error}`);
             done();
         }
     })
@@ -331,9 +329,8 @@ describe('WallpaperJSTest', function () {
         try {
             wallpaper.restore(function (err) {
                 if (err) {
-                    console.info(`restoreCallbackThrowErrorTest006 err : ${err}`);
                     expect(null).assertFail();
-                    console.info(`restoreCallbackThrowErrorTest006 fail : ${err}`);
+                    console.info(`restore CallbackThrowErrorTest006 fail : ${err}`);
                 } else {
                     expect(null).assertFail();
                 }
@@ -341,7 +338,7 @@ describe('WallpaperJSTest', function () {
             })
         } catch (error) {
             expect(error.code === PARAMETER_ERROR).assertTrue()
-            console.info(`restoreCallbackThrowErrorTest006 fail : ${error}`);
+            console.info(`restore CallbackThrowErrorTest006 fail : ${error}`);
             done();
         }
     })
@@ -425,11 +422,10 @@ describe('WallpaperJSTest', function () {
         try {
             wallpaper.getImage(WALLPAPER_SYSTEM, function (err, data) {
                 if (err) {
-                    console.info(`getImageCallbackSystemTest002 err : ${err}`);
                     expect(null).assertFail();
-                    console.info(`getImageCallbackSystemTest002 fail : ${err}`);
+                    console.info(`get Image CallbackSystemTest002 fail : ${err}`);
                 } else {
-                    console.info(`getImageCallbackSystemTest002 data : ${data}`);
+                    console.info(`get Image CallbackSystemTest002 data : ${data}`);
                     if (data !== undefined) {
                         expect(true).assertTrue();
                     }
@@ -438,7 +434,7 @@ describe('WallpaperJSTest', function () {
             });
         } catch (error) {
             expect(null).assertFail();
-            console.info(`getImageCallbackSystemTest002 fail : ${error}`);
+            console.info(`get Image CallbackSystemTest002 fail : ${error}`);
             done();
         }
     })
@@ -478,11 +474,10 @@ describe('WallpaperJSTest', function () {
         try {
             wallpaper.getImage(WALLPAPER_LOCKSCREEN, function (err, data) {
                 if (err) {
-                    console.info(`getImageCallbackLockTest004 err : ${err}`);
                     expect(null).assertFail();
-                    console.info(`getImageCallbackLockTest004 fail : ${err}`);
+                    console.info(`get Image CallbackLockTest004 fail : ${err}`);
                 } else {
-                    console.info(`getImageCallbackLockTest004 data : ${data}`);
+                    console.info(`get Image CallbackLockTest004 data : ${data}`);
                     if (data !== undefined) {
                         expect(true).assertTrue();
                     }
@@ -491,7 +486,7 @@ describe('WallpaperJSTest', function () {
             });
         } catch (error) {
             expect(null).assertFail();
-            console.info(`getImageCallbackLockTest004 fail : ${error}`);
+            console.info(`get Image CallbackLockTest004 fail : ${error}`);
             done();
         }
     })
@@ -633,9 +628,8 @@ describe('WallpaperJSTest', function () {
         try {
             wallpaper.setImage(URI, WALLPAPER_SYSTEM, async function (err) {
                 if (err) {
-                    console.info(`setImageURICallbackSystemTest002 err : ${err}`);
                     expect(null).assertFail();
-                    console.info(`setImageURICallbackSystemTest002 fail : ${err}`);
+                    console.info(`set Image URI CallbackSystemTest002 fail : ${err}`);
                 } else {
                     expect(true).assertTrue();
                 }
@@ -644,7 +638,7 @@ describe('WallpaperJSTest', function () {
             });
         } catch (error) {
             expect(null).assertFail();
-            console.info(`setImageURICallbackSystemTest002 fail : ${error}`);
+            console.info(`set Image URI CallbackSystemTest002 fail : ${error}`);
             done();
         }
     })
@@ -734,9 +728,8 @@ describe('WallpaperJSTest', function () {
             let pixelMap = await createTempPixelMap();
             wallpaper.setImage(pixelMap, WALLPAPER_SYSTEM, async function (err) {
                 if (err) {
-                    console.info(`setImageMapCallbackSystemTest006 err : ${err}`);
                     expect(null).assertFail();
-                    console.info(`setImageMapCallbackSystemTest006 fail : ${err}`);
+                    console.info(`set ImageMap CallbackSystemTest006 fail : ${err}`);
                 } else {
                     expect(true).assertTrue();
                 }
@@ -745,7 +738,7 @@ describe('WallpaperJSTest', function () {
             });
         } catch (error) {
             expect(null).assertFail();
-            console.info(`setImageMapCallbackSystemTest006 fail : ${error}`);
+            console.info(`set ImageMap CallbackSystemTest006 fail : ${error}`);
             done();
         }
     })
@@ -785,9 +778,8 @@ describe('WallpaperJSTest', function () {
             let pixelMap = await createTempPixelMap();
             wallpaper.setImage(pixelMap, WALLPAPER_LOCKSCREEN, async function (err) {
                 if (err) {
-                    console.info(`setImageMapCallbackLockTest008 err : ${err}`);
                     expect(null).assertFail();
-                    console.info(`setImageMapCallbackLockTest008 fail : ${err}`);
+                    console.info(`set ImageMap CallbackLockTest008 fail : ${err}`);
                 } else {
                     expect(true).assertTrue();
                 }
@@ -796,7 +788,7 @@ describe('WallpaperJSTest', function () {
             });
         } catch (error) {
             expect(null).assertFail();
-            console.info(`setImageMapCallbackLockTest008 fail : ${error}`);
+            console.info(`set ImageMap CallbackLockTest008 fail : ${error}`);
             done();
         }
     })
@@ -811,9 +803,8 @@ describe('WallpaperJSTest', function () {
         try {
             wallpaper.setImage(URI, INVALID_WALLPAPER_TYPE, function (err) {
                 if (err) {
-                    console.info(`setImageCallbackThrowErrorTest009 err : ${err}`);
                     expect(err.code === PARAMETER_ERROR).assertTrue()
-                    console.info(`setImageCallbackThrowErrorTest009 fail : ${err}`);
+                    console.info(`set Image CallbackThrowErrorTest009 fail : ${err}`);
                 } else {
                     expect(null).assertFail();
                 }
@@ -821,7 +812,7 @@ describe('WallpaperJSTest', function () {
             })
         } catch (error) {
             expect(null).assertFail();
-            console.info(`setImageCallbackThrowErrorTest009 fail : ${error}`);
+            console.info(`set Image CallbackThrowErrorTest009 fail : ${error}`);
             done();
         }
     })
@@ -836,9 +827,8 @@ describe('WallpaperJSTest', function () {
         try {
             wallpaper.setImage(URI, function (err) {
                 if (err) {
-                    console.info(`setImageCallbackThrowErrorTest010 err : ${err}`);
                     expect(null).assertFail();
-                    console.info(`setImageCallbackThrowErrorTest010 fail : ${err}`);
+                    console.info(`set Image CallbackThrowErrorTest010 fail : ${err}`);
                 } else {
                     expect(null).assertFail();
                 }
@@ -846,7 +836,7 @@ describe('WallpaperJSTest', function () {
             })
         } catch (error) {
             expect(error.code === PARAMETER_ERROR).assertTrue()
-            console.info(`setImageCallbackThrowErrorTest010 fail : ${error}`);
+            console.info(`set Image CallbackThrowErrorTest010 fail : ${error}`);
             done();
         }
     })
@@ -930,9 +920,8 @@ describe('WallpaperJSTest', function () {
             let pixelMap = await createTempPixelMap();
             wallpaper.setWallpaper(pixelMap, WALLPAPER_SYSTEM, async function (err) {
                 if (err) {
-                    console.info(`setWallpaperMapCallbackSystemTest002 err : ${err}`);
                     expect(null).assertFail();
-                    console.info(`setWallpaperMapCallbackSystemTest002 fail : ${err}`);
+                    console.info(`set Wallpaper Map CallbackSystemTest002 fail : ${err}`);
                 } else {
                     expect(true).assertTrue();
                 }
@@ -941,7 +930,7 @@ describe('WallpaperJSTest', function () {
             });
         } catch (error) {
             expect(null).assertFail();
-            console.info(`setWallpaperMapCallbackSystemTest002 fail : ${error}`);
+            console.info(`set Wallpaper Map CallbackSystemTest002 fail : ${error}`);
             done();
         }
     })
@@ -981,9 +970,8 @@ describe('WallpaperJSTest', function () {
             let pixelMap = await createTempPixelMap();
             wallpaper.setWallpaper(pixelMap, WALLPAPER_LOCKSCREEN, async function (err) {
                 if (err) {
-                    console.info(`setWallpaperMapCallbackLockTest004 err : ${err}`);
                     expect(null).assertFail();
-                    console.info(`setWallpaperMapCallbackLockTest004 fail : ${err}`);
+                    console.info(`set Wallpaper Map CallbackLockTest004 fail : ${err}`);
                 } else {
                     expect(true).assertTrue();
                 }
@@ -992,7 +980,7 @@ describe('WallpaperJSTest', function () {
             });
         } catch (error) {
             expect(null).assertFail();
-            console.info(`setWallpaperMapCallbackLockTest004 fail : ${error}`);
+            console.info(`set Wallpaper Map CallbackLockTest004 fail : ${error}`);
             done();
         }
     })
@@ -1032,9 +1020,8 @@ describe('WallpaperJSTest', function () {
         try {
             wallpaper.getPixelMap(WALLPAPER_SYSTEM, function (err, data) {
                 if (err) {
-                    console.info(`getPixelMapCallbackSystemTest002 err : ${err}`);
                     expect(null).assertFail();
-                    console.info(`getPixelMapCallbackSystemTest002 fail : ${err}`);
+                    console.info(`get Pixel Map CallbackSystemTest002 fail : ${err}`);
                 } else {
                     if (data !== undefined) {
                         expect(true).assertTrue();
@@ -1044,7 +1031,7 @@ describe('WallpaperJSTest', function () {
             });
         } catch (error) {
             expect(null).assertFail();
-            console.info(`getPixelMapCallbackSystemTest002 fail : ${error}`);
+            console.info(`get Pixel MapCallbackSystemTest002 fail : ${error}`);
             done();
         }
     })
@@ -1083,9 +1070,8 @@ describe('WallpaperJSTest', function () {
         try {
             wallpaper.getPixelMap(WALLPAPER_LOCKSCREEN, function (err, data) {
                 if (err) {
-                    console.info(`getPixelMapCallbackLockTest004 err : ${err}`);
                     expect(null).assertFail();
-                    console.info(`getPixelMapCallbackLockTest004 fail : ${err}`);
+                    console.info(`get Pixel Map CallbackLockTest004 fail : ${err}`);
                 } else {
                     if (data !== undefined) {
                         expect(true).assertTrue();
@@ -1095,7 +1081,7 @@ describe('WallpaperJSTest', function () {
             });
         } catch (error) {
             expect(null).assertFail();
-            console.info(`getPixelMapCallbackLockTest004 fail : ${error}`);
+            console.info(`get Pixel Map CallbackLockTest004 fail : ${error}`);
             done();
         }
     })
@@ -1110,9 +1096,8 @@ describe('WallpaperJSTest', function () {
         try {
             wallpaper.reset(WALLPAPER_SYSTEM, function (err) {
                 if (err) {
-                    console.info(`resetCallbackSystemTest001 err : ${err}`);
                     expect(null).assertFail()
-                    console.info(`resetCallbackSystemTest001 fail : ${err}`);
+                    console.info(`reset CallbackSystemTest001 fail : ${err}`);
                 } else {
                     expect(true).assertTrue();
                 }
@@ -1121,7 +1106,7 @@ describe('WallpaperJSTest', function () {
 
         } catch (error) {
             expect(null).assertFail();
-            console.info(`resetCallbackSystemTest001 fail : ${error}`);
+            console.info(`reset CallbackSystemTest001 fail : ${error}`);
             done();
         }
 
@@ -1159,9 +1144,8 @@ describe('WallpaperJSTest', function () {
         try {
             wallpaper.reset(WALLPAPER_LOCKSCREEN, function (err) {
                 if (err) {
-                    console.info(`resetCallbackLockTest003 err : ${err}`);
                     expect(null).assertFail();
-                    console.info(`resetCallbackLockTest003 fail : ${err}`);
+                    console.info(`reset CallbackLockTest003 fail : ${err}`);
                 } else {
                     expect(true).assertTrue();
                 }
@@ -1169,7 +1153,7 @@ describe('WallpaperJSTest', function () {
             })
         } catch (error) {
             expect(null).assertFail();
-            console.info(`resetCallbackLockTest003 fail : ${error}`);
+            console.info(`reset CallbackLockTest003 fail : ${error}`);
             done();
         }
     })
@@ -2066,9 +2050,8 @@ describe('WallpaperJSTest', function () {
             wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM, (error) => {
                 if (isBundleNameExists()) {
                     if (error !== undefined) {
-                        console.info(`setCustomWallpaperTest001 error : ${error}`);
                         expect(null).assertFail();
-                        console.info(`setCustomWallpaperTest001 fail : ${error}`);
+                        console.info(`set CustomWallpaperTest001 fail : ${error}`);
                     } else {
                         expect(true).assertTrue();
                         wallpaper.reset(WALLPAPER_SYSTEM);
@@ -2079,9 +2062,8 @@ describe('WallpaperJSTest', function () {
                 done();
             })
         } catch (error) {
-            console.info(`setCustomWallpaperTest001 error : ${error}`);
             expect(null).assertFail();
-            console.info(`setCustomWallpaperTest001 fail : ${error}`);
+            console.info(`set Custom WallpaperTest001 fail : ${error}`);
             done();
         }
     })
@@ -2100,9 +2082,8 @@ describe('WallpaperJSTest', function () {
                 await wallpaper.restore(WALLPAPER_SYSTEM);
             }).catch((err) => {
                 if (isBundleNameExists()) {
-                    console.info(`setCustomWallpaperPromiseTest002 err : ${err}`);
                     expect(null).assertFail();
-                    console.info(`setCustomWallpaperPromiseTest002 fail : ${err}`);
+                    console.info(`set Custom WallpaperPromiseTest002 fail : ${err}`);
                     done();
                 } else {
                     expect(true).assertTrue();
@@ -2111,7 +2092,7 @@ describe('WallpaperJSTest', function () {
             });
         } catch (error) {
             expect(null).assertFail();
-            console.info(`setCustomWallpaperPromiseTest002 fail : ${error}`);
+            console.info(`set Custom WallpaperPromiseTest002 fail : ${error}`);
             done();
         }
     })
@@ -2127,9 +2108,8 @@ describe('WallpaperJSTest', function () {
             wallpaper.setCustomWallpaper(URI, WALLPAPER_LOCKSCREEN, (error) => {
                 if (isBundleNameExists()) {
                     if (error !== undefined) {
-                        console.info(`setCustomWallpaperCallbackTest003 error : ${error}`);
                         expect(null).assertFail();
-                        console.info(`setCustomWallpaperCallbackTest003 fail : ${error}`);
+                        console.info(`set Custom WallpaperCallbackTest003 fail : ${error}`);
                     } else {
                         expect(true).assertTrue();
                         wallpaper.reset(WALLPAPER_SYSTEM);
@@ -2140,9 +2120,8 @@ describe('WallpaperJSTest', function () {
                 done();
             })
         } catch (error) {
-            console.info(`setCustomWallpaperCallbackTest003 error : ${error}`);
             expect(null).assertFail();
-            console.info(`setCustomWallpaperCallbackTest003 fail : ${error}`);
+            console.info(`set Custom WallpaperCallbackTest003 fail : ${error}`);
             done();
         }
     })
@@ -2161,9 +2140,8 @@ describe('WallpaperJSTest', function () {
                 await wallpaper.restore(WALLPAPER_LOCKSCREEN);
             }).catch((err) => {
                 if (isBundleNameExists()) {
-                    console.info(`setCustomWallpaperPromiseTest004 err : ${err}`);
                     expect(null).assertFail();
-                    console.info(`setCustomWallpaperPromiseTest004 fail : ${err}`);
+                    console.info(`set Custom WallpaperPromiseTest004 fail : ${err}`);
                     done();
                 } else {
                     expect(true).assertTrue();
@@ -2172,7 +2150,7 @@ describe('WallpaperJSTest', function () {
             });
         } catch (error) {
             expect(null).assertFail();
-            console.info(`setCustomWallpaperPromiseTest004 fail : ${error}`);
+            console.info(`set Custom WallpaperPromiseTest004 fail : ${error}`);
             done();
         }
     })
@@ -2187,9 +2165,8 @@ describe('WallpaperJSTest', function () {
         try {
             wallpaper.setCustomWallpaper(URI, INVALID_WALLPAPER_TYPE, function (err) {
                 if (err) {
-                    console.info(`setCustomCallbackThrowErrorTest005 err : ${err}`);
                     expect(err.code === PARAMETER_ERROR).assertTrue()
-                    console.info(`setCustomCallbackThrowErrorTest005 fail : ${err}`);
+                    console.info(`set Custom CallbackThrowErrorTest005 fail : ${err}`);
                 } else {
                     expect(null).assertFail();
                 }
@@ -2197,7 +2174,7 @@ describe('WallpaperJSTest', function () {
             })
         } catch (error) {
             expect(null).assertFail();
-            console.info(`setCustomCallbackThrowErrorTest005 fail : ${error}`);
+            console.info(`set Custom CallbackThrowErrorTest005 fail : ${error}`);
             done();
         }
     })
