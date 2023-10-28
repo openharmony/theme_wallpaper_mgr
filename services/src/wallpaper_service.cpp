@@ -1070,23 +1070,13 @@ void WallpaperService::ClearWallpaperLocked(int32_t userId, WallpaperType wallpa
 
 bool WallpaperService::CheckCallingPermission(const std::string &permissionName)
 {
-    bool bflag = false;
-    int32_t result;
     AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
-    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
-    if (tokenType == TOKEN_NATIVE || tokenType == TOKEN_SHELL || tokenType == TOKEN_HAP) {
-        result = AccessTokenKit::VerifyAccessToken(callerToken, permissionName);
-    } else {
-        HILOG_INFO("Check permission tokenId illegal");
+    int32_t result = AccessTokenKit::VerifyAccessToken(callerToken, permissionName);
+    if (result != TypePermissionState::PERMISSION_GRANTED) {
+        HILOG_ERROR("Check permission failed.");
         return false;
     }
-    if (result == TypePermissionState::PERMISSION_GRANTED) {
-        bflag = true;
-    } else {
-        bflag = false;
-    }
-    HILOG_INFO("Check permission result %{public}d", result);
-    return bflag;
+    return true;
 }
 
 bool WallpaperService::GetBundleNameByUid(std::int32_t uid, std::string &bname)
@@ -1140,16 +1130,6 @@ void WallpaperService::ReporterFault(FaultType faultType, FaultCode faultCode)
 
 int32_t WallpaperService::Dump(int32_t fd, const std::vector<std::u16string> &args)
 {
-    int32_t uid = static_cast<int32_t>(IPCSkeleton::GetCallingUid());
-    const int32_t maxUid = 10000;
-    if (uid > maxUid) {
-        AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
-        auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
-        if (tokenType != TOKEN_NATIVE && tokenType != TOKEN_SHELL) {
-            return 1;
-        }
-    }
-
     std::vector<std::string> argsStr;
     for (auto item : args) {
         argsStr.emplace_back(Str16ToStr8(item));
