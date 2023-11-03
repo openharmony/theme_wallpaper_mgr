@@ -1458,7 +1458,7 @@ int32_t WallpaperService::GrantUriPermission(const std::string &path, const std:
 {
     Uri uri(path);
     return AAFwk::UriPermissionManagerClient::GetInstance().GrantUriPermission(uri,
-        AAFwk::Want::FLAG_AUTH_READ_URI_PERMISSION, bundleName, 0);
+        AAFwk::Want::FLAG_AUTH_READ_URI_PERMISSION, bundleName);
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS
