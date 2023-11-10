@@ -76,14 +76,14 @@ ohos_shared_library("wallpaperextensionability") {
   ]
 
   sanitize = {
-    cif = true
+    cfi = true
+    cfi_cross_dso = true
     debug = false
     integer_overflow = true
     boundary_sanitize = true
     ubsan = true
-    stack_protector_ret = true
   }
-
+  branch_protector_ret = "pac_ret"
   subsystem_name = "theme"
   part_name = "wallpaper_mgr"
 }
@@ -110,12 +110,13 @@ ohos_shared_library("wallpaper_extension_module") {
   ]
   sanitize = {
     cfi = true
+    cfi_cross_dso = true
     debug = false
     integer_overflow = true
     boundary_sanitize = true
     ubsan = true
-    stack_protector_ret = true
   }
+  branch_protector_ret = "pac_ret"
   relative_install_dir = "extensionability/"
   subsystem_name = "theme"
   part_name = "wallpaper_mgr"
