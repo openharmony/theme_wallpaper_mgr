@@ -82,6 +82,12 @@ ohos_shared_library("wallpaper_service") {
     external_deps += [ "image_framework:image_native" ]
   }
 
+  defines = []
+  if (theme_service) {
+    external_deps += [ "theme_mgr:theme_manager_client" ]
+    defines += [ "THEME_SERVICE" ]
+  }
+
   subsystem_name = "theme"
   part_name = "wallpaper_mgr"
 }

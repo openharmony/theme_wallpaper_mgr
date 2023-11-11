@@ -142,6 +142,7 @@ private:
     int32_t GrantUriPermission(const std::string &path, const std::string &bundleName);
     void InitBundleNameParameter();
     void RemoveExtensionDeathRecipient();
+    void InitThemeResource();
 
 private:
     int32_t Init();

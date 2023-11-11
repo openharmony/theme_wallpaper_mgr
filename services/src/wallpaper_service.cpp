@@ -64,6 +64,10 @@
 #include "want.h"
 #include "window.h"
 
+#ifdef THEME_SERVICE
+#include "theme_manager_client.h"
+#endif
+
 namespace OHOS {
 namespace WallpaperMgrService {
 REGISTER_SYSTEM_ABILITY_BY_ID(WallpaperService, WALLPAPER_MANAGER_SERVICE_ID, true);
@@ -170,6 +174,7 @@ void WallpaperService::OnStart()
         serviceHandler_->PostTask(callback, INIT_INTERVAL);
         HILOG_ERROR("Init failed. Try again 10s later");
     }
+    InitThemeResource();
     return;
 }
 
@@ -1459,6 +1464,16 @@ int32_t WallpaperService::GrantUriPermission(const std::string &path, const std:
     Uri uri(path);
     return AAFwk::UriPermissionManagerClient::GetInstance().GrantUriPermission(uri,
         AAFwk::Want::FLAG_AUTH_READ_URI_PERMISSION, bundleName);
+}
+
+void WallpaperService::InitThemeResource()
+{
+#ifdef THEME_SERVICE
+    HILOG_INFO("guochao");
+    auto callback = [=]() { ThemeManager::ThemeManagerClient::GetInstance().InitResource(100); };
+    serviceHandler_->PostTask(callback, 300L);
+    HILOG_ERROR("Init failed. Try again 300ms later");
+#endif
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS
