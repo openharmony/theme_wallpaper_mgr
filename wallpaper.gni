@@ -30,9 +30,9 @@ adapter_path = "${wallpaper_path}/adapter"
 utils_path = "${wallpaper_path}/utils"
 
 declare_args() {
-    theme_service = false
-    if (defined(global_parts_info) &&
-    defined(global_parts_info.theme_theme_mgr)) {
-        theme_service = true
-    }
+  theme_service = false
+  if (defined(global_parts_info) &&
+      defined(global_parts_info.theme_theme_mgr)) {
+    theme_service = true
+  }
 }
