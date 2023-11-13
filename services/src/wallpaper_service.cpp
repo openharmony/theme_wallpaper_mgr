@@ -1469,7 +1469,6 @@ int32_t WallpaperService::GrantUriPermission(const std::string &path, const std:
 void WallpaperService::InitThemeResource()
 {
 #ifdef THEME_SERVICE
-    HILOG_INFO("guochao");
     auto callback = [=]() { ThemeManager::ThemeManagerClient::GetInstance().InitResource(100); };
     serviceHandler_->PostTask(callback, 300L);
     HILOG_ERROR("Init failed. Try again 300ms later");
