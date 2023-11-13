@@ -174,7 +174,9 @@ void WallpaperService::OnStart()
         serviceHandler_->PostTask(callback, INIT_INTERVAL);
         HILOG_ERROR("Init failed. Try again 10s later");
     }
+#ifdef THEME_SERVICE
     InitThemeResource();
+#endif
     return;
 }
 
@@ -1465,14 +1467,13 @@ int32_t WallpaperService::GrantUriPermission(const std::string &path, const std:
     return AAFwk::UriPermissionManagerClient::GetInstance().GrantUriPermission(uri,
         AAFwk::Want::FLAG_AUTH_READ_URI_PERMISSION, bundleName);
 }
-
+#ifdef THEME_SERVICE
 void WallpaperService::InitThemeResource()
 {
-#ifdef THEME_SERVICE
     auto callback = [=]() { ThemeManager::ThemeManagerClient::GetInstance().InitResource(100); };
     serviceHandler_->PostTask(callback, 300L);
     HILOG_ERROR("Init failed. Try again 300ms later");
-#endif
 }
+#endif
 } // namespace WallpaperMgrService
 } // namespace OHOS
