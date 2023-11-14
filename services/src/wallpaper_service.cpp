@@ -117,6 +117,11 @@ constexpr int32_t DEFAULT_VALUE = -1;
 constexpr int32_t MAX_VIDEO_SIZE = 104857600;
 const int CONFIG_LEN = 30;
 
+#ifdef THEME_SERVICE
+constexpr int64_t INIT_THEME_INTERVAL = 300L;
+const int USER_ID = 100;
+#endif
+
 std::mutex WallpaperService::instanceLock_;
 
 sptr<WallpaperService> WallpaperService::instance_;
@@ -1470,9 +1475,11 @@ int32_t WallpaperService::GrantUriPermission(const std::string &path, const std:
 #ifdef THEME_SERVICE
 void WallpaperService::InitThemeResource()
 {
-    auto callback = [=]() { ThemeManager::ThemeManagerClient::GetInstance().InitResource(100); };
-    serviceHandler_->PostTask(callback, 300L);
-    HILOG_ERROR("Init failed. Try again 300ms later");
+    auto callback = []() { ThemeManager::ThemeManagerClient::GetInstance().InitResource(USER_ID); };
+    auto result = serviceHandler_->PostTask(callback, INIT_THEME_INTERVAL);
+    if (!result) {
+        HILOG_ERROR("Init failed. Try again 300ms later");
+    }
 }
 #endif
 } // namespace WallpaperMgrService
