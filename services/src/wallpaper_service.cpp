@@ -64,6 +64,10 @@
 #include "want.h"
 #include "window.h"
 
+#ifdef THEME_SERVICE
+#include "theme_manager_client.h"
+#endif
+
 namespace OHOS {
 namespace WallpaperMgrService {
 REGISTER_SYSTEM_ABILITY_BY_ID(WallpaperService, WALLPAPER_MANAGER_SERVICE_ID, true);
@@ -112,6 +116,11 @@ constexpr int32_t DEFAULT_USER_ID = 0;
 constexpr int32_t DEFAULT_VALUE = -1;
 constexpr int32_t MAX_VIDEO_SIZE = 104857600;
 const int CONFIG_LEN = 30;
+
+#ifdef THEME_SERVICE
+constexpr int64_t INIT_THEME_INTERVAL = 300L;
+constexpr int32_t USER_ID = 100;
+#endif
 
 std::mutex WallpaperService::instanceLock_;
 
@@ -170,6 +179,9 @@ void WallpaperService::OnStart()
         serviceHandler_->PostTask(callback, INIT_INTERVAL);
         HILOG_ERROR("Init failed. Try again 10s later");
     }
+#ifdef THEME_SERVICE
+    InitThemeResource();
+#endif
     return;
 }
 
@@ -1460,5 +1472,18 @@ int32_t WallpaperService::GrantUriPermission(const std::string &path, const std:
     return AAFwk::UriPermissionManagerClient::GetInstance().GrantUriPermission(uri,
         AAFwk::Want::FLAG_AUTH_READ_URI_PERMISSION, bundleName);
 }
+#ifdef THEME_SERVICE
+void WallpaperService::InitThemeResource()
+{
+    if (ThemeManager::ThemeManagerClient::GetInstance().InitResource(USER_ID) == true) {
+        return;
+    }
+    auto callback = []() { ThemeManager::ThemeManagerClient::GetInstance().InitResource(USER_ID); };
+    auto result = serviceHandler_->PostTask(callback, INIT_THEME_INTERVAL);
+    if (!result) {
+        HILOG_ERROR("retry failed since post task failed");
+    }
+}
+#endif
 } // namespace WallpaperMgrService
 } // namespace OHOS
