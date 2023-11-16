@@ -45,7 +45,7 @@
           "player_framework",
           "eventhandler",
           "init",
-          "theme"
+          "theme_mgr"
         ],
         "third_party": []
       },
