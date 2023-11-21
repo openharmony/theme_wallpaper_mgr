@@ -26,9 +26,7 @@
 #include <sys/types.h>
 #include <thread>
 #include <unistd.h>
-#include <window_manager.h>
 
-#include "ability_manager_client.h"
 #include "bundle_mgr_interface.h"
 #include "bundle_mgr_proxy.h"
 #include "color_picker.h"
@@ -58,14 +56,16 @@
 #include "uri_permission_manager_client.h"
 #include "wallpaper_common.h"
 #include "wallpaper_common_event_manager.h"
-#include "wallpaper_extension_ability_connection.h"
-#include "wallpaper_extension_ability_death_recipient.h"
 #include "wallpaper_service_cb_proxy.h"
 #include "want.h"
 #include "window.h"
 
 #ifdef THEME_SERVICE
 #include "theme_manager_client.h"
+#else
+#include "ability_manager_client.h"
+#include "wallpaper_extension_ability_connection.h"
+#include "wallpaper_extension_ability_death_recipient.h"
 #endif
 
 namespace OHOS {
@@ -106,20 +106,21 @@ constexpr const char *WALLPAPER_CROP_PICTURE = "crop_file";
 constexpr int64_t INIT_INTERVAL = 10000L;
 constexpr int64_t DELAY_TIME = 1000L;
 constexpr int64_t QUERY_USER_ID_INTERVAL = 300L;
-constexpr int32_t CONNECT_EXTENSION_INTERVAL = 100;
-constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 50;
 constexpr int32_t FOO_MAX_LEN = 52428800;
 constexpr int32_t MAX_RETRY_TIMES = 20;
 constexpr int32_t QUERY_USER_MAX_RETRY_TIMES = 100;
 constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
 constexpr int32_t DEFAULT_USER_ID = 0;
-constexpr int32_t DEFAULT_VALUE = -1;
 constexpr int32_t MAX_VIDEO_SIZE = 104857600;
 const int CONFIG_LEN = 30;
 
 #ifdef THEME_SERVICE
 constexpr int64_t INIT_THEME_INTERVAL = 300L;
 constexpr int32_t USER_ID = 100;
+#else
+constexpr int32_t CONNECT_EXTENSION_INTERVAL = 100;
+constexpr int32_t DEFAULT_VALUE = -1;
+constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 50;
 #endif
 
 std::mutex WallpaperService::instanceLock_;
@@ -152,7 +153,9 @@ int32_t WallpaperService::Init()
     }
     HILOG_INFO("Publish success.");
     state_ = ServiceRunningState::STATE_RUNNING;
+#ifndef THEME_SERVICE
     StartExtensionAbility(CONNECT_EXTENSION_MAX_RETRY_TIMES);
+#endif
     return E_OK;
 }
 
@@ -227,7 +230,9 @@ void WallpaperService::OnStop()
         return;
     }
     serviceHandler_ = nullptr;
+#ifndef THEME_SERVICE
     connection_ = nullptr;
+#endif
     recipient_ = nullptr;
     extensionRemoteObject_ = nullptr;
     if (subscriber_ != nullptr) {
@@ -272,6 +277,7 @@ void WallpaperService::InitBundleNameParameter()
     HILOG_INFO("get appBundleName_ :%{public}s", appBundleName_.c_str());
 }
 
+#ifndef THEME_SERVICE
 void WallpaperService::AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObject> &remoteObject)
 {
     if (remoteObject != nullptr) {
@@ -287,6 +293,7 @@ void WallpaperService::AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObj
         }
     }
 }
+#endif
 
 void WallpaperService::RemoveExtensionDeathRecipient()
 {
@@ -310,6 +317,7 @@ void WallpaperService::InitQueryUserId(int32_t times)
     }
 }
 
+#ifndef THEME_SERVICE
 void WallpaperService::StartExtensionAbility(int32_t times)
 {
     times--;
@@ -320,6 +328,7 @@ void WallpaperService::StartExtensionAbility(int32_t times)
         serviceHandler_->PostTask(callback, CONNECT_EXTENSION_INTERVAL);
     }
 }
+#endif
 
 bool WallpaperService::InitUsersOnBoot()
 {
@@ -454,7 +463,9 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
         return;
     }
     RemoveExtensionDeathRecipient();
+#ifndef THEME_SERVICE
     ConnectExtensionAbility();
+#endif
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     LoadSettingsLocked(userId, true);
     if (!FileDeal::IsFileExist(userDir)) {
@@ -1154,6 +1165,7 @@ int32_t WallpaperService::Dump(int32_t fd, const std::vector<std::u16string> &ar
     return 1;
 }
 
+#ifndef THEME_SERVICE
 bool WallpaperService::ConnectExtensionAbility()
 {
     HILOG_DEBUG("ConnectAdapter");
@@ -1172,6 +1184,7 @@ bool WallpaperService::ConnectExtensionAbility()
     HILOG_INFO("ConnectExtensionAbility errCode=%{public}d", ret);
     return ret;
 }
+#endif
 
 bool WallpaperService::IsSystemApp()
 {
