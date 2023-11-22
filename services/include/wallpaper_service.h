@@ -20,8 +20,6 @@
 #include <map>
 #include <mutex>
 
-#include "ability_connect_callback_interface.h"
-#include "ability_manager_errors.h"
 #include "accesstoken_kit.h"
 #include "component_name.h"
 #include "concurrent_map.h"
@@ -39,13 +37,15 @@
 #include "wallpaper_common_event_subscriber.h"
 #include "wallpaper_data.h"
 #include "wallpaper_event_listener.h"
-#include "wallpaper_extension_ability_connection.h"
 #include "wallpaper_manager_common_info.h"
 #include "wallpaper_service_stub.h"
 #include "want.h"
-#include "window_option.h"
-#include "wm_common.h"
 
+#ifndef THEME_SERVICE
+#include "ability_connect_callback_interface.h"
+#include "ability_manager_errors.h"
+#include "wallpaper_extension_ability_connection.h"
+#endif
 namespace OHOS {
 namespace ColorManager {
 class Color;
@@ -92,9 +92,10 @@ public:
     void OnSwitchedUser(int32_t userId);
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
     void RegisterSubscriber(int32_t times);
+#ifndef THEME_SERVICE
     void AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObject> &remoteObject);
     void StartExtensionAbility(int32_t times);
-
+#endif
 protected:
     void OnStart() override;
     void OnStop() override;
@@ -119,7 +120,9 @@ private:
     bool GetBundleNameByUid(std::int32_t uid, std::string &bname);
     ErrorCode SetWallpaperBackupData(int32_t userId, WallpaperResourceType resourceType,
         const std::string &uriOrPixelMap, WallpaperType wallpaperType);
+#ifndef THEME_SERVICE
     bool ConnectExtensionAbility();
+#endif
     bool IsSystemApp();
     ErrorCode GetImageFd(int32_t userId, WallpaperType wallpaperType, int32_t &fd);
     ErrorCode GetImageSize(int32_t userId, WallpaperType wallpaperType, int32_t &size);
@@ -171,7 +174,9 @@ private:
     atomic<int32_t> wallpaperId_;
     sptr<IWallpaperCallback> callbackProxy_ = nullptr;
     std::shared_ptr<WallpaperCommonEventSubscriber> subscriber_;
+#ifndef THEME_SERVICE
     sptr<WallpaperExtensionAbilityConnection> connection_;
+#endif
     sptr<IRemoteObject::DeathRecipient> recipient_;
     sptr<IRemoteObject> extensionRemoteObject_;
     std::mutex remoteObjectMutex_;
