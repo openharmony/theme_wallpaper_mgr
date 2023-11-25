@@ -17,11 +17,13 @@
 #include <algorithm>
 #include <cstdio>
 #include <dirent.h>
+#include <filesystem>
 #include <sys/stat.h>
 #include <unistd.h>
 
 #include "hilog_wrapper.h"
 
+namespace fs = std::filesystem;
 namespace OHOS {
 namespace WallpaperMgrService {
 constexpr mode_t MODE = 0740;
@@ -131,6 +133,18 @@ bool FileDeal::GetRealPath(const std::string &inOriPath, std::string &outRealPat
         return false;
     }
     return true;
+}
+bool FileDeal::IsZipFile(const std::string &filePath)
+{
+    fs::path file(filePath);
+    if (fs::exists(file) && fs::is_regular_file(file)) {
+        std::string extension = file.extension().string();
+        if (extension == ".zip") {
+            return true;
+        }
+    }
+    HILOG_ERROR("this is not a zip");
+    return false;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

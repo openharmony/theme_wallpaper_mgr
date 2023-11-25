@@ -15,6 +15,7 @@
 #include "wallpaper_manager.h"
 
 #include <cerrno>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -315,12 +316,17 @@ ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int
         return E_DEAL_FAILED;
     }
     std::string fileRealPath;
-    if (!FileDeal::GetRealPath(uri, fileRealPath)) {
-        HILOG_ERROR("Get real path failed, uri: %{public}s", uri.c_str());
+    if (!FileDeal::GetRealPath(uri, fileRealPath) && !FileDeal::IsZipFile(uri)) {
+        HILOG_ERROR("Get real path failed or is not a zip, uri: %{public}s", uri.c_str());
+        return E_FILE_ERROR;
+    }
+    int32_t fd = open(fileRealPath.c_str(), O_RDONLY);
+    if (fd < 0) {
+        HILOG_ERROR("open file failed, errno %{public}d", errno);
         return E_FILE_ERROR;
     }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
-    ErrorCode wallpaperErrorCode = wallpaperServerProxy->SetCustomWallpaper(uri, wallpaperType);
+    ErrorCode wallpaperErrorCode = wallpaperServerProxy->SetCustomWallpaper(fd, wallpaperType);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
     return wallpaperErrorCode;
 }
