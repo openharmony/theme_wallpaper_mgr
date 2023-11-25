@@ -181,7 +181,7 @@ ErrorCode WallpaperServiceProxy::SetVideo(int32_t fd, int32_t wallpaperType, int
     return ConvertIntToErrorCode(reply.ReadInt32());
 }
 
-ErrorCode WallpaperServiceProxy::SetCustomWallpaper(const std::string &uri, int32_t wallpaperType)
+ErrorCode WallpaperServiceProxy::SetCustomWallpaper(int32_t fd, int32_t wallpaperType)
 {
     MessageParcel data;
     MessageParcel reply;
@@ -191,8 +191,8 @@ ErrorCode WallpaperServiceProxy::SetCustomWallpaper(const std::string &uri, int3
         HILOG_ERROR("Failed to write parcelable");
         return E_WRITE_PARCEL_ERROR;
     }
-    if (!data.WriteString(uri)) {
-        HILOG_ERROR("Failed to WriteString");
+    if (!data.WriteFileDescriptor(fd)) {
+        HILOG_ERROR("Failed to WriteFD");
         return E_WRITE_PARCEL_ERROR;
     }
     if (!data.WriteInt32(wallpaperType)) {

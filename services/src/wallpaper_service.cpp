@@ -26,9 +26,7 @@
 #include <sys/types.h>
 #include <thread>
 #include <unistd.h>
-#include <window_manager.h>
 
-#include "ability_manager_client.h"
 #include "bundle_mgr_interface.h"
 #include "bundle_mgr_proxy.h"
 #include "color_picker.h"
@@ -58,11 +56,17 @@
 #include "uri_permission_manager_client.h"
 #include "wallpaper_common.h"
 #include "wallpaper_common_event_manager.h"
-#include "wallpaper_extension_ability_connection.h"
-#include "wallpaper_extension_ability_death_recipient.h"
 #include "wallpaper_service_cb_proxy.h"
 #include "want.h"
 #include "window.h"
+
+#ifdef THEME_SERVICE
+#include "theme_manager_client.h"
+#else
+#include "ability_manager_client.h"
+#include "wallpaper_extension_ability_connection.h"
+#include "wallpaper_extension_ability_death_recipient.h"
+#endif
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -98,20 +102,27 @@ constexpr const char *WALLPAPER_DEFAULT_LOCK_FILEFULLPATH = "/system/etc/wallpap
 constexpr const char *WALLPAPER_PREFABRICATE_FILEFULLPATH = "/sys_prod/media/themes/wallpaperdefault.jpeg";
 constexpr const char *WALLPAPER_PREFABRICATE_LOCK_FILEFULLPATH = "/sys_prod/media/themes/wallpaperlockdefault.jpeg";
 constexpr const char *WALLPAPER_CROP_PICTURE = "crop_file";
+constexpr const char *WALLPAPER_CUSTOM_ZIP = "custom.zip";
 
 constexpr int64_t INIT_INTERVAL = 10000L;
 constexpr int64_t DELAY_TIME = 1000L;
 constexpr int64_t QUERY_USER_ID_INTERVAL = 300L;
-constexpr int32_t CONNECT_EXTENSION_INTERVAL = 100;
-constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 50;
 constexpr int32_t FOO_MAX_LEN = 52428800;
 constexpr int32_t MAX_RETRY_TIMES = 20;
 constexpr int32_t QUERY_USER_MAX_RETRY_TIMES = 100;
 constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
 constexpr int32_t DEFAULT_USER_ID = 0;
-constexpr int32_t DEFAULT_VALUE = -1;
 constexpr int32_t MAX_VIDEO_SIZE = 104857600;
 const int CONFIG_LEN = 30;
+
+#ifdef THEME_SERVICE
+constexpr int64_t INIT_THEME_INTERVAL = 300L;
+constexpr int32_t USER_ID = 100;
+#else
+constexpr int32_t CONNECT_EXTENSION_INTERVAL = 100;
+constexpr int32_t DEFAULT_VALUE = -1;
+constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 50;
+#endif
 
 std::mutex WallpaperService::instanceLock_;
 
@@ -143,7 +154,9 @@ int32_t WallpaperService::Init()
     }
     HILOG_INFO("Publish success.");
     state_ = ServiceRunningState::STATE_RUNNING;
+#ifndef THEME_SERVICE
     StartExtensionAbility(CONNECT_EXTENSION_MAX_RETRY_TIMES);
+#endif
     return E_OK;
 }
 
@@ -170,6 +183,9 @@ void WallpaperService::OnStart()
         serviceHandler_->PostTask(callback, INIT_INTERVAL);
         HILOG_ERROR("Init failed. Try again 10s later");
     }
+#ifdef THEME_SERVICE
+    InitThemeResource();
+#endif
     return;
 }
 
@@ -215,7 +231,9 @@ void WallpaperService::OnStop()
         return;
     }
     serviceHandler_ = nullptr;
+#ifndef THEME_SERVICE
     connection_ = nullptr;
+#endif
     recipient_ = nullptr;
     extensionRemoteObject_ = nullptr;
     if (subscriber_ != nullptr) {
@@ -260,6 +278,7 @@ void WallpaperService::InitBundleNameParameter()
     HILOG_INFO("get appBundleName_ :%{public}s", appBundleName_.c_str());
 }
 
+#ifndef THEME_SERVICE
 void WallpaperService::AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObject> &remoteObject)
 {
     if (remoteObject != nullptr) {
@@ -275,6 +294,7 @@ void WallpaperService::AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObj
         }
     }
 }
+#endif
 
 void WallpaperService::RemoveExtensionDeathRecipient()
 {
@@ -298,6 +318,7 @@ void WallpaperService::InitQueryUserId(int32_t times)
     }
 }
 
+#ifndef THEME_SERVICE
 void WallpaperService::StartExtensionAbility(int32_t times)
 {
     times--;
@@ -308,6 +329,7 @@ void WallpaperService::StartExtensionAbility(int32_t times)
         serviceHandler_->PostTask(callback, CONNECT_EXTENSION_INTERVAL);
     }
 }
+#endif
 
 bool WallpaperService::InitUsersOnBoot()
 {
@@ -442,7 +464,9 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
         return;
     }
     RemoveExtensionDeathRecipient();
+#ifndef THEME_SERVICE
     ConnectExtensionAbility();
+#endif
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     LoadSettingsLocked(userId, true);
     if (!FileDeal::IsFileExist(userDir)) {
@@ -798,7 +822,7 @@ ErrorCode WallpaperService::SetVideo(int32_t fd, int32_t wallpaperType, int32_t 
     return wallpaperErrorCode;
 }
 
-ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t type)
+ErrorCode WallpaperService::SetCustomWallpaper(int32_t fd, int32_t type)
 {
     if (!IsSystemApp()) {
         HILOG_ERROR("current app is not SystemApp");
@@ -838,7 +862,12 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
         HILOG_ERROR("Send wallpaper state failed!");
         return E_DEAL_FAILED;
     }
+    std::string zipPath = WALLPAPER_USERID_PATH + std::to_string(userId) + WALLPAPER_CUSTOM_ZIP;
+    if (GetZipFile(fd, zipPath) != E_OK) {
+        return E_FILE_ERROR;
+    }
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
+    HILOG_INFO("SetCustomWallpaper success");
     return E_OK;
 }
 
@@ -1070,23 +1099,13 @@ void WallpaperService::ClearWallpaperLocked(int32_t userId, WallpaperType wallpa
 
 bool WallpaperService::CheckCallingPermission(const std::string &permissionName)
 {
-    bool bflag = false;
-    int32_t result;
     AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
-    auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
-    if (tokenType == TOKEN_NATIVE || tokenType == TOKEN_SHELL || tokenType == TOKEN_HAP) {
-        result = AccessTokenKit::VerifyAccessToken(callerToken, permissionName);
-    } else {
-        HILOG_INFO("Check permission tokenId illegal");
+    int32_t result = AccessTokenKit::VerifyAccessToken(callerToken, permissionName);
+    if (result != TypePermissionState::PERMISSION_GRANTED) {
+        HILOG_ERROR("Check permission failed.");
         return false;
     }
-    if (result == TypePermissionState::PERMISSION_GRANTED) {
-        bflag = true;
-    } else {
-        bflag = false;
-    }
-    HILOG_INFO("Check permission result %{public}d", result);
-    return bflag;
+    return true;
 }
 
 bool WallpaperService::GetBundleNameByUid(std::int32_t uid, std::string &bname)
@@ -1140,16 +1159,6 @@ void WallpaperService::ReporterFault(FaultType faultType, FaultCode faultCode)
 
 int32_t WallpaperService::Dump(int32_t fd, const std::vector<std::u16string> &args)
 {
-    int32_t uid = static_cast<int32_t>(IPCSkeleton::GetCallingUid());
-    const int32_t maxUid = 10000;
-    if (uid > maxUid) {
-        AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
-        auto tokenType = AccessTokenKit::GetTokenTypeFlag(callerToken);
-        if (tokenType != TOKEN_NATIVE && tokenType != TOKEN_SHELL) {
-            return 1;
-        }
-    }
-
     std::vector<std::string> argsStr;
     for (auto item : args) {
         argsStr.emplace_back(Str16ToStr8(item));
@@ -1162,6 +1171,7 @@ int32_t WallpaperService::Dump(int32_t fd, const std::vector<std::u16string> &ar
     return 1;
 }
 
+#ifndef THEME_SERVICE
 bool WallpaperService::ConnectExtensionAbility()
 {
     HILOG_DEBUG("ConnectAdapter");
@@ -1180,6 +1190,7 @@ bool WallpaperService::ConnectExtensionAbility()
     HILOG_INFO("ConnectExtensionAbility errCode=%{public}d", ret);
     return ret;
 }
+#endif
 
 bool WallpaperService::IsSystemApp()
 {
@@ -1478,7 +1489,64 @@ int32_t WallpaperService::GrantUriPermission(const std::string &path, const std:
 {
     Uri uri(path);
     return AAFwk::UriPermissionManagerClient::GetInstance().GrantUriPermission(uri,
-        AAFwk::Want::FLAG_AUTH_READ_URI_PERMISSION, bundleName, 0);
+        AAFwk::Want::FLAG_AUTH_READ_URI_PERMISSION, bundleName);
 }
+
+ErrorCode WallpaperService::GetZipFile(int32_t fd, const std::string &zipPath)
+{
+    auto length = GetFileSize(fd);
+    if (length <= 0) {
+        HILOG_ERROR("GetFileSize error");
+        return E_FILE_ERROR;
+    }
+    char *paperBuf = new (std::nothrow) char[length]();
+    if (paperBuf == nullptr) {
+        HILOG_ERROR("Failed to apply for memory.");
+        return E_FILE_ERROR;
+    }
+    if (read(fd, paperBuf, length) <= 0) {
+        HILOG_ERROR("read fd failed fd = %{public}d, length = %{public}lld", fd, length);
+        delete[] paperBuf;
+        return E_FILE_ERROR;
+    }
+    int32_t fdw = open(zipPath.c_str(), O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+    if (fdw < 0) {
+        HILOG_ERROR("Open CustomWallpaper Path failed, errno %{public}d", errno);
+        return E_FILE_ERROR;
+    }
+    if (write(fdw, paperBuf, length) <= 0) {
+        HILOG_ERROR("Write fdw failed  errno %{public}d", errno);
+        delete[] paperBuf;
+        close(fdw);
+        return E_FILE_ERROR;
+    }
+    delete[] paperBuf;
+    close(fdw);
+    return E_OK;
+}
+
+off_t WallpaperService::GetFileSize(int32_t fd)
+{
+    struct stat fileStat;
+    int32_t ret = fstat(fd, &fileStat);
+    if (ret == -1) {
+        HILOG_ERROR("get file stat failed:%{public}s", strerror(errno));
+        return -1;
+    }
+    return fileStat.st_size;
+}
+#ifdef THEME_SERVICE
+void WallpaperService::InitThemeResource()
+{
+    if (ThemeManager::ThemeManagerClient::GetInstance().InitResource(USER_ID) == true) {
+        return;
+    }
+    auto callback = []() { ThemeManager::ThemeManagerClient::GetInstance().InitResource(USER_ID); };
+    auto result = serviceHandler_->PostTask(callback, INIT_THEME_INTERVAL);
+    if (!result) {
+        HILOG_ERROR("retry failed since post task failed");
+    }
+}
+#endif
 } // namespace WallpaperMgrService
 } // namespace OHOS

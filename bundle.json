@@ -44,7 +44,8 @@
           "image_framework",
           "player_framework",
           "eventhandler",
-          "init"
+          "init",
+          "theme_mgr"
         ],
         "third_party": []
       },
