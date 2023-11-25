@@ -316,8 +316,11 @@ ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int
         return E_DEAL_FAILED;
     }
     std::string fileRealPath;
-    if (!FileDeal::GetRealPath(uri, fileRealPath) && !FileDeal::IsZipFile(uri)) {
-        HILOG_ERROR("Get real path failed or is not a zip, uri: %{public}s", uri.c_str());
+    if (!FileDeal::GetRealPath(uri, fileRealPath)) {
+        HILOG_ERROR("Get real path failed, uri: %{public}s", uri.c_str());
+        return E_FILE_ERROR;
+    }
+    if (!FileDeal::IsZipFile(uri)) {
         return E_FILE_ERROR;
     }
     int32_t fd = open(fileRealPath.c_str(), O_RDONLY);
