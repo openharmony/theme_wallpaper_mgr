@@ -331,6 +331,7 @@ ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int
     StartAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
     ErrorCode wallpaperErrorCode = wallpaperServerProxy->SetCustomWallpaper(fd, wallpaperType);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
+    close(fd);
     return wallpaperErrorCode;
 }
 

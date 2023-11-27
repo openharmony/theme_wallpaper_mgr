@@ -1185,9 +1185,9 @@ HWTEST_F(WallpaperTest, SetCustomWallpaper001, TestSize.Level0)
     if (!Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
         testErrorCode = E_NO_PERMISSION;
     }
-    ErrorCode ret = WallpaperManagerkits::GetInstance().SetCustomWallpaper(URI, SYSTYEM);
+    ErrorCode ret = WallpaperManagerkits::GetInstance().SetCustomWallpaper(URI_ZIP, SYSTYEM);
     EXPECT_EQ(ret, testErrorCode);
-    ret = WallpaperManagerkits::GetInstance().SetCustomWallpaper(URI, LOCKSCREEN);
+    ret = WallpaperManagerkits::GetInstance().SetCustomWallpaper(URI_ZIP, LOCKSCREEN);
     EXPECT_EQ(ret, testErrorCode);
 }
 

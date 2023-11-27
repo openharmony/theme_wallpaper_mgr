@@ -143,7 +143,7 @@ bool FileDeal::IsZipFile(const std::string &filePath)
             return true;
         }
     }
-    HILOG_ERROR("this is not a zip");
+    HILOG_ERROR("this is not a zip. filePath:%{private}s", filePath.c_str());
     return false;
 }
 } // namespace WallpaperMgrService
