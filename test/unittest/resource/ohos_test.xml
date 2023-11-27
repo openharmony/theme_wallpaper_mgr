@@ -20,6 +20,7 @@
             <option name="push" value="30fps_3s.mp4 -> /data/test/theme/wallpaper" src="res"/>
             <option name="push" value="30fps_3s.mov -> /data/test/theme/wallpaper" src="res"/>
             <option name="push" value="15fps_7s.mp4 -> /data/test/theme/wallpaper" src="res"/>
+            <option name="push" value="test.zip -> /data/test/theme/wallpaper" src="res"/>
         </preparer>
         <cleaner>
             <option name="shell" value="rm -rf /data/test/theme/"/>
