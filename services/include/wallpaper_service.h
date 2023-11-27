@@ -145,7 +145,7 @@ private:
     int32_t GrantUriPermission(const std::string &path, const std::string &bundleName);
     void InitBundleNameParameter();
     void RemoveExtensionDeathRecipient();
-    ErrorCode GetZipFile(int32_t fd, const std::string &zipPath);
+    ErrorCode CopyFile(int32_t fd, const std::string &uri);
     off_t GetFileSize(int32_t fd);
 #ifdef THEME_SERVICE
     void InitThemeResource();

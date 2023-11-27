@@ -863,8 +863,8 @@ ErrorCode WallpaperService::SetCustomWallpaper(int32_t fd, int32_t type)
         return E_DEAL_FAILED;
     }
     std::string zipPath = WALLPAPER_USERID_PATH + std::to_string(userId) + WALLPAPER_CUSTOM_ZIP;
-    if (GetZipFile(fd, zipPath) != E_OK) {
-        return E_FILE_ERROR;
+    if (CopyFile(fd, zipPath) != E_OK) {
+        return E_DEAL_FAILED;
     }
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
     HILOG_INFO("SetCustomWallpaper success");
@@ -1306,32 +1306,10 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
         return errCode;
     }
     std::string uri = wallpaperTmpFullPath_;
-    char *paperBuf = new (std::nothrow) char[length]();
-    if (paperBuf == nullptr) {
-        return E_NO_MEMORY;
-    }
     std::lock_guard<std::mutex> lock(mtx_);
-    if (read(fd, paperBuf, length) <= 0) {
-        HILOG_ERROR("read fd failed");
-        delete[] paperBuf;
+    if (CopyFile(fd, uri) != E_OK) {
         return E_DEAL_FAILED;
     }
-    mode_t mode = S_IRUSR | S_IWUSR;
-    int32_t fdw = open(uri.c_str(), O_WRONLY | O_CREAT, mode);
-    if (fdw < 0) {
-        HILOG_ERROR("Open wallpaper tmpFullPath failed, errno %{public}d", errno);
-        delete[] paperBuf;
-        return E_DEAL_FAILED;
-    }
-    if (write(fdw, paperBuf, length) <= 0) {
-        HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
-        ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
-        delete[] paperBuf;
-        close(fdw);
-        return E_DEAL_FAILED;
-    }
-    delete[] paperBuf;
-    close(fdw);
     WallpaperType type = static_cast<WallpaperType>(wallpaperType);
     int32_t userId = QueryActiveUserId();
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
@@ -1492,7 +1470,7 @@ int32_t WallpaperService::GrantUriPermission(const std::string &path, const std:
         AAFwk::Want::FLAG_AUTH_READ_URI_PERMISSION, bundleName);
 }
 
-ErrorCode WallpaperService::GetZipFile(int32_t fd, const std::string &zipPath)
+ErrorCode WallpaperService::CopyFile(int32_t fd, const std::string &uri)
 {
     auto length = GetFileSize(fd);
     if (length <= 0) {
@@ -1502,23 +1480,25 @@ ErrorCode WallpaperService::GetZipFile(int32_t fd, const std::string &zipPath)
     char *paperBuf = new (std::nothrow) char[length]();
     if (paperBuf == nullptr) {
         HILOG_ERROR("Failed to apply for memory.");
-        return E_FILE_ERROR;
+        return E_NO_MEMORY;
     }
     if (read(fd, paperBuf, length) <= 0) {
         HILOG_ERROR("read fd failed fd = %{public}d, length = %{public}lld", fd, length);
         delete[] paperBuf;
-        return E_FILE_ERROR;
+        return E_DEAL_FAILED;
     }
-    int32_t fdw = open(zipPath.c_str(), O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+    mode_t mode = S_IRUSR | S_IWUSR;
+    int32_t fdw = open(uri.c_str(), O_WRONLY | O_CREAT, mode);
     if (fdw < 0) {
-        HILOG_ERROR("Open CustomWallpaper Path failed, errno %{public}d", errno);
-        return E_FILE_ERROR;
+        HILOG_ERROR("Open uri failed, errno %{public}d", errno);
+        delete[] paperBuf;
+        return E_DEAL_FAILED;
     }
     if (write(fdw, paperBuf, length) <= 0) {
         HILOG_ERROR("Write fdw failed  errno %{public}d", errno);
         delete[] paperBuf;
         close(fdw);
-        return E_FILE_ERROR;
+        return E_DEAL_FAILED;
     }
     delete[] paperBuf;
     close(fdw);
