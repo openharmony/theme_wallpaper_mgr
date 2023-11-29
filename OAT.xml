@@ -74,6 +74,9 @@ Note:If the text contains special characters, please escape them according to th
                 <filteritem type="filename" name="*.mov" desc="mov not need to add policy"/>
                 <filteritem type="filepath" name="test/unittest/resource/30fps_4s.mov" 
                             desc="mov for unittest"/>
+                <filteritem type="filename" name="*.zip" desc="zip need to add policy"/>
+                <filteritem type="filepath" name="test/unittest/resource/test.zip" 
+                            desc="zip for unittest"/>
             </filefilter>
         </filefilterlist>
     </oatconfig>
