@@ -56,6 +56,7 @@
 #include "uri_permission_manager_client.h"
 #include "wallpaper_common.h"
 #include "wallpaper_common_event_manager.h"
+#include "wallpaper_manager_common_info.h"
 #include "wallpaper_service_cb_proxy.h"
 #include "want.h"
 #include "window.h"
@@ -81,8 +82,8 @@ constexpr const char *WALLPAPER_SYSTEM_ORIG = "wallpaper_system_orig";
 constexpr const char *WALLPAPER_LOCK_ORIG = "wallpaper_lock_orig";
 constexpr const char *LIVE_WALLPAPER_SYSTEM_ORIG = "live_wallpaper_system_orig";
 constexpr const char *LIVE_WALLPAPER_LOCK_ORIG = "live_wallpaper_lock_orig";
-constexpr const char *CUSTOM_WALLPAPER_LOCK = "custom_wallpaper_lock";
-constexpr const char *CUSTOM_WALLPAPER_SYSTEM = "custom_wallpaper_system";
+constexpr const char *CUSTOM_WALLPAPER_LOCK = "custom_lock.zip";
+constexpr const char *CUSTOM_WALLPAPER_SYSTEM = "custom_system.zip";
 constexpr const char *OHOS_WALLPAPER_BUNDLE_NAME = "com.ohos.launcher";
 constexpr const char *SHOW_SYSTEM_SCREEN = "SHOW_SYSTEMSCREEN";
 constexpr const char *SHOW_LOCK_SCREEN = "SHOW_LOCKSCREEN";
@@ -627,11 +628,6 @@ ErrorCode WallpaperService::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
     }
     auto type = static_cast<WallpaperType>(wallpaperType);
     int32_t userId = QueryActiveUserId();
-    if (GetResType(userId, type) == WallpaperResourceType::PACKAGE) {
-        HILOG_ERROR("Current user's wallpaper is custom package");
-        wallpaperFd = -1; // -1: invalid file description
-        return E_OK;
-    }
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
     ErrorCode ret = GetImageFd(userId, type, wallpaperFd);
     HILOG_INFO("GetImageFd fd:%{public}d, ret:%{public}d", wallpaperFd, ret);
@@ -715,7 +711,24 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, WallpaperReso
     }
     wallpaperData.resourceType = resourceType;
     wallpaperData.wallpaperId = MakeWallpaperIdLocked();
-    std::string wallpaperFile = resourceType == VIDEO ? wallpaperData.liveWallpaperFile : wallpaperData.wallpaperFile;
+    std::string wallpaperFile;
+    switch (resourceType) {
+        case PICTURE:
+            wallpaperFile = wallpaperData.wallpaperFile;
+            break;
+        case DEFAULT:
+            wallpaperFile = wallpaperData.wallpaperFile;
+            break;
+        case VIDEO:
+            wallpaperFile = wallpaperData.liveWallpaperFile;
+            break;
+        case PACKAGE:
+            wallpaperFile = wallpaperData.customPackageUri;
+            break;
+        default:
+            HILOG_DEBUG("Non-existent error type!");
+            break;
+    }
     if (!FileDeal::CopyFile(uriOrPixelMap, wallpaperFile)) {
         HILOG_ERROR("CopyFile failed !");
         return E_DEAL_FAILED;
@@ -821,7 +834,7 @@ ErrorCode WallpaperService::SetVideo(int32_t fd, int32_t wallpaperType, int32_t 
     return wallpaperErrorCode;
 }
 
-ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t type)
+ErrorCode WallpaperService::SetCustomWallpaper(int32_t fd, int32_t type, int32_t length)
 {
     if (!IsSystemApp()) {
         HILOG_ERROR("current app is not SystemApp");
@@ -850,6 +863,7 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
         HILOG_ERROR("Save wallpaper state failed!");
         return E_DEAL_FAILED;
     }
+    ErrorCode wallpaperErrorCode = SetWallpaper(fd, wallpaperType, length, PACKAGE);
     wallpaperData.resourceType = PACKAGE;
     wallpaperData.wallpaperId = MakeWallpaperIdLocked();
     if (wallpaperType == WALLPAPER_SYSTEM) {
@@ -862,7 +876,7 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
         return E_DEAL_FAILED;
     }
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
-    return E_OK;
+    return wallpaperErrorCode;
 }
 
 ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)

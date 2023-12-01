@@ -146,9 +146,11 @@ int32_t WallpaperServiceStub::OnSetVideo(MessageParcel &data, MessageParcel &rep
 int32_t WallpaperServiceStub::OnSetCustomWallpaper(MessageParcel &data, MessageParcel &reply)
 {
     HILOG_DEBUG("WallpaperServiceStub::SetCustomWallpaper start.");
-    std::string uri = data.ReadString();
+    auto fd = data.ReadFileDescriptor();
     int32_t wallpaperType = data.ReadInt32();
-    ErrorCode wallpaperErrorCode = SetCustomWallpaper(uri, wallpaperType);
+    int32_t length = data.ReadInt32();
+    ErrorCode wallpaperErrorCode = SetCustomWallpaper(fd, wallpaperType, length);
+    close(fd);
     if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
         HILOG_ERROR("Write int is failed");
         return IPC_STUB_WRITE_PARCEL_ERR;

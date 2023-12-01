@@ -82,7 +82,7 @@ public:
     ErrorCode GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
     ErrorCode ResetWallpaperV9(int32_t wallpaperType) override;
     ErrorCode SetVideo(int32_t fd, int32_t wallpaperType, int32_t length) override;
-    ErrorCode SetCustomWallpaper(const std::string &uri, int32_t wallpaperType) override;
+    ErrorCode SetCustomWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode SendEvent(const std::string &eventType) override;
 
 public:

@@ -181,7 +181,7 @@ ErrorCode WallpaperServiceProxy::SetVideo(int32_t fd, int32_t wallpaperType, int
     return ConvertIntToErrorCode(reply.ReadInt32());
 }
 
-ErrorCode WallpaperServiceProxy::SetCustomWallpaper(const std::string &uri, int32_t wallpaperType)
+ErrorCode WallpaperServiceProxy::SetCustomWallpaper(int32_t fd, int32_t wallpaperType, int32_t length)
 {
     MessageParcel data;
     MessageParcel reply;
@@ -191,16 +191,20 @@ ErrorCode WallpaperServiceProxy::SetCustomWallpaper(const std::string &uri, int3
         HILOG_ERROR("Failed to write parcelable");
         return E_WRITE_PARCEL_ERROR;
     }
-    if (!data.WriteString(uri)) {
-        HILOG_ERROR("Failed to WriteString");
+    if (!data.WriteFileDescriptor(fd)) {
+        HILOG_ERROR("Failed to WriteFD");
         return E_WRITE_PARCEL_ERROR;
     }
     if (!data.WriteInt32(wallpaperType)) {
         HILOG_ERROR("Failed to WriteInt32");
         return E_WRITE_PARCEL_ERROR;
     }
-    int32_t result = Remote()->SendRequest(
-        static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_CUSTOM), data, reply, option);
+    if (!data.WriteInt32(length)) {
+        HILOG_ERROR(" Failed to WriteInt32 ");
+        return E_WRITE_PARCEL_ERROR;
+    }
+    int32_t result = Remote()->SendRequest(static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_CUSTOM), data,
+        reply, option);
     if (result != ERR_NONE) {
         HILOG_ERROR("Set video failed, result: %{public}d", result);
         return E_DEAL_FAILED;
