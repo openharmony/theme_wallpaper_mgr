@@ -1338,6 +1338,8 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
         close(fdw);
         return E_DEAL_FAILED;
     }
+    delete[] paperBuf;
+    close(fdw);
     WallpaperType type = static_cast<WallpaperType>(wallpaperType);
     int32_t userId = QueryActiveUserId();
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
