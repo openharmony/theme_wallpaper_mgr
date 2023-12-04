@@ -712,23 +712,7 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, WallpaperReso
     wallpaperData.resourceType = resourceType;
     wallpaperData.wallpaperId = MakeWallpaperIdLocked();
     std::string wallpaperFile;
-    switch (resourceType) {
-        case PICTURE:
-            wallpaperFile = wallpaperData.wallpaperFile;
-            break;
-        case DEFAULT:
-            wallpaperFile = wallpaperData.wallpaperFile;
-            break;
-        case VIDEO:
-            wallpaperFile = wallpaperData.liveWallpaperFile;
-            break;
-        case PACKAGE:
-            wallpaperFile = wallpaperData.customPackageUri;
-            break;
-        default:
-            HILOG_DEBUG("Non-existent error type!");
-            break;
-    }
+    WallpaperService::GetWallpaperFile(resourceType, wallpaperData, wallpaperFile);
     if (!FileDeal::CopyFile(uriOrPixelMap, wallpaperFile)) {
         HILOG_ERROR("CopyFile failed !");
         return E_DEAL_FAILED;
@@ -750,6 +734,28 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, WallpaperReso
         return E_DEAL_FAILED;
     }
     return E_OK;
+}
+
+void WallpaperService::GetWallpaperFile(WallpaperResourceType resourceType, WallpaperData &wallpaperData,
+    std::string &wallpaperFile)
+{
+    switch (resourceType) {
+        case PICTURE:
+            wallpaperFile = wallpaperData.wallpaperFile;
+            break;
+        case DEFAULT:
+            wallpaperFile = wallpaperData.wallpaperFile;
+            break;
+        case VIDEO:
+            wallpaperFile = wallpaperData.liveWallpaperFile;
+            break;
+        case PACKAGE:
+            wallpaperFile = wallpaperData.customPackageUri;
+            break;
+        default:
+            HILOG_DEBUG("Non-existent error type!");
+            break;
+    }
 }
 
 WallpaperResourceType WallpaperService::GetResType(int32_t userId, WallpaperType wallpaperType)
