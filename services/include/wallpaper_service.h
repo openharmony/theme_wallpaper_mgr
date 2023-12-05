@@ -145,6 +145,8 @@ private:
     int32_t GrantUriPermission(const std::string &path, const std::string &bundleName);
     void InitBundleNameParameter();
     void RemoveExtensionDeathRecipient();
+    static void GetWallpaperFile(WallpaperResourceType resourceType, const WallpaperData &wallpaperData,
+        std::string &wallpaperFile);
 #ifdef THEME_SERVICE
     void InitThemeResource();
 #endif
