@@ -736,7 +736,7 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, WallpaperReso
     return E_OK;
 }
 
-void WallpaperService::GetWallpaperFile(WallpaperResourceType resourceType, WallpaperData &wallpaperData,
+void WallpaperService::GetWallpaperFile(WallpaperResourceType resourceType, const WallpaperData &wallpaperData,
     std::string &wallpaperFile)
 {
     switch (resourceType) {
