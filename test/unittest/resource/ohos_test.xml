@@ -40,9 +40,10 @@
             <option name="push" value="30fps_3s.mp4 -> /system/etc" src="res"/>
             <option name="push" value="30fps_3s.mov -> /system/etc" src="res"/>
             <option name="push" value="15fps_7s.mp4 -> /system/etc" src="res"/>
+            <option name="push" value="test.zip -> /system/etc" src="res"/>
         </preparer>
         <cleaner>
-            <option name="shell" value="rm -rf /system/etc/30fps_3s.mp4 /system/etc/30fps_3s.mov /system/etc/15fps_7s.mp4"/>
+            <option name="shell" value="rm -rf /system/etc/30fps_3s.mp4 /system/etc/30fps_3s.mov /system/etc/15fps_7s.mp4 /system/etc/test.zip"/>
         </cleaner>
     </target>
 </configuration>
