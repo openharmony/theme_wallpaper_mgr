@@ -2048,7 +2048,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setCustomWallpaperTest001', 0, async function (done) {
         try {
-            wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM, (error) => {
+            wallpaper.setCustomWallpaper(URI_ZIP, WALLPAPER_SYSTEM, (error) => {
                 if (isBundleNameExists()) {
                     if (error !== undefined) {
                         expect(null).assertFail();
@@ -2077,7 +2077,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setCustomWallpaperPromiseTest002', 0, async function (done) {
         try {
-            wallpaper.setCustomWallpaper(URI, WALLPAPER_SYSTEM).then(async () => {
+            wallpaper.setCustomWallpaper(URI_ZIP, WALLPAPER_SYSTEM).then(async () => {
                 expect(true).assertTrue();
                 done();
                 await wallpaper.restore(WALLPAPER_SYSTEM);
@@ -2106,7 +2106,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setCustomWallpaperCallbackTest003', 0, async function (done) {
         try {
-            wallpaper.setCustomWallpaper(URI, WALLPAPER_LOCKSCREEN, (error) => {
+            wallpaper.setCustomWallpaper(URI_ZIP, WALLPAPER_LOCKSCREEN, (error) => {
                 if (isBundleNameExists()) {
                     if (error !== undefined) {
                         expect(null).assertFail();
@@ -2135,7 +2135,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setCustomWallpaperPromiseTest004', 0, async function (done) {
         try {
-            wallpaper.setCustomWallpaper(URI, WALLPAPER_LOCKSCREEN).then(async () => {
+            wallpaper.setCustomWallpaper(URI_ZIP, WALLPAPER_LOCKSCREEN).then(async () => {
                 expect(true).assertTrue();
                 done();
                 await wallpaper.restore(WALLPAPER_LOCKSCREEN);
@@ -2188,7 +2188,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setCustomWallpaperCallbackThrowErrorTest006', 0, async function (done) {
         try {
-            wallpaper.setCustomWallpaper(URI, function (err) {
+            wallpaper.setCustomWallpaper(URI_ZIP, function (err) {
                 if (err) {
                     console.info(`setCustomWallpaperCallbackThrowErrorTest006 err : ${err}`);
                     expect(null).assertFail();
