@@ -26,6 +26,7 @@ const INVALID_WALLPAPER_TYPE = 2;
 const DEFAULT_WALLPAPER_ID = -1;
 const PARAMETER_ERROR = 401;
 const URI = "/data/storage/el2/base/haps/js.jpeg";
+const URI_ZIP = "/system/etc/test.zip";
 const URI_30FPS_3S_MP4 = "/system/etc/30fps_3s.mp4";
 const URI_15FPS_7S_MP4 = "/system/etc/15fps_7s.mp4";
 const URI_30FPS_3S_MOV = "/system/etc/30fps_3s.mov";
@@ -2163,7 +2164,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setCustomCallbackThrowErrorTest005', 0, async function (done) {
         try {
-            wallpaper.setCustomWallpaper(URI, INVALID_WALLPAPER_TYPE, function (err) {
+            wallpaper.setCustomWallpaper(URI_ZIP, INVALID_WALLPAPER_TYPE, function (err) {
                 if (err) {
                     expect(err.code === PARAMETER_ERROR).assertTrue()
                     console.info(`set Custom CallbackThrowErrorTest005 fail : ${err}`);
@@ -2210,7 +2211,7 @@ describe('WallpaperJSTest', function () {
      */
     it('setCustomWallpaperPromiseThrowErrorTest007', 0, async function (done) {
         try {
-            wallpaper.setCustomWallpaper(URI, INVALID_WALLPAPER_TYPE).then(() => {
+            wallpaper.setCustomWallpaper(URI_ZIP, INVALID_WALLPAPER_TYPE).then(() => {
                 expect(null).assertFail();
                 done();
             }).catch((err) => {
