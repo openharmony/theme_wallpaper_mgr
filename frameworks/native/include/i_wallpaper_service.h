@@ -127,7 +127,7 @@ public:
     /**
      * Sets the custom wallpaper.
      */
-    virtual ErrorCode SetCustomWallpaper(const std::string &uri, int32_t wallpaperType) = 0;
+    virtual ErrorCode SetCustomWallpaper(int32_t fd, int32_t wallpaperType) = 0;
 
     /**
      * @brief The application sends the event to the wallpaper service.

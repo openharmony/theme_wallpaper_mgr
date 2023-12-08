@@ -102,6 +102,7 @@ constexpr const char *WALLPAPER_DEFAULT_LOCK_FILEFULLPATH = "/system/etc/wallpap
 constexpr const char *WALLPAPER_PREFABRICATE_FILEFULLPATH = "/sys_prod/media/themes/wallpaperdefault.jpeg";
 constexpr const char *WALLPAPER_PREFABRICATE_LOCK_FILEFULLPATH = "/sys_prod/media/themes/wallpaperlockdefault.jpeg";
 constexpr const char *WALLPAPER_CROP_PICTURE = "crop_file";
+constexpr const char *WALLPAPER_CUSTOM_ZIP = "custom.zip";
 
 constexpr int64_t INIT_INTERVAL = 10000L;
 constexpr int64_t DELAY_TIME = 1000L;
@@ -821,7 +822,7 @@ ErrorCode WallpaperService::SetVideo(int32_t fd, int32_t wallpaperType, int32_t 
     return wallpaperErrorCode;
 }
 
-ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t type)
+ErrorCode WallpaperService::SetCustomWallpaper(int32_t fd, int32_t type)
 {
     if (!IsSystemApp()) {
         HILOG_ERROR("current app is not SystemApp");
@@ -861,7 +862,12 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
         HILOG_ERROR("Send wallpaper state failed!");
         return E_DEAL_FAILED;
     }
+    std::string zipPath = WALLPAPER_USERID_PATH + std::to_string(userId) + WALLPAPER_CUSTOM_ZIP;
+    if (GetZipFile(fd, zipPath) != E_OK) {
+        return E_FILE_ERROR;
+    }
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
+    HILOG_INFO("SetCustomWallpaper success");
     return E_OK;
 }
 
@@ -1484,6 +1490,50 @@ int32_t WallpaperService::GrantUriPermission(const std::string &path, const std:
     Uri uri(path);
     return AAFwk::UriPermissionManagerClient::GetInstance().GrantUriPermission(uri,
         AAFwk::Want::FLAG_AUTH_READ_URI_PERMISSION, bundleName);
+}
+
+ErrorCode WallpaperService::GetZipFile(int32_t fd, const std::string &zipPath)
+{
+    auto length = GetFileSize(fd);
+    if (length <= 0) {
+        HILOG_ERROR("GetFileSize error");
+        return E_FILE_ERROR;
+    }
+    char *paperBuf = new (std::nothrow) char[length]();
+    if (paperBuf == nullptr) {
+        HILOG_ERROR("Failed to apply for memory.");
+        return E_FILE_ERROR;
+    }
+    if (read(fd, paperBuf, length) <= 0) {
+        HILOG_ERROR("read fd failed fd = %{public}d, length = %{public}lld", fd, length);
+        delete[] paperBuf;
+        return E_FILE_ERROR;
+    }
+    int32_t fdw = open(zipPath.c_str(), O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+    if (fdw < 0) {
+        HILOG_ERROR("Open CustomWallpaper Path failed, errno %{public}d", errno);
+        return E_FILE_ERROR;
+    }
+    if (write(fdw, paperBuf, length) <= 0) {
+        HILOG_ERROR("Write fdw failed  errno %{public}d", errno);
+        delete[] paperBuf;
+        close(fdw);
+        return E_FILE_ERROR;
+    }
+    delete[] paperBuf;
+    close(fdw);
+    return E_OK;
+}
+
+off_t WallpaperService::GetFileSize(int32_t fd)
+{
+    struct stat fileStat;
+    int32_t ret = fstat(fd, &fileStat);
+    if (ret == -1) {
+        HILOG_ERROR("get file stat failed:%{public}s", strerror(errno));
+        return -1;
+    }
+    return fileStat.st_size;
 }
 #ifdef THEME_SERVICE
 void WallpaperService::InitThemeResource()
