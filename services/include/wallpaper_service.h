@@ -82,7 +82,7 @@ public:
     ErrorCode GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
     ErrorCode ResetWallpaperV9(int32_t wallpaperType) override;
     ErrorCode SetVideo(int32_t fd, int32_t wallpaperType, int32_t length) override;
-    ErrorCode SetCustomWallpaper(int32_t fd, int32_t wallpaperType) override;
+    ErrorCode SetCustomWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode SendEvent(const std::string &eventType) override;
 
 public:
@@ -145,8 +145,8 @@ private:
     int32_t GrantUriPermission(const std::string &path, const std::string &bundleName);
     void InitBundleNameParameter();
     void RemoveExtensionDeathRecipient();
-    ErrorCode GetZipFile(int32_t fd, const std::string &zipPath);
-    off_t GetFileSize(int32_t fd);
+    static void GetWallpaperFile(WallpaperResourceType resourceType, const WallpaperData &wallpaperData,
+        std::string &wallpaperFile);
 #ifdef THEME_SERVICE
     void InitThemeResource();
 #endif

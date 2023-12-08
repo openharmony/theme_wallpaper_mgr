@@ -47,6 +47,7 @@ constexpr int32_t TEST_USERID = 99;
 constexpr int32_t INVALID_USERID = -1;
 uint64_t selfTokenID_ = 0;
 constexpr const char *URI = "/data/test/theme/wallpaper/wallpaper_test.JPG";
+constexpr const char *URI_ZIP = "/data/test/theme/wallpaper/test.zip";
 constexpr const char *URI_30FPS_3S_MP4 = "/data/test/theme/wallpaper/30fps_3s.mp4";
 constexpr const char *URI_15FPS_7S_MP4 = "/data/test/theme/wallpaper/15fps_7s.mp4";
 constexpr const char *URI_30FPS_3S_MOV = "/data/test/theme/wallpaper/30fps_3s.mov";
@@ -1184,9 +1185,9 @@ HWTEST_F(WallpaperTest, SetCustomWallpaper001, TestSize.Level0)
     if (!Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
         testErrorCode = E_NO_PERMISSION;
     }
-    ErrorCode ret = WallpaperManagerkits::GetInstance().SetCustomWallpaper(URI, SYSTYEM);
+    ErrorCode ret = WallpaperManagerkits::GetInstance().SetCustomWallpaper(URI_ZIP, SYSTYEM);
     EXPECT_EQ(ret, testErrorCode);
-    ret = WallpaperManagerkits::GetInstance().SetCustomWallpaper(URI, LOCKSCREEN);
+    ret = WallpaperManagerkits::GetInstance().SetCustomWallpaper(URI_ZIP, LOCKSCREEN);
     EXPECT_EQ(ret, testErrorCode);
 }
 

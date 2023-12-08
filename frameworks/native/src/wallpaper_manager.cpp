@@ -323,13 +323,21 @@ ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int
     if (!FileDeal::IsZipFile(uri)) {
         return E_FILE_ERROR;
     }
-    int32_t fd = open(fileRealPath.c_str(), O_RDONLY);
+    long length = 0;
+    ErrorCode wallpaperErrorCode = CheckWallpaperFormat(fileRealPath, false, length);
+    if (wallpaperErrorCode != E_OK) {
+        HILOG_ERROR("Check wallpaper format failed!");
+        return wallpaperErrorCode;
+    }
+    int32_t fd = open(fileRealPath.c_str(), O_RDONLY, 0660);
     if (fd < 0) {
-        HILOG_ERROR("open file failed, errno %{public}d", errno);
+        HILOG_ERROR("Open file failed, errno %{public}d", errno);
+        ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         return E_FILE_ERROR;
     }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
-    ErrorCode wallpaperErrorCode = wallpaperServerProxy->SetCustomWallpaper(fd, wallpaperType);
+    wallpaperErrorCode = wallpaperServerProxy->SetCustomWallpaper(fd, wallpaperType, length);
+    close(fd);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
     return wallpaperErrorCode;
 }

@@ -45,7 +45,7 @@
 #endif
 namespace OHOS {
 namespace WallpaperMgrService {
-static constexpr unsigned int WP_DOMAIN = 0xD001C00;
+static constexpr unsigned int WP_DOMAIN = 0xD001C20;
 static constexpr OHOS::HiviewDFX::HiLogLabel LOG_LABEL = { LOG_CORE, WP_DOMAIN, "Wallpaper_OS" };
 } // namespace WallpaperMgrService
 } // namespace OHOS
