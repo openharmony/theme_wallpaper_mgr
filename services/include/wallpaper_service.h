@@ -32,7 +32,6 @@
 #include "component_name.h"
 #include "file_deal.h"
 #include "fault_reporter.h"
-#include "statistic_reporter.h"
 #include "wm_common.h"
 #include "window_option.h"
 #include "surface_buffer.h"
@@ -96,7 +95,6 @@ public:
     bool SetLockWallpaperCallback(IWallpaperManagerCallback* cb);
     static void OnBootPhase();
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
-    void ReporterUsageTimeStatisic();
     void RegisterSubscriber(int times);
     void StartWallpaperExtension();
     void AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObject> &remoteObject);

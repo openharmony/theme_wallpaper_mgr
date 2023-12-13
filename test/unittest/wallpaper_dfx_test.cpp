@@ -22,7 +22,6 @@
 #include "dfx_types.h"
 #include "hilog_wrapper.h"
 #include "securec.h"
-#include "statistic_reporter.h"
 
 using namespace testing::ext;
 using namespace OHOS::MiscServices;
@@ -33,8 +32,6 @@ constexpr const uint16_t TOTAL_LENGTH = 1000;
 constexpr const char *CMD1 = "hidumper -s 3705";
 constexpr const char *CMD2 = "hidumper -s 3705 -a -h";
 constexpr const char *CMD3 = "hidumper -s 3705 -a -all";
-constexpr const int USER_ID = 1000;
-constexpr const char *BUNDLE_NAME = "WALLPAPER_SERVICE";
 class WallpaperDfxTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -133,25 +130,6 @@ HWTEST_F(WallpaperDfxTest, WallpaperDfxTest_DumpAllMethod_001, TestSize.Level0)
     EXPECT_NE(result.find("height"), std::string::npos);
     EXPECT_NE(result.find("width"), std::string::npos);
     EXPECT_NE(result.find("WallpaperExtension"), std::string::npos);
-}
-
-/**
-* @tc.name: WallpaperDfxTest_StatisticReporter_001
-* @tc.desc: Statistic Reporter .
-* @tc.type: FUNC
-* @tc.require:
-* @tc.author:
-*/
-HWTEST_F(WallpaperDfxTest, WallpaperDfxTest_StatisticReporter_001, TestSize.Level0)
-{
-    StatisticReporter::StartTimerThread();
-    UsageTimeStat timeStat;
-    timeStat.packagesName = BUNDLE_NAME;
-    timeStat.startTime = time(nullptr);
-    StatisticReporter::ReportUsageTimeStatistic(USER_ID, timeStat);
-    time_t current = time(nullptr);
-    auto status = StatisticReporter::InvokeUsageTime(current);
-    EXPECT_EQ(status, ReportStatus::SUCCESS);
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS
