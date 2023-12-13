@@ -154,7 +154,6 @@ void WallpaperService::OnStart()
             return true;
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
-    StatisticReporter::StartTimerThread();
     if (Init() != 0) {
         auto callback = [=]() { Init(); };
         serviceHandler_->PostTask(callback, INIT_INTERVAL);
@@ -690,7 +689,6 @@ int32_t WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int 
     if (wallpaperType == WALLPAPER_SYSTEM) {
         wallpaperMap_.InsertOrAssign(userId_, wallpaperData);
         WallpaperCommonEvent::SendWallpaperSystemSettingMessage();
-        ReporterUsageTimeStatisic();
         HILOG_INFO("  SetWallpaperBackupData callbackProxy->OnCall start");
         if (callbackProxy != nullptr) {
             callbackProxy->OnCall(wallpaperType);
@@ -698,7 +696,6 @@ int32_t WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int 
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId_, wallpaperData);
         WallpaperCommonEvent::SendWallpaperLockSettingMessage();
-        ReporterUsageTimeStatisic();
         HILOG_INFO("  SetWallpaperBackupData callbackProxy->OnCall start");
         if (callbackProxy != nullptr) {
             callbackProxy->OnCall(wallpaperType);
@@ -708,20 +705,6 @@ int32_t WallpaperService::SetWallpaperBackupData(std::string uriOrPixelMap, int 
         return static_cast<int32_t>(E_DEAL_FAILED);
     }
     return (retFileCp && retCropFileCp) ? static_cast<int32_t>(E_OK) : static_cast<int32_t>(E_DEAL_FAILED);
-}
-
-void WallpaperService::ReporterUsageTimeStatisic()
-{
-    int userId = static_cast<int>(IPCSkeleton::GetCallingUid());
-    std::string bundleName;
-    bool bRet = WPGetBundleNameByUid(userId, bundleName);
-    if (!bRet) {
-        bundleName = WALLPAPER_BUNDLE_NAME;
-    }
-    UsageTimeStat timeStat;
-    timeStat.packagesName = bundleName;
-    timeStat.startTime = time(nullptr);
-    StatisticReporter::ReportUsageTimeStatistic(userId, timeStat);
 }
 
 int32_t WallpaperService::GetPixelMapV9(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
