@@ -25,6 +25,7 @@
       "deps": {
         "components": [
           "graphic_2d",
+          "graphic_surface",
           "samgr",
           "common_event_service",
           "hiview",
