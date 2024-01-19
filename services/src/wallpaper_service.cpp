@@ -49,7 +49,6 @@
 #include "parameter.h"
 #include "pixel_map.h"
 #include "scene_board_judgement.h"
-#include "surface.h"
 #include "system_ability_definition.h"
 #include "tokenid_kit.h"
 #include "uri.h"

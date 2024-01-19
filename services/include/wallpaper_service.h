@@ -31,7 +31,6 @@
 #include "ipc_skeleton.h"
 #include "os_account_manager.h"
 #include "pixel_map.h"
-#include "surface_buffer.h"
 #include "system_ability.h"
 #include "wallpaper_common.h"
 #include "wallpaper_common_event_subscriber.h"
