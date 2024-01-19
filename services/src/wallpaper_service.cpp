@@ -1314,6 +1314,11 @@ bool WallpaperService::CheckUserPermissionById(int32_t userId)
 ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length,
     WallpaperResourceType resourceType)
 {
+    int32_t userId = QueryActiveUserId();
+    HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
+    if (!CheckUserPermissionById(userId)) {
+        return E_USER_IDENTITY_ERROR;
+    }
     ErrorCode errCode = CheckValid(wallpaperType, length, resourceType);
     if (errCode != E_OK) {
         return errCode;
@@ -1346,11 +1351,6 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
     delete[] paperBuf;
     close(fdw);
     WallpaperType type = static_cast<WallpaperType>(wallpaperType);
-    int32_t userId = QueryActiveUserId();
-    HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
-    if (!CheckUserPermissionById(userId)) {
-        return E_USER_IDENTITY_ERROR;
-    }
     ErrorCode wallpaperErrorCode = SetWallpaperBackupData(userId, resourceType, uri, type);
     if (resourceType == PICTURE) {
         SaveColor(userId, type);
