@@ -38,14 +38,6 @@ const int32_t BUFFERSIZE = 100;
 constexpr const char *COLOR_CHANGE_EVENT = "colorChange";
 constexpr const char *WALLPAPER_CHANGE_EVENT = "wallpaperChange";
 
-struct WorkData {
-    napi_env env_;
-    napi_ref callback_;
-    WorkData(napi_env env, napi_ref callback) : env_(env), callback_(callback)
-    {
-    }
-};
-
 napi_value NAPI_GetColors(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI_GetColors in");

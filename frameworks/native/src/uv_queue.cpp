@@ -24,11 +24,17 @@ bool UvQueue::Call(napi_env env, void *data, uv_after_work_cb afterCallback)
     }
     uv_work_t *work = new (std::nothrow) uv_work_t;
     if (work == nullptr) {
+        delete reinterpret_cast<WorkData *>(data);
         return false;
     }
     work->data = data;
-    uv_queue_work_with_qos(
+    auto ret = uv_queue_work_with_qos(
         loop, work, [](uv_work_t *work) {}, afterCallback, uv_qos_user_initiated);
+    if (ret != 0) {
+        delete reinterpret_cast<WorkData *>(data);
+        delete work;
+        return false;
+    }
     return true;
 }
 } // namespace OHOS::MiscServices
