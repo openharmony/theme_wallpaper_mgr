@@ -770,7 +770,7 @@ NapiWallpaperAbility::NapiWallpaperAbility(napi_env env, napi_value callback) : 
 
 NapiWallpaperAbility::~NapiWallpaperAbility()
 {
-    HILOG_ERROR("NapiWallpaperAbility::~NapiWallpaperAbility start!");
+    HILOG_INFO("~NapiWallpaperAbility start!");
     WorkData *workData = new (std::nothrow) WorkData(env_, callback_);
     if (workData != nullptr) {
         uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
@@ -785,7 +785,7 @@ NapiWallpaperAbility::~NapiWallpaperAbility()
 
 void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType)
 {
-    HILOG_ERROR("NapiWallpaperAbility::OnColorsChange start!");
+    HILOG_INFO("OnColorsChange start! wallpaperType:%{public}d", wallpaperType);
     WallpaperMgrService::WallpaperEventListener::OnColorsChange(color, wallpaperType);
     EventDataWorker *eventDataWorker = new (std::nothrow)
         EventDataWorker(this->shared_from_this(), color, wallpaperType);
