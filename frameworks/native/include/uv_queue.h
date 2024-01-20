@@ -22,6 +22,15 @@
 #include "visibility.h"
 
 namespace OHOS::MiscServices {
+struct WorkData {
+    napi_env env_;
+    napi_ref callback_;
+    int32_t wallpaperType;
+    WorkData(napi_env env, napi_ref callbackRef = nullptr, int32_t wallpaperType = 0)
+        : env_(env), callback_(callbackRef), wallpaperType(wallpaperType)
+    {
+    }
+};
 class UvQueue {
 public:
     WALLPAPER_API static bool Call(napi_env env, void *data, uv_after_work_cb afterCallback);

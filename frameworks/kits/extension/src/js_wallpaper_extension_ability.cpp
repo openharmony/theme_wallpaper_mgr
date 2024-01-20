@@ -35,13 +35,6 @@ namespace AbilityRuntime {
 namespace {
 constexpr size_t ARGC_ONE = 1;
 } // namespace
-struct WorkData {
-    napi_env napiEnv;
-    int32_t wallpaperType;
-    WorkData(napi_env napiEnv, int32_t wallpaperType) : napiEnv(napiEnv), wallpaperType(wallpaperType)
-    {
-    }
-};
 
 JsWallpaperExtensionAbility *JsWallpaperExtensionAbility::jsWallpaperExtensionAbility = NULL;
 std::mutex JsWallpaperExtensionAbility::mtx;
@@ -245,7 +238,7 @@ void JsWallpaperExtensionAbility::RegisterWallpaperCallback()
                 return false;
             }
             napi_env napiEnv = (JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->jsRuntime_).GetNapiEnv();
-            WorkData *workData = new (std::nothrow) WorkData(napiEnv, wallpaperType);
+            WorkData *workData = new (std::nothrow) WorkData(napiEnv, nullptr, wallpaperType);
             if (workData == nullptr) {
                 return false;
             }
@@ -256,21 +249,21 @@ void JsWallpaperExtensionAbility::RegisterWallpaperCallback()
                     return;
                 }
                 napi_handle_scope scope = nullptr;
-                napi_open_handle_scope(workData->napiEnv, &scope);
+                napi_open_handle_scope(workData->env_, &scope);
                 if (scope == nullptr) {
                     delete workData;
                     delete work;
                     return;
                 }
-                napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(workData->napiEnv, workData->wallpaperType);
+                napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(workData->env_, workData->wallpaperType);
 
                 napi_value arg[] = { type };
                 std::lock_guard<std::mutex> lock(mtx);
                 if (JsWallpaperExtensionAbility::jsWallpaperExtensionAbility != nullptr) {
-                    JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->CallObjectMethod("onWallpaperChange",
-                        arg, ARGC_ONE);
+                    JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->CallObjectMethod(
+                        "onWallpaperChange", arg, ARGC_ONE);
                 }
-                napi_close_handle_scope(workData->napiEnv, scope);
+                napi_close_handle_scope(workData->env_, scope);
                 delete workData;
                 delete work;
             };
