@@ -52,7 +52,6 @@
 #include "system_ability_definition.h"
 #include "tokenid_kit.h"
 #include "uri.h"
-#include "uri_permission_manager_client.h"
 #include "wallpaper_common.h"
 #include "wallpaper_common_event_manager.h"
 #include "wallpaper_manager_common_info.h"
@@ -475,28 +474,11 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
         InitResources(userId, WALLPAPER_LOCKSCREEN);
     }
     LoadWallpaperState();
-    GrantUriPermissionByUserId(userId);
     SendWallpaperChangeEvent(userId, WALLPAPER_SYSTEM);
     SendWallpaperChangeEvent(userId, WALLPAPER_LOCKSCREEN);
     SaveColor(userId, WALLPAPER_SYSTEM);
     SaveColor(userId, WALLPAPER_LOCKSCREEN);
     HILOG_INFO("OnSwitchedUser end, newUserId = %{public}d", userId);
-}
-
-void WallpaperService::GrantUriPermissionByUserId(int32_t userId)
-{
-    WallpaperData systemData;
-    WallpaperData lockScreenData;
-    if (!GetWallpaperSafeLocked(userId, WALLPAPER_SYSTEM, systemData) ||
-        !GetWallpaperSafeLocked(userId, WALLPAPER_LOCKSCREEN, lockScreenData)) {
-        return;
-    }
-    if (systemData.resourceType == PACKAGE) {
-        GrantUriPermission(systemData.customPackageUri, appBundleName_);
-    }
-    if (lockScreenData.resourceType == PACKAGE) {
-        GrantUriPermission(lockScreenData.customPackageUri, appBundleName_);
-    }
 }
 
 void WallpaperService::OnBootPhase()
@@ -1496,13 +1478,6 @@ void WallpaperService::LoadWallpaperState()
     if (root.contains(LOCKSCREEN_RES_TYPE) && root[SYSTEM_RES_TYPE].is_number()) {
         lockScreenData.resourceType = static_cast<WallpaperResourceType>(root[LOCKSCREEN_RES_TYPE].get<int>());
     }
-}
-
-int32_t WallpaperService::GrantUriPermission(const std::string &path, const std::string &bundleName)
-{
-    Uri uri(path);
-    return AAFwk::UriPermissionManagerClient::GetInstance().GrantUriPermission(uri,
-        AAFwk::Want::FLAG_AUTH_READ_URI_PERMISSION, bundleName);
 }
 #ifdef THEME_SERVICE
 void WallpaperService::InitThemeResource()
