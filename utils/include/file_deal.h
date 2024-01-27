@@ -33,6 +33,8 @@ public:
     static std::string GetExtension(const std::string &filePath);
     static bool GetRealPath(const std::string &inOriPath, std::string &outRealPath);
     static bool IsZipFile(const std::string &filePath);
+private:
+    static bool ForcedRefreshDisk(const std::string &sourcePath);
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
