@@ -14,12 +14,14 @@
  */
 #include "file_deal.h"
 
-#include <algorithm>
-#include <cstdio>
 #include <dirent.h>
-#include <filesystem>
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include <algorithm>
+#include <cstdio>
+#include <filesystem>
 
 #include "hilog_wrapper.h"
 
@@ -57,26 +59,16 @@ bool FileDeal::Mkdir(const std::string &path)
 
 bool FileDeal::CopyFile(const std::string &sourceFile, const std::string &newFile)
 {
-    std::ifstream in;
-    std::ofstream out;
-
-    in.open(sourceFile.c_str(), std::ios::binary);
-    if (in.fail()) {
-        HILOG_INFO("open file failed, errInfo=%{public}s", strerror(errno));
-        in.close();
+    std::filesystem::path dstPath(newFile);
+    std::filesystem::path srcPath(sourceFile);
+    std::error_code errCode;
+    if (!std::filesystem::copy_file(srcPath, dstPath, std::filesystem::copy_options::overwrite_existing, errCode)) {
+        HILOG_ERROR("Failed to copy file, error code: %{public}d", errCode.value());
         return false;
     }
-    out.open(newFile.c_str(), std::ios::binary);
-    if (out.fail()) {
-        HILOG_INFO("open file failed, errInfo=%{public}s", strerror(errno));
-        out.close();
-        in.close();
-        return false;
+    if (!ForcedRefreshDisk(newFile)) {
+        HILOG_WARN("ForcedRefreshDisk failed");
     }
-    out << in.rdbuf();
-    out.close();
-    in.close();
-    HILOG_INFO("copy file success");
     return true;
 }
 
@@ -145,6 +137,31 @@ bool FileDeal::IsZipFile(const std::string &filePath)
     }
     HILOG_ERROR("this is not a zip.filePath:%{private}s", filePath.c_str());
     return false;
+}
+bool FileDeal::ForcedRefreshDisk(const std::string &sourcePath)
+{
+    std::string fileRealPath;
+    if (!GetRealPath(sourcePath, fileRealPath)) {
+        HILOG_ERROR("get real path file failed");
+        return false;
+    }
+    FILE *file = std::fopen(fileRealPath.c_str(), "rb");
+    if (file == nullptr) {
+        HILOG_ERROR("Fopen failed, %{public}s, %{public}s", fileRealPath.c_str(), strerror(errno));
+        return false;
+    }
+    if (fflush(file) != 0) {
+        HILOG_ERROR("fflush file failed, errno %{public}d", errno);
+        fclose(file);
+        return false;
+    }
+    if (fsync(fileno(file)) != 0) {
+        HILOG_ERROR("fsync file failed, errno %{public}d", errno);
+        fclose(file);
+        return false;
+    }
+    (void)fclose(file);
+    return true;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS
