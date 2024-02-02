@@ -258,7 +258,7 @@ void WallpaperService::InitData()
     appBundleName_ = SCENEBOARD_BUNDLE_NAME;
     InitBundleNameParameter();
     InitUserDir(userId);
-    LoadSettingsLocked(userId, true);
+    LoadSettingsLocked(userId);
     InitResources(userId, WALLPAPER_SYSTEM);
     InitResources(userId, WALLPAPER_LOCKSCREEN);
     LoadWallpaperState();
@@ -339,7 +339,7 @@ bool WallpaperService::InitUsersOnBoot()
     HILOG_INFO("WallpaperService::get current userIds success, Current userId: %{public}d", userIds[0]);
     for (auto userId : userIds) {
         InitUserDir(userId);
-        LoadSettingsLocked(userId, true);
+        LoadSettingsLocked(userId);
         InitResources(userId, WALLPAPER_SYSTEM);
         InitResources(userId, WALLPAPER_LOCKSCREEN);
     }
@@ -363,7 +363,7 @@ void WallpaperService::OnInitUser(int32_t userId)
     if (!InitUserDir(userId)) {
         return;
     }
-    LoadSettingsLocked(userId, true);
+    LoadSettingsLocked(userId);
     InitResources(userId, WALLPAPER_SYSTEM);
     InitResources(userId, WALLPAPER_LOCKSCREEN);
     HILOG_INFO("OnInitUser success, userId = %{public}d", userId);
@@ -466,7 +466,7 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
     ConnectExtensionAbility();
 #endif
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
-    LoadSettingsLocked(userId, true);
+    LoadSettingsLocked(userId);
     if (!FileDeal::IsFileExist(userDir)) {
         HILOG_INFO("User file is not exist, userId = %{public}d", userId);
         InitUserDir(userId);
@@ -532,8 +532,10 @@ bool WallpaperService::GetPictureFileName(int32_t userId, WallpaperType wallpape
     auto iterator = wallpaperType == WALLPAPER_SYSTEM ? systemWallpaperMap_.Find(userId)
                                                       : lockWallpaperMap_.Find(userId);
     if (!iterator.first) {
-        HILOG_ERROR("system wallpaper already cleared");
-        return false;
+        HILOG_INFO("WallpaperType:%{public}d ,WallpaperMap not found userId: %{public}d", wallpaperType, userId);
+        OnInitUser(userId);
+        iterator = wallpaperType == WALLPAPER_SYSTEM ? systemWallpaperMap_.Find(userId)
+                                                     : lockWallpaperMap_.Find(userId);
     }
     filePathName = iterator.second.wallpaperFile;
     HILOG_INFO("GetPictureFileName filePathName : %{public}s", filePathName.c_str());
@@ -549,7 +551,7 @@ int32_t WallpaperService::MakeWallpaperIdLocked()
     return ++wallpaperId_;
 }
 
-void WallpaperService::LoadSettingsLocked(int32_t userId, bool keepDimensionHints)
+void WallpaperService::LoadSettingsLocked(int32_t userId)
 {
     HILOG_INFO("load Setting locked start.");
     if (!systemWallpaperMap_.Contains(userId)) {
@@ -1061,7 +1063,7 @@ bool WallpaperService::GetWallpaperSafeLocked(int32_t userId, WallpaperType wall
                                                       : lockWallpaperMap_.Find(userId);
     if (!iterator.first) {
         HILOG_INFO(" No Lock wallpaper?  Not tracking for lock-only ");
-        LoadSettingsLocked(userId, true);
+        LoadSettingsLocked(userId);
         iterator = wallpaperType == WALLPAPER_SYSTEM ? systemWallpaperMap_.Find(userId)
                                                      : lockWallpaperMap_.Find(userId);
         if (!iterator.first) {

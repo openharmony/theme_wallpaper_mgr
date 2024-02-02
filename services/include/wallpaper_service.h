@@ -107,7 +107,7 @@ private:
     bool InitUsersOnBoot();
     bool CompareColor(const uint64_t &localColor, const ColorManager::Color &color);
     bool SaveColor(int32_t userId, WallpaperType wallpaperType);
-    void LoadSettingsLocked(int32_t userId, bool keepDimensionHints);
+    void LoadSettingsLocked(int32_t userId);
     std::string GetWallpaperDir(int32_t userId, WallpaperType wallpaperType);
     bool GetFileNameFromMap(int32_t userId, WallpaperType wallpaperType, std::string &fileName);
     bool GetPictureFileName(int32_t userId, WallpaperType wallpaperType, std::string &fileName);
