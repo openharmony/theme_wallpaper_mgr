@@ -44,6 +44,7 @@ constexpr int32_t HUNDRED = 100;
 constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
 constexpr int32_t FOO_MAX_LEN = 60000000;
 constexpr int32_t TEST_USERID = 99;
+constexpr int32_t TEST_USERID1 = 98;
 constexpr int32_t INVALID_USERID = -1;
 uint64_t selfTokenID_ = 0;
 constexpr const char *URI = "/data/test/theme/wallpaper/wallpaper_test.JPG";
@@ -1246,6 +1247,23 @@ HWTEST_F(WallpaperTest, WallpaperTest_001, TestSize.Level0)
     wallpaperService->state_ = WallpaperService::ServiceRunningState::STATE_RUNNING;
     wallpaperService->OnStop();
     EXPECT_EQ(wallpaperService->state_, WallpaperService::ServiceRunningState::STATE_NOT_START);
+}
+
+/**
+ * @tc.name:    GetPictureFileName_001
+ * @tc.desc:    Load userIds that are not found in the Map.
+ * @tc.type:    FUNC
+ * @tc.require: issueI90IUI
+ */
+HWTEST_F(WallpaperTest, GetPictureFileName_001, TestSize.Level0)
+{
+    HILOG_INFO("GetPictureFileName_001 begin");
+    std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
+    std::string fileName;
+    wallpaperService->GetPictureFileName(TEST_USERID1, WALLPAPER_SYSTEM, fileName);
+    auto pos = fileName.find(to_string(TEST_USERID1));
+    EXPECT_EQ(pos != string::npos, true);
+    wallpaperService->OnRemovedUser(TEST_USERID1);
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS
