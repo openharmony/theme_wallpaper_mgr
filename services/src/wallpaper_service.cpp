@@ -165,7 +165,6 @@ void WallpaperService::OnStart()
             return true;
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
-    StatisticReporter::StartTimerThread();
     if (Init() != E_OK) {
         auto callback = [=]() { Init(); };
         serviceHandler_->PostTask(callback, INIT_INTERVAL);
@@ -706,10 +705,8 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, WallpaperReso
     }
     if (wallpaperType == WALLPAPER_SYSTEM) {
         systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-        ReporterUsageTimeStatistic();
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
-        ReporterUsageTimeStatistic();
     }
     if (!SendWallpaperChangeEvent(userId, wallpaperType)) {
         HILOG_ERROR("Send wallpaper state failed!");
@@ -758,7 +755,6 @@ ErrorCode WallpaperService::SendEvent(const std::string &eventType)
         HILOG_ERROR("Get wallpaper safe locked failed!");
         return E_PARAMETERS_INVALID;
     }
-    ReporterUsageTimeStatistic();
     std::string uri;
     GetFileNameFromMap(userId, WALLPAPER_SYSTEM, uri);
     WallpaperChanged(wallpaperType, data.resourceType, uri);
@@ -842,20 +838,6 @@ ErrorCode WallpaperService::SetCustomWallpaper(const std::string &uri, int32_t t
     }
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
     return E_OK;
-}
-
-void WallpaperService::ReporterUsageTimeStatistic()
-{
-    int32_t uid = static_cast<int32_t>(IPCSkeleton::GetCallingUid());
-    std::string bundleName;
-    bool bRet = GetBundleNameByUid(uid, bundleName);
-    if (!bRet) {
-        bundleName = OHOS_WALLPAPER_BUNDLE_NAME;
-    }
-    UsageTimeStat timeStat;
-    timeStat.packagesName = bundleName;
-    timeStat.startTime = time(nullptr);
-    StatisticReporter::ReportUsageTimeStatistic(uid, timeStat);
 }
 
 ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)

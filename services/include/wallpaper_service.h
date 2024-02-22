@@ -33,7 +33,6 @@
 #include "ipc_skeleton.h"
 #include "os_account_manager.h"
 #include "pixel_map.h"
-#include "statistic_reporter.h"
 #include "surface_buffer.h"
 #include "system_ability.h"
 #include "wallpaper_common.h"
@@ -92,7 +91,6 @@ public:
     void OnRemovedUser(int32_t userId);
     void OnSwitchedUser(int32_t userId);
     void ReporterFault(MiscServices::FaultType faultType, MiscServices::FaultCode faultCode);
-    void ReporterUsageTimeStatistic();
     void RegisterSubscriber(int32_t times);
     void AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObject> &remoteObject);
     void StartExtensionAbility(int32_t times);
