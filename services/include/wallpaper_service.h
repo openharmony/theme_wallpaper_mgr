@@ -142,11 +142,8 @@ private:
     WallpaperResourceType GetResType(int32_t userId, WallpaperType wallpaperType);
     void InitBundleNameParameter();
     void RemoveExtensionDeathRecipient();
-    static void GetWallpaperFile(WallpaperResourceType resourceType, const WallpaperData &wallpaperData,
-        std::string &wallpaperFile);
-#ifdef THEME_SERVICE
-    void InitThemeResource();
-#endif
+    static void GetWallpaperFile(
+        WallpaperResourceType resourceType, const WallpaperData &wallpaperData, std::string &wallpaperFile);
 
 private:
     int32_t Init();

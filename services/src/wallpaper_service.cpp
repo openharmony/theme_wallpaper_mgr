@@ -59,11 +59,8 @@
 #include "want.h"
 #include "window.h"
 
-#ifdef THEME_SERVICE
-#include "theme_manager_client.h"
-#else
+#ifndef THEME_SERVICE
 #include "ability_manager_client.h"
-#include "wallpaper_extension_ability_connection.h"
 #include "wallpaper_extension_ability_death_recipient.h"
 #endif
 
@@ -113,10 +110,7 @@ constexpr int32_t DEFAULT_USER_ID = 0;
 constexpr int32_t MAX_VIDEO_SIZE = 104857600;
 const int CONFIG_LEN = 30;
 
-#ifdef THEME_SERVICE
-constexpr int64_t INIT_THEME_INTERVAL = 300L;
-constexpr int32_t USER_ID = 100;
-#else
+#ifndef THEME_SERVICE
 constexpr int32_t CONNECT_EXTENSION_INTERVAL = 100;
 constexpr int32_t DEFAULT_VALUE = -1;
 constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 50;
@@ -181,9 +175,6 @@ void WallpaperService::OnStart()
         serviceHandler_->PostTask(callback, INIT_INTERVAL);
         HILOG_ERROR("Init failed. Try again 10s later");
     }
-#ifdef THEME_SERVICE
-    InitThemeResource();
-#endif
     return;
 }
 
@@ -1481,18 +1472,5 @@ void WallpaperService::LoadWallpaperState()
         lockScreenData.resourceType = static_cast<WallpaperResourceType>(root[LOCKSCREEN_RES_TYPE].get<int>());
     }
 }
-#ifdef THEME_SERVICE
-void WallpaperService::InitThemeResource()
-{
-    if (ThemeManager::ThemeManagerClient::GetInstance().InitResource(USER_ID) == true) {
-        return;
-    }
-    auto callback = []() { ThemeManager::ThemeManagerClient::GetInstance().InitResource(USER_ID); };
-    auto result = serviceHandler_->PostTask(callback, INIT_THEME_INTERVAL);
-    if (!result) {
-        HILOG_ERROR("retry failed since post task failed");
-    }
-}
-#endif
 } // namespace WallpaperMgrService
 } // namespace OHOS

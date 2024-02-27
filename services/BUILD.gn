@@ -80,7 +80,6 @@ ohos_shared_library("wallpaper_service") {
 
   defines = []
   if (theme_service) {
-    external_deps += [ "theme_mgr:theme_manager_client" ]
     defines += [ "THEME_SERVICE" ]
   } else {
     external_deps += [
