@@ -179,6 +179,7 @@ private:
 
     std::string name_;
     std::mutex mtx_;
+    std::mutex setMtx_;
     uint64_t lockWallpaperColor_;
     uint64_t systemWallpaperColor_;
     std::map<std::string, WallpaperListenerMap> wallpaperEventMap_;
