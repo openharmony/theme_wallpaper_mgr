@@ -50,7 +50,7 @@ namespace ColorManager {
 class Color;
 }
 namespace WallpaperMgrService {
-class WallpaperService: public SystemAbility, public WallpaperServiceStub {
+class WallpaperService : public SystemAbility, public WallpaperServiceStub {
     DECLARE_SYSTEM_ABILITY(WallpaperService);
     enum class ServiceRunningState { STATE_NOT_START, STATE_RUNNING };
     enum class FileType : uint8_t { WALLPAPER_FILE, CROP_FILE };
