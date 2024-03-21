@@ -124,11 +124,12 @@ sptr<WallpaperService> WallpaperService::instance_;
 std::shared_ptr<AppExecFwk::EventHandler> WallpaperService::serviceHandler_;
 
 WallpaperService::WallpaperService(int32_t systemAbilityId, bool runOnCreate)
-    : SystemAbility(systemAbilityId, runOnCreate), state_(ServiceRunningState::STATE_NOT_START)
+    : SystemAbility(systemAbilityId, runOnCreate), WallpaperServiceStub(true),
+      state_(ServiceRunningState::STATE_NOT_START)
 {
 }
 
-WallpaperService::WallpaperService() : state_(ServiceRunningState::STATE_NOT_START)
+WallpaperService::WallpaperService() : WallpaperServiceStub(true), state_(ServiceRunningState::STATE_NOT_START)
 {
 }
 
@@ -657,7 +658,6 @@ bool WallpaperService::SaveColor(int32_t userId, WallpaperType wallpaperType)
 ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length)
 {
     StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
-    std::lock_guard<std::mutex> lock(setMtx_);
     ErrorCode wallpaperErrorCode = SetWallpaper(fd, wallpaperType, length, PICTURE);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
     return wallpaperErrorCode;
@@ -814,7 +814,6 @@ ErrorCode WallpaperService::SetVideo(int32_t fd, int32_t wallpaperType, int32_t 
         return E_NOT_SYSTEM_APP;
     }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetVideo", static_cast<int32_t>(TraceTaskId::SET_VIDEO));
-    std::lock_guard<std::mutex> lock(setMtx_);
     ErrorCode wallpaperErrorCode = SetWallpaper(fd, wallpaperType, length, VIDEO);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetVideo", static_cast<int32_t>(TraceTaskId::SET_VIDEO));
     return wallpaperErrorCode;
@@ -833,7 +832,6 @@ ErrorCode WallpaperService::SetCustomWallpaper(int32_t fd, int32_t type, int32_t
     if (type != static_cast<int32_t>(WALLPAPER_LOCKSCREEN) && type != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
         return E_PARAMETERS_INVALID;
     }
-    std::lock_guard<std::mutex> lock(setMtx_);
     StartAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
     int32_t userId = QueryActiveUserId();
     WallpaperType wallpaperType = static_cast<WallpaperType>(type);
@@ -959,7 +957,6 @@ ErrorCode WallpaperService::ResetWallpaper(int32_t wallpaperType)
         return E_PARAMETERS_INVALID;
     }
     WallpaperType type = static_cast<WallpaperType>(wallpaperType);
-    std::lock_guard<std::mutex> lock(setMtx_);
     int32_t userId = QueryActiveUserId();
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
     if (!CheckUserPermissionById(userId)) {

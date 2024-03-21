@@ -50,7 +50,9 @@ namespace ColorManager {
 class Color;
 }
 namespace WallpaperMgrService {
-class WallpaperService : public SystemAbility, public WallpaperServiceStub {
+class WallpaperService
+    : public SystemAbility
+    , public WallpaperServiceStub {
     DECLARE_SYSTEM_ABILITY(WallpaperService);
     enum class ServiceRunningState { STATE_NOT_START, STATE_RUNNING };
     enum class FileType : uint8_t { WALLPAPER_FILE, CROP_FILE };
@@ -179,7 +181,6 @@ private:
 
     std::string name_;
     std::mutex mtx_;
-    std::mutex setMtx_;
     uint64_t lockWallpaperColor_;
     uint64_t systemWallpaperColor_;
     std::map<std::string, WallpaperListenerMap> wallpaperEventMap_;

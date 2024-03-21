@@ -30,7 +30,7 @@ namespace WallpaperMgrService {
 using namespace OHOS::HiviewDFX;
 using namespace OHOS::Media;
 
-WallpaperServiceStub::WallpaperServiceStub()
+WallpaperServiceStub::WallpaperServiceStub(bool serialInvokeFlag) : IRemoteStub(serialInvokeFlag)
 {
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_WALLPAPER] = &WallpaperServiceStub::OnSetWallpaper;
     memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_PIXELMAP] = &WallpaperServiceStub::OnGetPixelMap;
@@ -59,8 +59,8 @@ WallpaperServiceStub::~WallpaperServiceStub()
     memberFuncMap_.clear();
 }
 
-int32_t WallpaperServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
-    MessageOption &option)
+int32_t WallpaperServiceStub::OnRemoteRequest(
+    uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
     MemoryGuard cacheGuard;
     HILOG_INFO("start##ret = %{public}u", code);
@@ -73,8 +73,8 @@ int32_t WallpaperServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data
     pid_t p = IPCSkeleton::GetCallingPid();
     pid_t p1 = IPCSkeleton::GetCallingUid();
     HILOG_INFO("CallingPid = %{public}d, CallingUid = %{public}d, code = %{public}u", p, p1, code);
-    if (code >= static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_WALLPAPER) &&
-        code <= static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SEND_EVENT)) {
+    if (code >= static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_WALLPAPER)
+        && code <= static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SEND_EVENT)) {
         auto itFunc = memberFuncMap_.find(static_cast<WallpaperServiceIpcInterfaceCode>(code));
         if (itFunc != memberFuncMap_.end()) {
             auto memberFunc = itFunc->second;
