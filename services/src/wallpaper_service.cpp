@@ -14,18 +14,19 @@
  */
 #include "wallpaper_service.h"
 
-#include <cerrno>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <fcntl.h>
-#include <iostream>
 #include <sys/prctl.h>
 #include <sys/sendfile.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <thread>
 #include <unistd.h>
+
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <thread>
 
 #include "bundle_mgr_interface.h"
 #include "bundle_mgr_proxy.h"
@@ -123,11 +124,12 @@ sptr<WallpaperService> WallpaperService::instance_;
 std::shared_ptr<AppExecFwk::EventHandler> WallpaperService::serviceHandler_;
 
 WallpaperService::WallpaperService(int32_t systemAbilityId, bool runOnCreate)
-    : SystemAbility(systemAbilityId, runOnCreate), state_(ServiceRunningState::STATE_NOT_START)
+    : SystemAbility(systemAbilityId, runOnCreate), WallpaperServiceStub(true),
+      state_(ServiceRunningState::STATE_NOT_START)
 {
 }
 
-WallpaperService::WallpaperService() : state_(ServiceRunningState::STATE_NOT_START)
+WallpaperService::WallpaperService() : WallpaperServiceStub(true), state_(ServiceRunningState::STATE_NOT_START)
 {
 }
 
@@ -416,8 +418,8 @@ bool WallpaperService::RestoreUserResources(const WallpaperData &wallpaperData, 
             wallpaperDefaultPath = WALLPAPER_PREFABRICATE_LOCK_FILEFULLPATH;
         }
     }
-    if (!FileDeal::IsFileExist(wallpaperDefaultPath) ||
-        !FileDeal::IsFileExist(GetWallpaperDir(wallpaperData.userId, wallpaperType))) {
+    if (!FileDeal::IsFileExist(wallpaperDefaultPath)
+        || !FileDeal::IsFileExist(GetWallpaperDir(wallpaperData.userId, wallpaperType))) {
         HILOG_INFO("Copy file path is not exist");
         return false;
     }
@@ -596,8 +598,8 @@ ErrorCode WallpaperService::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
         HILOG_ERROR("GetPixelMap no get permission!");
         return E_NO_PERMISSION;
     }
-    if (wallpaperType != static_cast<int32_t>(WALLPAPER_LOCKSCREEN) &&
-        wallpaperType != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
+    if (wallpaperType != static_cast<int32_t>(WALLPAPER_LOCKSCREEN)
+        && wallpaperType != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
         return E_PARAMETERS_INVALID;
     }
     auto type = static_cast<WallpaperType>(wallpaperType);
@@ -670,8 +672,8 @@ ErrorCode WallpaperService::SetWallpaperV9(int32_t fd, int32_t wallpaperType, in
     return SetWallpaper(fd, wallpaperType, length);
 }
 
-ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, WallpaperResourceType resourceType,
-    const std::string &uriOrPixelMap, WallpaperType wallpaperType)
+ErrorCode WallpaperService::SetWallpaperBackupData(
+    int32_t userId, WallpaperResourceType resourceType, const std::string &uriOrPixelMap, WallpaperType wallpaperType)
 {
     HILOG_INFO("set wallpaper and backup data Start.");
     if (!OHOS::FileExists(uriOrPixelMap)) {
@@ -687,12 +689,15 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, WallpaperReso
     wallpaperData.wallpaperId = MakeWallpaperIdLocked();
     std::string wallpaperFile;
     WallpaperService::GetWallpaperFile(resourceType, wallpaperData, wallpaperFile);
-    if (!FileDeal::CopyFile(uriOrPixelMap, wallpaperFile)) {
-        HILOG_ERROR("CopyFile failed !");
-        return E_DEAL_FAILED;
-    }
-    if (!FileDeal::DeleteFile(uriOrPixelMap)) {
-        return E_DEAL_FAILED;
+    {
+        std::lock_guard<std::mutex> lock(mtx_);
+        if (!FileDeal::CopyFile(uriOrPixelMap, wallpaperFile)) {
+            HILOG_ERROR("CopyFile failed !");
+            return E_DEAL_FAILED;
+        }
+        if (!FileDeal::DeleteFile(uriOrPixelMap)) {
+            return E_DEAL_FAILED;
+        }
     }
     if (!SaveWallpaperState(userId, wallpaperType, resourceType)) {
         HILOG_ERROR("Save wallpaper state failed!");
@@ -710,8 +715,8 @@ ErrorCode WallpaperService::SetWallpaperBackupData(int32_t userId, WallpaperReso
     return E_OK;
 }
 
-void WallpaperService::GetWallpaperFile(WallpaperResourceType resourceType, const WallpaperData &wallpaperData,
-    std::string &wallpaperFile)
+void WallpaperService::GetWallpaperFile(
+    WallpaperResourceType resourceType, const WallpaperData &wallpaperData, std::string &wallpaperFile)
 {
     switch (resourceType) {
         case PICTURE:
@@ -870,8 +875,8 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
         HILOG_ERROR("GetPixelMap no get permission!");
         return E_NO_PERMISSION;
     }
-    if (wallpaperType != static_cast<int32_t>(WALLPAPER_LOCKSCREEN) &&
-        wallpaperType != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
+    if (wallpaperType != static_cast<int32_t>(WALLPAPER_LOCKSCREEN)
+        && wallpaperType != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
         return E_PARAMETERS_INVALID;
     }
     auto type = static_cast<WallpaperType>(wallpaperType);
@@ -946,9 +951,8 @@ ErrorCode WallpaperService::ResetWallpaper(int32_t wallpaperType)
         HILOG_INFO("reset wallpaper no set permission!");
         return E_NO_PERMISSION;
     }
-
-    if (wallpaperType != static_cast<int32_t>(WALLPAPER_LOCKSCREEN) &&
-        wallpaperType != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
+    if (wallpaperType != static_cast<int32_t>(WALLPAPER_LOCKSCREEN)
+        && wallpaperType != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
         HILOG_INFO("wallpaperType = %{public}d type not support ", wallpaperType);
         return E_PARAMETERS_INVALID;
     }
@@ -1286,8 +1290,8 @@ bool WallpaperService::CheckUserPermissionById(int32_t userId)
     return true;
 }
 
-ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length,
-    WallpaperResourceType resourceType)
+ErrorCode WallpaperService::SetWallpaper(
+    int32_t fd, int32_t wallpaperType, int32_t length, WallpaperResourceType resourceType)
 {
     int32_t userId = QueryActiveUserId();
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
@@ -1303,28 +1307,30 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
     if (paperBuf == nullptr) {
         return E_NO_MEMORY;
     }
-    std::lock_guard<std::mutex> lock(mtx_);
-    if (read(fd, paperBuf, length) <= 0) {
-        HILOG_ERROR("read fd failed");
-        delete[] paperBuf;
-        return E_DEAL_FAILED;
-    }
-    mode_t mode = S_IRUSR | S_IWUSR;
-    int32_t fdw = open(uri.c_str(), O_WRONLY | O_CREAT, mode);
-    if (fdw < 0) {
-        HILOG_ERROR("Open wallpaper tmpFullPath failed, errno %{public}d", errno);
-        delete[] paperBuf;
-        return E_DEAL_FAILED;
-    }
-    if (write(fdw, paperBuf, length) <= 0) {
-        HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
-        ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
+    {
+        std::lock_guard<std::mutex> lock(mtx_);
+        if (read(fd, paperBuf, length) <= 0) {
+            HILOG_ERROR("read fd failed");
+            delete[] paperBuf;
+            return E_DEAL_FAILED;
+        }
+        mode_t mode = S_IRUSR | S_IWUSR;
+        int32_t fdw = open(uri.c_str(), O_WRONLY | O_CREAT, mode);
+        if (fdw < 0) {
+            HILOG_ERROR("Open wallpaper tmpFullPath failed, errno %{public}d", errno);
+            delete[] paperBuf;
+            return E_DEAL_FAILED;
+        }
+        if (write(fdw, paperBuf, length) <= 0) {
+            HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
+            ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
+            delete[] paperBuf;
+            close(fdw);
+            return E_DEAL_FAILED;
+        }
         delete[] paperBuf;
         close(fdw);
-        return E_DEAL_FAILED;
     }
-    delete[] paperBuf;
-    close(fdw);
     WallpaperType type = static_cast<WallpaperType>(wallpaperType);
     ErrorCode wallpaperErrorCode = SetWallpaperBackupData(userId, resourceType, uri, type);
     if (resourceType == PICTURE) {
@@ -1353,8 +1359,8 @@ ErrorCode WallpaperService::CheckValid(int32_t wallpaperType, int32_t length, Wa
         HILOG_INFO("SetWallpaper no set permission!");
         return E_NO_PERMISSION;
     }
-    if (wallpaperType != static_cast<int32_t>(WALLPAPER_LOCKSCREEN) &&
-        wallpaperType != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
+    if (wallpaperType != static_cast<int32_t>(WALLPAPER_LOCKSCREEN)
+        && wallpaperType != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
         return E_PARAMETERS_INVALID;
     }
 
@@ -1365,8 +1371,8 @@ ErrorCode WallpaperService::CheckValid(int32_t wallpaperType, int32_t length, Wa
     return E_OK;
 }
 
-bool WallpaperService::WallpaperChanged(WallpaperType wallpaperType, WallpaperResourceType resType,
-    const std::string &uri)
+bool WallpaperService::WallpaperChanged(
+    WallpaperType wallpaperType, WallpaperResourceType resType, const std::string &uri)
 {
     std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
     auto it = wallpaperEventMap_.find(WALLPAPER_CHANGE);
@@ -1396,13 +1402,13 @@ void WallpaperService::NotifyColorChange(const std::vector<uint64_t> &colors, co
     }
 }
 
-bool WallpaperService::SaveWallpaperState(int32_t userId, WallpaperType wallpaperType,
-    WallpaperResourceType resourceType)
+bool WallpaperService::SaveWallpaperState(
+    int32_t userId, WallpaperType wallpaperType, WallpaperResourceType resourceType)
 {
     WallpaperData systemData;
     WallpaperData lockScreenData;
-    if (!GetWallpaperSafeLocked(userId, WALLPAPER_SYSTEM, systemData) ||
-        !GetWallpaperSafeLocked(userId, WALLPAPER_LOCKSCREEN, lockScreenData)) {
+    if (!GetWallpaperSafeLocked(userId, WALLPAPER_SYSTEM, systemData)
+        || !GetWallpaperSafeLocked(userId, WALLPAPER_LOCKSCREEN, lockScreenData)) {
         return false;
     }
     nlohmann::json root;
@@ -1460,8 +1466,8 @@ void WallpaperService::LoadWallpaperState()
     }
     WallpaperData systemData;
     WallpaperData lockScreenData;
-    if (!GetWallpaperSafeLocked(userId, WALLPAPER_SYSTEM, systemData) ||
-        !GetWallpaperSafeLocked(userId, WALLPAPER_LOCKSCREEN, lockScreenData)) {
+    if (!GetWallpaperSafeLocked(userId, WALLPAPER_SYSTEM, systemData)
+        || !GetWallpaperSafeLocked(userId, WALLPAPER_LOCKSCREEN, lockScreenData)) {
         return;
     }
     auto root = nlohmann::json::parse(buf);

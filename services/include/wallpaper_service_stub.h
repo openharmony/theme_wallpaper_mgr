@@ -28,7 +28,7 @@ namespace WallpaperMgrService {
 class WallpaperServiceStub : public IRemoteStub<IWallpaperService> {
 public:
     int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
-    WallpaperServiceStub();
+    WallpaperServiceStub(bool serialInvokeFlag = true);
     ~WallpaperServiceStub();
 
 private:
