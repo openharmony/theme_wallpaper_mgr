@@ -247,6 +247,7 @@ void WallpaperService::InitData()
     wallpaperCropPath_ = std::string(WALLPAPER_USERID_PATH) + std::string(WALLPAPER_CROP_PICTURE);
     systemWallpaperColor_ = 0;
     lockWallpaperColor_ = 0;
+    currentUserId_ = userId;
     wallpaperEventMap_.clear();
     appBundleName_ = SCENEBOARD_BUNDLE_NAME;
     InitBundleNameParameter();
@@ -454,6 +455,11 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
         HILOG_ERROR("userId error, userId = %{public}d", userId);
         return;
     }
+    if (userId == currentUserId_) {
+        HILOG_INFO("userId not switch, userId = %{public}d", userId);
+        return;
+    }
+    currentUserId_ = userId;
     RemoveExtensionDeathRecipient();
 #ifndef THEME_SERVICE
     ConnectExtensionAbility();

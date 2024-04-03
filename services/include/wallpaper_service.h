@@ -186,6 +186,7 @@ private:
     int32_t pictureWidth_ = 0;
     int32_t pictureHeight_ = 0;
     std::string appBundleName_;
+    std::int32_t currentUserId_;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
