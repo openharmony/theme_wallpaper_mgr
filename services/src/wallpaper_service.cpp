@@ -211,8 +211,6 @@ void WallpaperService::InitServiceHandler()
     }
     std::shared_ptr<AppExecFwk::EventRunner> runner = AppExecFwk::EventRunner::Create("WallpaperService");
     serviceHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner);
-
-    HILOG_INFO("InitServiceHandler succeeded.");
 }
 
 void WallpaperService::OnStop()
@@ -233,7 +231,6 @@ void WallpaperService::OnStop()
         HILOG_INFO("UnregisterSubscriber end, unSubscribeResult = %{public}d", unSubscribeResult);
     }
     state_ = ServiceRunningState::STATE_NOT_START;
-    HILOG_INFO("OnStop end.");
 }
 
 void WallpaperService::InitData()
@@ -256,7 +253,6 @@ void WallpaperService::InitData()
     InitResources(userId, WALLPAPER_SYSTEM);
     InitResources(userId, WALLPAPER_LOCKSCREEN);
     LoadWallpaperState();
-    HILOG_INFO("WallpaperService::initData --> end ");
 }
 
 void WallpaperService::InitBundleNameParameter()
@@ -327,7 +323,7 @@ bool WallpaperService::InitUsersOnBoot()
 {
     std::vector<int32_t> userIds;
     if (AccountSA::OsAccountManager::QueryActiveOsAccountIds(userIds) != ERR_OK || userIds.empty()) {
-        HILOG_INFO("WallpaperService: failed to get current userIds");
+        HILOG_DEBUG("WallpaperService: failed to get current userIds");
         return false;
     }
     HILOG_INFO("WallpaperService::get current userIds success, Current userId: %{public}d", userIds[0]);
@@ -421,12 +417,12 @@ bool WallpaperService::RestoreUserResources(const WallpaperData &wallpaperData, 
     }
     if (!FileDeal::IsFileExist(wallpaperDefaultPath)
         || !FileDeal::IsFileExist(GetWallpaperDir(wallpaperData.userId, wallpaperType))) {
-        HILOG_INFO("Copy file path is not exist");
+        HILOG_ERROR("Copy file path is not exist");
         return false;
     }
     std::lock_guard<std::mutex> lock(mtx_);
     if (!FileDeal::CopyFile(wallpaperDefaultPath, wallpaperData.wallpaperFile)) {
-        HILOG_INFO("CopyFile WALLPAPER_DEFAULT_FILEFULLPATH failed");
+        HILOG_ERROR("CopyFile WALLPAPER_DEFAULT_FILEFULLPATH failed");
         return false;
     }
     HILOG_INFO("Restore user resources end ");
@@ -456,7 +452,7 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
         return;
     }
     if (userId == currentUserId_) {
-        HILOG_INFO("userId not switch, userId = %{public}d", userId);
+        HILOG_ERROR("userId not switch, userId = %{public}d", userId);
         return;
     }
     currentUserId_ = userId;
@@ -505,7 +501,7 @@ bool WallpaperService::GetFileNameFromMap(int32_t userId, WallpaperType wallpape
         HILOG_ERROR("system wallpaper already cleared");
         return false;
     }
-    HILOG_INFO("GetFileNameFromMap resourceType : %{public}d", static_cast<int32_t>(iterator.second.resourceType));
+    HILOG_DEBUG("GetFileNameFromMap resourceType : %{public}d", static_cast<int32_t>(iterator.second.resourceType));
     switch (iterator.second.resourceType) {
         case PICTURE:
             filePathName = iterator.second.wallpaperFile;
@@ -575,7 +571,6 @@ void WallpaperService::LoadSettingsLocked(int32_t userId)
         wallpaperLock.wallpaperId = DEFAULT_WALLPAPER_ID;
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperLock);
     }
-    HILOG_INFO("load Setting locked end.");
 }
 
 ErrorCode WallpaperService::GetColors(int32_t wallpaperType, std::vector<uint64_t> &colors)
@@ -585,14 +580,14 @@ ErrorCode WallpaperService::GetColors(int32_t wallpaperType, std::vector<uint64_
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         colors.emplace_back(lockWallpaperColor_);
     }
-    HILOG_INFO(" Service End!");
+    HILOG_INFO("GetColors Service End!");
     return E_OK;
 }
 
 ErrorCode WallpaperService::GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors)
 {
     if (!IsSystemApp()) {
-        HILOG_INFO("CallingApp is not SystemApp");
+        HILOG_ERROR("CallingApp is not SystemApp");
         return E_NOT_SYSTEM_APP;
     }
     return GetColors(wallpaperType, colors);
@@ -672,7 +667,7 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
 ErrorCode WallpaperService::SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length)
 {
     if (!IsSystemApp()) {
-        HILOG_INFO("CallingApp is not SystemApp");
+        HILOG_ERROR("CallingApp is not SystemApp");
         return E_NOT_SYSTEM_APP;
     }
     return SetWallpaper(fd, wallpaperType, length);
@@ -738,7 +733,7 @@ void WallpaperService::GetWallpaperFile(
             wallpaperFile = wallpaperData.customPackageUri;
             break;
         default:
-            HILOG_DEBUG("Non-existent error type!");
+            HILOG_ERROR("Non-existent error type!");
             break;
     }
 }
@@ -761,7 +756,7 @@ WallpaperResourceType WallpaperService::GetResType(int32_t userId, WallpaperType
 
 ErrorCode WallpaperService::SendEvent(const std::string &eventType)
 {
-    HILOG_DEBUG("Send event start.");
+    HILOG_INFO("Send event start.");
     if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
         HILOG_ERROR("Send event not set permission!");
         return E_NO_PERMISSION;
@@ -832,7 +827,7 @@ ErrorCode WallpaperService::SetCustomWallpaper(int32_t fd, int32_t type, int32_t
         return E_NOT_SYSTEM_APP;
     }
     if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
-        HILOG_INFO("SetWallpaper no set permission!");
+        HILOG_ERROR("SetWallpaper no set permission!");
         return E_NO_PERMISSION;
     }
     if (type != static_cast<int32_t>(WALLPAPER_LOCKSCREEN) && type != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
@@ -954,12 +949,12 @@ ErrorCode WallpaperService::ResetWallpaper(int32_t wallpaperType)
     HILOG_INFO("reset wallpaper Start!");
     bool permissionSet = CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
     if (!permissionSet) {
-        HILOG_INFO("reset wallpaper no set permission!");
+        HILOG_ERROR("reset wallpaper no set permission!");
         return E_NO_PERMISSION;
     }
     if (wallpaperType != static_cast<int32_t>(WALLPAPER_LOCKSCREEN)
         && wallpaperType != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
-        HILOG_INFO("wallpaperType = %{public}d type not support ", wallpaperType);
+        HILOG_ERROR("wallpaperType = %{public}d type not support ", wallpaperType);
         return E_PARAMETERS_INVALID;
     }
     WallpaperType type = static_cast<WallpaperType>(wallpaperType);
@@ -976,7 +971,7 @@ ErrorCode WallpaperService::ResetWallpaper(int32_t wallpaperType)
 ErrorCode WallpaperService::ResetWallpaperV9(int32_t wallpaperType)
 {
     if (!IsSystemApp()) {
-        HILOG_INFO("CallingApp is not SystemApp");
+        HILOG_ERROR("CallingApp is not SystemApp");
         return E_NOT_SYSTEM_APP;
     }
     return ResetWallpaper(wallpaperType);
@@ -1025,7 +1020,6 @@ ErrorCode WallpaperService::On(const std::string &type, sptr<IWallpaperEventList
     }
     std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
     wallpaperEventMap_[type].insert_or_assign(IPCSkeleton::GetCallingTokenID(), listener);
-    HILOG_DEBUG("WallpaperService::On out");
     return E_OK;
 }
 
@@ -1046,7 +1040,6 @@ ErrorCode WallpaperService::Off(const std::string &type, sptr<IWallpaperEventLis
             iter->second.erase(it);
         }
     }
-    HILOG_DEBUG("WallpaperService::Off out");
     return E_OK;
 }
 
@@ -1059,7 +1052,7 @@ bool WallpaperService::RegisterWallpaperCallback(const sptr<IWallpaperCallback> 
 
 bool WallpaperService::GetWallpaperSafeLocked(int32_t userId, WallpaperType wallpaperType, WallpaperData &wallpaperData)
 {
-    HILOG_INFO("function start.");
+    HILOG_DEBUG("GetWallpaperSafeLocked start.");
     auto iterator = wallpaperType == WALLPAPER_SYSTEM ? systemWallpaperMap_.Find(userId)
                                                       : lockWallpaperMap_.Find(userId);
     if (!iterator.first) {
@@ -1082,7 +1075,7 @@ void WallpaperService::ClearWallpaperLocked(int32_t userId, WallpaperType wallpa
     auto iterator = wallpaperType == WALLPAPER_SYSTEM ? systemWallpaperMap_.Find(userId)
                                                       : lockWallpaperMap_.Find(userId);
     if (!iterator.first) {
-        HILOG_INFO("Lock wallpaper already cleared");
+        HILOG_ERROR("Lock wallpaper already cleared");
         return;
     }
     if (!iterator.second.wallpaperFile.empty() || !iterator.second.liveWallpaperFile.empty()) {
@@ -1092,7 +1085,6 @@ void WallpaperService::ClearWallpaperLocked(int32_t userId, WallpaperType wallpa
             systemWallpaperMap_.Erase(userId);
         }
     }
-    HILOG_INFO("Clear wallpaper End!");
 }
 
 bool WallpaperService::CheckCallingPermission(const std::string &permissionName)
@@ -1362,7 +1354,7 @@ void WallpaperService::OnColorsChange(WallpaperType wallpaperType, const ColorMa
 ErrorCode WallpaperService::CheckValid(int32_t wallpaperType, int32_t length, WallpaperResourceType resourceType)
 {
     if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
-        HILOG_INFO("SetWallpaper no set permission!");
+        HILOG_ERROR("SetWallpaper no set permission!");
         return E_NO_PERMISSION;
     }
     if (wallpaperType != static_cast<int32_t>(WALLPAPER_LOCKSCREEN)

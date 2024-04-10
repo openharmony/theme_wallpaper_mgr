@@ -63,11 +63,11 @@ Call::~Call()
 napi_value Call::AsyncCall(napi_env env, const std::string &resourceName)
 {
     if (context_ == nullptr) {
-        HILOG_DEBUG("context_ is null");
+        HILOG_ERROR("context_ is null");
         return nullptr;
     }
     if (context_->ctx == nullptr) {
-        HILOG_DEBUG("context_->ctx is null");
+        HILOG_ERROR("context_->ctx is null");
         return nullptr;
     }
     HILOG_DEBUG("async call exec");
@@ -85,14 +85,13 @@ napi_value Call::AsyncCall(napi_env env, const std::string &resourceName)
     context_->work = work;
     context_ = nullptr;
     napi_queue_async_work_with_qos(env, work, napi_qos_user_initiated);
-    HILOG_DEBUG("async call exec");
     return promise;
 }
 
 napi_value Call::SyncCall(napi_env env)
 {
     if ((context_ == nullptr) || (context_->ctx == nullptr)) {
-        HILOG_DEBUG("context_ or context_->ctx is null");
+        HILOG_ERROR("context_ or context_->ctx is null");
         return nullptr;
     }
     Call::OnExecute(env, context_);
