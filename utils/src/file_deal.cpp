@@ -39,7 +39,7 @@ bool FileDeal::IsDirExist(std::string path)
 {
     DIR *dp;
     if ((dp = opendir(path.c_str())) == NULL) {
-        HILOG_INFO("FileDeal : openDir  is not exist, errInfo=%{public}s", strerror(errno));
+        HILOG_ERROR("FileDeal : openDir  is not exist, errInfo=%{public}s", strerror(errno));
         return false;
     }
     closedir(dp);
@@ -50,7 +50,7 @@ bool FileDeal::Mkdir(const std::string &path)
 {
     if (!IsDirExist(path)) {
         if (mkdir(path.c_str(), MODE) != 0) {
-            HILOG_INFO("FileDeal : mkdir errInfo=%{public}s", strerror(errno));
+            HILOG_ERROR("FileDeal : mkdir errInfo=%{public}s", strerror(errno));
             return false;
         }
     }
@@ -75,7 +75,7 @@ bool FileDeal::CopyFile(const std::string &sourceFile, const std::string &newFil
 bool FileDeal::DeleteFile(const std::string &sourceFile)
 {
     if (remove(sourceFile.c_str()) < 0) {
-        HILOG_INFO("Failed to remove source file, errInfo=%{public}s.", strerror(errno));
+        HILOG_ERROR("Failed to remove source file, errInfo=%{public}s.", strerror(errno));
         return false;
     }
     return true;
@@ -84,7 +84,7 @@ bool FileDeal::DeleteFile(const std::string &sourceFile)
 bool FileDeal::IsFileExist(const std::string &name)
 {
     if (access(name.c_str(), F_OK) != 0) {
-        HILOG_INFO("FileDeal : access errInfo=%{public}s", strerror(errno));
+        HILOG_ERROR("FileDeal : access errInfo=%{public}s", strerror(errno));
         return false;
     }
     return true;

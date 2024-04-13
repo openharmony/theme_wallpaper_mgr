@@ -27,8 +27,7 @@ WallpaperServiceCbStub::WallpaperServiceCbStub()
 int32_t WallpaperServiceCbStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
     MessageOption &option)
 {
-    HILOG_INFO("  WallpaperServiceCbStub::OnRemoteRequest");
-    HILOG_INFO(" start##ret = %{public}u", code);
+    HILOG_INFO("  WallpaperServiceCbStub::OnRemoteRequest start##ret = %{public}u", code);
     std::u16string myDescriptor = WallpaperServiceCbStub::GetDescriptor();
     std::u16string remoteDescriptor = data.ReadInterfaceToken();
     if (myDescriptor != remoteDescriptor) {
@@ -43,7 +42,7 @@ int32_t WallpaperServiceCbStub::OnRemoteRequest(uint32_t code, MessageParcel &da
         }
     }
     int32_t ret = IPCObjectStub::OnRemoteRequest(code, data, reply, option);
-    HILOG_INFO(" end##ret = %{public}d", ret);
+    HILOG_INFO("  WallpaperServiceCbStub::OnRemoteRequest end##ret = %{public}d", ret);
     return ret;
 }
 

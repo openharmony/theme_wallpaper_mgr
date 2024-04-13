@@ -25,17 +25,15 @@ WallpaperEventListenerClient::WallpaperEventListenerClient(
     std::shared_ptr<WallpaperMgrService::WallpaperEventListener> wallpaperEventListener)
     : wallpaperEventListener_(wallpaperEventListener)
 {
-    HILOG_INFO("start");
 }
 
 WallpaperEventListenerClient::~WallpaperEventListenerClient()
 {
-    HILOG_INFO("start");
 }
 
 void WallpaperEventListenerClient::OnColorsChange(const std::vector<uint64_t> &color, int32_t wallpaperType)
 {
-    HILOG_INFO("start");
+    HILOG_INFO("OnColorsChange start");
     if (wallpaperEventListener_ != nullptr) {
         wallpaperEventListener_->OnColorsChange(color, wallpaperType);
     }
