@@ -81,7 +81,6 @@ void JsWallpaperExtensionAbility::Init(const std::shared_ptr<AbilityLocalRecord>
         HILOG_ERROR("Failed to get jsObj_");
         return;
     }
-    HILOG_INFO("JsWallpaperExtensionAbility::Init GetNapiValue.");
     napi_value obj = jsObj_->GetNapiValue();
     if (obj == nullptr) {
         HILOG_ERROR("Failed to get JsWallpaperExtensionAbility object");
@@ -93,13 +92,10 @@ void JsWallpaperExtensionAbility::Init(const std::shared_ptr<AbilityLocalRecord>
         return;
     }
     auto workContext = new (std::nothrow) std::weak_ptr<WallpaperExtensionContext>(context);
-    HILOG_INFO("JsWallpaperExtensionAbility::Init CreateJsWallpaperExtensionContext.");
     napi_value contextObj = CreateJsWallpaperExtensionContext(env, context);
     auto shellContextRef = jsRuntime_.LoadSystemModule("WallpaperExtensionContext", &contextObj, ARGC_ONE);
     contextObj = shellContextRef->GetNapiValue();
-    HILOG_INFO("JsWallpaperExtension::Init Bind.");
     context->Bind(jsRuntime_, shellContextRef.release());
-    HILOG_INFO("JsWallpaperExtension::SetProperty.");
     napi_set_named_property(env, obj, "context", contextObj);
     if (contextObj == nullptr) {
         HILOG_ERROR("Failed to get wallpaper extension native object");
@@ -142,7 +138,6 @@ void JsWallpaperExtensionAbility::OnStop()
     if (ret) {
         HILOG_INFO("The wallpaper extension connection is not disconnected.");
     }
-    HILOG_INFO("%{public}s end.", __func__);
 }
 
 sptr<IRemoteObject> JsWallpaperExtensionAbility::OnConnect(const AAFwk::Want &want)
@@ -169,7 +164,6 @@ void JsWallpaperExtensionAbility::OnCommand(const AAFwk::Want &want, bool restar
     Extension::OnCommand(want, restart, startId);
     HILOG_INFO("%{public}s begin restart=%{public}s,startId=%{public}d.", __func__, restart ? "true" : "false",
         startId);
-    HILOG_INFO("%{public}s end.", __func__);
 }
 
 napi_value JsWallpaperExtensionAbility::CallObjectMethod(const std::string &name, napi_value const *argv, size_t argc)

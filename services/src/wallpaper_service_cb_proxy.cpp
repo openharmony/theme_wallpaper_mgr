@@ -33,7 +33,6 @@ int32_t WallpaperServiceCbProxy::OnCall(const int32_t wallpaperType)
         HILOG_ERROR("Failed to WriteInt32 ");
         return -1;
     }
-    HILOG_INFO("WallpaperServiceCbProxy::Remote()->SendRequest");
     Remote()->SendRequest(ONCALL, data, reply, option);
     return 0;
 }

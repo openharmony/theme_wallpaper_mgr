@@ -46,7 +46,6 @@ void WallpaperExtensionAbility::Init(const std::shared_ptr<AbilityLocalRecord> &
 {
     HILOG_INFO("jws WallpaperExtensionAbility begin init context");
     ExtensionBase<WallpaperExtensionContext>::Init(record, application, handler, token);
-    HILOG_INFO("WallpaperExtensionAbility begin init context");
 }
 
 std::shared_ptr<WallpaperExtensionContext> WallpaperExtensionAbility::CreateAndInitContext(

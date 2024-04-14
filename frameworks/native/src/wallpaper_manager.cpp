@@ -106,7 +106,6 @@ sptr<IWallpaperService> WallpaperManager::GetService()
         HILOG_ERROR("Failed to add death recipient");
     }
 
-    HILOG_INFO("get remote object ok");
     wallpaperProxy_ = iface_cast<WallpaperServiceProxy>(object);
     if (wallpaperProxy_ == nullptr) {
         HILOG_ERROR("iface_cast failed");
@@ -339,7 +338,6 @@ ErrorCode WallpaperManager::GetPixelMap(int32_t wallpaperType, const ApiInfo &ap
     uint32_t errorCode = 0;
     OHOS::Media::SourceOptions opts;
     opts.formatHint = "image/jpeg";
-    HILOG_INFO(" CreateImageSource by FD");
     std::unique_ptr<OHOS::Media::ImageSource> imageSource =
         OHOS::Media::ImageSource::CreateImageSource(fdInfo.fd, opts, errorCode);
     if (errorCode != 0) {
@@ -349,7 +347,6 @@ ErrorCode WallpaperManager::GetPixelMap(int32_t wallpaperType, const ApiInfo &ap
     }
     close(fdInfo.fd);
     OHOS::Media::DecodeOptions decodeOpts;
-    HILOG_INFO(" CreatePixelMap");
     pixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
 
     if (errorCode != 0) {
@@ -450,7 +447,6 @@ ErrorCode WallpaperManager::On(const std::string &type, std::shared_ptr<Wallpape
         std::lock_guard<std::mutex> lock(listenerMapLock_);
         listenerMap_.insert_or_assign(type, ipcListener);
     }
-    HILOG_DEBUG("WallpaperManager::On out");
     return wallpaperServerProxy->On(type, ipcListener);
 }
 
@@ -470,7 +466,6 @@ ErrorCode WallpaperManager::Off(const std::string &type, std::shared_ptr<Wallpap
             return E_NO_MEMORY;
         }
     }
-    HILOG_DEBUG("WallpaperManager::Off out");
     return wallpaperServerProxy->Off(type, ipcListener);
 }
 
@@ -486,7 +481,7 @@ void WallpaperManager::SetCallback(JScallback cb)
 
 bool WallpaperManager::RegisterWallpaperCallback(JScallback callback)
 {
-    HILOG_ERROR("  WallpaperManager::RegisterWallpaperCallback statrt");
+    HILOG_INFO("  WallpaperManager::RegisterWallpaperCallback statrt");
     SetCallback(callback);
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
@@ -498,7 +493,6 @@ bool WallpaperManager::RegisterWallpaperCallback(JScallback callback)
         HILOG_ERROR("callback is NULL.");
         return false;
     }
-    HILOG_INFO("  WallpaperManager::RegisterWallpaperCallback");
 
     bool status = wallpaperServerProxy->RegisterWallpaperCallback(new WallpaperServiceCbStub());
     if (!status) {
@@ -585,7 +579,7 @@ bool WallpaperManager::CheckVideoFormat(const std::string &fileName)
             return false;
         }
     } else {
-        HILOG_INFO("Cannot get video mime type!");
+        HILOG_ERROR("Cannot get video mime type!");
         close(videoFd);
         return false;
     }
@@ -598,7 +592,7 @@ bool WallpaperManager::CheckVideoFormat(const std::string &fileName)
             return false;
         }
     } else {
-        HILOG_INFO("Cannot get the duration of this video!");
+        HILOG_ERROR("Cannot get the duration of this video!");
         close(videoFd);
         return false;
     }

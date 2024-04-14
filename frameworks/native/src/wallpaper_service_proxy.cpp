@@ -448,7 +448,6 @@ ErrorCode WallpaperServiceProxy::On(const std::string &type, sptr<IWallpaperEven
         return E_DEAL_FAILED;
     }
 
-    HILOG_DEBUG("WallpaperServiceProxy::On out");
     return ConvertIntToErrorCode(reply.ReadInt32());
 }
 
@@ -480,7 +479,6 @@ ErrorCode WallpaperServiceProxy::Off(const std::string &type, sptr<IWallpaperEve
         return E_DEAL_FAILED;
     }
 
-    HILOG_DEBUG("WallpaperServiceProxy::Off out");
     return ConvertIntToErrorCode(reply.ReadInt32());
 }
 
@@ -502,7 +500,6 @@ bool WallpaperServiceProxy::RegisterWallpaperCallback(const sptr<IWallpaperCallb
         HILOG_ERROR("write subscribe type or parcel failed.");
         return false;
     }
-    HILOG_INFO("  Remote()->SendRequest");
     int32_t result = Remote()->SendRequest(
         static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::REGISTER_CALLBACK), data, reply, option);
     if (result != ERR_NONE) {
@@ -511,7 +508,6 @@ bool WallpaperServiceProxy::RegisterWallpaperCallback(const sptr<IWallpaperCallb
     }
     int32_t status = reply.ReadInt32();
     bool ret = status == static_cast<int32_t>(E_OK);
-    HILOG_DEBUG("WallpaperServiceProxy::REGISTER_CALLBACK out");
     return ret;
 }
 

@@ -61,7 +61,7 @@ static napi_value InitWallpaperResourceType(napi_env &env)
 
 static napi_value Init(napi_env env, napi_value exports)
 {
-    HILOG_INFO("napi_module Init start...");
+    HILOG_DEBUG("napi_module Init start...");
     napi_value wallpaperType = InitWallpaperType(env);
     napi_value wallpaperResourceType = InitWallpaperResourceType(env);
 
@@ -92,7 +92,7 @@ static napi_value Init(napi_env env, napi_value exports)
     };
 
     NAPI_CALL(env, napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc));
-    HILOG_INFO("napi_module Init end...");
+    HILOG_DEBUG("napi_module Init end...");
     return exports;
 }
 

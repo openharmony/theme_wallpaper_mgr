@@ -107,7 +107,7 @@ int32_t WallpaperServiceStub::OnSetWallpaperInner(MessageParcel &data, MessagePa
     HILOG_DEBUG("WallpaperServiceStub::SetWallpaper start.");
     int32_t fd = data.ReadFileDescriptor();
     if (fd < 0) {
-        HILOG_INFO("ReadFileDescriptor fail. fd[%{public}d]", fd);
+        HILOG_ERROR("ReadFileDescriptor fail. fd[%{public}d]", fd);
         return IPC_STUB_INVALID_DATA_ERR;
     }
     int32_t wallpaperType = data.ReadInt32();
@@ -380,7 +380,6 @@ int32_t WallpaperServiceStub::OnWallpaperOn(MessageParcel &data, MessageParcel &
         HILOG_ERROR("WriteInt32 failed");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
-    HILOG_DEBUG("WallpaperServiceStub::OnWallpaperOn out");
     return ERR_NONE;
 }
 
@@ -405,7 +404,6 @@ int32_t WallpaperServiceStub::OnWallpaperOff(MessageParcel &data, MessageParcel 
         HILOG_ERROR("WriteInt32 failed");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
-    HILOG_DEBUG("WallpaperServiceStub::OnWallpaperOff out");
     return ERR_NONE;
 }
 

@@ -166,7 +166,7 @@ private:
 
         int32_t accountId = 0;
         if (!OHOS::AppExecFwk::UnwrapInt32FromJS2(env, argv[INDEX_ONE], accountId)) {
-            HILOG_INFO("%{public}s called, the second parameter is invalid.", __func__);
+            HILOG_ERROR("%{public}s called, the second parameter is invalid.", __func__);
             return CreateJsUndefined(env);
         }
         HILOG_INFO("%{public}d accountId:", accountId);
@@ -294,7 +294,7 @@ private:
             want.GetElement().GetAbilityName().c_str());
         int32_t accountId = 0;
         if (!OHOS::AppExecFwk::UnwrapInt32FromJS2(env, argv[INDEX_ONE], accountId)) {
-            HILOG_INFO("%{public}s called, the second parameter is invalid.", __func__);
+            HILOG_ERROR("%{public}s called, the second parameter is invalid.", __func__);
             return CreateJsUndefined(env);
         }
         sptr<JSWallpaperExtensionConnection> connection = new JSWallpaperExtensionConnection(env);
@@ -384,7 +384,6 @@ private:
                 task.Reject(env, CreateJsError(env, ERROR_CODE_TWO, "not found connection"));
                 return;
             }
-            HILOG_INFO("context->DisconnectAbility");
             auto errcode = context->DisconnectAbility(want, connection);
             errcode == 0 ? task.Resolve(env, CreateJsUndefined(env))
                          : task.Reject(env, CreateJsError(env, errcode, "Disconnect Ability failed."));
@@ -489,7 +488,7 @@ napi_value CreateJsWallpaperExtensionContext(napi_env env, std::shared_ptr<Wallp
             auto infoIter =
                 std::find_if(hapModuleInfo->extensionInfos.begin(), hapModuleInfo->extensionInfos.end(), isExist);
             if (infoIter == hapModuleInfo->extensionInfos.end()) {
-                HILOG_INFO("Get target fail.");
+                HILOG_ERROR("Get target fail.");
                 return objValue;
             }
             napi_set_named_property(env, objValue, "extensionAbilityInfo",
@@ -511,14 +510,14 @@ void JSWallpaperExtensionConnection::OnAbilityConnectDone(const AppExecFwk::Elem
 {
     HILOG_INFO("OnAbilityConnectDone begin, resultCode:%{public}d", resultCode);
     if (handler_ == nullptr) {
-        HILOG_INFO("handler_ nullptr");
+        HILOG_ERROR("handler_ nullptr");
         return;
     }
     wptr<JSWallpaperExtensionConnection> connection = this;
     auto task = [connection, element, remoteObject, resultCode]() {
         sptr<JSWallpaperExtensionConnection> connectionSptr = connection.promote();
         if (!connectionSptr) {
-            HILOG_INFO("connectionSptr nullptr");
+            HILOG_ERROR("connectionSptr nullptr");
             return;
         }
         connectionSptr->HandleOnAbilityConnectDone(element, remoteObject, resultCode);
@@ -553,24 +552,22 @@ void JSWallpaperExtensionConnection::HandleOnAbilityConnectDone(const AppExecFwk
         HILOG_ERROR("Failed to get onConnect from object");
         return;
     }
-    HILOG_INFO("JSWallpaperExtensionConnection::napi_call_function onConnect, success");
     napi_value callResult = nullptr;
     napi_call_function(env_, obj, methodOnConnect, ARGC_TWO, argv, &callResult);
-    HILOG_INFO("OnAbilityConnectDone end");
 }
 
 void JSWallpaperExtensionConnection::OnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int32_t resultCode)
 {
     HILOG_INFO("OnAbilityDisconnectDone begin, resultCode:%{public}d", resultCode);
     if (handler_ == nullptr) {
-        HILOG_INFO("handler_ nullptr");
+        HILOG_ERROR("handler_ nullptr");
         return;
     }
     wptr<JSWallpaperExtensionConnection> connection = this;
     auto task = [connection, element, resultCode]() {
         sptr<JSWallpaperExtensionConnection> connectionSptr = connection.promote();
         if (!connectionSptr) {
-            HILOG_INFO("connectionSptr nullptr");
+            HILOG_ERROR("connectionSptr nullptr");
             return;
         }
         connectionSptr->HandleOnAbilityDisconnectDone(element, resultCode);
@@ -619,7 +616,6 @@ void JSWallpaperExtensionConnection::HandleOnAbilityDisconnectDone(const AppExec
             HILOG_INFO("OnAbilityDisconnectDone erase connects_.size:%{public}zu", connects_.size());
         }
     }
-    HILOG_INFO("OnAbilityDisconnectDone napi_call_function success");
     napi_value callResult = nullptr;
     napi_call_function(env_, obj, method, ARGC_TWO, argv, &callResult);
 }
@@ -654,10 +650,8 @@ void JSWallpaperExtensionConnection::CallJsFailed(int32_t errorCode)
     napi_create_int32(env_, errorCode, &result);
     napi_value argv[] = { result };
 
-    HILOG_INFO("CallJsFailed CallFunction success");
     napi_value callResult = nullptr;
     napi_call_function(env_, obj, method, ARGC_ONE, argv, &callResult);
-    HILOG_INFO("CallJsFailed end");
 }
 } // namespace AbilityRuntime
 } // namespace OHOS

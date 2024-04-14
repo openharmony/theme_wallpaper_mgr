@@ -48,7 +48,6 @@ void WallpaperEventListenerProxy::OnColorsChange(const std::vector<uint64_t> &co
     if (error != 0) {
         HILOG_ERROR("SendRequest failed, error %{public}d", error);
     }
-    HILOG_DEBUG("WallpaperEventListenerProxy::OnColorsChange End");
 }
 
 void WallpaperEventListenerProxy::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
@@ -80,7 +79,6 @@ void WallpaperEventListenerProxy::OnWallpaperChange(WallpaperType wallpaperType,
     if (error != 0) {
         HILOG_ERROR("SendRequest failed, error %{public}d", error);
     }
-    HILOG_DEBUG("WallpaperEventListenerProxy::OnWallpaperChange End");
 }
 
 } // namespace WallpaperMgrService
