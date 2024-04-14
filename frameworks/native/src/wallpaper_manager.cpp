@@ -47,7 +47,6 @@
 namespace OHOS {
 using namespace MiscServices;
 namespace WallpaperMgrService {
-constexpr int32_t OPTION_QUALITY = 100;
 constexpr int32_t MIN_TIME = 0;
 constexpr int32_t MAX_TIME = 5000;
 constexpr int32_t MAX_VIDEO_SIZE = 104857600;
@@ -234,44 +233,15 @@ ErrorCode WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> 
         return E_DEAL_FAILED;
     }
 
-    std::stringbuf stringBuf;
-    std::ostream ostream(&stringBuf);
-    int32_t mapSize = WritePixelMapToStream(ostream, pixelMap);
-    if (mapSize <= 0) {
-        HILOG_ERROR("WritePixelMapToStream failed");
-        return E_WRITE_PARCEL_ERROR;
-    }
-    char *buffer = new (std::nothrow) char[mapSize]();
-    if (buffer == nullptr) {
-        return E_NO_MEMORY;
-    }
-    stringBuf.sgetn(buffer, mapSize);
-
-    int32_t fd[2];
-    pipe(fd);
-    fcntl(fd[1], F_SETPIPE_SZ, mapSize);
-    fcntl(fd[0], F_SETPIPE_SZ, mapSize);
-    int32_t writeSize = write(fd[1], buffer, mapSize);
-    if (writeSize != mapSize) {
-        HILOG_ERROR("Write file failed, errno %{public}d", errno);
-        ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
-        delete[] buffer;
-        close(fd[1]);
-        close(fd[0]);
-        return E_WRITE_PARCEL_ERROR;
-    }
-    close(fd[1]);
     ErrorCode wallpaperErrorCode = E_UNKNOWN;
     if (apiInfo.isSystemApi) {
-        wallpaperErrorCode = wallpaperServerProxy->SetWallpaperV9(fd[0], wallpaperType, mapSize);
+        wallpaperErrorCode = wallpaperServerProxy->SetWallpaperV9ByPixelMap(pixelMap, wallpaperType);
     } else {
-        wallpaperErrorCode = wallpaperServerProxy->SetWallpaper(fd[0], wallpaperType, mapSize);
+        wallpaperErrorCode = wallpaperServerProxy->SetWallpaperByPixelMap(pixelMap, wallpaperType);
     }
-    close(fd[0]);
     if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
         CloseWallpaperFd(wallpaperType);
     }
-    delete[] buffer;
     return wallpaperErrorCode;
 }
 
@@ -339,28 +309,6 @@ ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int
     close(fd);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
     return wallpaperErrorCode;
-}
-
-int64_t WallpaperManager::WritePixelMapToStream(std::ostream &outputStream,
-    std::shared_ptr<OHOS::Media::PixelMap> pixelMap)
-{
-    OHOS::Media::ImagePacker imagePacker;
-    OHOS::Media::PackOption option;
-    option.format = "image/jpeg";
-    option.quality = OPTION_QUALITY;
-    option.numberHint = 1;
-    std::set<std::string> formats;
-    uint32_t ret = imagePacker.GetSupportedFormats(formats);
-    if (ret != 0) {
-        HILOG_ERROR("image packer get supported format failed, ret=%{public}u.", ret);
-    }
-
-    imagePacker.StartPacking(outputStream, option);
-    imagePacker.AddImage(*pixelMap);
-    int64_t packedSize = 0;
-    imagePacker.FinalizePacking(packedSize);
-    HILOG_INFO("FrameWork WritePixelMapToStream End! packedSize=%{public}lld.", static_cast<long long>(packedSize));
-    return packedSize;
 }
 
 ErrorCode WallpaperManager::GetPixelMap(int32_t wallpaperType, const ApiInfo &apiInfo,

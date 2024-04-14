@@ -27,6 +27,7 @@
 #include <cstring>
 #include <iostream>
 #include <thread>
+#include <sstream>
 
 #include "bundle_mgr_interface.h"
 #include "bundle_mgr_proxy.h"
@@ -109,6 +110,7 @@ constexpr int32_t QUERY_USER_MAX_RETRY_TIMES = 100;
 constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
 constexpr int32_t DEFAULT_USER_ID = 0;
 constexpr int32_t MAX_VIDEO_SIZE = 104857600;
+constexpr int32_t OPTION_QUALITY = 100;
 const int CONFIG_LEN = 30;
 
 #ifndef THEME_SERVICE
@@ -664,6 +666,15 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
     return wallpaperErrorCode;
 }
 
+ErrorCode WallpaperService::SetWallpaperByPixelMap(
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType)
+{
+    StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
+    ErrorCode wallpaperErrorCode = SetWallpaperByPixelMap(pixelMap, wallpaperType, PICTURE);
+    FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
+    return wallpaperErrorCode;
+}
+
 ErrorCode WallpaperService::SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length)
 {
     if (!IsSystemApp()) {
@@ -671,6 +682,16 @@ ErrorCode WallpaperService::SetWallpaperV9(int32_t fd, int32_t wallpaperType, in
         return E_NOT_SYSTEM_APP;
     }
     return SetWallpaper(fd, wallpaperType, length);
+}
+
+ErrorCode WallpaperService::SetWallpaperV9ByPixelMap(
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType)
+{
+    if (!IsSystemApp()) {
+        HILOG_INFO("CallingApp is not SystemApp");
+        return E_NOT_SYSTEM_APP;
+    }
+    return SetWallpaperByPixelMap(pixelMap, wallpaperType);
 }
 
 ErrorCode WallpaperService::SetWallpaperBackupData(
@@ -1335,6 +1356,93 @@ ErrorCode WallpaperService::SetWallpaper(
         SaveColor(userId, type);
     }
     return wallpaperErrorCode;
+}
+
+ErrorCode WallpaperService::SetWallpaperByPixelMap(std::shared_ptr<OHOS::Media::PixelMap> pixelMap,
+    int32_t wallpaperType, WallpaperResourceType resourceType)
+{
+    int32_t userId = QueryActiveUserId();
+    HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
+    if (!CheckUserPermissionById(userId)) {
+        return E_USER_IDENTITY_ERROR;
+    }
+    std::string uri = wallpaperTmpFullPath_;
+    ErrorCode errCode = WritePixelMapToFile(pixelMap, uri, wallpaperType, resourceType);
+    if (errCode != E_OK) {
+        HILOG_ERROR("WritePixelMapToFile failed!");
+        return errCode;
+    }
+    WallpaperType type = static_cast<WallpaperType>(wallpaperType);
+    ErrorCode wallpaperErrorCode = SetWallpaperBackupData(userId, resourceType, uri, type);
+    if (resourceType == PICTURE) {
+        SaveColor(userId, type);
+    }
+    return wallpaperErrorCode;
+}
+
+ErrorCode WallpaperService::WritePixelMapToFile(std::shared_ptr<OHOS::Media::PixelMap> pixelMap,
+    std::string wallpaperTmpFullPath, int32_t wallpaperType, WallpaperResourceType resourceType)
+{
+    std::stringbuf stringBuf;
+    std::ostream ostream(&stringBuf);
+    int32_t mapSize = WritePixelMapToStream(pixelMap, ostream);
+    if (mapSize <= 0) {
+        HILOG_ERROR("WritePixelMapToStream failed");
+        return E_WRITE_PARCEL_ERROR;
+    }
+    ErrorCode errCode = CheckValid(wallpaperType, mapSize, resourceType);
+    if (errCode != E_OK) {
+        HILOG_ERROR("CheckValid failed");
+        return errCode;
+    }
+    char *buffer = new (std::nothrow) char[mapSize]();
+    if (buffer == nullptr) {
+        HILOG_ERROR("buffer failed");
+        return E_NO_MEMORY;
+    }
+    stringBuf.sgetn(buffer, mapSize);
+    {
+        std::lock_guard<std::mutex> lock(mtx_);
+        mode_t mode = S_IRUSR | S_IWUSR;
+        int32_t fdw = open(wallpaperTmpFullPath.c_str(), O_WRONLY | O_CREAT, mode);
+        if (fdw < 0) {
+            HILOG_ERROR("Open wallpaper tmpFullPath failed, errno %{public}d", errno);
+            delete[] buffer;
+            return E_DEAL_FAILED;
+        }
+        if (write(fdw, buffer, mapSize) <= 0) {
+            HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
+            ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
+            delete[] buffer;
+            close(fdw);
+            return E_DEAL_FAILED;
+        }
+        delete[] buffer;
+        close(fdw);
+    }
+    return E_OK;
+}
+
+int64_t WallpaperService::WritePixelMapToStream(std::shared_ptr<OHOS::Media::PixelMap> pixelMap,
+    std::ostream &outputStream)
+{
+    OHOS::Media::ImagePacker imagePacker;
+    OHOS::Media::PackOption option;
+    option.format = "image/jpeg";
+    option.quality = OPTION_QUALITY;
+    option.numberHint = 1;
+    std::set<std::string> formats;
+    uint32_t ret = imagePacker.GetSupportedFormats(formats);
+    if (ret != 0) {
+        HILOG_ERROR("image packer get supported format failed, ret=%{public}u.", ret);
+    }
+
+    imagePacker.StartPacking(outputStream, option);
+    imagePacker.AddImage(*pixelMap);
+    int64_t packedSize = 0;
+    imagePacker.FinalizePacking(packedSize);
+    HILOG_INFO("FrameWork WritePixelMapToStream End! packedSize=%{public}lld.", static_cast<long long>(packedSize));
+    return packedSize;
 }
 
 void WallpaperService::OnColorsChange(WallpaperType wallpaperType, const ColorManager::Color &color)

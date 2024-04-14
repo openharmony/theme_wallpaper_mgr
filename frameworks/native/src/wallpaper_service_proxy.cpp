@@ -105,7 +105,7 @@ ErrorCode WallpaperServiceProxy::SetWallpaperV9(int32_t fd, int32_t wallpaperTyp
 ErrorCode WallpaperServiceProxy::SetWallpaperInner(
     int32_t fd, int32_t wallpaperType, int32_t length, WallpaperServiceIpcInterfaceCode code)
 {
-    HILOG_INFO(" WallpaperServiceProxy::SetWallpaper --> start ");
+    HILOG_DEBUG(" WallpaperServiceProxy::SetWallpaper --> start ");
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -124,6 +124,56 @@ ErrorCode WallpaperServiceProxy::SetWallpaperInner(
         return E_WRITE_PARCEL_ERROR;
     }
     if (!data.WriteInt32(length)) {
+        HILOG_ERROR(" Failed to WriteInt32 ");
+        return E_WRITE_PARCEL_ERROR;
+    }
+
+    int32_t result = Remote()->SendRequest(static_cast<uint32_t>(code), data, reply, option);
+    if (result != ERR_NONE) {
+        HILOG_ERROR(" WallpaperCallbackProxy::SetWallpaper fail, result = %{public}d ", result);
+        return E_DEAL_FAILED;
+    }
+
+    return ConvertIntToErrorCode(reply.ReadInt32());
+}
+
+ErrorCode WallpaperServiceProxy::SetWallpaperByPixelMap(
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType)
+{
+    return SetWallpaperInnerByPixelMap(pixelMap, wallpaperType,
+        WallpaperServiceIpcInterfaceCode::SET_WALLPAPER_PIXELMAP);
+}
+
+ErrorCode WallpaperServiceProxy::SetWallpaperV9ByPixelMap(
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType)
+{
+    return SetWallpaperInnerByPixelMap(pixelMap, wallpaperType,
+        WallpaperServiceIpcInterfaceCode::SET_WALLPAPER_PIXELMAP_V9);
+}
+
+ErrorCode WallpaperServiceProxy::SetWallpaperInnerByPixelMap(std::shared_ptr<OHOS::Media::PixelMap> pixelMap,
+    int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code)
+{
+    HILOG_DEBUG(" WallpaperServiceProxy::SetWallpaper --> start ");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        HILOG_ERROR(" Failed to write parcelable ");
+        return E_WRITE_PARCEL_ERROR;
+    }
+    std::vector<std::uint8_t> value = PixelMapToVector(pixelMap);
+    if (!data.WriteInt32(value.size())) {
+        HILOG_ERROR(" Failed to WriteInt32 ");
+        return E_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteRawData(value.data(), value.size())) {
+        HILOG_ERROR(" Failed to WriteUInt8Vector ");
+        return E_WRITE_PARCEL_ERROR;
+    }
+
+    if (!data.WriteInt32(wallpaperType)) {
         HILOG_ERROR(" Failed to WriteInt32 ");
         return E_WRITE_PARCEL_ERROR;
     }
@@ -215,7 +265,7 @@ ErrorCode WallpaperServiceProxy::SetCustomWallpaper(int32_t fd, int32_t wallpape
 ErrorCode WallpaperServiceProxy::GetPixelMapInner(
     int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code, IWallpaperService::FdInfo &fdInfo)
 {
-    HILOG_INFO(" WallpaperServiceProxy::getPixelMap --> start ");
+    HILOG_DEBUG(" WallpaperServiceProxy::getPixelMap --> start ");
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -459,6 +509,20 @@ bool WallpaperServiceProxy::RegisterWallpaperCallback(const sptr<IWallpaperCallb
     int32_t status = reply.ReadInt32();
     bool ret = status == static_cast<int32_t>(E_OK);
     return ret;
+}
+
+std::vector<std::uint8_t> WallpaperServiceProxy::PixelMapToVector(std::shared_ptr<OHOS::Media::PixelMap> pixelMap)
+{
+    HILOG_DEBUG("PixelMapToVector start");
+    if (pixelMap == nullptr) {
+        return {};
+    }
+    std::vector<std::uint8_t> value;
+    if (!pixelMap->EncodeTlv(value)) {
+        HILOG_ERROR("pixelMap encode failed!");
+        return {};
+    }
+    return value;
 }
 
 ErrorCode WallpaperServiceProxy::ConvertIntToErrorCode(int32_t errorCode)

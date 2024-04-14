@@ -34,6 +34,7 @@ public:
     }
     DISALLOW_COPY_AND_MOVE(WallpaperServiceProxy);
     ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
+    ErrorCode SetWallpaperByPixelMap(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType) override;
     ErrorCode GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo) override;
     ErrorCode GetColors(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
     ErrorCode GetFile(int32_t wallpaperType, int32_t &wallpaperFd) override;
@@ -50,6 +51,7 @@ public:
     ErrorCode ConvertIntToErrorCode(int32_t errorCode);
 
     ErrorCode SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length) override;
+    ErrorCode SetWallpaperV9ByPixelMap(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType) override;
     ErrorCode GetPixelMapV9(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo) override;
     ErrorCode GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
     ErrorCode ResetWallpaperV9(int wallpaperType) override;
@@ -57,12 +59,15 @@ public:
 private:
     ErrorCode SetWallpaperInner(
         int32_t fd, int32_t wallpaperType, int32_t length, WallpaperServiceIpcInterfaceCode code);
+    ErrorCode SetWallpaperInnerByPixelMap(std::shared_ptr<OHOS::Media::PixelMap> pixelMap,
+       int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code);
     ErrorCode GetPixelMapInner(
         int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code, IWallpaperService::FdInfo &fdInfo);
     ErrorCode GetColorsInner(
         int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code, std::vector<uint64_t> &colors);
     ErrorCode ResetWallpaperInner(int wallpaperType, WallpaperServiceIpcInterfaceCode code);
     bool StartSocket(std::string uri, std::string name);
+    std::vector<std::uint8_t> PixelMapToVector(std::shared_ptr<OHOS::Media::PixelMap> pixelMap);
     static inline BrokerDelegator<WallpaperServiceProxy> delegator_;
     sptr<OHOS::Media::PixelMap> pixelMapData_;
     std::string serviceReadUri = "";

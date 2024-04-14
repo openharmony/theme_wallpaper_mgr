@@ -33,6 +33,7 @@ public:
 
 private:
     int32_t OnSetWallpaper(MessageParcel &data, MessageParcel &reply);
+    int32_t OnSetWallpaperByPixelMap(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetPixelMap(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetColors(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetFile(MessageParcel &data, MessageParcel &reply);
@@ -45,11 +46,13 @@ private:
     int32_t OnRegisterWallpaperCallback(MessageParcel &data, MessageParcel &reply);
 
     int32_t OnSetWallpaperV9(MessageParcel &data, MessageParcel &reply);
+    int32_t OnSetWallpaperV9ByPixelMap(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetPixelMapV9(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetColorsV9(MessageParcel &data, MessageParcel &reply);
     int32_t OnResetWallpaperV9(MessageParcel &data, MessageParcel &reply);
 
     int32_t OnSetWallpaperInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
+    int32_t OnSetWallpaperInnerByPixelMap(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
     int32_t OnGetPixelMapInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
     int32_t OnGetColorsInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
     int32_t OnResetWallpaperInner(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
@@ -58,6 +61,7 @@ private:
     int32_t OnSendEvent(MessageParcel &data, MessageParcel &reply);
 
     using WallpaperServiceFunc = int32_t (WallpaperServiceStub::*)(MessageParcel &data, MessageParcel &reply);
+    std::shared_ptr<OHOS::Media::PixelMap> VectorToPixelMap(std::vector<std::uint8_t> value);
     std::map<WallpaperServiceIpcInterfaceCode, WallpaperServiceFunc> memberFuncMap_;
 };
 } // namespace WallpaperMgrService

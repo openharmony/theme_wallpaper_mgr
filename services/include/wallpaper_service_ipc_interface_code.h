@@ -38,6 +38,8 @@ enum class WallpaperServiceIpcInterfaceCode {
     SET_VIDEO,
     SET_CUSTOM,
     SEND_EVENT,
+    SET_WALLPAPER_PIXELMAP,
+    SET_WALLPAPER_PIXELMAP_V9,
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
