@@ -92,6 +92,10 @@ void JsWallpaperExtensionAbility::Init(const std::shared_ptr<AbilityLocalRecord>
         return;
     }
     auto workContext = new (std::nothrow) std::weak_ptr<WallpaperExtensionContext>(context);
+    if (workContext == nullptr) {
+        HILOG_ERROR("Failed to new workContext");
+        return;
+    }
     napi_value contextObj = CreateJsWallpaperExtensionContext(env, context);
     auto shellContextRef = jsRuntime_.LoadSystemModule("WallpaperExtensionContext", &contextObj, ARGC_ONE);
     contextObj = shellContextRef->GetNapiValue();
