@@ -36,15 +36,15 @@ JsErrorInfo JsError::ConvertErrorCode(ErrorCode wallpaperErrorCode)
     switch (wallpaperErrorCode) {
         case E_PARAMETERS_INVALID:
             errorObject.code = static_cast<int32_t>(ErrorThrowType::PARAMETER_ERROR);
-            errorObject.message = PARAMETERERRORMESSAGE;
+            errorObject.message = std::string(PARAMETER_ERROR_MESSAGE);
             break;
         case E_NO_PERMISSION:
             errorObject.code = static_cast<int32_t>(ErrorThrowType::PERMISSION_ERROR);
-            errorObject.message = PERMISSIONDENIEDMESSAGE;
+            errorObject.message = PERMISSION_DENIED_MESSAGE;
             break;
         case E_NOT_SYSTEM_APP:
             errorObject.code = static_cast<int32_t>(ErrorThrowType::SYSTEM_APP_PERMISSION_ERROR);
-            errorObject.message = PERMISSIONFAILEDMESSAGE;
+            errorObject.message = PERMISSION_FAILED_MESSAGE;
             break;
         default:
             HILOG_DEBUG("Non-existent error type!");

@@ -37,7 +37,7 @@ Call::Call(napi_env env, napi_callback_info info, std::shared_ptr<Context> conte
             argc = pos;
         } else {
             context->errCode_ = ErrorThrowType::PARAMETER_ERROR;
-            context->errMsg_ = PARAMETERERRORMESSAGE;
+            context->errMsg_ = std::string(PARAMETER_ERROR_MESSAGE) + "The type of valueType must be function.";
         }
     }
     auto status = (*context)(env, argc, argv, self);
