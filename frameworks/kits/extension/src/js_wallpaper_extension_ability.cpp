@@ -72,7 +72,6 @@ void JsWallpaperExtensionAbility::Init(const std::shared_ptr<AbilityLocalRecord>
     }
     std::string moduleName(Extension::abilityInfo_->moduleName);
     moduleName.append("::").append(abilityInfo_->name);
-    HILOG_INFO("JsWallpaperExtension::Init module:%{public}s,srcPath:%{public}s.", moduleName.c_str(), srcPath.c_str());
     HandleScope handleScope(jsRuntime_);
     napi_env env = jsRuntime_.GetNapiEnv();
     jsObj_ = jsRuntime_.LoadModule(moduleName, srcPath, abilityInfo_->hapPath,
@@ -91,11 +90,6 @@ void JsWallpaperExtensionAbility::Init(const std::shared_ptr<AbilityLocalRecord>
         HILOG_ERROR("Failed to get context");
         return;
     }
-    auto workContext = new (std::nothrow) std::weak_ptr<WallpaperExtensionContext>(context);
-    if (workContext == nullptr) {
-        HILOG_ERROR("Failed to new workContext");
-        return;
-    }
     napi_value contextObj = CreateJsWallpaperExtensionContext(env, context);
     auto shellContextRef = jsRuntime_.LoadSystemModule("WallpaperExtensionContext", &contextObj, ARGC_ONE);
     contextObj = shellContextRef->GetNapiValue();
@@ -105,10 +99,17 @@ void JsWallpaperExtensionAbility::Init(const std::shared_ptr<AbilityLocalRecord>
         HILOG_ERROR("Failed to get wallpaper extension native object");
         return;
     }
-    napi_wrap(env, contextObj, workContext, [](napi_env, void *data, void *) {
-            HILOG_INFO("Finalizer for weak_ptr wallpaper extension context is called");
-            delete static_cast<std::weak_ptr<AbilityRuntime::Context> *>(data);
+    auto workContext = new (std::nothrow) WallpaperExtensionContext();
+    if (workContext == nullptr) {
+        HILOG_ERROR("Failed to new workContext");
+        return;
+    }
+    auto ret = napi_wrap(env, contextObj, workContext, [](napi_env, void *data, void *) {
+            delete static_cast<AbilityRuntime::Context *>(data);
         }, nullptr, nullptr);
+    if (ret != napi_ok) {
+        delete workContext;
+    }
 }
 
 void JsWallpaperExtensionAbility::OnStart(const AAFwk::Want &want)
