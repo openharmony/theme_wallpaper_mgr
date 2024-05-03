@@ -114,6 +114,11 @@ setwallpaperv9_test = {
   configFuzzer = "wallpapersetwallpaperv9_fuzzer"
   source = "src/setwallpaperv9_fuzzer.cpp"
 }
+setwallpaperpixelmapv9_test = {
+  targetName = "WallpaperSetWallpaperPixelmapV9FuzzTest"
+  configFuzzer = "wallpapersetwallpaperpixelmapv9_fuzzer"
+  source = "src/setwallpaperpixelmapv9_fuzz.cpp"
+}
 
 wallpaper_fuzztests = [
   boundarycode_test,
@@ -135,6 +140,7 @@ wallpaper_fuzztests = [
   setvideo_test,
   setwallpaper_test,
   setwallpaperv9_test,
+  setwallpaperpixelmapv9_test,
 ]
 foreach(item, wallpaper_fuzztests) {
   ohos_fuzztest(item.targetName) {
@@ -203,6 +209,7 @@ group("fuzztest") {
     ":WallpaperSetCustomFuzzTest",
     ":WallpaperSetVideoFuzzTest",
     ":WallpaperSetWallpaperFuzzTest",
+    ":WallpaperSetWallpaperPixelmapV9FuzzTest",
     ":WallpaperSetWallpaperV9FuzzTest",
   ]
 }
