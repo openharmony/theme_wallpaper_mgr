@@ -60,6 +60,7 @@ ohos_shared_library("wallpaper_service") {
     "hitrace:hitrace_meter",
     "init:libbegetutil",
     "ipc:ipc_single",
+    "memmgr:memmgrclient",
     "os_account:os_account_innerkits",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",

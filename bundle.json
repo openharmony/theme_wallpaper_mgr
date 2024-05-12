@@ -44,7 +44,8 @@
           "image_framework",
           "player_framework",
           "eventhandler",
-          "init"
+          "init",
+          "memmgr"
         ],
         "third_party": []
       },
