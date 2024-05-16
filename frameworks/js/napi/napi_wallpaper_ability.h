@@ -19,6 +19,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <uv.h>
 
 #include "call.h"
 #include "napi/native_api.h"
@@ -216,6 +217,8 @@ private:
         {
         }
     };
+    static void OnWallpaperChangeLambdaFunction(uv_work_t *work, int status);
+    static void OnColorsChangeLambdaFunction(uv_work_t *work, int status);
     napi_ref callback_ = nullptr;
     napi_env env_;
     uv_loop_s *loop_ = nullptr;
