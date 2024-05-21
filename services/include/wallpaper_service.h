@@ -147,7 +147,6 @@ private:
     bool SaveWallpaperState(int32_t userId, WallpaperType wallpaperType, WallpaperResourceType resourceType);
     void LoadWallpaperState();
     WallpaperResourceType GetResType(int32_t userId, WallpaperType wallpaperType);
-    void InitBundleNameParameter();
     void RemoveExtensionDeathRecipient();
     static void GetWallpaperFile(
         WallpaperResourceType resourceType, const WallpaperData &wallpaperData, std::string &wallpaperFile);

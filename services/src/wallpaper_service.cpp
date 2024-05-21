@@ -88,7 +88,6 @@ constexpr const char *SYSTEM_RES_TYPE = "SystemResType";
 constexpr const char *LOCKSCREEN_RES_TYPE = "LockScreenResType";
 constexpr const char *WALLPAPER_CHANGE = "wallpaperChange";
 constexpr const char *COLOR_CHANGE = "colorChange";
-constexpr const char *BUNDLE_NAME_KEY = "persist.wallpaper_mgr.bundleName";
 constexpr const char *SCENEBOARD_BUNDLE_NAME = "com.ohos.sceneboard";
 
 constexpr const char *WALLPAPER_USERID_PATH = "/data/service/el1/public/wallpaper/";
@@ -111,7 +110,6 @@ constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
 constexpr int32_t DEFAULT_USER_ID = 0;
 constexpr int32_t MAX_VIDEO_SIZE = 104857600;
 constexpr int32_t OPTION_QUALITY = 100;
-const int CONFIG_LEN = 30;
 
 #ifndef THEME_SERVICE
 constexpr int32_t CONNECT_EXTENSION_INTERVAL = 100;
@@ -249,23 +247,11 @@ void WallpaperService::InitData()
     currentUserId_ = userId;
     wallpaperEventMap_.clear();
     appBundleName_ = SCENEBOARD_BUNDLE_NAME;
-    InitBundleNameParameter();
     InitUserDir(userId);
     LoadSettingsLocked(userId);
     InitResources(userId, WALLPAPER_SYSTEM);
     InitResources(userId, WALLPAPER_LOCKSCREEN);
     LoadWallpaperState();
-}
-
-void WallpaperService::InitBundleNameParameter()
-{
-    char value[CONFIG_LEN] = "";
-    if (GetParameter(BUNDLE_NAME_KEY, "", value, CONFIG_LEN) < 0 || strlen(value) == 0) {
-        HILOG_ERROR("No found bundle name from system parameter.");
-        return;
-    }
-    appBundleName_ = value;
-    HILOG_INFO("get appBundleName_ :%{public}s", appBundleName_.c_str());
 }
 
 #ifndef THEME_SERVICE

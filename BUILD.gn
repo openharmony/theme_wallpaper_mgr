@@ -18,8 +18,6 @@ group("wallpaper_mgr_packages") {
   if (is_standard_system) {
     deps = [
       "services:wallpaper_service",
-      "services/etc:wallpaper.para",
-      "services/etc:wallpaper.para.dac",
       "services/etc/init:wallpaperservice.rc",
       "services/profile:wallpaper_sa_profiles",
     ]
