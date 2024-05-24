@@ -60,6 +60,8 @@
 #include "wallpaper_service_cb_proxy.h"
 #include "want.h"
 #include "window.h"
+#include "mem_mgr_client.h"
+#include "mem_mgr_proxy.h"
 
 #ifndef THEME_SERVICE
 #include "ability_manager_client.h"
@@ -165,6 +167,7 @@ void WallpaperService::OnStart()
     InitData();
     InitServiceHandler();
     AddSystemAbilityListener(COMMON_EVENT_SERVICE_ID);
+    AddSystemAbilityListener(MEMORY_MANAGER_SA_ID);
     auto cmd = std::make_shared<Command>(std::vector<std::string>({ "-all" }), "Show all",
         [this](const std::vector<std::string> &input, std::string &output) -> bool {
             output.append(
@@ -186,6 +189,9 @@ void WallpaperService::OnAddSystemAbility(int32_t systemAbilityId, const std::st
     if (systemAbilityId == COMMON_EVENT_SERVICE_ID) {
         int32_t times = 0;
         RegisterSubscriber(times);
+    } else if (systemAbilityId == MEMORY_MANAGER_SA_ID) {
+        int pid = getpid();
+        Memory::MemMgrClient::GetInstance().NotifyProcessStatus(pid, 1, 1, WALLPAPER_MANAGER_SERVICE_ID);
     }
 }
 
@@ -231,6 +237,8 @@ void WallpaperService::OnStop()
         HILOG_INFO("UnregisterSubscriber end, unSubscribeResult = %{public}d", unSubscribeResult);
     }
     state_ = ServiceRunningState::STATE_NOT_START;
+    int pid = getpid();
+    Memory::MemMgrClient::GetInstance().NotifyProcessStatus(pid, 1, 0, WALLPAPER_MANAGER_SERVICE_ID);
 }
 
 void WallpaperService::InitData()
