@@ -463,12 +463,25 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
     ConnectExtensionAbility();
 #endif
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
+    std::string systemFile =
+        WALLPAPER_USERID_PATH + std::to_string(userId) + "/" + WALLPAPER_SYSTEM_DIRNAME + "/" + WALLPAPER_SYSTEM_ORIG;
+    std::string lockFile = WALLPAPER_USERID_PATH + std::to_string(userId) + "/" + WALLPAPER_LOCKSCREEN_DIRNAME + "/"
+                           + WALLPAPER_LOCK_ORIG;
     LoadSettingsLocked(userId);
     if (!FileDeal::IsFileExist(userDir)) {
         HILOG_INFO("User file is not exist, userId = %{public}d", userId);
         InitUserDir(userId);
         InitResources(userId, WALLPAPER_SYSTEM);
         InitResources(userId, WALLPAPER_LOCKSCREEN);
+    } else {
+        if (!FileDeal::IsFileExist(systemFile)) {
+            HILOG_INFO("systemFile is not exist, userId = %{public}d", userId);
+            InitResources(userId, WALLPAPER_SYSTEM);
+        }
+        if (!FileDeal::IsFileExist(lockFile)) {
+            HILOG_INFO("lockFile is not exist, userId = %{public}d", userId);
+            InitResources(userId, WALLPAPER_LOCKSCREEN);
+        }
     }
     LoadWallpaperState();
     SendWallpaperChangeEvent(userId, WALLPAPER_SYSTEM);
