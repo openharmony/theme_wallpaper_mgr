@@ -25,6 +25,7 @@
 
 namespace OHOS {
 namespace WallpaperMgrService {
+using WallpaperRequestHandler = std::function<int32_t(MessageParcel &, MessageParcel &)>;
 class WallpaperServiceStub : public IRemoteStub<IWallpaperService> {
 public:
     int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
@@ -59,10 +60,10 @@ private:
     int32_t OnSetVideo(MessageParcel &data, MessageParcel &reply);
     int32_t OnSetCustomWallpaper(MessageParcel &data, MessageParcel &reply);
     int32_t OnSendEvent(MessageParcel &data, MessageParcel &reply);
-
-    using WallpaperServiceFunc = int32_t (WallpaperServiceStub::*)(MessageParcel &data, MessageParcel &reply);
+    int32_t HandleWallpaperRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option);
     std::shared_ptr<OHOS::Media::PixelMap> VectorToPixelMap(std::vector<std::uint8_t> value);
-    std::map<WallpaperServiceIpcInterfaceCode, WallpaperServiceFunc> memberFuncMap_;
+    WallpaperRequestHandler GetWallpaperRequestHandler(uint32_t code);
+    std::unordered_map<uint32_t, WallpaperRequestHandler> requestHandlers;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

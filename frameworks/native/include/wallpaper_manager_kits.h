@@ -169,6 +169,8 @@ public:
 
     virtual void CloseWallpaperFd(int32_t wallpaperType) = 0;
 
+    virtual bool RegisterWallpaperListener() = 0;
+
 protected:
     WallpaperManagerkits() = default;
 };

@@ -19,36 +19,33 @@
 
 namespace OHOS {
 namespace WallpaperMgrService {
+
 WallpaperServiceCbStub::WallpaperServiceCbStub()
 {
-    memberFuncMap_[ONCALL] = &WallpaperServiceCbStub::HandleOnCall;
 }
-
-int32_t WallpaperServiceCbStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
-    MessageOption &option)
+int32_t WallpaperServiceCbStub::OnRemoteRequest(
+    uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
-    HILOG_INFO("  WallpaperServiceCbStub::OnRemoteRequest start##ret = %{public}u", code);
+    HILOG_INFO("WallpaperServiceCbStub::OnRemoteRequest start##ret = %{public}u", code);
     std::u16string myDescriptor = WallpaperServiceCbStub::GetDescriptor();
     std::u16string remoteDescriptor = data.ReadInterfaceToken();
     if (myDescriptor != remoteDescriptor) {
-        HILOG_ERROR(" end##descriptor checked fail");
+        HILOG_ERROR("end##descriptor checked fail");
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    auto itFunc = memberFuncMap_.find(code);
-    if (itFunc != memberFuncMap_.end()) {
-        auto memberFunc = itFunc->second;
-        if (memberFunc != nullptr) {
-            return (this->*memberFunc)(data, reply);
-        }
+    switch (code) {
+        case static_cast<uint32_t>(ONCALL):
+            return HandleOnCall(data, reply);
+        default:
+            HILOG_ERROR("remote request unhandled: %{public}d", code);
+            return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    int32_t ret = IPCObjectStub::OnRemoteRequest(code, data, reply, option);
-    HILOG_INFO("  WallpaperServiceCbStub::OnRemoteRequest end##ret = %{public}d", ret);
-    return ret;
+    return E_OK;
 }
 
 int32_t WallpaperServiceCbStub::HandleOnCall(MessageParcel &data, MessageParcel &reply)
 {
-    HILOG_INFO("  WallpaperServiceCbStub::HandleOnCall");
+    HILOG_INFO("WallpaperServiceCbStub::HandleOnCall");
     int32_t wallpaperType = data.ReadInt32();
     OnCall(wallpaperType);
     HILOG_INFO("wallpaperType = %{public}d", wallpaperType);
@@ -57,7 +54,7 @@ int32_t WallpaperServiceCbStub::HandleOnCall(MessageParcel &data, MessageParcel 
 
 int32_t WallpaperServiceCbStub::OnCall(const int32_t num)
 {
-    HILOG_INFO("  WallpaperServiceCbStub::OnCall");
+    HILOG_INFO("WallpaperServiceCbStub::OnCall");
     WallpaperMgrService::WallpaperManagerkits::GetInstance().GetCallback()(num);
     return 0;
 }

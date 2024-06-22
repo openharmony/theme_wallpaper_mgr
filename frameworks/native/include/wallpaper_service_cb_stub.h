@@ -33,8 +33,6 @@ public:
 
 private:
     int32_t HandleOnCall(MessageParcel &data, MessageParcel &reply);
-    using WallpaperCallbackFunc = int32_t (WallpaperServiceCbStub::*)(MessageParcel &data, MessageParcel &reply);
-    std::map<uint32_t, WallpaperCallbackFunc> memberFuncMap_;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

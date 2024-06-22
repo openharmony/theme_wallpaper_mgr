@@ -24,6 +24,7 @@
 #include "parcel.h"
 #include "pixel_map.h"
 #include "wallpaper_common.h"
+#include "wallpaper_service_ipc_interface_code.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -32,64 +33,85 @@ using namespace OHOS::Media;
 
 WallpaperServiceStub::WallpaperServiceStub(bool serialInvokeFlag) : IRemoteStub(serialInvokeFlag)
 {
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_WALLPAPER] = &WallpaperServiceStub::OnSetWallpaper;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_PIXELMAP] = &WallpaperServiceStub::OnGetPixelMap;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_COLORS] = &WallpaperServiceStub::OnGetColors;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_WALLPAPER_ID] = &WallpaperServiceStub::OnGetWallpaperId;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_FILE] = &WallpaperServiceStub::OnGetFile;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::ON] = &WallpaperServiceStub::OnWallpaperOn;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::OFF] = &WallpaperServiceStub::OnWallpaperOff;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::IS_CHANGE_PERMITTED] = &WallpaperServiceStub::OnIsChangePermitted;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::IS_OPERATION_ALLOWED] =
-        &WallpaperServiceStub::OnIsOperationAllowed;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::RESET_WALLPAPER] = &WallpaperServiceStub::OnResetWallpaper;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::REGISTER_CALLBACK] =
-        &WallpaperServiceStub::OnRegisterWallpaperCallback;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_WALLPAPER_V9] = &WallpaperServiceStub::OnSetWallpaperV9;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_PIXELMAP_V9] = &WallpaperServiceStub::OnGetPixelMapV9;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::GET_COLORS_V9] = &WallpaperServiceStub::OnGetColorsV9;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::RESET_WALLPAPER_V9] = &WallpaperServiceStub::OnResetWallpaperV9;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_VIDEO] = &WallpaperServiceStub::OnSetVideo;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_CUSTOM] = &WallpaperServiceStub::OnSetCustomWallpaper;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::SEND_EVENT] = &WallpaperServiceStub::OnSendEvent;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_WALLPAPER_PIXELMAP] =
-        &WallpaperServiceStub::OnSetWallpaperByPixelMap;
-    memberFuncMap_[WallpaperServiceIpcInterfaceCode::SET_WALLPAPER_PIXELMAP_V9] =
-        &WallpaperServiceStub::OnSetWallpaperV9ByPixelMap;
+    requestHandlers = {
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_WALLPAPER),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnSetWallpaper(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::GET_PIXELMAP),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnGetPixelMap(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::GET_COLORS),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnGetColors(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::GET_WALLPAPER_ID),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnGetWallpaperId(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::GET_FILE),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnGetFile(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::ON),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnWallpaperOn(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::OFF),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnWallpaperOff(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::IS_CHANGE_PERMITTED),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnIsChangePermitted(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::IS_OPERATION_ALLOWED),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnIsOperationAllowed(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::RESET_WALLPAPER),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnResetWallpaper(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::REGISTER_CALLBACK),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnRegisterWallpaperCallback(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_WALLPAPER_V9),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnSetWallpaperV9(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::GET_PIXELMAP_V9),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnGetPixelMapV9(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::GET_COLORS_V9),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnGetColorsV9(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::RESET_WALLPAPER_V9),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnResetWallpaperV9(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_VIDEO),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnSetVideo(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_CUSTOM),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnSetCustomWallpaper(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SEND_EVENT),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnSendEvent(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_WALLPAPER_PIXELMAP),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnSetWallpaperByPixelMap(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_WALLPAPER_PIXELMAP_V9),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnSetWallpaperV9ByPixelMap(data, reply); } },
+    };
 }
 
 WallpaperServiceStub::~WallpaperServiceStub()
 {
-    memberFuncMap_.clear();
 }
 
 int32_t WallpaperServiceStub::OnRemoteRequest(
     uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
     MemoryGuard cacheGuard;
-    HILOG_INFO("start##ret = %{public}u", code);
     std::u16string myDescriptor = WallpaperServiceStub::GetDescriptor();
     std::u16string remoteDescriptor = data.ReadInterfaceToken();
     if (myDescriptor != remoteDescriptor) {
-        HILOG_ERROR("end##descriptor checked fail");
+        HILOG_ERROR("Remote descriptor not the same as local descriptor.");
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    pid_t p = IPCSkeleton::GetCallingPid();
-    pid_t p1 = IPCSkeleton::GetCallingUid();
-    HILOG_INFO("CallingPid = %{public}d, CallingUid = %{public}d, code = %{public}u", p, p1, code);
-    if (code >= static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_WALLPAPER)
-        && code <= static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_WALLPAPER_PIXELMAP_V9)) {
-        auto itFunc = memberFuncMap_.find(static_cast<WallpaperServiceIpcInterfaceCode>(code));
-        if (itFunc != memberFuncMap_.end()) {
-            auto memberFunc = itFunc->second;
-            if (memberFunc != nullptr) {
-                return (this->*memberFunc)(data, reply);
-            }
-        }
+    return HandleWallpaperRequest(code, data, reply, option);
+}
+
+WallpaperRequestHandler WallpaperServiceStub::GetWallpaperRequestHandler(uint32_t code)
+{
+    auto it = requestHandlers.find(code);
+    if (it != requestHandlers.end()) {
+        return it->second;
     }
-    int32_t ret = IPCObjectStub::OnRemoteRequest(code, data, reply, option);
-    HILOG_INFO("end##ret = %{public}d", ret);
-    return ret;
+    return nullptr;
+}
+
+int32_t WallpaperServiceStub::HandleWallpaperRequest(
+    uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+{
+    WallpaperRequestHandler handler = GetWallpaperRequestHandler(code);
+    if (handler) {
+        return handler(data, reply);
+    }
+    HILOG_ERROR("remote request unhandled: %{public}d", code);
+    return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
 }
 
 int32_t WallpaperServiceStub::OnSetWallpaper(MessageParcel &data, MessageParcel &reply)

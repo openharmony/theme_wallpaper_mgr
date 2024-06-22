@@ -499,8 +499,7 @@ bool WallpaperManager::RegisterWallpaperCallback(JScallback callback)
         HILOG_ERROR("off failed code=%d.", ERR_NONE);
         return false;
     }
-
-    return 0;
+    return true;
 }
 
 void WallpaperManager::ReporterFault(FaultType faultType, FaultCode faultCode)
