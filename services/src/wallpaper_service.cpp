@@ -190,7 +190,7 @@ void WallpaperService::OnAddSystemAbility(int32_t systemAbilityId, const std::st
         int32_t times = 0;
         RegisterSubscriber(times);
     } else if (systemAbilityId == MEMORY_MANAGER_SA_ID) {
-        int pid = getpid();
+        int32_t pid = getpid();
         Memory::MemMgrClient::GetInstance().NotifyProcessStatus(pid, 1, 1, WALLPAPER_MANAGER_SERVICE_ID);
     }
 }
@@ -237,7 +237,7 @@ void WallpaperService::OnStop()
         HILOG_INFO("UnregisterSubscriber end, unSubscribeResult = %{public}d", unSubscribeResult);
     }
     state_ = ServiceRunningState::STATE_NOT_START;
-    int pid = getpid();
+    int32_t pid = getpid();
     Memory::MemMgrClient::GetInstance().NotifyProcessStatus(pid, 1, 0, WALLPAPER_MANAGER_SERVICE_ID);
 }
 
@@ -1477,7 +1477,7 @@ ErrorCode WallpaperService::CheckValid(int32_t wallpaperType, int32_t length, Wa
         return E_PARAMETERS_INVALID;
     }
 
-    int maxLength = resourceType == VIDEO ? MAX_VIDEO_SIZE : FOO_MAX_LEN;
+    int32_t maxLength = resourceType == VIDEO ? MAX_VIDEO_SIZE : FOO_MAX_LEN;
     if (length <= 0 || length > maxLength) {
         return E_PARAMETERS_INVALID;
     }

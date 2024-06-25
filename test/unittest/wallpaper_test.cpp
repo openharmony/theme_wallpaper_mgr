@@ -176,7 +176,7 @@ void WallpaperTest::TearDown(void)
 class WallpaperEventListenerTestImpl : public WallpaperEventListener {
 public:
     std::vector<uint64_t> color_;
-    int wallpaperType_;
+    int32_t wallpaperType_;
     WallpaperEventListenerTestImpl();
     ~WallpaperEventListenerTestImpl()
     {
@@ -188,9 +188,9 @@ public:
     WallpaperEventListenerTestImpl &operator=(WallpaperEventListenerTestImpl &&) = delete;
 
     // callback function will be called when the db data is changed.
-    void OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType) override;
-    void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
-        const std::string &uri) override;
+    void OnColorsChange(const std::vector<uint64_t> &color, int32_t wallpaperType) override;
+    void OnWallpaperChange(
+        WallpaperType wallpaperType, WallpaperResourceType resourceType, const std::string &uri) override;
     // reset the callCount_ to zero.
     void ResetToZero();
 
@@ -200,7 +200,7 @@ private:
     unsigned long callCount_;
 };
 
-void WallpaperEventListenerTestImpl::OnColorsChange(const std::vector<uint64_t> &color, int wallpaperType)
+void WallpaperEventListenerTestImpl::OnColorsChange(const std::vector<uint64_t> &color, int32_t wallpaperType)
 {
     callCount_++;
     for (auto const &each : color) {
@@ -364,12 +364,12 @@ HWTEST_F(WallpaperTest, Reset005, TestSize.Level1)
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset.";
-    int firstId = WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
+    int32_t firstId = WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
 
     /* duplicate reset */
     wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset.";
-    int secondId = WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
+    int32_t secondId = WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
     EXPECT_EQ(firstId, secondId) << "Id should be same one.";
 }
 
@@ -653,7 +653,7 @@ HWTEST_F(WallpaperTest, GetFile004, TestSize.Level0)
 HWTEST_F(WallpaperTest, getMinHeight001, TestSize.Level0)
 {
     HILOG_INFO("getMinHeight001  begin");
-    int height = 0;
+    int32_t height = 0;
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetWallpaperMinHeight(apiInfo, height);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to get WallpaperMinHeight.";
@@ -669,7 +669,7 @@ HWTEST_F(WallpaperTest, getMinHeight001, TestSize.Level0)
 HWTEST_F(WallpaperTest, getMinHeight002, TestSize.Level0)
 {
     HILOG_INFO("getMinHeight002  begin");
-    int height = 0;
+    int32_t height = 0;
     ApiInfo apiInfo{ true, true };
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetWallpaperMinHeight(apiInfo, height);
     EXPECT_EQ(wallpaperErrorCode, E_OK);
@@ -686,7 +686,7 @@ HWTEST_F(WallpaperTest, getMinHeight002, TestSize.Level0)
 HWTEST_F(WallpaperTest, getMinWidth001, TestSize.Level0)
 {
     HILOG_INFO("getMinWidth001  begin");
-    int width = 0;
+    int32_t width = 0;
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetWallpaperMinWidth(apiInfo, width);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to get WallpaperMinWidth.";
@@ -702,7 +702,7 @@ HWTEST_F(WallpaperTest, getMinWidth001, TestSize.Level0)
 HWTEST_F(WallpaperTest, getMinWidth002, TestSize.Level0)
 {
     HILOG_INFO("getMinWidth002  begin");
-    int width = 0;
+    int32_t width = 0;
     ApiInfo apiInfo{ true, true };
     ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetWallpaperMinWidth(apiInfo, width);
     EXPECT_EQ(wallpaperErrorCode, E_OK);

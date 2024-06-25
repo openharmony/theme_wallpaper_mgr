@@ -31,7 +31,7 @@ namespace WallpaperMgrService {
 
 class WallpaperEventListenerStub : public IRemoteStub<IWallpaperEventListener> {
 public:
-    int OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
+    int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
 };
 
 } // namespace WallpaperMgrService
