@@ -118,7 +118,6 @@ private:
     ErrorCode SetDefaultDataForWallpaper(int32_t userId, WallpaperType wallpaperType);
     int32_t MakeWallpaperIdLocked();
     bool CheckCallingPermission(const std::string &permissionName);
-    bool GetBundleNameByUid(std::int32_t uid, std::string &bname);
     ErrorCode SetWallpaperBackupData(int32_t userId, WallpaperResourceType resourceType,
         const std::string &uriOrPixelMap, WallpaperType wallpaperType);
     ErrorCode WritePixelMapToFile(std::shared_ptr<OHOS::Media::PixelMap> pixelMap,
@@ -132,7 +131,6 @@ private:
     ErrorCode GetImageSize(int32_t userId, WallpaperType wallpaperType, int32_t &size);
     bool RestoreUserResources(const WallpaperData &wallpaperData, WallpaperType wallpaperType);
     bool InitUserDir(int32_t userId);
-    bool BlockRetry(int64_t interval, uint32_t maxRetryTimes, std::function<bool()> function);
     int32_t QueryActiveUserId();
     bool CheckUserPermissionById(int32_t userId);
 

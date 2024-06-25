@@ -1126,35 +1126,6 @@ bool WallpaperService::CheckCallingPermission(const std::string &permissionName)
     return true;
 }
 
-bool WallpaperService::GetBundleNameByUid(std::int32_t uid, std::string &bname)
-{
-    sptr<ISystemAbilityManager> systemMgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (systemMgr == nullptr) {
-        HILOG_ERROR("Fail to get system ability mgr");
-        return false;
-    }
-
-    sptr<IRemoteObject> remoteObject = systemMgr->GetSystemAbility(BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
-    if (remoteObject == nullptr) {
-        HILOG_ERROR("Fail to get bundle manager proxy");
-        return false;
-    }
-
-    sptr<OHOS::AppExecFwk::IBundleMgr> bundleMgrProxy = iface_cast<OHOS::AppExecFwk::IBundleMgr>(remoteObject);
-    if (bundleMgrProxy == nullptr) {
-        HILOG_ERROR("Bundle mgr proxy is nullptr");
-        return false;
-    }
-
-    ErrCode errCode = bundleMgrProxy->GetNameForUid(uid, bname);
-    if (errCode != ERR_OK) {
-        HILOG_ERROR("Get bundle name failed errcode:%{public}d", errCode);
-        return false;
-    }
-    HILOG_INFO("Get bundle name is %{public}s", bname.c_str());
-    return true;
-}
-
 void WallpaperService::ReporterFault(FaultType faultType, FaultCode faultCode)
 {
     FaultMsg msg;
@@ -1270,23 +1241,6 @@ ErrorCode WallpaperService::GetImageSize(int32_t userId, WallpaperType wallpaper
     }
     fclose(fd);
     return E_OK;
-}
-
-bool WallpaperService::BlockRetry(int64_t interval, uint32_t maxRetryTimes, std::function<bool()> function)
-{
-    uint32_t times = 0;
-    bool ret = false;
-    do {
-        times++;
-        ret = function();
-        if (ret) {
-            break;
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(interval));
-        HILOG_INFO("function() is: %d", ret);
-    } while (times < maxRetryTimes);
-    HILOG_INFO("retry times: %d", times);
-    return ret;
 }
 
 int32_t WallpaperService::QueryActiveUserId()
