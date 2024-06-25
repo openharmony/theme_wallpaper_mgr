@@ -36,12 +36,12 @@ public:
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.Wallpaper.IWallpaperService");
     struct getPixelMap {
         std::string result;
-        int fileLen;
+        int32_t fileLen;
     };
 
     struct FdInfo {
-        int fd = -1;
-        int size = 0;
+        int32_t fd = -1;
+        int32_t size = 0;
     };
 
     /**
@@ -59,7 +59,7 @@ public:
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of array callback function
      */
-    virtual ErrorCode GetColors(int wallpaperType, std::vector<uint64_t> &colors) = 0;
+    virtual ErrorCode GetColors(int32_t wallpaperType, std::vector<uint64_t> &colors) = 0;
 
     virtual ErrorCode GetFile(int32_t wallpaperType, int32_t &wallpaperFd) = 0;
 
@@ -68,7 +68,7 @@ public:
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of callback function
      */
-    virtual int GetWallpaperId(int32_t wallpaperType) = 0;
+    virtual int32_t GetWallpaperId(int32_t wallpaperType) = 0;
 
     /**
      * Checks whether to allow the application to change the wallpaper for the current user.

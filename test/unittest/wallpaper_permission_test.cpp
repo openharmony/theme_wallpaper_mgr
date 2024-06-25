@@ -23,8 +23,8 @@
 #include "wallpaper_manager.h"
 #include "wallpaper_manager_kits.h"
 
-constexpr int LOCKSCREEN = 1;
-constexpr int HUNDRED = 100;
+constexpr int32_t LOCKSCREEN = 1;
+constexpr uint8_t HUNDRED = 100;
 using namespace testing::ext;
 using namespace testing;
 using namespace OHOS::Media;

@@ -29,7 +29,7 @@ public:
     void SendWallpaperSystemSettingMessage(WallpaperResourceType resType);
 
 private:
-    bool PublishEvent(const OHOS::AAFwk::Want &want, int eventCode, const std::string &eventData);
+    bool PublishEvent(const OHOS::AAFwk::Want &want, int32_t eventCode, const std::string &eventData);
     ;
 };
 } // namespace WallpaperMgrService
