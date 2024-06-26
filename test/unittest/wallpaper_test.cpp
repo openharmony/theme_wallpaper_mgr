@@ -138,6 +138,7 @@ public:
     static bool SubscribeCommonEvent(shared_ptr<WallpaperService> wallpaperService);
     static void TriggerEvent(int32_t userId, const std::string &commonEventSupport);
     static std::string GetUserFilePath(int32_t userId, const char *filePath);
+    static bool TestCallBack(int32_t num);
 };
 const std::string VALID_SCHEMA_STRICT_DEFINE = "{\"SCHEMA_VERSION\":\"1.0\","
                                                "\"SCHEMA_MODE\":\"STRICT\","
@@ -291,6 +292,13 @@ std::string WallpaperTest::GetUserFilePath(int32_t userId, const char *filePath)
     return WALLPAPER_DEFAULT_PATH + std::string("/") + std::to_string(userId) + filePath;
 }
 
+bool WallpaperTest::TestCallBack(int32_t num)
+{
+    if (num > 0) {
+        return true;
+    }
+    return false;
+}
 /*********************   ResetWallpaper   *********************/
 /**
 * @tc.name:    Reset001
@@ -1264,6 +1272,33 @@ HWTEST_F(WallpaperTest, GetPictureFileName_001, TestSize.Level0)
     auto pos = fileName.find(to_string(TEST_USERID1));
     EXPECT_EQ(pos != string::npos, true);
     wallpaperService->OnRemovedUser(TEST_USERID1);
+}
+
+/**
+ * @tc.name:    RegisterWallpaperCallback_001
+ * @tc.desc:    Test RegisterWallpaperCallback
+ * @tc.type:    FUNC
+ * @tc.require: issueIA87VK
+ */
+HWTEST_F(WallpaperTest, RegisterWallpaperCallback_001, TestSize.Level0)
+{
+    HILOG_INFO("RegisterWallpaperCallback_001 begin");
+    JScallback callback = &WallpaperTest::TestCallBack;
+    bool res = WallpaperManagerkits::GetInstance().RegisterWallpaperCallback(callback);
+    EXPECT_EQ(res, true);
+}
+
+/**
+ * @tc.name:    RegisterWallpaperListener_001
+ * @tc.desc:    Test RegisterWallpaperListener
+ * @tc.type:    FUNC
+ * @tc.require: issueIA87VK
+ */
+HWTEST_F(WallpaperTest, RegisterWallpaperListener_001, TestSize.Level0)
+{
+    HILOG_INFO("RegisterWallpaperListener_001 begin");
+    bool res = WallpaperManagerkits::GetInstance().RegisterWallpaperListener();
+    EXPECT_EQ(res, true);
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

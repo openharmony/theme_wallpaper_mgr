@@ -17,9 +17,10 @@
 #define WALLPAPER_SERVICE_IPC_INTERFACE_CODE_H
 
 /* SAID: 3705*/
+#include <cstdint>
 namespace OHOS {
 namespace WallpaperMgrService {
-enum class WallpaperServiceIpcInterfaceCode {
+enum class WallpaperServiceIpcInterfaceCode : uint32_t {
     SET_WALLPAPER,
     GET_PIXELMAP,
     GET_COLORS,
