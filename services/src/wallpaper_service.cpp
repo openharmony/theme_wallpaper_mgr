@@ -485,11 +485,6 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
     HILOG_INFO("OnSwitchedUser end, newUserId = %{public}d", userId);
 }
 
-void WallpaperService::OnBootPhase()
-{
-    HILOG_INFO("WallpaperService OnBootPhase");
-}
-
 std::string WallpaperService::GetWallpaperDir(int32_t userId, WallpaperType wallpaperType)
 {
     std::string userIdPath = WALLPAPER_USERID_PATH + std::to_string(userId);
