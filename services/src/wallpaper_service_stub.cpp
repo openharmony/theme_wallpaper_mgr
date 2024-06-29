@@ -89,7 +89,7 @@ int32_t WallpaperServiceStub::OnRemoteRequest(
     std::u16string remoteDescriptor = data.ReadInterfaceToken();
     if (myDescriptor != remoteDescriptor) {
         HILOG_ERROR("Remote descriptor not the same as local descriptor.");
-        return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
+        return E_CHECK_DESCRIPTOR_ERROR;
     }
     return HandleWallpaperRequest(code, data, reply, option);
 }

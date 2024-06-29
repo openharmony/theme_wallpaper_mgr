@@ -31,7 +31,7 @@ int32_t WallpaperServiceCbStub::OnRemoteRequest(
     std::u16string remoteDescriptor = data.ReadInterfaceToken();
     if (myDescriptor != remoteDescriptor) {
         HILOG_ERROR("end##descriptor checked fail");
-        return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
+        return E_CHECK_DESCRIPTOR_ERROR;
     }
     switch (code) {
         case static_cast<uint32_t>(ONCALL):
