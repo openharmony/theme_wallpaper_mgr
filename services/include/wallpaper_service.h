@@ -87,7 +87,6 @@ public:
     ErrorCode SendEvent(const std::string &eventType) override;
 
 public:
-    static void OnBootPhase();
     void OnInitUser(int32_t newUserId);
     void OnRemovedUser(int32_t userId);
     void OnSwitchedUser(int32_t userId);

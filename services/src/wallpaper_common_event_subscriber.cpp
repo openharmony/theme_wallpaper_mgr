@@ -26,9 +26,7 @@ void WallpaperCommonEventSubscriber::OnReceiveEvent(const OHOS::EventFwk::Common
     HILOG_INFO("WallpaperCommonEvent::OnReceiveEvent");
     auto want = data.GetWant();
     std::string action = want.GetAction();
-    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED) {
-        WallpaperService::OnBootPhase();
-    } else if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED) {
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED) {
         wallpaperService_.OnInitUser(data.GetCode());
     } else if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED) {
         wallpaperService_.OnRemovedUser(data.GetCode());
@@ -40,7 +38,6 @@ void WallpaperCommonEventSubscriber::OnReceiveEvent(const OHOS::EventFwk::Common
 CommonEventSubscribeInfo WallpaperCommonEventSubscriber::CreateSubscriberInfo()
 {
     OHOS::EventFwk::MatchingSkills matchingSkills;
-    matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_BOOT_COMPLETED);
     matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED);
     matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED);
     matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_USER_SWITCHED);
