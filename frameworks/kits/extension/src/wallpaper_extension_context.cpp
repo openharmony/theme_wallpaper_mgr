@@ -50,15 +50,15 @@ ErrCode WallpaperExtensionContext::StartAbility(const AAFwk::Want &want, const A
 bool WallpaperExtensionContext::ConnectAbility(const AAFwk::Want &want,
     const sptr<AbilityConnectCallback> &connectCallback) const
 {
-    HILOG_INFO("%{public}s begin.", __func__);
+    HILOG_DEBUG("%{public}s begin.", __func__);
     ErrCode ret = ConnectionManager::GetInstance().ConnectAbility(token_, want, connectCallback);
-    HILOG_INFO("WallpaperExtensionContext::ConnectAbility ErrorCode = %{public}d", ret);
+    HILOG_DEBUG("WallpaperExtensionContext::ConnectAbility ErrorCode = %{public}d", ret);
     return ret == ERR_OK;
 }
 
 ErrCode WallpaperExtensionContext::StartAbilityWithAccount(const AAFwk::Want &want, int32_t accountId) const
 {
-    HILOG_INFO("%{public}s begin. %{public}d accountId:", __func__, accountId);
+    HILOG_DEBUG("%{public}s begin.", __func__);
     ErrCode err =
         AAFwk::AbilityManagerClient::GetInstance()->StartAbility(want, token_, ILLEGAL_REQUEST_CODE, accountId);
     HILOG_DEBUG("%{public}s. End calling StartAbilityWithAccount. ret=%{public}d", __func__, err);
@@ -86,14 +86,14 @@ bool WallpaperExtensionContext::ConnectAbilityWithAccount(const AAFwk::Want &wan
 {
     HILOG_DEBUG("%{public}s begin.", __func__);
     ErrCode ret = ConnectionManager::GetInstance().ConnectAbilityWithAccount(token_, want, accountId, connectCallback);
-    HILOG_INFO("WallpaperExtensionContext::ConnectAbilityWithAccount ErrorCode = %{public}d", ret);
+    HILOG_DEBUG("WallpaperExtensionContext::ConnectAbilityWithAccount ErrorCode = %{public}d", ret);
     return ret == ERR_OK;
 }
 
 ErrCode WallpaperExtensionContext::DisconnectAbility(const AAFwk::Want &want,
     const sptr<AbilityConnectCallback> &connectCallback) const
 {
-    HILOG_INFO("%{public}s begin.", __func__);
+    HILOG_DEBUG("%{public}s begin.", __func__);
     ErrCode ret = ConnectionManager::GetInstance().DisconnectAbility(token_, want.GetElement(), connectCallback);
     if (ret != ERR_OK) {
         HILOG_ERROR("%{public}s end DisconnectAbility error, ret=%{public}d", __func__, ret);
@@ -103,7 +103,7 @@ ErrCode WallpaperExtensionContext::DisconnectAbility(const AAFwk::Want &want,
 
 ErrCode WallpaperExtensionContext::TerminateAbility()
 {
-    HILOG_INFO("%{public}s begin.", __func__);
+    HILOG_DEBUG("%{public}s begin.", __func__);
     ErrCode err = AAFwk::AbilityManagerClient::GetInstance()->TerminateAbility(token_, -1, nullptr);
     if (err != ERR_OK) {
         HILOG_ERROR("WallpaperExtensionContext::TerminateAbility is failed %{public}d", err);

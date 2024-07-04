@@ -169,7 +169,6 @@ private:
             HILOG_ERROR("%{public}s called, the second parameter is invalid.", __func__);
             return CreateJsUndefined(env);
         }
-        HILOG_INFO("%{public}d accountId:", accountId);
         unwrapArgc++;
 
         AAFwk::StartOptions startOptions;
