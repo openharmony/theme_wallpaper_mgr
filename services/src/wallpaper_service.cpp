@@ -215,7 +215,8 @@ void WallpaperService::InitServiceHandler()
         HILOG_ERROR("InitServiceHandler already init.");
         return;
     }
-    std::shared_ptr<AppExecFwk::EventRunner> runner = AppExecFwk::EventRunner::Create("WallpaperService");
+    std::shared_ptr<AppExecFwk::EventRunner> runner =
+        AppExecFwk::EventRunner::Create("WallpaperService", AppExecFwk::ThreadMode::FFRT);
     serviceHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner);
 }
 
