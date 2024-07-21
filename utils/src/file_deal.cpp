@@ -74,6 +74,9 @@ bool FileDeal::CopyFile(const std::string &sourceFile, const std::string &newFil
 
 bool FileDeal::DeleteFile(const std::string &sourceFile)
 {
+    if (!IsFileExist(sourceFile)) {
+        return true;
+    }
     if (remove(sourceFile.c_str()) < 0) {
         HILOG_ERROR("Failed to remove source file, errInfo=%{public}s.", strerror(errno));
         return false;

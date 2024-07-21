@@ -45,7 +45,8 @@
           "player_framework",
           "eventhandler",
           "init",
-          "memmgr"
+          "memmgr",
+          "config_policy"
         ],
         "third_party": []
       },

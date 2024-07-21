@@ -103,12 +103,11 @@ protected:
 
 private:
     void InitData();
-    void InitResources(int32_t userId, WallpaperType wallpaperType);
     void InitQueryUserId(int32_t times);
     bool InitUsersOnBoot();
     bool CompareColor(const uint64_t &localColor, const ColorManager::Color &color);
     bool SaveColor(int32_t userId, WallpaperType wallpaperType);
-    void LoadSettingsLocked(int32_t userId);
+    void UpdataWallpaperMap(int32_t userId, WallpaperType wallpaperType);
     std::string GetWallpaperDir(int32_t userId, WallpaperType wallpaperType);
     bool GetFileNameFromMap(int32_t userId, WallpaperType wallpaperType, std::string &fileName);
     bool GetPictureFileName(int32_t userId, WallpaperType wallpaperType, std::string &fileName);
@@ -128,7 +127,7 @@ private:
     bool IsSystemApp();
     ErrorCode GetImageFd(int32_t userId, WallpaperType wallpaperType, int32_t &fd);
     ErrorCode GetImageSize(int32_t userId, WallpaperType wallpaperType, int32_t &size);
-    bool RestoreUserResources(const WallpaperData &wallpaperData, WallpaperType wallpaperType);
+    bool RestoreUserResources(int32_t userId, WallpaperData &wallpaperData, WallpaperType wallpaperType);
     bool InitUserDir(int32_t userId);
     int32_t QueryActiveUserId();
     bool CheckUserPermissionById(int32_t userId);
@@ -147,6 +146,10 @@ private:
     void RemoveExtensionDeathRecipient();
     static void GetWallpaperFile(
         WallpaperResourceType resourceType, const WallpaperData &wallpaperData, std::string &wallpaperFile);
+    std::string GetDefaultResDir();
+    std::string GetWallpaperDefaultPath(WallpaperType wallpaperType);
+    std::string GetWallpaperPathInJson(const std::string filePath);
+    void ClearRedundantFile(int32_t userId, WallpaperType wallpaperType, std::string fileName);
 
 private:
     int32_t Init();

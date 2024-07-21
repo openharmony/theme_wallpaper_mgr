@@ -53,8 +53,11 @@ constexpr const char *URI_30FPS_3S_MP4 = "/data/test/theme/wallpaper/30fps_3s.mp
 constexpr const char *URI_15FPS_7S_MP4 = "/data/test/theme/wallpaper/15fps_7s.mp4";
 constexpr const char *URI_30FPS_3S_MOV = "/data/test/theme/wallpaper/30fps_3s.mov";
 constexpr const char *WALLPAPER_DEFAULT_PATH = "/data/service/el1/public/wallpaper";
-constexpr const char *SYSTEM_FILE = "/system/wallpaper_system_orig";
-constexpr const char *LOCKSCREEN_FILE = "/lockscreen/wallpaper_lock_orig";
+constexpr const char *SYSTEM_DIR = "/system";
+constexpr const char *LOCKSCREEN_DIR = "/lockscreen";
+constexpr const char *LOCKSCREEN_FILE = "/lockscreen/wallpaper_lock";
+constexpr const char *WALLPAPER_DEFAULT = "wallpaperdefault.jpeg";
+constexpr const char *HOME_WALLPAPER = "home_wallpaper_0.jpg";
 
 std::shared_ptr<WallpaperCommonEventSubscriber> subscriber = nullptr;
 
@@ -903,6 +906,29 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri006, TestSize.Level0)
     wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, SYSTYEM, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK);
 }
+
+/**
+* @tc.name:    SetWallpaperByUri007
+* @tc.desc:    SetWallpaperByUri throw permission error.
+* @tc.type:    FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, SetWallpaperByUri007, TestSize.Level0)
+{
+    HILOG_INFO("SetWallpaperByUri007  begin");
+    ApiInfo apiInfo{ true, true };
+    WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
+    std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
+    int32_t userId = wallpaperService->QueryActiveUserId();
+    HILOG_INFO("guochao  userId:%{public}d", userId);
+    bool ret = FileDeal::IsFileExist(WallpaperTest::GetUserFilePath(userId, LOCKSCREEN_FILE));
+    EXPECT_EQ(ret, false) << "Failed to reset.";
+    WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
+    ret = FileDeal::IsFileExist(WallpaperTest::GetUserFilePath(userId, LOCKSCREEN_FILE));
+    EXPECT_EQ(ret, true);
+    WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
+}
+
 /*********************   SetWallpaperByUri   *********************/
 
 /*********************   FILE_DEAL   *********************/
@@ -960,9 +986,9 @@ HWTEST_F(WallpaperTest, AddUsersDeal001, TestSize.Level0)
     ASSERT_EQ(ret, true);
     std::string commonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED;
     WallpaperTest::TriggerEvent(TEST_USERID, commonEvent);
-    ret = FileDeal::IsFileExist(WallpaperTest::GetUserFilePath(TEST_USERID, SYSTEM_FILE));
+    ret = FileDeal::IsDirExist(WallpaperTest::GetUserFilePath(TEST_USERID, SYSTEM_DIR));
     EXPECT_EQ(ret, true);
-    ret = FileDeal::IsFileExist(WallpaperTest::GetUserFilePath(TEST_USERID, LOCKSCREEN_FILE));
+    ret = FileDeal::IsDirExist(WallpaperTest::GetUserFilePath(TEST_USERID, LOCKSCREEN_DIR));
     EXPECT_EQ(ret, true);
     std::string userDir = WALLPAPER_DEFAULT_PATH + std::string("/") + std::to_string(TEST_USERID);
     if (!OHOS::ForceRemoveDirectory(userDir)) {
@@ -1269,8 +1295,13 @@ HWTEST_F(WallpaperTest, GetPictureFileName_001, TestSize.Level0)
     std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
     std::string fileName;
     wallpaperService->GetPictureFileName(TEST_USERID1, WALLPAPER_SYSTEM, fileName);
+    auto wallpaperDefault = fileName.find(WALLPAPER_DEFAULT);
+    auto homeWallpaper = fileName.find(HOME_WALLPAPER);
+    EXPECT_EQ((wallpaperDefault != string::npos) || (homeWallpaper != string::npos), true);
+    wallpaperService->SetWallpaperBackupData(TEST_USERID1, PICTURE, URI, WALLPAPER_SYSTEM);
+    wallpaperService->GetPictureFileName(TEST_USERID1, WALLPAPER_SYSTEM, fileName);
     auto pos = fileName.find(to_string(TEST_USERID1));
-    EXPECT_EQ(pos != string::npos, true);
+    EXPECT_NE(pos, string::npos);
     wallpaperService->OnRemovedUser(TEST_USERID1);
 }
 
