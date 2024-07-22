@@ -308,7 +308,7 @@ void WallpaperService::InitQueryUserId(int32_t times)
     times--;
     bool ret = InitUsersOnBoot();
     if (!ret && times > 0) {
-        HILOG_INFO("InitQueryUserId failed");
+        HILOG_DEBUG("InitQueryUserId failed");
         auto callback = [this, times]() { InitQueryUserId(times); };
         serviceHandler_->PostTask(callback, QUERY_USER_ID_INTERVAL);
     }
@@ -337,6 +337,7 @@ bool WallpaperService::InitUsersOnBoot()
     }
     for (const auto &osAccountInfo : osAccountInfos) {
         int32_t userId = osAccountInfo.GetLocalId();
+        HILOG_INFO("InitUsersOnBoot Current userId: %{public}d", userId);
         InitUserDir(userId);
         UpdataWallpaperMap(userId, WALLPAPER_SYSTEM);
         UpdataWallpaperMap(userId, WALLPAPER_LOCKSCREEN);
@@ -556,14 +557,11 @@ void WallpaperService::UpdataWallpaperMap(int32_t userId, WallpaperType wallpape
             return lockWallpaperMap_;
         }
     }();
-    if (!wallpaperMap.Contains(userId)) {
-        HILOG_INFO("wallpaperMap_ of type:%{public}d does not contain userId", wallpaperType);
-        wallpaperData.wallpaperFile = wallpaperDefaultFilePath;
-        wallpaperData.userId = userId;
-        wallpaperData.allowBackup = true;
-        wallpaperData.resourceType = PICTURE;
-        wallpaperData.wallpaperId = DEFAULT_WALLPAPER_ID;
-    }
+    wallpaperData.wallpaperFile = wallpaperDefaultFilePath;
+    wallpaperData.userId = userId;
+    wallpaperData.allowBackup = true;
+    wallpaperData.resourceType = PICTURE;
+    wallpaperData.wallpaperId = DEFAULT_WALLPAPER_ID;
     if (FileDeal::IsFileExist(wallpaperFilePath)) {
         wallpaperData.wallpaperFile = wallpaperFilePath;
     }
@@ -1548,7 +1546,7 @@ std::string WallpaperService::GetDefaultResDir()
     if (cfgFiles != nullptr) {
         for (auto &cfgPath : cfgFiles->paths) {
             if (cfgPath != nullptr) {
-                HILOG_INFO("GetCfgFiles path is :%{public}s", cfgPath);
+                HILOG_DEBUG("GetCfgFiles path is :%{public}s", cfgPath);
                 resPath = cfgPath + std::string(DEFAULT_PATH);
                 break;
             }
