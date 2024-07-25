@@ -51,8 +51,8 @@ public:
     * @return  true or false
     */
     virtual ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) = 0;
-    virtual ErrorCode SetWallpaperByPixelMap(std::shared_ptr<OHOS::Media::PixelMap> pixelMap,
-        int32_t wallpaperType) = 0;
+    virtual ErrorCode SetWallpaperByPixelMap(
+        std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType) = 0;
     virtual ErrorCode GetPixelMap(int32_t wallpaperType, FdInfo &fdInfo) = 0;
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
@@ -108,8 +108,8 @@ public:
     virtual bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) = 0;
 
     virtual ErrorCode SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length) = 0;
-    virtual ErrorCode SetWallpaperV9ByPixelMap(std::shared_ptr<OHOS::Media::PixelMap> pixelMap,
-        int32_t wallpaperType) = 0;
+    virtual ErrorCode SetWallpaperV9ByPixelMap(
+        std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType) = 0;
     virtual ErrorCode GetPixelMapV9(int32_t wallpaperType, FdInfo &fdInfo) = 0;
     virtual ErrorCode GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors) = 0;
     virtual ErrorCode ResetWallpaperV9(int32_t wallpaperType) = 0;

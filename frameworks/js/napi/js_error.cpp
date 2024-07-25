@@ -18,7 +18,7 @@ namespace OHOS::WallpaperNAPI {
 
 void JsError::ThrowError(napi_env env, int32_t errorCode, const std::string &errorMessage)
 {
-    HILOG_DEBUG("ThrowError in");
+    HILOG_DEBUG("ThrowError in.");
     napi_value message;
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, errorMessage.c_str(), NAPI_AUTO_LENGTH, &message));
     napi_value error;
@@ -31,7 +31,7 @@ void JsError::ThrowError(napi_env env, int32_t errorCode, const std::string &err
 
 JsErrorInfo JsError::ConvertErrorCode(ErrorCode wallpaperErrorCode)
 {
-    HILOG_DEBUG("ConvertErrorCode in");
+    HILOG_DEBUG("ConvertErrorCode in.");
     JsErrorInfo errorObject;
     switch (wallpaperErrorCode) {
         case E_PARAMETERS_INVALID:

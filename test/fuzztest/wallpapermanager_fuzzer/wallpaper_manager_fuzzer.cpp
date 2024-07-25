@@ -80,8 +80,7 @@ void WallpaperEventListenerFuzzTestImpl::OnColorsChange(const std::vector<uint64
     wallpaperType_ = wallpaperType;
 }
 
-WallpaperEventListenerFuzzTestImpl::WallpaperEventListenerFuzzTestImpl()
-    : wallpaperType_(-1), callCount_(0)
+WallpaperEventListenerFuzzTestImpl::WallpaperEventListenerFuzzTestImpl() : wallpaperType_(-1), callCount_(0)
 {
 }
 

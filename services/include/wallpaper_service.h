@@ -118,8 +118,8 @@ private:
     bool CheckCallingPermission(const std::string &permissionName);
     ErrorCode SetWallpaperBackupData(int32_t userId, WallpaperResourceType resourceType,
         const std::string &uriOrPixelMap, WallpaperType wallpaperType);
-    ErrorCode WritePixelMapToFile(std::shared_ptr<OHOS::Media::PixelMap> pixelMap,
-        std::string wallpaperTmpFullPath, int32_t wallpaperType, WallpaperResourceType resourceType);
+    ErrorCode WritePixelMapToFile(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, std::string wallpaperTmpFullPath,
+        int32_t wallpaperType, WallpaperResourceType resourceType);
     int64_t WritePixelMapToStream(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, std::ostream &outputStream);
 #ifndef THEME_SERVICE
     bool ConnectExtensionAbility();
@@ -134,8 +134,8 @@ private:
 
     bool SendWallpaperChangeEvent(int32_t userId, WallpaperType wallpaperType);
     ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length, WallpaperResourceType resourceType);
-    ErrorCode SetWallpaperByPixelMap(std::shared_ptr<OHOS::Media::PixelMap> pixelMap,
-        int32_t wallpaperType, WallpaperResourceType resourceType);
+    ErrorCode SetWallpaperByPixelMap(
+        std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType, WallpaperResourceType resourceType);
     void OnColorsChange(WallpaperType wallpaperType, const ColorManager::Color &color);
     ErrorCode CheckValid(int32_t wallpaperType, int32_t length, WallpaperResourceType resourceType);
     bool WallpaperChanged(WallpaperType wallpaperType, WallpaperResourceType resType, const std::string &uri);

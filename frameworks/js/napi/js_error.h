@@ -30,12 +30,12 @@ constexpr const char *PARAMETER_ERROR_MESSAGE = "BusinessError 401: Parameter er
 constexpr const char *PERMISSION_DENIED_MESSAGE = "BusinessError 201: Permission Denied.";
 constexpr const char *EQUIPMENT_ERROR_MESSAGE = "BusinessError 801: Equipment error.";
 constexpr const char *PERMISSION_FAILED_MESSAGE = "BusinessError 202: Permission verification failed,"
-                                                "application which is not a system application uses system API.";
+                                                  "application which is not a system application uses system API.";
 constexpr const char *PARAMETER_COUNT = "Mandatory parameters are left unspecified.";
-constexpr const char *WALLPAPERTYPE_PARAMETER_TYPE =
-    "The type must be WallpaperType, parameter range must be WALLPAPER_LOCKSCREEN or WALLPAPER_SYSTEM.";
-constexpr const char *DYNAMIC_WALLPAPERTYPE_PARAMETER_TYPE =
-    "The dynamic wallpaper must be .mp4 or conform to the video format requirements.";
+constexpr const char *WALLPAPERTYPE_PARAMETER_TYPE = "The type must be WallpaperType, parameter range must be "
+                                                     "WALLPAPER_LOCKSCREEN or WALLPAPER_SYSTEM.";
+constexpr const char *DYNAMIC_WALLPAPERTYPE_PARAMETER_TYPE = "The dynamic wallpaper must be .mp4 or conform to the "
+                                                             "video format requirements.";
 enum ErrorThrowType : int32_t {
     PERMISSION_ERROR = 201,
     SYSTEM_APP_PERMISSION_ERROR = 202,

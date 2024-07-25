@@ -30,7 +30,7 @@ public:
     explicit WallpaperServiceCbProxy(const sptr<IRemoteObject> &object) : IRemoteProxy<IWallpaperCallback>(object)
     {
     }
-    virtual ~WallpaperServiceCbProxy(){};
+    virtual ~WallpaperServiceCbProxy() {};
 
     static inline BrokerDelegator<WallpaperServiceCbProxy> delegator_;
 

@@ -13,12 +13,11 @@
  * limitations under the License.
  */
 
-#include "getpixelmap_fuzzer.h"
-
 #include <cstddef>
 #include <cstdint>
 
 #include "fuzztest_utils.h"
+#include "getpixelmap_fuzzer.h"
 #include "message_parcel.h"
 #include "wallpaper_service.h"
 

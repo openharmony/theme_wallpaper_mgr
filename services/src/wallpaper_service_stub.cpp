@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-#include "wallpaper_service_stub.h"
-
 #include <unistd.h>
 
 #include "ashmem.h"
@@ -25,6 +23,7 @@
 #include "pixel_map.h"
 #include "wallpaper_common.h"
 #include "wallpaper_service_ipc_interface_code.h"
+#include "wallpaper_service_stub.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -142,7 +141,7 @@ int32_t WallpaperServiceStub::OnSetWallpaperInner(MessageParcel &data, MessagePa
     }
     close(fd);
     if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
-        HILOG_ERROR("WriteInt32 fail");
+        HILOG_ERROR("WriteInt32 fail!");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     return ERR_NONE;
@@ -163,12 +162,12 @@ int32_t WallpaperServiceStub::OnSetWallpaperInnerByPixelMap(MessageParcel &data,
     HILOG_DEBUG("WallpaperServiceStub::SetWallpaper start.");
     int32_t vectorPixelMapSize = data.ReadInt32();
     if (vectorPixelMapSize <= 0) {
-        HILOG_ERROR("ReadInt32 fail ");
+        HILOG_ERROR("ReadInt32 fail!");
         return IPC_STUB_INVALID_DATA_ERR;
     }
     auto *rawData = (uint8_t *)data.ReadRawData(vectorPixelMapSize);
     if (rawData == nullptr) {
-        HILOG_ERROR("ReadRawData fail");
+        HILOG_ERROR("ReadRawData fail!");
         return IPC_STUB_INVALID_DATA_ERR;
     }
     std::vector<uint8_t> VectorPixelMap(rawData, rawData + vectorPixelMapSize);
@@ -181,7 +180,7 @@ int32_t WallpaperServiceStub::OnSetWallpaperInnerByPixelMap(MessageParcel &data,
         wallpaperErrorCode = SetWallpaperByPixelMap(pixelMap, wallpaperType);
     }
     if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
-        HILOG_ERROR("WriteInt32 fail");
+        HILOG_ERROR("WriteInt32 fail!");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     return ERR_NONE;
@@ -201,7 +200,7 @@ int32_t WallpaperServiceStub::OnSetVideo(MessageParcel &data, MessageParcel &rep
     ErrorCode wallpaperErrorCode = SetVideo(fd, wallpaperType, length);
     close(fd);
     if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
-        HILOG_ERROR("Write int is failed");
+        HILOG_ERROR("Write int is failed!");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     return ERR_NONE;
@@ -216,7 +215,7 @@ int32_t WallpaperServiceStub::OnSetCustomWallpaper(MessageParcel &data, MessageP
     ErrorCode wallpaperErrorCode = SetCustomWallpaper(fd, wallpaperType, length);
     close(fd);
     if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
-        HILOG_ERROR("Write int is failed");
+        HILOG_ERROR("Write int is failed!");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     return ERR_NONE;
@@ -240,18 +239,18 @@ int32_t WallpaperServiceStub::OnGetPixelMapInner(MessageParcel &data, MessagePar
     }
     HILOG_INFO(" OnGetPixelMap wallpaperErrorCode = %{public}d", wallpaperErrorCode);
     if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
-        HILOG_ERROR("WriteInt32 fail");
+        HILOG_ERROR("WriteInt32 fail!");
         close(fdInfo.fd);
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     if (wallpaperErrorCode == E_OK) {
         if (!reply.WriteInt32(fdInfo.size)) {
-            HILOG_ERROR("WriteInt32 fail");
+            HILOG_ERROR("WriteInt32 fail!");
             close(fdInfo.fd);
             return IPC_STUB_WRITE_PARCEL_ERR;
         }
         if (!reply.WriteFileDescriptor(fdInfo.fd)) {
-            HILOG_ERROR("WriteFileDescriptor fail");
+            HILOG_ERROR("WriteFileDescriptor fail!");
             close(fdInfo.fd);
             return IPC_STUB_WRITE_PARCEL_ERR;
         }
@@ -283,12 +282,12 @@ int32_t WallpaperServiceStub::OnGetColorsInner(MessageParcel &data, MessageParce
     }
     auto size = vecWallpaperColors.size();
     if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
-        HILOG_ERROR("WriteInt32 fail");
+        HILOG_ERROR("WriteInt32 fail!");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     if (wallpaperErrorCode == E_OK) {
         if (!reply.WriteUInt64Vector(vecWallpaperColors)) {
-            HILOG_ERROR("WallpaperServiceStub::OnGetColors WriteUInt64Vector error.");
+            HILOG_ERROR("WallpaperServiceStub::OnGetColors WriteUInt64Vector error!");
             return IPC_STUB_WRITE_PARCEL_ERR;
         }
     }
@@ -302,14 +301,14 @@ int32_t WallpaperServiceStub::OnGetFile(MessageParcel &data, MessageParcel &repl
     int32_t wallpaperFd = INVALID_FD;
     ErrorCode wallpaperErrorCode = GetFile(wallpaperType, wallpaperFd);
     if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
-        HILOG_ERROR("WriteInt32 fail");
+        HILOG_ERROR("WriteInt32 fail!");
         if (wallpaperFd > INVALID_FD) {
             close(wallpaperFd);
         }
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     if (wallpaperErrorCode == E_OK && !reply.WriteFileDescriptor(wallpaperFd)) {
-        HILOG_ERROR("WriteFileDescriptor fail");
+        HILOG_ERROR("WriteFileDescriptor fail!");
         close(wallpaperFd);
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
@@ -325,7 +324,7 @@ int32_t WallpaperServiceStub::OnGetWallpaperId(MessageParcel &data, MessageParce
     int32_t wallpaperType = data.ReadInt32();
     int32_t wallpaperId = GetWallpaperId(wallpaperType);
     if (!reply.WriteInt32(wallpaperId)) {
-        HILOG_ERROR("Write result data failed");
+        HILOG_ERROR("Write result data failed!");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     HILOG_INFO("End. Id[%{public}d]", wallpaperId);
@@ -337,7 +336,7 @@ int32_t WallpaperServiceStub::OnIsChangePermitted(MessageParcel &data, MessagePa
     HILOG_DEBUG("WallpaperServiceStub::OnIsChangePermitted start.");
     auto bResult = IsChangePermitted();
     if (!reply.WriteBool(bResult)) {
-        HILOG_ERROR("Write result data failed");
+        HILOG_ERROR("Write result data failed!");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     return ERR_NONE;
@@ -348,7 +347,7 @@ int32_t WallpaperServiceStub::OnIsOperationAllowed(MessageParcel &data, MessageP
     HILOG_DEBUG("WallpaperServiceStub::OnIsOperationAllowed start.");
     auto bResult = IsOperationAllowed();
     if (!reply.WriteBool(bResult)) {
-        HILOG_ERROR("Write result data failed");
+        HILOG_ERROR("Write result data failed!");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     return ERR_NONE;
@@ -375,7 +374,7 @@ int32_t WallpaperServiceStub::OnResetWallpaperInner(MessageParcel &data, Message
         wallpaperErrorCode = ResetWallpaper(wallpaperType);
     }
     if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
-        HILOG_ERROR("Write result data failed");
+        HILOG_ERROR("Write result data failed!");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     return ERR_NONE;
@@ -383,15 +382,15 @@ int32_t WallpaperServiceStub::OnResetWallpaperInner(MessageParcel &data, Message
 
 int32_t WallpaperServiceStub::OnWallpaperOn(MessageParcel &data, MessageParcel &reply)
 {
-    HILOG_DEBUG("WallpaperServiceStub::OnWallpaperOn in");
+    HILOG_DEBUG("WallpaperServiceStub::OnWallpaperOn in.");
     std::string type = data.ReadString();
     if (type.empty()) {
-        HILOG_ERROR("OnWallpaperOn type is empty after ipc");
+        HILOG_ERROR("OnWallpaperOn type is empty after ipc.");
         return IPC_STUB_INVALID_DATA_ERR;
     }
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
     if (remote == nullptr) {
-        HILOG_ERROR("OnWallpaperOn nullptr after ipc");
+        HILOG_ERROR("OnWallpaperOn nullptr after ipc.");
         return IPC_STUB_INVALID_DATA_ERR;
     }
 
@@ -399,7 +398,7 @@ int32_t WallpaperServiceStub::OnWallpaperOn(MessageParcel &data, MessageParcel &
     ErrorCode errorCode = On(type, std::move(wallpaperListenerProxy));
     int32_t ret = static_cast<int32_t>(errorCode);
     if (!reply.WriteInt32(ret)) {
-        HILOG_ERROR("WriteInt32 failed");
+        HILOG_ERROR("WriteInt32 failed!");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     return ERR_NONE;
@@ -407,10 +406,10 @@ int32_t WallpaperServiceStub::OnWallpaperOn(MessageParcel &data, MessageParcel &
 
 int32_t WallpaperServiceStub::OnWallpaperOff(MessageParcel &data, MessageParcel &reply)
 {
-    HILOG_DEBUG("WallpaperServiceStub::OnWallpaperOff in");
+    HILOG_DEBUG("WallpaperServiceStub::OnWallpaperOff in.");
     std::string type = data.ReadString();
     if (type.empty()) {
-        HILOG_ERROR("OnWallpaperOff type is empty after ipc");
+        HILOG_ERROR("OnWallpaperOff type is empty after ipc.");
         return IPC_STUB_INVALID_DATA_ERR;
     }
     sptr<IRemoteObject> remote = data.ReadRemoteObject();
@@ -423,7 +422,7 @@ int32_t WallpaperServiceStub::OnWallpaperOff(MessageParcel &data, MessageParcel 
     }
     int32_t ret = static_cast<int32_t>(errorCode);
     if (!reply.WriteInt32(ret)) {
-        HILOG_ERROR("WriteInt32 failed");
+        HILOG_ERROR("WriteInt32 failed!");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     return ERR_NONE;
@@ -435,7 +434,7 @@ int32_t WallpaperServiceStub::OnSendEvent(MessageParcel &data, MessageParcel &re
     std::string eventType = data.ReadString();
     auto result = SendEvent(eventType);
     if (!reply.WriteInt32(result)) {
-        HILOG_ERROR("Write int is failed");
+        HILOG_ERROR("Write int is failed!");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     return ERR_NONE;
@@ -443,11 +442,11 @@ int32_t WallpaperServiceStub::OnSendEvent(MessageParcel &data, MessageParcel &re
 
 int32_t WallpaperServiceStub::OnRegisterWallpaperCallback(MessageParcel &data, MessageParcel &reply)
 {
-    HILOG_DEBUG("WallpaperServiceStub::OnRegisterWallpaperCallback start");
+    HILOG_DEBUG("WallpaperServiceStub::OnRegisterWallpaperCallback start.");
     sptr<IRemoteObject> object = data.ReadRemoteObject();
     bool status = false;
     if (object == nullptr) {
-        HILOG_ERROR("RegisterWallpaperCallback failed");
+        HILOG_ERROR("RegisterWallpaperCallback failed!");
         return IPC_STUB_INVALID_DATA_ERR;
     }
     sptr<IWallpaperCallback> callbackProxy = iface_cast<IWallpaperCallback>(object);
@@ -455,7 +454,7 @@ int32_t WallpaperServiceStub::OnRegisterWallpaperCallback(MessageParcel &data, M
     status = RegisterWallpaperCallback(callbackProxy);
     int32_t ret = status ? static_cast<int32_t>(E_OK) : static_cast<int32_t>(E_DEAL_FAILED);
     if (!reply.WriteInt32(ret)) {
-        HILOG_ERROR("WriteInt32 failed");
+        HILOG_ERROR("WriteInt32 failed!");
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     return ERR_NONE;
@@ -463,11 +462,11 @@ int32_t WallpaperServiceStub::OnRegisterWallpaperCallback(MessageParcel &data, M
 
 std::shared_ptr<OHOS::Media::PixelMap> WallpaperServiceStub::VectorToPixelMap(std::vector<std::uint8_t> value)
 {
-    HILOG_DEBUG("VectorToPixelMap start");
+    HILOG_DEBUG("VectorToPixelMap start.!");
     if (value.size() == 0) {
         return nullptr;
     }
-    return std::shared_ptr<PixelMap> (PixelMap::DecodeTlv(value));
+    return std::shared_ptr<PixelMap>(PixelMap::DecodeTlv(value));
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

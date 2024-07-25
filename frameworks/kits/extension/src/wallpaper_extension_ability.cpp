@@ -13,12 +13,11 @@
  * limitations under the License.
  */
 
-#include "wallpaper_extension_ability.h"
-
 #include "connection_manager.h"
 #include "hilog_wrapper.h"
 #include "js_wallpaper_extension_ability.h"
 #include "runtime.h"
+#include "wallpaper_extension_ability.h"
 #include "wallpaper_extension_context.h"
 
 namespace OHOS {
@@ -26,11 +25,11 @@ namespace AbilityRuntime {
 using namespace OHOS::AppExecFwk;
 WallpaperExtensionAbility *WallpaperExtensionAbility::Create(const std::unique_ptr<Runtime> &runtime)
 {
-    HILOG_INFO("jws WallpaperExtensionAbility::Create runtime");
+    HILOG_INFO("jws WallpaperExtensionAbility::Create runtime.");
     if (!runtime) {
         return new WallpaperExtensionAbility();
     }
-    HILOG_INFO("jws WallpaperExtensionAbility::Create runtime");
+    HILOG_INFO("jws WallpaperExtensionAbility::Create runtime.");
     switch (runtime->GetLanguage()) {
         case Runtime::Language::JS:
             return JsWallpaperExtensionAbility::Create(runtime);
@@ -44,20 +43,19 @@ void WallpaperExtensionAbility::Init(const std::shared_ptr<AbilityLocalRecord> &
     const std::shared_ptr<OHOSApplication> &application, std::shared_ptr<AbilityHandler> &handler,
     const sptr<IRemoteObject> &token)
 {
-    HILOG_INFO("jws WallpaperExtensionAbility begin init context");
+    HILOG_INFO("jws WallpaperExtensionAbility begin init context.");
     ExtensionBase<WallpaperExtensionContext>::Init(record, application, handler, token);
 }
 
 std::shared_ptr<WallpaperExtensionContext> WallpaperExtensionAbility::CreateAndInitContext(
-    const std::shared_ptr<AbilityLocalRecord> &record,
-    const std::shared_ptr<OHOSApplication> &application, std::shared_ptr<AbilityHandler> &handler,
-    const sptr<IRemoteObject> &token)
+    const std::shared_ptr<AbilityLocalRecord> &record, const std::shared_ptr<OHOSApplication> &application,
+    std::shared_ptr<AbilityHandler> &handler, const sptr<IRemoteObject> &token)
 {
-    HILOG_INFO("jws WallpaperExtensionAbility begin init context");
+    HILOG_INFO("jws WallpaperExtensionAbility begin init context.");
     std::shared_ptr<WallpaperExtensionContext> context =
         ExtensionBase<WallpaperExtensionContext>::CreateAndInitContext(record, application, handler, token);
     if (context == nullptr) {
-        HILOG_ERROR("WallpaperExtensionAbility::CreateAndInitContext context is nullptr");
+        HILOG_ERROR("WallpaperExtensionAbility::CreateAndInitContext context is nullptr!");
         return context;
     }
     return context;

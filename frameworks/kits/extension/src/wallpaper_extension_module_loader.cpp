@@ -13,9 +13,8 @@
  * limitations under the License.
  */
 
-#include "wallpaper_extension_module_loader.h"
-
 #include "wallpaper_extension_ability.h"
+#include "wallpaper_extension_module_loader.h"
 
 namespace OHOS::AbilityRuntime {
 WallpaperExtensionModuleLoader::WallpaperExtensionModuleLoader() = default;
@@ -23,7 +22,7 @@ WallpaperExtensionModuleLoader::~WallpaperExtensionModuleLoader() = default;
 
 Extension *WallpaperExtensionModuleLoader::Create(const std::unique_ptr<Runtime> &runtime) const
 {
-    HILOG_INFO("jws WallpaperExtensionAbility::Create runtime");
+    HILOG_INFO("jws WallpaperExtensionAbility::Create runtime.");
     return WallpaperExtensionAbility::Create(runtime);
 }
 

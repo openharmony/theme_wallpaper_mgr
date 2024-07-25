@@ -13,14 +13,13 @@
  * limitations under the License.
  */
 
-#include "getcolors_fuzzer.h"
-
 #include <cstddef>
 #include <cstdint>
 
+#include "fuzztest_utils.h"
+#include "getcolors_fuzzer.h"
 #include "message_parcel.h"
 #include "wallpaper_service.h"
-#include "fuzztest_utils.h"
 
 using namespace OHOS::WallpaperMgrService;
 constexpr size_t THRESHOLD = 4;

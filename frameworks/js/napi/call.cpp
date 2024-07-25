@@ -14,7 +14,6 @@
  */
 #define LOG_TAG "Call"
 #include "call.h"
-
 #include "hilog_wrapper.h"
 #include "js_error.h"
 #include "wallpaper_js_util.h"
@@ -63,14 +62,14 @@ Call::~Call()
 napi_value Call::AsyncCall(napi_env env, const std::string &resourceName)
 {
     if (context_ == nullptr) {
-        HILOG_ERROR("context_ is null");
+        HILOG_ERROR("context_ is null.");
         return nullptr;
     }
     if (context_->ctx == nullptr) {
-        HILOG_ERROR("context_->ctx is null");
+        HILOG_ERROR("context_->ctx is null.");
         return nullptr;
     }
-    HILOG_DEBUG("async call exec");
+    HILOG_DEBUG("async call exec.");
     napi_value promise = nullptr;
     if (context_->callback == nullptr) {
         napi_create_promise(env, &context_->defer, &promise);
@@ -91,7 +90,7 @@ napi_value Call::AsyncCall(napi_env env, const std::string &resourceName)
 napi_value Call::SyncCall(napi_env env)
 {
     if ((context_ == nullptr) || (context_->ctx == nullptr)) {
-        HILOG_ERROR("context_ or context_->ctx is null");
+        HILOG_ERROR("context_ or context_->ctx is null.");
         return nullptr;
     }
     Call::OnExecute(env, context_);
@@ -108,14 +107,14 @@ napi_value Call::SyncCall(napi_env env)
 
 void Call::OnExecute(napi_env env, void *data)
 {
-    HILOG_DEBUG("run the async runnable");
+    HILOG_DEBUG("run the async runnable.");
     CallContext *context = reinterpret_cast<CallContext *>(data);
     context->ctx->Exec();
 }
 
 void Call::OnComplete(napi_env env, napi_status status, void *data)
 {
-    HILOG_DEBUG("run the js callback function");
+    HILOG_DEBUG("run the js callback function.");
     CallContext *context = reinterpret_cast<CallContext *>(data);
     napi_value output = nullptr;
     napi_status runStatus = (*context->ctx)(env, &output);
@@ -124,16 +123,16 @@ void Call::OnComplete(napi_env env, napi_status status, void *data)
     if (status == napi_ok && runStatus == napi_ok) {
         napi_get_undefined(env, &result[ARG_ERROR]);
         if (output != nullptr) {
-            HILOG_DEBUG("AsyncCall::OnComplete output != nullptr");
+            HILOG_DEBUG("AsyncCall::OnComplete output != nullptr.");
             result[ARG_DATA] = output;
         } else {
-            HILOG_DEBUG("AsyncCall::OnComplete output == nullptr");
+            HILOG_DEBUG("AsyncCall::OnComplete output == nullptr.");
             napi_get_undefined(env, &result[ARG_DATA]);
         }
     } else {
         napi_value errCode = nullptr;
         napi_value message = nullptr;
-        std::string errMsg("async call failed");
+        std::string errMsg("async call failed!");
         if (context->ctx->errCode_ != 0) {
             napi_create_int32(env, context->ctx->errCode_, &errCode);
         }

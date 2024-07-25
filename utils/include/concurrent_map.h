@@ -19,8 +19,7 @@
 #include <map>
 #include <mutex>
 namespace OHOS {
-template<typename _Key, typename _Tp>
-class ConcurrentMap {
+template<typename _Key, typename _Tp> class ConcurrentMap {
 public:
     using key_type = typename std::map<_Key, _Tp>::key_type;
     using mapped_type = typename std::map<_Key, _Tp>::mapped_type;
@@ -67,8 +66,7 @@ public:
         return *this;
     }
 
-    template<typename... _Args>
-    bool Emplace(_Args &&...args) noexcept
+    template<typename... _Args> bool Emplace(_Args &&...args) noexcept
     {
         std::lock_guard<decltype(mutex_)> lock(mutex_);
         auto it = entries_.emplace(std::forward<_Args>(args)...);
@@ -92,8 +90,7 @@ public:
         return (entries_.find(key) != entries_.end());
     }
 
-    template<typename _Obj>
-    bool InsertOrAssign(const key_type &key, _Obj &&obj) noexcept
+    template<typename _Obj> bool InsertOrAssign(const key_type &key, _Obj &&obj) noexcept
     {
         std::lock_guard<decltype(mutex_)> lock(mutex_);
         auto it = entries_.insert_or_assign(key, std::forward<_Obj>(obj));
@@ -140,8 +137,8 @@ public:
         }
         std::lock_guard<decltype(mutex_)> lock(mutex_);
 #if __cplusplus > 201703L
-        auto count = std::erase_if(entries_,
-            [&action](value_type &value) -> bool { return action(value.first, value.second); });
+        auto count = std::erase_if(
+            entries_, [&action](value_type &value) -> bool { return action(value.first, value.second); });
 #else
         auto count = entries_.size();
         for (auto it = entries_.begin(); it != entries_.end();) {

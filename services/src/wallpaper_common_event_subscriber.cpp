@@ -13,9 +13,8 @@
  * limitations under the License.
  */
 
-#include "wallpaper_common_event_subscriber.h"
-
 #include "hilog_wrapper.h"
+#include "wallpaper_common_event_subscriber.h"
 #include "wallpaper_service.h"
 
 namespace OHOS {
@@ -23,7 +22,7 @@ namespace WallpaperMgrService {
 
 void WallpaperCommonEventSubscriber::OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data)
 {
-    HILOG_INFO("WallpaperCommonEvent::OnReceiveEvent");
+    HILOG_INFO("WallpaperCommonEvent::OnReceiveEvent.");
     auto want = data.GetWant();
     std::string action = want.GetAction();
     if (action == EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED) {

@@ -16,10 +16,11 @@
 #ifndef NAPI_WALLPAPER_ABILITY_H
 #define NAPI_WALLPAPER_ABILITY_H
 
+#include <uv.h>
+
 #include <map>
 #include <string>
 #include <vector>
-#include <uv.h>
 
 #include "call.h"
 #include "napi/native_api.h"
@@ -54,8 +55,8 @@ struct GetContextInfo : public Call::Context {
     bool result = false;
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     napi_status status = napi_generic_failure;
-    GetContextInfo() : Context(nullptr, nullptr){};
-    GetContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)){};
+    GetContextInfo() : Context(nullptr, nullptr) {};
+    GetContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)) {};
 
     napi_status operator()(napi_env env, size_t argc, napi_value *argv, napi_value self) override
     {
@@ -76,8 +77,8 @@ struct GetMinContextInfo : public Call::Context {
     int32_t minHeight = 0;
     int32_t minWidth = 0;
     napi_status status = napi_generic_failure;
-    GetMinContextInfo() : Context(nullptr, nullptr){};
-    GetMinContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)){};
+    GetMinContextInfo() : Context(nullptr, nullptr) {};
+    GetMinContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)) {};
 
     napi_status operator()(napi_env env, size_t argc, napi_value *argv, napi_value self) override
     {
@@ -98,8 +99,8 @@ struct PermissionContextInfo : public Call::Context {
     bool isChangePermitted = false;
     bool isOperationAllowed = false;
     napi_status status = napi_generic_failure;
-    PermissionContextInfo() : Context(nullptr, nullptr){};
-    PermissionContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)){};
+    PermissionContextInfo() : Context(nullptr, nullptr) {};
+    PermissionContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)) {};
 
     napi_status operator()(napi_env env, size_t argc, napi_value *argv, napi_value self) override
     {
@@ -125,8 +126,8 @@ struct SetContextInfo : public Call::Context {
     int32_t xOffset = 0;
     int32_t yOffset = 0;
     bool isSetOffset = false;
-    SetContextInfo() : Context(nullptr, nullptr){};
-    SetContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)){};
+    SetContextInfo() : Context(nullptr, nullptr) {};
+    SetContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)) {};
 
     napi_status operator()(napi_env env, size_t argc, napi_value *argv, napi_value self) override
     {
@@ -148,8 +149,8 @@ struct GetFileContextInfo : public Call::Context {
     int32_t wallpaperType = 0;
     int32_t wallpaperFd = INVALID_FD;
     napi_status status = napi_generic_failure;
-    GetFileContextInfo() : Context(nullptr, nullptr){};
-    GetFileContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)){};
+    GetFileContextInfo() : Context(nullptr, nullptr) {};
+    GetFileContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)) {};
 
     napi_status operator()(napi_env env, size_t argc, napi_value *argv, napi_value self) override
     {
@@ -172,13 +173,13 @@ public:
     NapiWallpaperAbility(napi_env env, napi_value callback);
     virtual ~NapiWallpaperAbility();
     void OnColorsChange(const std::vector<uint64_t> &color, int32_t wallpaperType) override;
-    void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
-        const std::string &uri) override;
+    void OnWallpaperChange(
+        WallpaperType wallpaperType, WallpaperResourceType resourceType, const std::string &uri) override;
     static bool IsValidArgCount(size_t argc, size_t expectationSize);
     static bool IsValidArgType(napi_env env, napi_value argValue, napi_valuetype expectationType);
     static bool IsValidArgRange(napi_env env, napi_value argValue);
-    static bool CheckValidArgWallpaperType(napi_env env, size_t argc, napi_value argValue,
-        std::shared_ptr<Call::Context> ctx);
+    static bool CheckValidArgWallpaperType(
+        napi_env env, size_t argc, napi_value argValue, std::shared_ptr<Call::Context> ctx);
     static void GetColorsInner(std::shared_ptr<GetContextInfo> context, const ApiInfo &apiInfo);
     static void GetIdInner(std::shared_ptr<GetContextInfo> context);
     static void GetFileInner(std::shared_ptr<GetFileContextInfo> context, const ApiInfo &apiInfo);

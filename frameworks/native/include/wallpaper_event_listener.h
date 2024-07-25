@@ -35,8 +35,8 @@ public:
     {
     }
 
-    virtual void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
-        const std::string &uri)
+    virtual void OnWallpaperChange(
+        WallpaperType wallpaperType, WallpaperResourceType resourceType, const std::string &uri)
     {
     }
 };

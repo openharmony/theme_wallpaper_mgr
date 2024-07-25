@@ -13,9 +13,8 @@
  * limitations under the License.
  */
 
-#include "wallpaper_data.h"
-
 #include "file_ex.h"
+#include "wallpaper_data.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {

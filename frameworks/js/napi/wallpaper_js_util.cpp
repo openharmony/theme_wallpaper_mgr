@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 #define LOG_TAG "WallpaperJSUtil"
-#include "wallpaper_js_util.h"
 #include "color.h"
 #include "hilog_wrapper.h"
+#include "wallpaper_js_util.h"
 
 namespace OHOS::WallpaperNAPI {
 using namespace WallpaperMgrService;
@@ -49,16 +49,16 @@ std::string WallpaperJSUtil::Convert2String(napi_env env, napi_value jsString)
 
 napi_value WallpaperJSUtil::Convert2JSRgbaArray(napi_env env, const std::vector<uint64_t> &color)
 {
-    HILOG_DEBUG("Convert2JSRgbaArray in");
+    HILOG_DEBUG("Convert2JSRgbaArray in.");
     napi_value result = nullptr;
     napi_status status = napi_create_array_with_length(env, color.size(), &result);
     if (status != napi_ok) {
-        HILOG_DEBUG("Convert2JSRgbaArray failed");
+        HILOG_DEBUG("Convert2JSRgbaArray failed!");
         return nullptr;
     }
     int32_t index = 0;
     for (const auto it : color) {
-        HILOG_DEBUG("Convert2JSRgbaArray for");
+        HILOG_DEBUG("Convert2JSRgbaArray for.");
         ColorManager::Color colors(it);
         napi_value red = nullptr;
         napi_value green = nullptr;

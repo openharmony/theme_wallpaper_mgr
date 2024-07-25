@@ -12,12 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <cstdint>
-#include <ctime>
 #include <gtest/gtest.h>
-#include <string>
 #include <sys/time.h>
 #include <unistd.h>
+
+#include <cstdint>
+#include <ctime>
+#include <string>
 
 #include "dfx_types.h"
 #include "hilog_wrapper.h"

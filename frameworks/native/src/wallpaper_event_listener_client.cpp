@@ -15,9 +15,8 @@
 
 #define LOG_TAG "WallpaperEventListenerClient"
 
-#include "wallpaper_event_listener_client.h"
-
 #include "hilog_wrapper.h"
+#include "wallpaper_event_listener_client.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -33,14 +32,14 @@ WallpaperEventListenerClient::~WallpaperEventListenerClient()
 
 void WallpaperEventListenerClient::OnColorsChange(const std::vector<uint64_t> &color, int32_t wallpaperType)
 {
-    HILOG_INFO("OnColorsChange start");
+    HILOG_INFO("OnColorsChange start.");
     if (wallpaperEventListener_ != nullptr) {
         wallpaperEventListener_->OnColorsChange(color, wallpaperType);
     }
 }
 
-void WallpaperEventListenerClient::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
-    const std::string &uri)
+void WallpaperEventListenerClient::OnWallpaperChange(
+    WallpaperType wallpaperType, WallpaperResourceType resourceType, const std::string &uri)
 {
     if (wallpaperEventListener_ != nullptr) {
         wallpaperEventListener_->OnWallpaperChange(wallpaperType, resourceType, uri);

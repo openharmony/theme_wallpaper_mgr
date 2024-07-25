@@ -32,8 +32,8 @@ public:
     enum Message { ON_COLORS_CHANGE = 0, ON_WALLPAPER_CHANGE };
     DECLARE_INTERFACE_DESCRIPTOR(u"OHOS.WallpaperMgrService.IWallpaperEventListener");
     virtual void OnColorsChange(const std::vector<uint64_t> &color, int32_t wallpaperType) = 0;
-    virtual void OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
-        const std::string &uri) = 0;
+    virtual void OnWallpaperChange(
+        WallpaperType wallpaperType, WallpaperResourceType resourceType, const std::string &uri) = 0;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

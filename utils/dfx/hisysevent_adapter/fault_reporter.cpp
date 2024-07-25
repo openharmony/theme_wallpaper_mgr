@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 #include "fault_reporter.h"
-
 #include "hisysevent.h"
 
 namespace OHOS {

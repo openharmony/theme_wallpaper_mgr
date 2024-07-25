@@ -16,8 +16,9 @@
 #ifndef ABILITY_RUNTIME_JS_WALLPAPER_EXTENSION_CONTEXT_H
 #define ABILITY_RUNTIME_JS_WALLPAPER_EXTENSION_CONTEXT_H
 
-#include <memory>
 #include <node_api.h>
+
+#include <memory>
 
 #include "ability_connect_callback.h"
 #include "event_handler.h"
@@ -34,11 +35,11 @@ class JSWallpaperExtensionConnection : public AbilityConnectCallback {
 public:
     explicit JSWallpaperExtensionConnection(napi_env env);
     ~JSWallpaperExtensionConnection();
-    void OnAbilityConnectDone(const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject,
-        int32_t resultCode) override;
+    void OnAbilityConnectDone(
+        const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int32_t resultCode) override;
     void OnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int32_t resultCode) override;
-    void HandleOnAbilityConnectDone(const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject,
-        int32_t resultCode);
+    void HandleOnAbilityConnectDone(
+        const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int32_t resultCode);
     void HandleOnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int32_t resultCode);
     void SetJsConnectionObject(napi_value jsConnectionObject);
     void CallJsFailed(int32_t errorCode);
