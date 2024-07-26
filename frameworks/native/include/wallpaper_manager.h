@@ -54,8 +54,8 @@ public:
     * values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
     * @return  ErrorCode
     */
-    ErrorCode SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType,
-        const ApiInfo &apiInfo) final;
+    ErrorCode SetWallpaper(
+        std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType, const ApiInfo &apiInfo) final;
 
     /**
         *Obtains the default pixel map of a wallpaper of the specified type.
@@ -65,8 +65,8 @@ public:
         * @permission ohos.permission.GET_WALLPAPER
         * @systemapi Hide this for inner system use.
     */
-    ErrorCode GetPixelMap(int32_t wallpaperType, const ApiInfo &apiInfo,
-        std::shared_ptr<OHOS::Media::PixelMap> &PixelMap) final;
+    ErrorCode GetPixelMap(
+        int32_t wallpaperType, const ApiInfo &apiInfo, std::shared_ptr<OHOS::Media::PixelMap> &PixelMap) final;
 
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
@@ -167,6 +167,7 @@ public:
     void CloseWallpaperFd(int32_t wallpaperType);
 
     bool RegisterWallpaperListener();
+
 private:
     class DeathRecipient final : public IRemoteObject::DeathRecipient {
     public:
@@ -177,8 +178,7 @@ private:
         void OnRemoteDied(const wptr<IRemoteObject> &remote) final;
     };
 
-    template<typename F, typename... Args>
-    ErrCode CallService(F func, Args &&...args);
+    template<typename F, typename... Args> ErrCode CallService(F func, Args &&...args);
     bool CheckVideoFormat(const std::string &fileName);
     void ResetService(const wptr<IRemoteObject> &remote);
     sptr<IWallpaperService> GetService();

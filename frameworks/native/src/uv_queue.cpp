@@ -12,9 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "hilog_wrapper.h"
 #include "uv_queue.h"
 
-#include "hilog_wrapper.h"
 
 namespace OHOS::MiscServices {
 using namespace WallpaperMgrService;
@@ -31,10 +31,9 @@ bool UvQueue::Call(napi_env env, void *data, uv_after_work_cb afterCallback)
         return false;
     }
     work->data = data;
-    auto ret = uv_queue_work_with_qos(
-        loop, work, [](uv_work_t *work) {}, afterCallback, uv_qos_user_initiated);
+    auto ret = uv_queue_work_with_qos(loop, work, [](uv_work_t *work) {}, afterCallback, uv_qos_user_initiated);
     if (ret != 0) {
-        HILOG_ERROR("uv_queue_work_with_qos faild retCode:%{public}d", ret);
+        HILOG_ERROR("uv_queue_work_with_qos faild retCode:%{public}d!", ret);
         delete static_cast<WorkData *>(data);
         delete work;
         return false;

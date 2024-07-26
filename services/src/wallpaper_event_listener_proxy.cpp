@@ -15,10 +15,9 @@
 
 #define LOG_TAG "WallpaperEventListenerProxy"
 
-#include "wallpaper_event_listener_proxy.h"
-
 #include "hilog_wrapper.h"
 #include "message_parcel.h"
+#include "wallpaper_event_listener_proxy.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -26,58 +25,58 @@ using namespace std::chrono;
 
 void WallpaperEventListenerProxy::OnColorsChange(const std::vector<uint64_t> &color, int32_t wallpaperType)
 {
-    HILOG_DEBUG("WallpaperEventListenerProxy::OnColorsChange Start");
+    HILOG_DEBUG("WallpaperEventListenerProxy::OnColorsChange Start.");
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
     if (!data.WriteInterfaceToken(WallpaperEventListenerProxy::GetDescriptor())) {
-        HILOG_ERROR("write descriptor failed");
+        HILOG_ERROR("write descriptor failed!");
         return;
     }
 
     if (!data.WriteUInt64Vector(color)) {
-        HILOG_ERROR("write color failed");
+        HILOG_ERROR("write color failed!");
         return;
     }
     if (!data.WriteInt32(wallpaperType)) {
-        HILOG_ERROR("write wallpaperType failed");
+        HILOG_ERROR("write wallpaperType failed!");
         return;
     }
 
     int32_t error = Remote()->SendRequest(ON_COLORS_CHANGE, data, reply, option);
     if (error != 0) {
-        HILOG_ERROR("SendRequest failed, error %{public}d", error);
+        HILOG_ERROR("SendRequest failed, error %{public}d!", error);
     }
 }
 
-void WallpaperEventListenerProxy::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
-    const std::string &uri)
+void WallpaperEventListenerProxy::OnWallpaperChange(
+    WallpaperType wallpaperType, WallpaperResourceType resourceType, const std::string &uri)
 {
-    HILOG_DEBUG("WallpaperEventListenerProxy::OnWallpaperChange Start");
+    HILOG_DEBUG("WallpaperEventListenerProxy::OnWallpaperChange Start.");
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
     if (!data.WriteInterfaceToken(WallpaperEventListenerProxy::GetDescriptor())) {
-        HILOG_ERROR("write descriptor failed");
+        HILOG_ERROR("write descriptor failed!");
         return;
     }
 
     if (!data.WriteInt32(wallpaperType)) {
-        HILOG_ERROR("write wallpaperType failed");
+        HILOG_ERROR("write wallpaperType failed!");
         return;
     }
     if (!data.WriteInt32(resourceType)) {
-        HILOG_ERROR("write resourceType failed");
+        HILOG_ERROR("write resourceType failed!");
         return;
     }
     if (!data.WriteString(uri)) {
-        HILOG_ERROR("write uri failed");
+        HILOG_ERROR("write uri failed!");
         return;
     }
 
     int32_t error = Remote()->SendRequest(ON_WALLPAPER_CHANGE, data, reply, option);
     if (error != 0) {
-        HILOG_ERROR("SendRequest failed, error %{public}d", error);
+        HILOG_ERROR("SendRequest failed, error %{public}d!", error);
     }
 }
 

@@ -12,8 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "file_deal.h"
-
 #include <dirent.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -23,6 +21,7 @@
 #include <cstdio>
 #include <filesystem>
 
+#include "file_deal.h"
 #include "hilog_wrapper.h"
 
 namespace fs = std::filesystem;
@@ -67,7 +66,7 @@ bool FileDeal::CopyFile(const std::string &sourceFile, const std::string &newFil
         return false;
     }
     if (!ForcedRefreshDisk(newFile)) {
-        HILOG_WARN("ForcedRefreshDisk failed");
+        HILOG_WARN("ForcedRefreshDisk failed!");
     }
     return true;
 }
@@ -115,7 +114,7 @@ bool FileDeal::GetRealPath(const std::string &inOriPath, std::string &outRealPat
 {
     char realPath[PATH_MAX + 1] = { 0x00 };
     if (inOriPath.size() > PATH_MAX || realpath(inOriPath.c_str(), realPath) == nullptr) {
-        HILOG_ERROR("get real path fail");
+        HILOG_ERROR("get real path fail!");
         return false;
     }
     outRealPath = std::string(realPath);
@@ -145,7 +144,7 @@ bool FileDeal::ForcedRefreshDisk(const std::string &sourcePath)
 {
     std::string fileRealPath;
     if (!GetRealPath(sourcePath, fileRealPath)) {
-        HILOG_ERROR("get real path file failed");
+        HILOG_ERROR("get real path file failed!");
         return false;
     }
     FILE *file = std::fopen(fileRealPath.c_str(), "rb");
@@ -154,12 +153,12 @@ bool FileDeal::ForcedRefreshDisk(const std::string &sourcePath)
         return false;
     }
     if (fflush(file) != 0) {
-        HILOG_ERROR("fflush file failed, errno %{public}d", errno);
+        HILOG_ERROR("fflush file failed, errno=%{public}d", errno);
         fclose(file);
         return false;
     }
     if (fsync(fileno(file)) != 0) {
-        HILOG_ERROR("fsync file failed, errno %{public}d", errno);
+        HILOG_ERROR("fsync file failed, errno=%{public}d", errno);
         fclose(file);
         return false;
     }

@@ -13,13 +13,12 @@
  * limitations under the License.
  */
 
-#include "setwallpaperpixelmapv9_fuzz.h"
-
 #include <cstddef>
 #include <cstdint>
 
 #include "fuzztest_utils.h"
 #include "message_parcel.h"
+#include "setwallpaperpixelmapv9_fuzz.h"
 #include "wallpaper_service.h"
 
 using namespace OHOS::WallpaperMgrService;

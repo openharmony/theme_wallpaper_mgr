@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
-#include "boundarycode_fuzzer.h"
-
 #include <cstddef>
 #include <cstdint>
 
+#include "boundarycode_fuzzer.h"
 #include "fuzztest_utils.h"
 #include "message_parcel.h"
 #include "wallpaper_service.h"

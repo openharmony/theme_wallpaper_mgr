@@ -13,9 +13,9 @@
 * limitations under the License.
 */
 
+#include "hilog_wrapper.h"
 #include "wallpaper_common_event_manager.h"
 
-#include "hilog_wrapper.h"
 namespace OHOS {
 namespace WallpaperMgrService {
 constexpr const char *LOCKSCREEN_WALLPAPER_SETTING_SUCCESS_EVENT = "com.ohos.wallpaperlocksettingsuccess";
@@ -23,8 +23,8 @@ constexpr const char *SYSTEM_WALLPAPER_SETTING_SUCCESS_EVENT = "com.ohos.wallpap
 constexpr int32_t LOCKSCREEN_WALLPAPER_SETTING_SUCCESS_CODE = 11000;
 constexpr int32_t SYSTEM_WALLPAPER_SETTING_SUCCESS_CODE = 21000;
 
-bool WallpaperCommonEventManager::PublishEvent(const OHOS::AAFwk::Want &want, int32_t eventCode,
-    const std::string &eventData)
+bool WallpaperCommonEventManager::PublishEvent(
+    const OHOS::AAFwk::Want &want, int32_t eventCode, const std::string &eventData)
 {
     OHOS::EventFwk::CommonEventData data;
     data.SetWant(want);

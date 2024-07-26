@@ -57,8 +57,8 @@ public:
     * WALLPAPER_LOCKSCREEN
     * @return  ErrorCode
     */
-    virtual ErrorCode SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType,
-        const ApiInfo &apiInfo) = 0;
+    virtual ErrorCode SetWallpaper(
+        std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType, const ApiInfo &apiInfo) = 0;
 
     /**
         *Obtains the default pixel map of a wallpaper of the specified type.
@@ -68,8 +68,8 @@ public:
         * @permission ohos.permission.GET_WALLPAPER
         * @systemapi Hide this for inner system use.
     */
-    virtual ErrorCode GetPixelMap(int32_t wallpaperType, const ApiInfo &apiInfo,
-        std::shared_ptr<OHOS::Media::PixelMap> &pixelMap) = 0;
+    virtual ErrorCode GetPixelMap(
+        int32_t wallpaperType, const ApiInfo &apiInfo, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap) = 0;
 
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.

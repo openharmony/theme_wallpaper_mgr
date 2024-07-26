@@ -15,8 +15,9 @@
 
 #include <napi/native_api.h>
 #include <pthread.h>
-#include <string>
 #include <unistd.h>
+
+#include <string>
 
 #include "hilog_wrapper.h"
 #include "napi/native_node_api.h"

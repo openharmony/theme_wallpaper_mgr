@@ -12,12 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "dump_helper.h"
-
 #include <cstdio>
 #include <utility>
 
+#include "dump_helper.h"
 #include "hilog_wrapper.h"
+
 using namespace OHOS::WallpaperMgrService;
 namespace OHOS {
 namespace MiscServices {
@@ -46,7 +46,7 @@ bool DumpHelper::Dispatch(int fd, const std::vector<std::string> &args)
         std::string output;
         bool ret = handler->second->DoAction(args, output);
         if (!ret) {
-            HILOG_INFO("DoAction failed");
+            HILOG_INFO("DoAction failed!");
         }
         dprintf(fd, "\n%s", output.c_str());
         return ret;

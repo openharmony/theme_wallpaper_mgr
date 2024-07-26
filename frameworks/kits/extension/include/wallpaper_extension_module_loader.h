@@ -19,7 +19,8 @@
 #include "extension_module_loader.h"
 
 namespace OHOS::AbilityRuntime {
-class WallpaperExtensionModuleLoader : public ExtensionModuleLoader, public Singleton<WallpaperExtensionModuleLoader> {
+class WallpaperExtensionModuleLoader : public ExtensionModuleLoader,
+                                       public Singleton<WallpaperExtensionModuleLoader> {
     DECLARE_SINGLETON(WallpaperExtensionModuleLoader);
 
 public:

@@ -13,8 +13,9 @@
 * limitations under the License.
 */
 
-#include <ctime>
 #include <gtest/gtest.h>
+
+#include <ctime>
 
 #include "directory_ex.h"
 #include "hilog_wrapper.h"

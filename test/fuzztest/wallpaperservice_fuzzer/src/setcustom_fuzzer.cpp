@@ -13,13 +13,12 @@
  * limitations under the License.
  */
 
-#include "setcustom_fuzzer.h"
-
 #include <cstddef>
 #include <cstdint>
 
 #include "fuzztest_utils.h"
 #include "message_parcel.h"
+#include "setcustom_fuzzer.h"
 #include "wallpaper_service.h"
 
 using namespace OHOS::WallpaperMgrService;

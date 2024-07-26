@@ -18,8 +18,9 @@
 #undef private
 #undef protected
 
-#include <ctime>
 #include <gtest/gtest.h>
+
+#include <ctime>
 
 #include "accesstoken_kit.h"
 #include "directory_ex.h"
@@ -213,8 +214,8 @@ void WallpaperEventListenerTestImpl::OnColorsChange(const std::vector<uint64_t> 
     wallpaperType_ = wallpaperType;
 }
 
-void WallpaperEventListenerTestImpl::OnWallpaperChange(WallpaperType wallpaperType, WallpaperResourceType resourceType,
-    const std::string &uri)
+void WallpaperEventListenerTestImpl::OnWallpaperChange(
+    WallpaperType wallpaperType, WallpaperResourceType resourceType, const std::string &uri)
 {
     HILOG_INFO("wallpaperType: %{public}d, resourceType: %{public}d, uri: %{public}s",
         static_cast<int32_t>(wallpaperType), static_cast<int32_t>(resourceType), uri.c_str());

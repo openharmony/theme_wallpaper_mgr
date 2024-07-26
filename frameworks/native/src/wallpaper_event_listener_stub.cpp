@@ -12,47 +12,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "wallpaper_event_listener_stub.h"
-
 #include "hilog_wrapper.h"
 #include "message_parcel.h"
+#include "wallpaper_event_listener_stub.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
 using namespace std::chrono;
-int32_t WallpaperEventListenerStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
-    MessageOption &option)
+int32_t WallpaperEventListenerStub::OnRemoteRequest(
+    uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
     HILOG_DEBUG("WallpaperEventListenerStub::OnRemoteRequest Start");
     std::u16string descriptor = WallpaperEventListenerStub::GetDescriptor();
     std::u16string remoteDescriptor = data.ReadInterfaceToken();
     if (descriptor != remoteDescriptor) {
-        HILOG_ERROR("local descriptor is not equal to remote");
+        HILOG_ERROR("local descriptor is not equal to remote.");
         return -1;
     }
     switch (code) {
         case ON_COLORS_CHANGE: {
             std::vector<uint64_t> color;
             if (!data.ReadUInt64Vector(&color)) {
-                HILOG_ERROR("ON_COLORS_CHANGE ReadUInt64Vector error");
+                HILOG_ERROR("ON_COLORS_CHANGE ReadUInt64Vector error!");
                 return -1;
             }
             int32_t wallpaperType = data.ReadInt32();
             OnColorsChange(color, wallpaperType);
-            HILOG_DEBUG("WallpaperEventListenerStub::OnRemoteRequest End");
+            HILOG_DEBUG("WallpaperEventListenerStub::OnRemoteRequest End.");
             return 0;
         }
         case ON_WALLPAPER_CHANGE: {
             int32_t wallpaperType = data.ReadInt32();
             int32_t resouceType = data.ReadInt32();
             std::string uri = data.ReadString();
-            OnWallpaperChange(static_cast<WallpaperType>(wallpaperType),
-                static_cast<WallpaperResourceType>(resouceType), uri);
-            HILOG_DEBUG("WallpaperEventListenerStub::OnRemoteRequest End");
+            OnWallpaperChange(
+                static_cast<WallpaperType>(wallpaperType), static_cast<WallpaperResourceType>(resouceType), uri);
+            HILOG_DEBUG("WallpaperEventListenerStub::OnRemoteRequest End.");
             return 0;
         }
         default: {
-            HILOG_ERROR("code error, WallpaperEventListenerStub::OnRemoteRequest End");
+            HILOG_ERROR("code error, WallpaperEventListenerStub::OnRemoteRequest End.");
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
         }
     }

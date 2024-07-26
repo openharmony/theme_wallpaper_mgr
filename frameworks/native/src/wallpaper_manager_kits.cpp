@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
+#include "wallpaper_manager.h"
 #include "wallpaper_manager_kits.h"
 
-#include "wallpaper_manager.h"
 namespace OHOS {
 namespace WallpaperMgrService {
 WallpaperManagerkits &WallpaperManagerkits::GetInstance()

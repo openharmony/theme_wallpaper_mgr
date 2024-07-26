@@ -12,21 +12,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "wallpaper_manager.h"
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include <cerrno>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <fcntl.h>
 #include <fstream>
 #include <iostream>
 #include <mutex>
 #include <sstream>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 #include "dfx_types.h"
 #include "display_manager.h"
@@ -41,6 +40,7 @@
 #include "image_type.h"
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
+#include "wallpaper_manager.h"
 #include "wallpaper_service_cb_stub.h"
 #include "wallpaper_service_proxy.h"
 
@@ -69,7 +69,7 @@ WallpaperManager::~WallpaperManager()
 
 void WallpaperManager::ResetService(const wptr<IRemoteObject> &remote)
 {
-    HILOG_INFO("Remote is dead, reset service instance");
+    HILOG_INFO("Remote is dead, reset service instance.");
     std::lock_guard<std::mutex> lock(wallpaperProxyLock_);
     if (wallpaperProxy_ != nullptr) {
         sptr<IRemoteObject> object = wallpaperProxy_->AsObject();
@@ -89,12 +89,12 @@ sptr<IWallpaperService> WallpaperManager::GetService()
 
     sptr<ISystemAbilityManager> samgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (samgr == nullptr) {
-        HILOG_ERROR("Get samgr failed");
+        HILOG_ERROR("Get samgr failed!");
         return nullptr;
     }
     sptr<IRemoteObject> object = samgr->GetSystemAbility(WALLPAPER_MANAGER_SERVICE_ID);
     if (object == nullptr) {
-        HILOG_ERROR("Get wallpaper object from samgr failed");
+        HILOG_ERROR("Get wallpaper object from samgr failed!");
         return nullptr;
     }
 
@@ -103,12 +103,12 @@ sptr<IWallpaperService> WallpaperManager::GetService()
     }
 
     if ((object->IsProxyObject()) && (!object->AddDeathRecipient(deathRecipient_))) {
-        HILOG_ERROR("Failed to add death recipient");
+        HILOG_ERROR("Failed to add death recipient!");
     }
 
     wallpaperProxy_ = iface_cast<WallpaperServiceProxy>(object);
     if (wallpaperProxy_ == nullptr) {
-        HILOG_ERROR("iface_cast failed");
+        HILOG_ERROR("iface_cast failed!");
     }
     return wallpaperProxy_;
 }
@@ -128,12 +128,11 @@ void WallpaperManager::DeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &r
     HILOG_INFO("Register WallpaperListener result:%{public}d.", result);
 }
 
-template<typename F, typename... Args>
-ErrCode WallpaperManager::CallService(F func, Args &&...args)
+template<typename F, typename... Args> ErrCode WallpaperManager::CallService(F func, Args &&...args)
 {
     auto service = GetService();
     if (service == nullptr) {
-        HILOG_ERROR("get service failed");
+        HILOG_ERROR("get service failed!");
         return ERR_DEAD_OBJECT;
     }
 
@@ -147,7 +146,7 @@ ErrCode WallpaperManager::CallService(F func, Args &&...args)
         ResetService(service);
     }
 
-    HILOG_ERROR("Callservice failed with: %{public}d", result);
+    HILOG_ERROR("Callservice failed with: %{public}d.", result);
     return result;
 }
 
@@ -155,7 +154,7 @@ ErrorCode WallpaperManager::GetColors(int32_t wallpaperType, const ApiInfo &apiI
 {
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+        HILOG_ERROR("Get proxy failed!");
         return E_DEAL_FAILED;
     }
     if (apiInfo.isSystemApi) {
@@ -168,7 +167,7 @@ ErrorCode WallpaperManager::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
 {
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+        HILOG_ERROR("Get proxy failed!");
         return E_DEAL_FAILED;
     }
     std::lock_guard<std::mutex> lock(wallpaperFdLock_);
@@ -188,12 +187,12 @@ ErrorCode WallpaperManager::SetWallpaper(std::string uri, int32_t wallpaperType,
 {
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+        HILOG_ERROR("Get proxy failed!");
         return E_DEAL_FAILED;
     }
     std::string fileRealPath;
     if (!FileDeal::GetRealPath(uri, fileRealPath)) {
-        HILOG_ERROR("get real path file failed, len = %{public}zu", uri.size());
+        HILOG_ERROR("get real path file failed, len = %{public}zu.", uri.size());
         return E_FILE_ERROR;
     }
 
@@ -206,7 +205,7 @@ ErrorCode WallpaperManager::SetWallpaper(std::string uri, int32_t wallpaperType,
 
     int32_t fd = open(fileRealPath.c_str(), O_RDONLY, 0660);
     if (fd < 0) {
-        HILOG_ERROR("open file failed, errno %{public}d", errno);
+        HILOG_ERROR("open file failed, errno %{public}d!", errno);
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         return E_FILE_ERROR;
     }
@@ -224,12 +223,12 @@ ErrorCode WallpaperManager::SetWallpaper(std::string uri, int32_t wallpaperType,
     return wallpaperErrorCode;
 }
 
-ErrorCode WallpaperManager::SetWallpaper(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType,
-    const ApiInfo &apiInfo)
+ErrorCode WallpaperManager::SetWallpaper(
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType, const ApiInfo &apiInfo)
 {
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+        HILOG_ERROR("Get proxy failed!");
         return E_DEAL_FAILED;
     }
 
@@ -249,12 +248,12 @@ ErrorCode WallpaperManager::SetVideo(const std::string &uri, const int32_t wallp
 {
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+        HILOG_ERROR("Get proxy failed!");
         return E_DEAL_FAILED;
     }
     std::string fileRealPath;
     if (!FileDeal::GetRealPath(uri, fileRealPath)) {
-        HILOG_ERROR("Get real path failed, uri: %{public}s", uri.c_str());
+        HILOG_ERROR("Get real path failed, uri: %{public}s!", uri.c_str());
         return E_FILE_ERROR;
     }
 
@@ -266,7 +265,7 @@ ErrorCode WallpaperManager::SetVideo(const std::string &uri, const int32_t wallp
     }
     int32_t fd = open(fileRealPath.c_str(), O_RDONLY, 0660);
     if (fd < 0) {
-        HILOG_ERROR("Open file failed, errno %{public}d", errno);
+        HILOG_ERROR("Open file failed, errno %{public}d!", errno);
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         return E_FILE_ERROR;
     }
@@ -281,12 +280,12 @@ ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int
 {
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+        HILOG_ERROR("Get proxy failed!");
         return E_DEAL_FAILED;
     }
     std::string fileRealPath;
     if (!FileDeal::GetRealPath(uri, fileRealPath)) {
-        HILOG_ERROR("Get real path failed, uri: %{public}s", uri.c_str());
+        HILOG_ERROR("Get real path failed, uri: %{public}s!", uri.c_str());
         return E_FILE_ERROR;
     }
     if (!FileDeal::IsZipFile(uri)) {
@@ -300,7 +299,7 @@ ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int
     }
     int32_t fd = open(fileRealPath.c_str(), O_RDONLY, 0660);
     if (fd < 0) {
-        HILOG_ERROR("Open file failed, errno %{public}d", errno);
+        HILOG_ERROR("Open file failed, errno %{public}d!", errno);
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         return E_FILE_ERROR;
     }
@@ -311,13 +310,13 @@ ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int
     return wallpaperErrorCode;
 }
 
-ErrorCode WallpaperManager::GetPixelMap(int32_t wallpaperType, const ApiInfo &apiInfo,
-    std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
+ErrorCode WallpaperManager::GetPixelMap(
+    int32_t wallpaperType, const ApiInfo &apiInfo, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
 {
-    HILOG_INFO("FrameWork GetPixelMap Start by FD");
+    HILOG_INFO("FrameWork GetPixelMap Start by FD.");
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+        HILOG_ERROR("Get proxy failed!");
         return E_SA_DIED;
     }
     IWallpaperService::FdInfo fdInfo;
@@ -341,7 +340,7 @@ ErrorCode WallpaperManager::GetPixelMap(int32_t wallpaperType, const ApiInfo &ap
     std::unique_ptr<OHOS::Media::ImageSource> imageSource =
         OHOS::Media::ImageSource::CreateImageSource(fdInfo.fd, opts, errorCode);
     if (errorCode != 0) {
-        HILOG_ERROR("ImageSource::CreateImageSource failed,errcode= %{public}d", errorCode);
+        HILOG_ERROR("ImageSource::CreateImageSource failed, errcode= %{public}d!", errorCode);
         close(fdInfo.fd);
         return E_IMAGE_ERRCODE;
     }
@@ -350,7 +349,7 @@ ErrorCode WallpaperManager::GetPixelMap(int32_t wallpaperType, const ApiInfo &ap
     pixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
 
     if (errorCode != 0) {
-        HILOG_ERROR("ImageSource::CreatePixelMap failed,errcode= %{public}d", errorCode);
+        HILOG_ERROR("ImageSource::CreatePixelMap failed, errcode= %{public}d!", errorCode);
         return E_IMAGE_ERRCODE;
     }
     return wallpaperErrorCode;
@@ -360,7 +359,7 @@ int32_t WallpaperManager::GetWallpaperId(int32_t wallpaperType)
 {
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+        HILOG_ERROR("Get proxy failed!");
         return -1;
     }
     return wallpaperServerProxy->GetWallpaperId(wallpaperType);
@@ -370,7 +369,7 @@ ErrorCode WallpaperManager::GetWallpaperMinHeight(const ApiInfo &apiInfo, int32_
 {
     auto display = Rosen::DisplayManager::GetInstance().GetDefaultDisplay();
     if (display == nullptr) {
-        HILOG_ERROR("GetDefaultDisplay is nullptr");
+        HILOG_ERROR("GetDefaultDisplay is nullptr.");
         return E_DEAL_FAILED;
     }
     minHeight = display->GetHeight();
@@ -381,7 +380,7 @@ ErrorCode WallpaperManager::GetWallpaperMinWidth(const ApiInfo &apiInfo, int32_t
 {
     auto display = Rosen::DisplayManager::GetInstance().GetDefaultDisplay();
     if (display == nullptr) {
-        HILOG_ERROR("GetDefaultDisplay is nullptr");
+        HILOG_ERROR("GetDefaultDisplay is nullptr.");
         return E_DEAL_FAILED;
     }
     minWidth = display->GetWidth();
@@ -392,7 +391,7 @@ bool WallpaperManager::IsChangePermitted()
 {
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+        HILOG_ERROR("Get proxy failed!");
         return false;
     }
     return wallpaperServerProxy->IsChangePermitted();
@@ -402,7 +401,7 @@ bool WallpaperManager::IsOperationAllowed()
 {
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+        HILOG_ERROR("Get proxy failed!");
         return false;
     }
     return wallpaperServerProxy->IsOperationAllowed();
@@ -411,7 +410,7 @@ ErrorCode WallpaperManager::ResetWallpaper(std::int32_t wallpaperType, const Api
 {
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+        HILOG_ERROR("Get proxy failed!");
         return E_SA_DIED;
     }
     ErrorCode wallpaperErrorCode = E_UNKNOWN;
@@ -428,10 +427,10 @@ ErrorCode WallpaperManager::ResetWallpaper(std::int32_t wallpaperType, const Api
 
 ErrorCode WallpaperManager::On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener)
 {
-    HILOG_DEBUG("WallpaperManager::On in");
+    HILOG_DEBUG("WallpaperManager::On in.");
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+        HILOG_ERROR("Get proxy failed!");
         return E_SA_DIED;
     }
     if (listener == nullptr) {
@@ -440,7 +439,7 @@ ErrorCode WallpaperManager::On(const std::string &type, std::shared_ptr<Wallpape
     }
     sptr<WallpaperEventListenerClient> ipcListener = new (std::nothrow) WallpaperEventListenerClient(listener);
     if (ipcListener == nullptr) {
-        HILOG_ERROR("new WallpaperEventListenerClient failed");
+        HILOG_ERROR("new WallpaperEventListenerClient failed!");
         return E_NO_MEMORY;
     }
     {
@@ -452,17 +451,17 @@ ErrorCode WallpaperManager::On(const std::string &type, std::shared_ptr<Wallpape
 
 ErrorCode WallpaperManager::Off(const std::string &type, std::shared_ptr<WallpaperEventListener> listener)
 {
-    HILOG_DEBUG("WallpaperManager::Off in");
+    HILOG_DEBUG("WallpaperManager::Off in.");
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+        HILOG_ERROR("Get proxy failed!");
         return E_SA_DIED;
     }
     sptr<WallpaperEventListenerClient> ipcListener = nullptr;
     if (listener != nullptr) {
         ipcListener = new (std::nothrow) WallpaperEventListenerClient(listener);
         if (ipcListener == nullptr) {
-            HILOG_ERROR("new WallpaperEventListenerClient failed");
+            HILOG_ERROR("new WallpaperEventListenerClient failed!");
             return E_NO_MEMORY;
         }
     }
@@ -481,7 +480,7 @@ void WallpaperManager::SetCallback(JScallback cb)
 
 bool WallpaperManager::RegisterWallpaperCallback(JScallback callback)
 {
-    HILOG_INFO("  WallpaperManager::RegisterWallpaperCallback statrt");
+    HILOG_INFO("  WallpaperManager::RegisterWallpaperCallback statrt.");
     SetCallback(callback);
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
@@ -524,7 +523,7 @@ bool WallpaperManager::RegisterWallpaperListener()
 {
     auto service = GetService();
     if (service == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+        HILOG_ERROR("Get proxy failed!");
         return false;
     }
 
@@ -532,8 +531,8 @@ bool WallpaperManager::RegisterWallpaperListener()
     for (const auto &iter : listenerMap_) {
         auto ret = service->On(iter.first, iter.second);
         if (ret != E_OK) {
-            HILOG_ERROR("Register WallpaperListener failed type:%{public}s,errcode:%{public}d", iter.first.c_str(),
-                ret);
+            HILOG_ERROR(
+                "Register WallpaperListener failed type:%{public}s, errcode:%{public}d", iter.first.c_str(), ret);
             return false;
         }
     }
@@ -543,7 +542,7 @@ ErrorCode WallpaperManager::SendEvent(const std::string &eventType)
 {
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
-        HILOG_ERROR("Get proxy failed");
+        HILOG_ERROR("Get proxy failed!");
         return E_DEAL_FAILED;
     }
     return wallpaperServerProxy->SendEvent(eventType);
@@ -554,7 +553,7 @@ bool WallpaperManager::CheckVideoFormat(const std::string &fileName)
     int32_t videoFd = -1;
     int64_t length = 0;
     if (!OpenFile(fileName, videoFd, length)) {
-        HILOG_ERROR("Open file: %{public}s failed.", fileName.c_str());
+        HILOG_ERROR("Open file: %{public}s failed!", fileName.c_str());
         return false;
     }
     std::shared_ptr<Media::AVMetadataHelper> helper = Media::AVMetadataHelperFactory::CreateAVMetadataHelper();
@@ -566,7 +565,7 @@ bool WallpaperManager::CheckVideoFormat(const std::string &fileName)
     int32_t offset = 0;
     int32_t errorCode = helper->SetSource(videoFd, offset, length);
     if (errorCode != 0) {
-        HILOG_ERROR("Set helper source failed");
+        HILOG_ERROR("Set helper source failed!");
         close(videoFd);
         return false;
     }
@@ -602,7 +601,7 @@ bool WallpaperManager::CheckVideoFormat(const std::string &fileName)
 bool WallpaperManager::OpenFile(const std::string &fileName, int32_t &fd, int64_t &fileSize)
 {
     if (!OHOS::FileExists(fileName)) {
-        HILOG_ERROR("File is not exist, file: %{public}s", fileName.c_str());
+        HILOG_ERROR("File is not exist, file: %{public}s.", fileName.c_str());
         return false;
     }
 
@@ -613,7 +612,7 @@ bool WallpaperManager::OpenFile(const std::string &fileName, int32_t &fd, int64_
     }
     struct stat64 st;
     if (fstat64(fd, &st) != 0) {
-        HILOG_ERROR("Failed to fstat64");
+        HILOG_ERROR("Failed to fstat64!");
         close(fd);
         return false;
     }
@@ -630,7 +629,7 @@ ErrorCode WallpaperManager::CheckWallpaperFormat(const std::string &realPath, bo
 
     FILE *file = std::fopen(realPath.c_str(), "rb");
     if (file == nullptr) {
-        HILOG_ERROR("Fopen failed, %{public}s, %{public}s", realPath.c_str(), strerror(errno));
+        HILOG_ERROR("Fopen failed, %{public}s, %{public}s!", realPath.c_str(), strerror(errno));
         return E_FILE_ERROR;
     }
 
@@ -638,7 +637,7 @@ ErrorCode WallpaperManager::CheckWallpaperFormat(const std::string &realPath, bo
     length = ftell(file);
     int32_t fset = fseek(file, 0, SEEK_SET);
     if (length <= 0 || (isLive && length > MAX_VIDEO_SIZE) || fend != 0 || fset != 0) {
-        HILOG_ERROR("ftell file failed or fseek file failed, errno %{public}d", errno);
+        HILOG_ERROR("ftell file failed or fseek file failed, errno %{public}d!", errno);
         fclose(file);
         return E_FILE_ERROR;
     }

@@ -59,8 +59,8 @@ public:
 private:
     ErrorCode SetWallpaperInner(
         int32_t fd, int32_t wallpaperType, int32_t length, WallpaperServiceIpcInterfaceCode code);
-    ErrorCode SetWallpaperInnerByPixelMap(std::shared_ptr<OHOS::Media::PixelMap> pixelMap,
-       int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code);
+    ErrorCode SetWallpaperInnerByPixelMap(
+        std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code);
     ErrorCode GetPixelMapInner(
         int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code, IWallpaperService::FdInfo &fdInfo);
     ErrorCode GetColorsInner(
