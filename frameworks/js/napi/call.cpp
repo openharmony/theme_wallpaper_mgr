@@ -132,7 +132,7 @@ void Call::OnComplete(napi_env env, napi_status status, void *data)
     } else {
         napi_value errCode = nullptr;
         napi_value message = nullptr;
-        std::string errMsg("async call failed!");
+        std::string errMsg("async call failed");
         if (context->ctx->errCode_ != 0) {
             napi_create_int32(env, context->ctx->errCode_, &errCode);
         }

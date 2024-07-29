@@ -36,6 +36,14 @@ describe('WallpaperPerfJSTest', function () {
      * @tc.type      PERF
      * @tc.require
      */
+    it('on_performance_test_001', 0, function (done) {
+        let info = "on_performance_test_001 averageTime:";
+        calcAverageTime(SAMPLE_SIZE, () => {
+            wallpaper.off('colorChange', function (colors, wallpaperType) {
+            }, info);
+            done();
+        })
+    })
 
     /**
      * @tc.name      getColorsSync_performance_test_001
