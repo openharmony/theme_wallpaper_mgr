@@ -661,6 +661,10 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
 ErrorCode WallpaperService::SetWallpaperByPixelMap(
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType)
 {
+    if (pixelMap == nullptr) {
+        HILOG_ERROR("pixelMap is nullptr");
+        return E_FILE_ERROR;
+    }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
     ErrorCode wallpaperErrorCode = SetWallpaperByPixelMap(pixelMap, wallpaperType, PICTURE);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
@@ -682,6 +686,10 @@ ErrorCode WallpaperService::SetWallpaperV9ByPixelMap(
     if (!IsSystemApp()) {
         HILOG_INFO("CallingApp is not SystemApp.");
         return E_NOT_SYSTEM_APP;
+    }
+    if (pixelMap == nullptr) {
+        HILOG_ERROR("pixelMap is nullptr");
+        return E_FILE_ERROR;
     }
     return SetWallpaperByPixelMap(pixelMap, wallpaperType);
 }
@@ -1312,6 +1320,10 @@ ErrorCode WallpaperService::SetWallpaper(
 ErrorCode WallpaperService::SetWallpaperByPixelMap(
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType, WallpaperResourceType resourceType)
 {
+    if (pixelMap == nullptr) {
+        HILOG_ERROR("pixelMap is nullptr");
+        return E_FILE_ERROR;
+    }
     int32_t userId = QueryActiveUserId();
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
     if (!CheckUserPermissionById(userId)) {
@@ -1334,6 +1346,10 @@ ErrorCode WallpaperService::SetWallpaperByPixelMap(
 ErrorCode WallpaperService::WritePixelMapToFile(std::shared_ptr<OHOS::Media::PixelMap> pixelMap,
     std::string wallpaperTmpFullPath, int32_t wallpaperType, WallpaperResourceType resourceType)
 {
+    if (pixelMap == nullptr) {
+        HILOG_ERROR("pixelMap is nullptr");
+        return E_FILE_ERROR;
+    }
     std::stringbuf stringBuf;
     std::ostream ostream(&stringBuf);
     int32_t mapSize = WritePixelMapToStream(pixelMap, ostream);
@@ -1377,6 +1393,10 @@ ErrorCode WallpaperService::WritePixelMapToFile(std::shared_ptr<OHOS::Media::Pix
 int64_t WallpaperService::WritePixelMapToStream(
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap, std::ostream &outputStream)
 {
+    if (pixelMap == nullptr) {
+        HILOG_ERROR("pixelMap is nullptr");
+        return 0;
+    }
     OHOS::Media::ImagePacker imagePacker;
     OHOS::Media::PackOption option;
     option.format = "image/jpeg";

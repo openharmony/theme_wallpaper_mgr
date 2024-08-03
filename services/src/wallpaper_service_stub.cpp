@@ -173,6 +173,10 @@ int32_t WallpaperServiceStub::OnSetWallpaperInnerByPixelMap(MessageParcel &data,
     std::vector<uint8_t> VectorPixelMap(rawData, rawData + vectorPixelMapSize);
     int32_t wallpaperType = data.ReadInt32();
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap = VectorToPixelMap(VectorPixelMap);
+    if (pixelMap == nullptr) {
+        HILOG_ERROR("VectorToPixelMap fail!");
+        return IPC_STUB_INVALID_DATA_ERR;
+    }
     ErrorCode wallpaperErrorCode = E_UNKNOWN;
     if (isSystemApi) {
         wallpaperErrorCode = SetWallpaperV9ByPixelMap(pixelMap, wallpaperType);
