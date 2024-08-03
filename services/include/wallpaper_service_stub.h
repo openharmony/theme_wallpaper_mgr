@@ -62,6 +62,7 @@ private:
     int32_t OnSendEvent(MessageParcel &data, MessageParcel &reply);
     int32_t HandleWallpaperRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option);
     std::shared_ptr<OHOS::Media::PixelMap> VectorToPixelMap(std::vector<std::uint8_t> value);
+    std::vector<std::uint8_t> PixelMapToVector(std::shared_ptr<OHOS::Media::PixelMap> pixelMap);
     WallpaperRequestHandler GetWallpaperRequestHandler(uint32_t code);
     std::unordered_map<uint32_t, WallpaperRequestHandler> requestHandlers;
 };
