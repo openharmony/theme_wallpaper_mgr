@@ -319,38 +319,19 @@ ErrorCode WallpaperManager::GetPixelMap(
         HILOG_ERROR("Get proxy failed!");
         return E_SA_DIED;
     }
-    IWallpaperService::FdInfo fdInfo;
     ErrorCode wallpaperErrorCode = E_UNKNOWN;
     if (apiInfo.isSystemApi) {
-        wallpaperErrorCode = wallpaperServerProxy->GetPixelMapV9(wallpaperType, fdInfo);
+        wallpaperErrorCode = wallpaperServerProxy->GetPixelMapV9(wallpaperType, pixelMap);
     } else {
-        wallpaperErrorCode = wallpaperServerProxy->GetPixelMap(wallpaperType, fdInfo);
+        wallpaperErrorCode = wallpaperServerProxy->GetPixelMap(wallpaperType, pixelMap);
     }
     if (wallpaperErrorCode != E_OK) {
         return wallpaperErrorCode;
     }
     // current wallpaper is live video, not image
-    if (fdInfo.size == 0 && fdInfo.fd == -1) { // 0: empty file size; -1: invalid file description
-        pixelMap = nullptr;
+    if (pixelMap == nullptr) { // nullptr: invalid pixelMap
+        HILOG_ERROR("pixelMap is nullptr!");
         return E_OK;
-    }
-    uint32_t errorCode = 0;
-    OHOS::Media::SourceOptions opts;
-    opts.formatHint = "image/jpeg";
-    std::unique_ptr<OHOS::Media::ImageSource> imageSource =
-        OHOS::Media::ImageSource::CreateImageSource(fdInfo.fd, opts, errorCode);
-    if (errorCode != 0) {
-        HILOG_ERROR("ImageSource::CreateImageSource failed, errcode= %{public}d!", errorCode);
-        close(fdInfo.fd);
-        return E_IMAGE_ERRCODE;
-    }
-    close(fdInfo.fd);
-    OHOS::Media::DecodeOptions decodeOpts;
-    pixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
-
-    if (errorCode != 0) {
-        HILOG_ERROR("ImageSource::CreatePixelMap failed, errcode= %{public}d!", errorCode);
-        return E_IMAGE_ERRCODE;
     }
     return wallpaperErrorCode;
 }

@@ -186,14 +186,16 @@ ErrorCode WallpaperServiceProxy::SetWallpaperInnerByPixelMap(
     return ConvertIntToErrorCode(reply.ReadInt32());
 }
 
-ErrorCode WallpaperServiceProxy::GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
+ErrorCode WallpaperServiceProxy::GetPixelMap(
+    int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
 {
-    return GetPixelMapInner(wallpaperType, WallpaperServiceIpcInterfaceCode::GET_PIXELMAP, fdInfo);
+    return GetPixelMapInner(wallpaperType, WallpaperServiceIpcInterfaceCode::GET_PIXELMAP, pixelMap);
 }
 
-ErrorCode WallpaperServiceProxy::GetPixelMapV9(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
+ErrorCode WallpaperServiceProxy::GetPixelMapV9(
+    int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
 {
-    return GetPixelMapInner(wallpaperType, WallpaperServiceIpcInterfaceCode::GET_PIXELMAP_V9, fdInfo);
+    return GetPixelMapInner(wallpaperType, WallpaperServiceIpcInterfaceCode::GET_PIXELMAP_V9, pixelMap);
 }
 
 ErrorCode WallpaperServiceProxy::SetVideo(int32_t fd, int32_t wallpaperType, int32_t length)
@@ -262,7 +264,7 @@ ErrorCode WallpaperServiceProxy::SetCustomWallpaper(int32_t fd, int32_t wallpape
 }
 
 ErrorCode WallpaperServiceProxy::GetPixelMapInner(
-    int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code, IWallpaperService::FdInfo &fdInfo)
+    int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
 {
     HILOG_DEBUG("WallpaperServiceProxy::getPixelMap --> start.");
     MessageParcel data;
@@ -285,8 +287,22 @@ ErrorCode WallpaperServiceProxy::GetPixelMapInner(
     }
     ErrorCode wallpaperErrorCode = ConvertIntToErrorCode(reply.ReadInt32());
     if (wallpaperErrorCode == E_OK) {
-        fdInfo.size = reply.ReadInt32();
-        fdInfo.fd = reply.ReadFileDescriptor();
+        int32_t vectorPixelMapSize = reply.ReadInt32();
+        if (vectorPixelMapSize <= 0) {
+            HILOG_ERROR("ReadInt32 fail!");
+            return E_DEAL_FAILED;
+        }
+        auto *rawData = (uint8_t *)reply.ReadRawData(vectorPixelMapSize);
+        if (rawData == nullptr) {
+            HILOG_ERROR("ReadRawData fail!");
+            return E_DEAL_FAILED;
+        }
+        std::vector<uint8_t> VectorPixelMap(rawData, rawData + vectorPixelMapSize);
+        pixelMap = VectorToPixelMap(VectorPixelMap);
+        if (pixelMap == nullptr) {
+            HILOG_ERROR("VectorToPixelMap fail!");
+            return E_DEAL_FAILED;
+        }
     }
     return wallpaperErrorCode;
 }
@@ -513,15 +529,22 @@ bool WallpaperServiceProxy::RegisterWallpaperCallback(const sptr<IWallpaperCallb
 std::vector<std::uint8_t> WallpaperServiceProxy::PixelMapToVector(std::shared_ptr<OHOS::Media::PixelMap> pixelMap)
 {
     HILOG_DEBUG("PixelMapToVector start.");
-    if (pixelMap == nullptr) {
-        return {};
-    }
     std::vector<std::uint8_t> value;
-    if (!pixelMap->EncodeTlv(value)) {
+    if (pixelMap == nullptr || !pixelMap->EncodeTlv(value)) {
         HILOG_ERROR("pixelMap encode failed!");
-        return {};
+        value.clear();
+        return value;
     }
     return value;
+}
+
+std::shared_ptr<OHOS::Media::PixelMap> WallpaperServiceProxy::VectorToPixelMap(std::vector<std::uint8_t> value)
+{
+    HILOG_DEBUG("VectorToPixelMap start.!");
+    if (value.size() == 0) {
+        return nullptr;
+    }
+    return std::shared_ptr<Media::PixelMap>(Media::PixelMap::DecodeTlv(value));
 }
 
 ErrorCode WallpaperServiceProxy::ConvertIntToErrorCode(int32_t errorCode)

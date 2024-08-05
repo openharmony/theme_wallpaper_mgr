@@ -65,7 +65,7 @@ public:
 
     ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode SetWallpaperByPixelMap(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType) override;
-    ErrorCode GetPixelMap(int32_t wallpaperType, FdInfo &fdInfo) override;
+    ErrorCode GetPixelMap(int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap) override;
     ErrorCode GetColors(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
     ErrorCode GetFile(int32_t wallpaperType, int32_t &wallpaperFd) override;
     int32_t GetWallpaperId(int32_t wallpaperType) override;
@@ -79,7 +79,7 @@ public:
 
     ErrorCode SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode SetWallpaperV9ByPixelMap(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType) override;
-    ErrorCode GetPixelMapV9(int32_t wallpaperType, FdInfo &fdInfo) override;
+    ErrorCode GetPixelMapV9(int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap) override;
     ErrorCode GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
     ErrorCode ResetWallpaperV9(int32_t wallpaperType) override;
     ErrorCode SetVideo(int32_t fd, int32_t wallpaperType, int32_t length) override;
@@ -126,7 +126,8 @@ private:
 #endif
     bool IsSystemApp();
     ErrorCode GetImageFd(int32_t userId, WallpaperType wallpaperType, int32_t &fd);
-    ErrorCode GetImageSize(int32_t userId, WallpaperType wallpaperType, int32_t &size);
+    ErrorCode GetPixelMapData(
+        int32_t userId, WallpaperType wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap);
     bool RestoreUserResources(int32_t userId, WallpaperData &wallpaperData, WallpaperType wallpaperType);
     bool InitUserDir(int32_t userId);
     int32_t QueryActiveUserId();
