@@ -661,6 +661,10 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
 ErrorCode WallpaperService::SetWallpaperByPixelMap(
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType)
 {
+    if (pixelMap == nullptr) {
+        HILOG_ERROR("pixelMap is nullptr");
+        return E_FILE_ERROR;
+    }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
     ErrorCode wallpaperErrorCode = SetWallpaperByPixelMap(pixelMap, wallpaperType, PICTURE);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
@@ -682,6 +686,10 @@ ErrorCode WallpaperService::SetWallpaperV9ByPixelMap(
     if (!IsSystemApp()) {
         HILOG_INFO("CallingApp is not SystemApp.");
         return E_NOT_SYSTEM_APP;
+    }
+    if (pixelMap == nullptr) {
+        HILOG_ERROR("pixelMap is nullptr");
+        return E_FILE_ERROR;
     }
     return SetWallpaperByPixelMap(pixelMap, wallpaperType);
 }
@@ -883,7 +891,7 @@ ErrorCode WallpaperService::SetCustomWallpaper(int32_t fd, int32_t type, int32_t
     return wallpaperErrorCode;
 }
 
-ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
+ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
 {
     HILOG_INFO("WallpaperService::getPixelMap start.");
     if (!IsSystemApp()) {
@@ -905,26 +913,20 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
     WallpaperResourceType resType = GetResType(userId, type);
     if (resType != PICTURE && resType != DEFAULT) {
         HILOG_ERROR("Current user's wallpaper is live video, not image.");
-        fdInfo.size = 0; // 0: empty file size
-        fdInfo.fd = -1;  // -1: invalid file description
+        pixelMap = nullptr; // nullptr: invalid pixelMap
         return E_OK;
     }
-    ErrorCode ret = GetImageSize(userId, type, fdInfo.size);
+    ErrorCode ret = GetPixelMapData(userId, type, pixelMap);
     if (ret != E_OK) {
-        HILOG_ERROR("GetImageSize failed!");
-        return ret;
-    }
-    ret = GetImageFd(userId, type, fdInfo.fd);
-    if (ret != E_OK) {
-        HILOG_ERROR("GetImageFd failed!");
+        HILOG_ERROR("GetPixelMapData failed!");
         return ret;
     }
     return E_OK;
 }
 
-ErrorCode WallpaperService::GetPixelMapV9(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
+ErrorCode WallpaperService::GetPixelMapV9(int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
 {
-    return GetPixelMap(wallpaperType, fdInfo);
+    return GetPixelMap(wallpaperType, pixelMap);
 }
 
 int32_t WallpaperService::GetWallpaperId(int32_t wallpaperType)
@@ -1202,34 +1204,34 @@ ErrorCode WallpaperService::GetImageFd(int32_t userId, WallpaperType wallpaperTy
     return E_OK;
 }
 
-ErrorCode WallpaperService::GetImageSize(int32_t userId, WallpaperType wallpaperType, int32_t &size)
+ErrorCode WallpaperService::GetPixelMapData(
+    int32_t userId, WallpaperType wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
 {
-    HILOG_INFO("WallpaperService::GetImageSize start.");
+    HILOG_INFO("WallpaperService::GetPixelMapData start.");
     std::string filePathName;
     HILOG_INFO("userId = %{public}d", userId);
     if (!GetPictureFileName(userId, wallpaperType, filePathName)) {
         return E_DEAL_FAILED;
     }
-
     if (!OHOS::FileExists(filePathName)) {
         HILOG_ERROR("file is not exist.");
         return E_NOT_FOUND;
     }
-    std::lock_guard<std::mutex> lock(mtx_);
-    FILE *fd = fopen(filePathName.c_str(), "rb");
-    if (fd == nullptr) {
-        HILOG_ERROR("fopen file failed, errno %{public}d", errno);
+    uint32_t errorCode = 0;
+    OHOS::Media::SourceOptions opts;
+    opts.formatHint = "image/jpeg";
+    std::unique_ptr<OHOS::Media::ImageSource> imageSource =
+        OHOS::Media::ImageSource::CreateImageSource(filePathName, opts, errorCode);
+    if (errorCode != 0) {
+        HILOG_ERROR("CreateImageSource failed!");
         return E_FILE_ERROR;
     }
-    int32_t fend = fseek(fd, 0, SEEK_END);
-    size = ftell(fd);
-    int32_t fset = fseek(fd, 0, SEEK_SET);
-    if (size <= 0 || fend != 0 || fset != 0) {
-        HILOG_ERROR("ftell file failed or fseek file failed, errno %{public}d", errno);
-        fclose(fd);
+    OHOS::Media::DecodeOptions decodeOpts;
+    pixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
+    if (errorCode != 0) {
+        HILOG_ERROR("CreatePixelMap failed!");
         return E_FILE_ERROR;
     }
-    fclose(fd);
     return E_OK;
 }
 
@@ -1312,6 +1314,10 @@ ErrorCode WallpaperService::SetWallpaper(
 ErrorCode WallpaperService::SetWallpaperByPixelMap(
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType, WallpaperResourceType resourceType)
 {
+    if (pixelMap == nullptr) {
+        HILOG_ERROR("pixelMap is nullptr");
+        return E_FILE_ERROR;
+    }
     int32_t userId = QueryActiveUserId();
     HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
     if (!CheckUserPermissionById(userId)) {
@@ -1334,6 +1340,10 @@ ErrorCode WallpaperService::SetWallpaperByPixelMap(
 ErrorCode WallpaperService::WritePixelMapToFile(std::shared_ptr<OHOS::Media::PixelMap> pixelMap,
     std::string wallpaperTmpFullPath, int32_t wallpaperType, WallpaperResourceType resourceType)
 {
+    if (pixelMap == nullptr) {
+        HILOG_ERROR("pixelMap is nullptr");
+        return E_FILE_ERROR;
+    }
     std::stringbuf stringBuf;
     std::ostream ostream(&stringBuf);
     int32_t mapSize = WritePixelMapToStream(pixelMap, ostream);
@@ -1377,6 +1387,10 @@ ErrorCode WallpaperService::WritePixelMapToFile(std::shared_ptr<OHOS::Media::Pix
 int64_t WallpaperService::WritePixelMapToStream(
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap, std::ostream &outputStream)
 {
+    if (pixelMap == nullptr) {
+        HILOG_ERROR("pixelMap is nullptr");
+        return 0;
+    }
     OHOS::Media::ImagePacker imagePacker;
     OHOS::Media::PackOption option;
     option.format = "image/jpeg";
