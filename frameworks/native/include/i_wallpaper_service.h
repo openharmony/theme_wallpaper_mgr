@@ -39,6 +39,11 @@ public:
         int32_t fileLen;
     };
 
+    struct FdInfo {
+        int32_t fd = -1;
+        int32_t size = 0;
+    };
+
     /**
     * Wallpaper set.
     * @param  uriOrPixelMap Wallpaper picture; wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or
@@ -48,7 +53,7 @@ public:
     virtual ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) = 0;
     virtual ErrorCode SetWallpaperByPixelMap(
         std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType) = 0;
-    virtual ErrorCode GetPixelMap(int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap) = 0;
+    virtual ErrorCode GetPixelMap(int32_t wallpaperType, FdInfo &fdInfo) = 0;
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
@@ -105,7 +110,7 @@ public:
     virtual ErrorCode SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length) = 0;
     virtual ErrorCode SetWallpaperV9ByPixelMap(
         std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType) = 0;
-    virtual ErrorCode GetPixelMapV9(int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap) = 0;
+    virtual ErrorCode GetPixelMapV9(int32_t wallpaperType, FdInfo &fdInfo) = 0;
     virtual ErrorCode GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors) = 0;
     virtual ErrorCode ResetWallpaperV9(int32_t wallpaperType) = 0;
 

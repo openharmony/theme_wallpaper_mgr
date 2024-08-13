@@ -185,6 +185,7 @@ private:
     int64_t WritePixelMapToStream(std::ostream &outputStream, std::shared_ptr<OHOS::Media::PixelMap> pixelMap);
     bool OpenFile(const std::string &fileName, int32_t &fd, int64_t &fileSize);
     ErrorCode CheckWallpaperFormat(const std::string &realPath, bool isLive, long &length);
+    ErrorCode CreatePixelMapByFd(int32_t fd, int32_t size, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap);
     sptr<IWallpaperService> wallpaperProxy_{};
     sptr<IRemoteObject::DeathRecipient> deathRecipient_{};
     std::mutex wallpaperFdLock_;

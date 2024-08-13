@@ -234,33 +234,32 @@ int32_t WallpaperServiceStub::OnGetPixelMapInner(MessageParcel &data, MessagePar
 {
     HILOG_DEBUG("WallpaperServiceStub::GetPixelMap start.");
     int32_t wallpaperType = data.ReadInt32();
-    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+    IWallpaperService::FdInfo fdInfo;
     ErrorCode wallpaperErrorCode = E_UNKNOWN;
     if (isSystemApi) {
-        wallpaperErrorCode = GetPixelMapV9(wallpaperType, pixelMap);
+        wallpaperErrorCode = GetPixelMapV9(wallpaperType, fdInfo);
     } else {
-        wallpaperErrorCode = GetPixelMap(wallpaperType, pixelMap);
+        wallpaperErrorCode = GetPixelMap(wallpaperType, fdInfo);
     }
     HILOG_INFO(" OnGetPixelMap wallpaperErrorCode = %{public}d", wallpaperErrorCode);
     if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
         HILOG_ERROR("WriteInt32 fail!");
+        close(fdInfo.fd);
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     if (wallpaperErrorCode == E_OK) {
-        if (pixelMap == nullptr) {
-            HILOG_ERROR("&pixelMap nullptr!");
+        if (!reply.WriteInt32(fdInfo.size)) {
+            HILOG_ERROR("WriteInt32 fail!");
+            close(fdInfo.fd);
             return IPC_STUB_WRITE_PARCEL_ERR;
         }
-        std::vector<std::uint8_t> value = PixelMapToVector(pixelMap);
-        if (!reply.WriteInt32(value.size())) {
-            HILOG_ERROR("Failed to WriteInt32!");
-            return IPC_STUB_WRITE_PARCEL_ERR;
-        }
-        if (!reply.WriteRawData(value.data(), value.size())) {
-            HILOG_ERROR("Failed to WriteUIntoVector!");
+        if (!reply.WriteFileDescriptor(fdInfo.fd)) {
+            HILOG_ERROR("WriteFileDescriptor fail!");
+            close(fdInfo.fd);
             return IPC_STUB_WRITE_PARCEL_ERR;
         }
     }
+    close(fdInfo.fd);
     return ERR_NONE;
 }
 
@@ -473,18 +472,5 @@ std::shared_ptr<OHOS::Media::PixelMap> WallpaperServiceStub::VectorToPixelMap(st
     }
     return std::shared_ptr<PixelMap>(PixelMap::DecodeTlv(value));
 }
-
-std::vector<std::uint8_t> WallpaperServiceStub::PixelMapToVector(std::shared_ptr<OHOS::Media::PixelMap> pixelMap)
-{
-    HILOG_DEBUG("PixelMapToVector start.");
-    std::vector<std::uint8_t> value;
-    if (pixelMap == nullptr || !pixelMap->EncodeTlv(value)) {
-        HILOG_ERROR("pixelMap encode failed!");
-        value.clear();
-        return value;
-    }
-    return value;
-}
-
 } // namespace WallpaperMgrService
 } // namespace OHOS
