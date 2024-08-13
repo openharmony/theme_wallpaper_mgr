@@ -891,7 +891,7 @@ ErrorCode WallpaperService::SetCustomWallpaper(int32_t fd, int32_t type, int32_t
     return wallpaperErrorCode;
 }
 
-ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
+ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
     HILOG_INFO("WallpaperService::getPixelMap start.");
     if (!IsSystemApp()) {
@@ -913,20 +913,26 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, std::shared_ptr<O
     WallpaperResourceType resType = GetResType(userId, type);
     if (resType != PICTURE && resType != DEFAULT) {
         HILOG_ERROR("Current user's wallpaper is live video, not image.");
-        pixelMap = nullptr; // nullptr: invalid pixelMap
+        fdInfo.size = 0; // 0: empty file size
+        fdInfo.fd = -1;  // -1: invalid file description
         return E_OK;
     }
-    ErrorCode ret = GetPixelMapData(userId, type, pixelMap);
+    ErrorCode ret = GetImageSize(userId, type, fdInfo.size);
     if (ret != E_OK) {
-        HILOG_ERROR("GetPixelMapData failed!");
+        HILOG_ERROR("GetImageSize failed!");
+        return ret;
+    }
+    ret = GetImageFd(userId, type, fdInfo.fd);
+    if (ret != E_OK) {
+        HILOG_ERROR("GetImageFd failed!");
         return ret;
     }
     return E_OK;
 }
 
-ErrorCode WallpaperService::GetPixelMapV9(int32_t wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
+ErrorCode WallpaperService::GetPixelMapV9(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
 {
-    return GetPixelMap(wallpaperType, pixelMap);
+    return GetPixelMap(wallpaperType, fdInfo);
 }
 
 int32_t WallpaperService::GetWallpaperId(int32_t wallpaperType)
@@ -1204,34 +1210,34 @@ ErrorCode WallpaperService::GetImageFd(int32_t userId, WallpaperType wallpaperTy
     return E_OK;
 }
 
-ErrorCode WallpaperService::GetPixelMapData(
-    int32_t userId, WallpaperType wallpaperType, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
+ErrorCode WallpaperService::GetImageSize(int32_t userId, WallpaperType wallpaperType, int32_t &size)
 {
-    HILOG_INFO("WallpaperService::GetPixelMapData start.");
+    HILOG_INFO("WallpaperService::GetImageSize start.");
     std::string filePathName;
     HILOG_INFO("userId = %{public}d", userId);
     if (!GetPictureFileName(userId, wallpaperType, filePathName)) {
         return E_DEAL_FAILED;
     }
+
     if (!OHOS::FileExists(filePathName)) {
         HILOG_ERROR("file is not exist.");
         return E_NOT_FOUND;
     }
-    uint32_t errorCode = 0;
-    OHOS::Media::SourceOptions opts;
-    opts.formatHint = "image/jpeg";
-    std::unique_ptr<OHOS::Media::ImageSource> imageSource =
-        OHOS::Media::ImageSource::CreateImageSource(filePathName, opts, errorCode);
-    if (errorCode != 0) {
-        HILOG_ERROR("CreateImageSource failed!");
+    std::lock_guard<std::mutex> lock(mtx_);
+    FILE *fd = fopen(filePathName.c_str(), "rb");
+    if (fd == nullptr) {
+        HILOG_ERROR("fopen file failed, errno %{public}d", errno);
         return E_FILE_ERROR;
     }
-    OHOS::Media::DecodeOptions decodeOpts;
-    pixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
-    if (errorCode != 0) {
-        HILOG_ERROR("CreatePixelMap failed!");
+    int32_t fend = fseek(fd, 0, SEEK_END);
+    size = ftell(fd);
+    int32_t fset = fseek(fd, 0, SEEK_SET);
+    if (size <= 0 || fend != 0 || fset != 0) {
+        HILOG_ERROR("ftell file failed or fseek file failed, errno %{public}d", errno);
+        fclose(fd);
         return E_FILE_ERROR;
     }
+    fclose(fd);
     return E_OK;
 }
 
