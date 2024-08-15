@@ -319,21 +319,66 @@ ErrorCode WallpaperManager::GetPixelMap(
         HILOG_ERROR("Get proxy failed!");
         return E_SA_DIED;
     }
+    IWallpaperService::FdInfo fdInfo;
     ErrorCode wallpaperErrorCode = E_UNKNOWN;
     if (apiInfo.isSystemApi) {
-        wallpaperErrorCode = wallpaperServerProxy->GetPixelMapV9(wallpaperType, pixelMap);
+        wallpaperErrorCode = wallpaperServerProxy->GetPixelMapV9(wallpaperType, fdInfo);
     } else {
-        wallpaperErrorCode = wallpaperServerProxy->GetPixelMap(wallpaperType, pixelMap);
+        wallpaperErrorCode = wallpaperServerProxy->GetPixelMap(wallpaperType, fdInfo);
     }
     if (wallpaperErrorCode != E_OK) {
         return wallpaperErrorCode;
     }
     // current wallpaper is live video, not image
-    if (pixelMap == nullptr) { // nullptr: invalid pixelMap
-        HILOG_ERROR("pixelMap is nullptr!");
+    if (fdInfo.size == 0 && fdInfo.fd == -1) { // 0: empty file size; -1: invalid file description
+        pixelMap = nullptr;
         return E_OK;
     }
+    wallpaperErrorCode = CreatePixelMapByFd(fdInfo.fd, fdInfo.size, pixelMap);
+    if (wallpaperErrorCode != E_OK) {
+        pixelMap = nullptr;
+        return wallpaperErrorCode;
+    }
     return wallpaperErrorCode;
+}
+
+ErrorCode WallpaperManager::CreatePixelMapByFd(
+    int32_t fd, int32_t size, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
+{
+    if (size <= 0 && fd < 0) {
+        HILOG_ERROR("Size or fd error!");
+        return E_IMAGE_ERRCODE;
+    }
+    uint8_t *buffer = new uint8_t[size];
+    ssize_t bytesRead = read(fd, buffer, size);
+    if (bytesRead < 0) {
+        HILOG_ERROR("Read fd to buffer fail!");
+        delete[] buffer;
+        close(fd);
+        return E_IMAGE_ERRCODE;
+    }
+    uint32_t errorCode = 0;
+    OHOS::Media::SourceOptions opts;
+    opts.formatHint = "image/jpeg";
+    std::unique_ptr<OHOS::Media::ImageSource> imageSource =
+        OHOS::Media::ImageSource::CreateImageSource(buffer, size, opts, errorCode);
+    if (errorCode != 0) {
+        HILOG_ERROR("ImageSource::CreateImageSource failed, errcode= %{public}d!", errorCode);
+        delete[] buffer;
+        close(fd);
+        return E_IMAGE_ERRCODE;
+    }
+    OHOS::Media::DecodeOptions decodeOpts;
+    pixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
+    if (errorCode != 0) {
+        HILOG_ERROR("ImageSource::CreatePixelMap failed, errcode= %{public}d!", errorCode);
+        delete[] buffer;
+        close(fd);
+        return E_IMAGE_ERRCODE;
+    }
+    delete[] buffer;
+    close(fd);
+    return E_OK;
 }
 
 int32_t WallpaperManager::GetWallpaperId(int32_t wallpaperType)
