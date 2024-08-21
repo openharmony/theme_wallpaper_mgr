@@ -86,7 +86,7 @@ bool FileDeal::DeleteFile(const std::string &sourceFile)
 bool FileDeal::IsFileExist(const std::string &name)
 {
     if (access(name.c_str(), F_OK) != 0) {
-        HILOG_ERROR("FileDeal : access errInfo=%{public}s", strerror(errno));
+        HILOG_DEBUG("FileDeal : access errInfo=%{public}s", strerror(errno));
         return false;
     }
     return true;
