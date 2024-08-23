@@ -621,7 +621,7 @@ bool WallpaperService::SaveColor(int32_t userId, WallpaperType wallpaperType)
     }
     std::unique_ptr<OHOS::Media::ImageSource> imageSource =
         OHOS::Media::ImageSource::CreateImageSource(pathName, opts, errorCode);
-    if (errorCode != 0) {
+    if (errorCode != 0 || imageSource == nullptr) {
         HILOG_ERROR("CreateImageSource failed!");
         return false;
     }
