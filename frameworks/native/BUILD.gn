@@ -26,19 +26,11 @@ config("wallpaper_manager_config") {
 }
 
 ohos_shared_library("wallpapermanager") {
-  cflags = [
-    "-fdata-sections",
-    "-ffunction-sections",
-    "-fvisibility=hidden",
-    "-Os",
-  ]
-
   sources = [
     "src/uv_queue.cpp",
     "src/wallpaper_event_listener_client.cpp",
     "src/wallpaper_event_listener_stub.cpp",
     "src/wallpaper_manager.cpp",
-    "src/wallpaper_manager_kits.cpp",
     "src/wallpaper_service_cb_stub.cpp",
     "src/wallpaper_service_proxy.cpp",
   ]
@@ -68,7 +60,6 @@ ohos_static_library("wallpapermanager_static") {
     "src/wallpaper_event_listener_client.cpp",
     "src/wallpaper_event_listener_stub.cpp",
     "src/wallpaper_manager.cpp",
-    "src/wallpaper_manager_kits.cpp",
     "src/wallpaper_service_cb_stub.cpp",
     "src/wallpaper_service_proxy.cpp",
   ]

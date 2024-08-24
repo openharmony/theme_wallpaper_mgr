@@ -228,7 +228,7 @@ void JsWallpaperExtensionAbility::GetSrcPath(std::string &srcPath)
 
 void JsWallpaperExtensionAbility::RegisterWallpaperCallback()
 {
-    WallpaperMgrService::WallpaperManagerkits::GetInstance().RegisterWallpaperCallback(
+    WallpaperMgrService::WallpaperManager::GetInstance().RegisterWallpaperCallback(
         [](int32_t wallpaperType) -> bool {
             HILOG_INFO("jsWallpaperExtensionAbility->CallObjectMethod.");
             std::lock_guard<std::mutex> lock(mtx);
