@@ -260,8 +260,11 @@ void WallpaperService::InitData()
     lockWallpaperMap_.Clear();
     wallpaperTmpFullPath_ = std::string(WALLPAPER_USERID_PATH) + std::string(WALLPAPER_TMP_DIRNAME);
     wallpaperCropPath_ = std::string(WALLPAPER_USERID_PATH) + std::string(WALLPAPER_CROP_PICTURE);
-    systemWallpaperColor_ = 0;
-    lockWallpaperColor_ = 0;
+    {
+        std::lock_guard<std::mutex> lock(wallpaperColorMtx_);
+        systemWallpaperColor_ = 0;
+        lockWallpaperColor_ = 0;
+    }
     currentUserId_ = userId;
     wallpaperEventMap_.clear();
     appBundleName_ = SCENEBOARD_BUNDLE_NAME;
@@ -570,8 +573,10 @@ void WallpaperService::UpdataWallpaperMap(int32_t userId, WallpaperType wallpape
 ErrorCode WallpaperService::GetColors(int32_t wallpaperType, std::vector<uint64_t> &colors)
 {
     if (wallpaperType == WALLPAPER_SYSTEM) {
+        std::lock_guard<std::mutex> lock(wallpaperColorMtx_);
         colors.emplace_back(systemWallpaperColor_);
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
+        std::lock_guard<std::mutex> lock(wallpaperColorMtx_);
         colors.emplace_back(lockWallpaperColor_);
     }
     HILOG_INFO("GetColors Service End.");
@@ -631,10 +636,6 @@ bool WallpaperService::SaveColor(int32_t userId, WallpaperType wallpaperType)
         HILOG_ERROR("CreatePixelMap failed!");
         return false;
     }
-
-    pictureHeight_ = wallpaperPixelMap->GetHeight();
-    pictureWidth_ = wallpaperPixelMap->GetWidth();
-
     auto colorPicker = Rosen::ColorPicker::CreateColorPicker(std::move(wallpaperPixelMap), errorCode);
     if (errorCode != 0) {
         HILOG_ERROR("CreateColorPicker failed!");
@@ -1420,12 +1421,18 @@ void WallpaperService::OnColorsChange(WallpaperType wallpaperType, const ColorMa
 {
     std::vector<uint64_t> colors;
     if (wallpaperType == WALLPAPER_SYSTEM && !CompareColor(systemWallpaperColor_, color)) {
-        systemWallpaperColor_ = color.PackValue();
-        colors.emplace_back(systemWallpaperColor_);
+        {
+            std::lock_guard<std::mutex> lock(wallpaperColorMtx_);
+            systemWallpaperColor_ = color.PackValue();
+            colors.emplace_back(systemWallpaperColor_);
+        }
         NotifyColorChange(colors, WALLPAPER_SYSTEM);
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN && !CompareColor(lockWallpaperColor_, color)) {
-        lockWallpaperColor_ = color.PackValue();
-        colors.emplace_back(lockWallpaperColor_);
+        {
+            std::lock_guard<std::mutex> lock(wallpaperColorMtx_);
+            lockWallpaperColor_ = color.PackValue();
+            colors.emplace_back(lockWallpaperColor_);
+        }
         NotifyColorChange(colors, WALLPAPER_LOCKSCREEN);
     }
 }
