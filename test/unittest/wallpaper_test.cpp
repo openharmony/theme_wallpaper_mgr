@@ -33,7 +33,6 @@
 #include "token_setproc.h"
 #include "wallpaper_common_event_subscriber.h"
 #include "wallpaper_manager.h"
-#include "wallpaper_manager_kits.h"
 #include "wallpaper_service.h"
 
 namespace OHOS {
@@ -164,8 +163,8 @@ void WallpaperTest::TearDownTestCase(void)
 {
     HILOG_INFO("TearDownTestCase");
     ApiInfo apiInfo{ false, false };
-    WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
-    WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
+    WallpaperManager::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
+    WallpaperManager::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
     auto ret = SetSelfTokenID(selfTokenID_);
     HILOG_INFO("SetSelfTokenID ret = %{public}d", ret);
 }
@@ -314,7 +313,7 @@ HWTEST_F(WallpaperTest, Reset001, TestSize.Level1)
 {
     HILOG_INFO("Reset001 begin.");
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset.";
 }
 
@@ -328,7 +327,7 @@ HWTEST_F(WallpaperTest, Reset002, TestSize.Level1)
 {
     HILOG_INFO("Reset002 begin.");
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset.";
 }
 
@@ -342,7 +341,7 @@ HWTEST_F(WallpaperTest, Reset003, TestSize.Level1)
 {
     HILOG_INFO("Reset003 begin.");
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(INVALID_WALLPAPER_TYPE, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().ResetWallpaper(INVALID_WALLPAPER_TYPE, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_PARAMETERS_INVALID) << "Failed to throw error.";
 }
 
@@ -356,11 +355,11 @@ HWTEST_F(WallpaperTest, Reset004, TestSize.Level1)
 {
     HILOG_INFO("Reset004 begin.");
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset.";
 
     /* duplicate reset */
-    wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
+    wallpaperErrorCode = WallpaperManager::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset.";
 }
 
@@ -374,14 +373,14 @@ HWTEST_F(WallpaperTest, Reset005, TestSize.Level1)
 {
     HILOG_INFO("Reset005 begin.");
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset.";
-    int32_t firstId = WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
+    int32_t firstId = WallpaperManager::GetInstance().GetWallpaperId(LOCKSCREEN);
 
     /* duplicate reset */
-    wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
+    wallpaperErrorCode = WallpaperManager::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset.";
-    int32_t secondId = WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
+    int32_t secondId = WallpaperManager::GetInstance().GetWallpaperId(LOCKSCREEN);
     EXPECT_EQ(firstId, secondId) << "Id should be same one.";
 }
 
@@ -395,9 +394,9 @@ HWTEST_F(WallpaperTest, Reset006, TestSize.Level1)
 {
     HILOG_INFO("Reset006 begin.");
     ApiInfo apiInfo{ true, true };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK);
-    wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
+    wallpaperErrorCode = WallpaperManager::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK);
 }
 /*********************   ResetWallpaper   *********************/
@@ -413,7 +412,7 @@ HWTEST_F(WallpaperTest, Reset006, TestSize.Level1)
 */
 HWTEST_F(WallpaperTest, IsChangePermitted001, TestSize.Level1)
 {
-    EXPECT_EQ(WallpaperManagerkits::GetInstance().IsChangePermitted(), true);
+    EXPECT_EQ(WallpaperManager::GetInstance().IsChangePermitted(), true);
 }
 
 /*********************   IsChangePermitted   *********************/
@@ -429,7 +428,7 @@ HWTEST_F(WallpaperTest, IsChangePermitted001, TestSize.Level1)
 */
 HWTEST_F(WallpaperTest, IsOperationAllowed001, TestSize.Level1)
 {
-    EXPECT_EQ(WallpaperManagerkits::GetInstance().IsOperationAllowed(), true);
+    EXPECT_EQ(WallpaperManager::GetInstance().IsOperationAllowed(), true);
 }
 
 /*********************   IsOperationAllowed   *********************/
@@ -447,9 +446,9 @@ HWTEST_F(WallpaperTest, On001, TestSize.Level1)
 {
     HILOG_INFO("On001 begin");
     auto listener = std::make_shared<WallpaperEventListenerTestImpl>();
-    auto status = WallpaperManagerkits::GetInstance().On("colorChange", listener);
+    auto status = WallpaperManager::GetInstance().On("colorChange", listener);
     EXPECT_EQ(status, E_OK) << "subscribe wallpaper color change failed.";
-    auto offSubStatus = WallpaperManagerkits::GetInstance().Off("colorChange", listener);
+    auto offSubStatus = WallpaperManager::GetInstance().Off("colorChange", listener);
     EXPECT_EQ(offSubStatus, E_OK) << "unsubscribe wallpaper color change failed.";
 }
 
@@ -464,9 +463,9 @@ HWTEST_F(WallpaperTest, On002, TestSize.Level1)
 {
     HILOG_INFO("On002 begin");
     auto listener = std::make_shared<WallpaperEventListenerTestImpl>();
-    auto status = WallpaperManagerkits::GetInstance().On("wallpaperChange", listener);
+    auto status = WallpaperManager::GetInstance().On("wallpaperChange", listener);
     EXPECT_EQ(status, E_OK);
-    auto offSubStatus = WallpaperManagerkits::GetInstance().Off("wallpaperChange", listener);
+    auto offSubStatus = WallpaperManager::GetInstance().Off("wallpaperChange", listener);
     EXPECT_EQ(offSubStatus, E_OK);
 }
 
@@ -485,7 +484,7 @@ HWTEST_F(WallpaperTest, GetColors001, TestSize.Level0)
     HILOG_INFO("GetColors001 begin");
     std::vector<uint64_t> colors;
     ApiInfo apiInfo{ false, false };
-    ErrorCode errorCode = WallpaperManagerkits::GetInstance().GetColors(SYSTYEM, apiInfo, colors);
+    ErrorCode errorCode = WallpaperManager::GetInstance().GetColors(SYSTYEM, apiInfo, colors);
     EXPECT_EQ(errorCode, E_OK) << "Failed to GetColors.";
     EXPECT_FALSE(colors.empty());
 }
@@ -502,7 +501,7 @@ HWTEST_F(WallpaperTest, GetColors002, TestSize.Level0)
     HILOG_INFO("GetColors002 begin");
     std::vector<uint64_t> colors;
     ApiInfo apiInfo{ false, false };
-    ErrorCode errorCode = WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN, apiInfo, colors);
+    ErrorCode errorCode = WallpaperManager::GetInstance().GetColors(LOCKSCREEN, apiInfo, colors);
     EXPECT_EQ(errorCode, E_OK) << "Failed to GetColors.";
     EXPECT_FALSE(colors.empty());
 }
@@ -519,9 +518,9 @@ HWTEST_F(WallpaperTest, GetColors003, TestSize.Level0)
     HILOG_INFO("GetColors003 begin");
     std::vector<uint64_t> colors;
     ApiInfo apiInfo{ true, true };
-    ErrorCode errorCode = WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN, apiInfo, colors);
+    ErrorCode errorCode = WallpaperManager::GetInstance().GetColors(LOCKSCREEN, apiInfo, colors);
     EXPECT_EQ(errorCode, E_OK);
-    errorCode = WallpaperManagerkits::GetInstance().GetColors(SYSTYEM, apiInfo, colors);
+    errorCode = WallpaperManager::GetInstance().GetColors(SYSTYEM, apiInfo, colors);
     EXPECT_EQ(errorCode, E_OK);
 }
 /*********************   GetColors   *********************/
@@ -538,9 +537,9 @@ HWTEST_F(WallpaperTest, GetId001, TestSize.Level0)
 {
     HILOG_INFO("GetId001 begin");
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to ResetWallpaper";
-    int32_t id = WallpaperManagerkits::GetInstance().GetWallpaperId(SYSTYEM);
+    int32_t id = WallpaperManager::GetInstance().GetWallpaperId(SYSTYEM);
     EXPECT_EQ(id, DEFAULT_WALLPAPER_ID) << "Failed to GetId";
 }
 
@@ -555,9 +554,9 @@ HWTEST_F(WallpaperTest, GetId002, TestSize.Level0)
 {
     HILOG_INFO("GetId002 begin");
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to ResetWallpaper";
-    int32_t id = WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
+    int32_t id = WallpaperManager::GetInstance().GetWallpaperId(LOCKSCREEN);
     EXPECT_EQ(id, DEFAULT_WALLPAPER_ID) << "Failed to GetId";
 }
 
@@ -572,9 +571,9 @@ HWTEST_F(WallpaperTest, GetId003, TestSize.Level0)
 {
     HILOG_INFO("GetId003 begin");
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, SYSTYEM, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().SetWallpaper(URI, SYSTYEM, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to SetWallpaper";
-    int32_t id = WallpaperManagerkits::GetInstance().GetWallpaperId(SYSTYEM);
+    int32_t id = WallpaperManager::GetInstance().GetWallpaperId(SYSTYEM);
     EXPECT_GT(id, DEFAULT_WALLPAPER_ID) << "Failed to GetId";
 }
 
@@ -589,9 +588,9 @@ HWTEST_F(WallpaperTest, GetId004, TestSize.Level0)
 {
     HILOG_INFO("GetId004 begin");
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to SetWallpaper";
-    int32_t id = WallpaperManagerkits::GetInstance().GetWallpaperId(LOCKSCREEN);
+    int32_t id = WallpaperManager::GetInstance().GetWallpaperId(LOCKSCREEN);
     EXPECT_GT(id, DEFAULT_WALLPAPER_ID) << "Failed to GetId";
 }
 /*********************   GetId   *********************/
@@ -607,7 +606,7 @@ HWTEST_F(WallpaperTest, GetFile001, TestSize.Level0)
 {
     HILOG_INFO("GetFile001 begin");
     int32_t wallpaperFd = 0;
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetFile(SYSTYEM, wallpaperFd);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().GetFile(SYSTYEM, wallpaperFd);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to get File.";
 }
 
@@ -621,7 +620,7 @@ HWTEST_F(WallpaperTest, GetFile002, TestSize.Level0)
 {
     HILOG_INFO("GetFile002 begin");
     int32_t wallpaperFd = 0;
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetFile(LOCKSCREEN, wallpaperFd);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().GetFile(LOCKSCREEN, wallpaperFd);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to get File.";
 }
 
@@ -635,7 +634,7 @@ HWTEST_F(WallpaperTest, GetFile003, TestSize.Level0)
 {
     HILOG_INFO("GetFile003 begin");
     int32_t wallpaperFd = 0;
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetFile(INVALID_WALLPAPER_TYPE, wallpaperFd);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().GetFile(INVALID_WALLPAPER_TYPE, wallpaperFd);
     EXPECT_EQ(wallpaperErrorCode, E_PARAMETERS_INVALID) << "Failed to throw parameters error";
 }
 
@@ -650,7 +649,7 @@ HWTEST_F(WallpaperTest, GetFile004, TestSize.Level0)
 {
     HILOG_INFO("GetFile001 begin");
     int32_t wallpaperFd = 0;
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetFile(SYSTYEM, wallpaperFd);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().GetFile(SYSTYEM, wallpaperFd);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to get File.";
 }
 /*********************   GetFile   *********************/
@@ -667,7 +666,7 @@ HWTEST_F(WallpaperTest, getMinHeight001, TestSize.Level0)
     HILOG_INFO("getMinHeight001  begin");
     int32_t height = 0;
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetWallpaperMinHeight(apiInfo, height);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().GetWallpaperMinHeight(apiInfo, height);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to get WallpaperMinHeight.";
     EXPECT_GT(height, 0);
 }
@@ -683,7 +682,7 @@ HWTEST_F(WallpaperTest, getMinHeight002, TestSize.Level0)
     HILOG_INFO("getMinHeight002  begin");
     int32_t height = 0;
     ApiInfo apiInfo{ true, true };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetWallpaperMinHeight(apiInfo, height);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().GetWallpaperMinHeight(apiInfo, height);
     EXPECT_EQ(wallpaperErrorCode, E_OK);
 }
 /*********************   GetWallpaperMinHeight   *********************/
@@ -700,7 +699,7 @@ HWTEST_F(WallpaperTest, getMinWidth001, TestSize.Level0)
     HILOG_INFO("getMinWidth001  begin");
     int32_t width = 0;
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetWallpaperMinWidth(apiInfo, width);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().GetWallpaperMinWidth(apiInfo, width);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to get WallpaperMinWidth.";
     EXPECT_GT(width, 0);
 }
@@ -716,7 +715,7 @@ HWTEST_F(WallpaperTest, getMinWidth002, TestSize.Level0)
     HILOG_INFO("getMinWidth002  begin");
     int32_t width = 0;
     ApiInfo apiInfo{ true, true };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetWallpaperMinWidth(apiInfo, width);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().GetWallpaperMinWidth(apiInfo, width);
     EXPECT_EQ(wallpaperErrorCode, E_OK);
 }
 /*********************   GetWallpaperMinWidth   *********************/
@@ -733,7 +732,7 @@ HWTEST_F(WallpaperTest, GetPixelMap001, TestSize.Level0)
     HILOG_INFO("GetPixelMap001  begin");
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetPixelMap(SYSTYEM, apiInfo, pixelMap);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().GetPixelMap(SYSTYEM, apiInfo, pixelMap);
     EXPECT_EQ(wallpaperErrorCode, E_OK);
 }
 
@@ -748,7 +747,7 @@ HWTEST_F(WallpaperTest, GetPixelMap002, TestSize.Level0)
     HILOG_INFO("GetPixelMap002  begin");
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetPixelMap(LOCKSCREEN, apiInfo, pixelMap);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().GetPixelMap(LOCKSCREEN, apiInfo, pixelMap);
     EXPECT_EQ(wallpaperErrorCode, E_OK);
 }
 
@@ -763,9 +762,9 @@ HWTEST_F(WallpaperTest, GetPixelMap003, TestSize.Level0)
     HILOG_INFO("GetPixelMap003  begin");
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     ApiInfo apiInfo{ true, true };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetPixelMap(LOCKSCREEN, apiInfo, pixelMap);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().GetPixelMap(LOCKSCREEN, apiInfo, pixelMap);
     EXPECT_EQ(wallpaperErrorCode, E_OK);
-    wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetPixelMap(SYSTYEM, apiInfo, pixelMap);
+    wallpaperErrorCode = WallpaperManager::GetInstance().GetPixelMap(SYSTYEM, apiInfo, pixelMap);
     EXPECT_EQ(wallpaperErrorCode, E_OK);
 }
 /*********************   GetPixelMap   *********************/
@@ -782,7 +781,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap001, TestSize.Level0)
     HILOG_INFO("SetWallpaperByMap001  begin");
     std::shared_ptr<PixelMap> pixelMap = WallpaperTest::CreateTempPixelMap();
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, SYSTYEM, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().SetWallpaper(pixelMap, SYSTYEM, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set SYSTYEM PixelMap.";
 }
 
@@ -797,7 +796,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap002, TestSize.Level0)
     HILOG_INFO("SetWallpaperByMap002  begin");
     std::shared_ptr<PixelMap> pixelMap = WallpaperTest::CreateTempPixelMap();
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, LOCKSCREEN, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().SetWallpaper(pixelMap, LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set LOCKSCREEN PixelMap.";
 }
 
@@ -813,7 +812,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap003, TestSize.Level0)
     std::shared_ptr<PixelMap> pixelMap = WallpaperTest::CreateTempPixelMap();
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode =
-        WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, INVALID_WALLPAPER_TYPE, apiInfo);
+        WallpaperManager::GetInstance().SetWallpaper(pixelMap, INVALID_WALLPAPER_TYPE, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_PARAMETERS_INVALID) << "Failed to throw parameters error";
 }
 /*********************   SetWallpaperByMap   *********************/
@@ -829,7 +828,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri001, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByUri001  begin");
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, SYSTYEM, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().SetWallpaper(URI, SYSTYEM, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set SYSTYEM.";
 }
 
@@ -843,7 +842,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri002, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByUri002  begin");
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set LOCKSCREEN.";
 }
 
@@ -858,7 +857,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri003, TestSize.Level0)
     HILOG_INFO("SetWallpaperByUri003  begin");
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode =
-        WallpaperManagerkits::GetInstance().SetWallpaper(URI, INVALID_WALLPAPER_TYPE, apiInfo);
+        WallpaperManager::GetInstance().SetWallpaper(URI, INVALID_WALLPAPER_TYPE, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_PARAMETERS_INVALID) << "Failed to throw error";
 }
 
@@ -873,7 +872,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri004, TestSize.Level0)
     HILOG_INFO("SetWallpaperByUri004  begin");
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode =
-        WallpaperManagerkits::GetInstance().SetWallpaper("/data/test/theme/wallpaper/errorURI", LOCKSCREEN, apiInfo);
+        WallpaperManager::GetInstance().SetWallpaper("/data/test/theme/wallpaper/errorURI", LOCKSCREEN, apiInfo);
     EXPECT_NE(wallpaperErrorCode, E_OK) << "Failed to throw error";
 }
 
@@ -888,7 +887,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri005, TestSize.Level0)
     HILOG_INFO("SetWallpaperByUri005  begin");
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode =
-        WallpaperManagerkits::GetInstance().SetWallpaper("../data/test/theme/wallpaper/errorURI", LOCKSCREEN, apiInfo);
+        WallpaperManager::GetInstance().SetWallpaper("../data/test/theme/wallpaper/errorURI", LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_FILE_ERROR) << "Failed to return error";
 }
 
@@ -902,9 +901,9 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri006, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByUri006  begin");
     ApiInfo apiInfo{ true, true };
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK);
-    wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, SYSTYEM, apiInfo);
+    wallpaperErrorCode = WallpaperManager::GetInstance().SetWallpaper(URI, SYSTYEM, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK);
 }
 
@@ -918,16 +917,16 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri007, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByUri007  begin");
     ApiInfo apiInfo{ true, true };
-    WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
+    WallpaperManager::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
     std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
     int32_t userId = wallpaperService->QueryActiveUserId();
     HILOG_INFO("guochao  userId:%{public}d", userId);
     bool ret = FileDeal::IsFileExist(WallpaperTest::GetUserFilePath(userId, LOCKSCREEN_FILE));
     EXPECT_EQ(ret, false) << "Failed to reset.";
-    WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
+    WallpaperManager::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
     ret = FileDeal::IsFileExist(WallpaperTest::GetUserFilePath(userId, LOCKSCREEN_FILE));
     EXPECT_EQ(ret, true);
-    WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
+    WallpaperManager::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
 }
 
 /*********************   SetWallpaperByUri   *********************/
@@ -1039,29 +1038,29 @@ HWTEST_F(WallpaperTest, SwitchedUserIdDeal001, TestSize.Level0)
     WallpaperTest::TriggerEvent(TEST_USERID, addCommonEvent);
     std::string userDir = WALLPAPER_DEFAULT_PATH + std::string("/") + std::to_string(TEST_USERID);
     ASSERT_EQ(FileDeal::IsDirExist(userDir), true);
-    ErrorCode wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset lockscreen wallpaper";
 
     std::vector<uint64_t> oldLockscreenColor;
-    wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN, apiInfo, oldLockscreenColor);
+    wallpaperErrorCode = WallpaperManager::GetInstance().GetColors(LOCKSCREEN, apiInfo, oldLockscreenColor);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetColors";
-    wallpaperErrorCode = WallpaperManagerkits::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
+    wallpaperErrorCode = WallpaperManager::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset system wallpaper";
     std::vector<uint64_t> oldSystemColor;
-    wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetColors(SYSTYEM, apiInfo, oldSystemColor);
+    wallpaperErrorCode = WallpaperManager::GetInstance().GetColors(SYSTYEM, apiInfo, oldSystemColor);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetColors";
 
     std::string switchCommonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_SWITCHED;
     WallpaperTest::TriggerEvent(TEST_USERID, switchCommonEvent);
-    wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
+    wallpaperErrorCode = WallpaperManager::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set lockscreen wallpaper";
     std::vector<uint64_t> newLockscreenColor;
-    wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetColors(LOCKSCREEN, apiInfo, newLockscreenColor);
+    wallpaperErrorCode = WallpaperManager::GetInstance().GetColors(LOCKSCREEN, apiInfo, newLockscreenColor);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetColors";
-    wallpaperErrorCode = WallpaperManagerkits::GetInstance().SetWallpaper(URI, SYSTYEM, apiInfo);
+    wallpaperErrorCode = WallpaperManager::GetInstance().SetWallpaper(URI, SYSTYEM, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set system wallpaper";
     std::vector<uint64_t> newSystemColor;
-    wallpaperErrorCode = WallpaperManagerkits::GetInstance().GetColors(SYSTYEM, apiInfo, newSystemColor);
+    wallpaperErrorCode = WallpaperManager::GetInstance().GetColors(SYSTYEM, apiInfo, newSystemColor);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetColors";
     EXPECT_NE(oldLockscreenColor, newLockscreenColor);
     EXPECT_NE(oldSystemColor, newSystemColor);
@@ -1110,7 +1109,7 @@ HWTEST_F(WallpaperTest, InvalidUserIdDeal001, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetVideo001, TestSize.Level0)
 {
     HILOG_INFO("SetVideo001 begin");
-    ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(URI_30FPS_3S_MOV, SYSTYEM);
+    ErrorCode ret = WallpaperManager::GetInstance().SetVideo(URI_30FPS_3S_MOV, SYSTYEM);
     EXPECT_EQ(ret, E_PARAMETERS_INVALID);
 }
 
@@ -1124,7 +1123,7 @@ HWTEST_F(WallpaperTest, SetVideo002, TestSize.Level0)
 {
     HILOG_INFO("SetVideo002 begin");
     std::string errUri = "errorPath/zm_30fps_4s.mp4";
-    ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(errUri, SYSTYEM);
+    ErrorCode ret = WallpaperManager::GetInstance().SetVideo(errUri, SYSTYEM);
     EXPECT_EQ(ret, E_FILE_ERROR);
 }
 
@@ -1137,7 +1136,7 @@ HWTEST_F(WallpaperTest, SetVideo002, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetVideo003, TestSize.Level0)
 {
     HILOG_INFO("SetVideo003 begin");
-    ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(URI_30FPS_3S_MP4, SYSTYEM);
+    ErrorCode ret = WallpaperManager::GetInstance().SetVideo(URI_30FPS_3S_MP4, SYSTYEM);
     EXPECT_EQ(ret, E_OK);
 }
 
@@ -1150,7 +1149,7 @@ HWTEST_F(WallpaperTest, SetVideo003, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetVideo004, TestSize.Level0)
 {
     HILOG_INFO("SetVideo004 begin");
-    ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(URI_15FPS_7S_MP4, SYSTYEM);
+    ErrorCode ret = WallpaperManager::GetInstance().SetVideo(URI_15FPS_7S_MP4, SYSTYEM);
     EXPECT_EQ(ret, E_PARAMETERS_INVALID);
 }
 
@@ -1163,7 +1162,7 @@ HWTEST_F(WallpaperTest, SetVideo004, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetVideo005, TestSize.Level0)
 {
     HILOG_INFO("SetVideo005 begin");
-    ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(URI_30FPS_3S_MOV, LOCKSCREEN);
+    ErrorCode ret = WallpaperManager::GetInstance().SetVideo(URI_30FPS_3S_MOV, LOCKSCREEN);
     EXPECT_EQ(ret, E_PARAMETERS_INVALID);
 }
 
@@ -1177,7 +1176,7 @@ HWTEST_F(WallpaperTest, SetVideo006, TestSize.Level0)
 {
     HILOG_INFO("SetVideo006 begin");
     std::string errUri = "errorPath/zm_30fps_4s.mp4";
-    ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(errUri, LOCKSCREEN);
+    ErrorCode ret = WallpaperManager::GetInstance().SetVideo(errUri, LOCKSCREEN);
     EXPECT_EQ(ret, E_FILE_ERROR);
 }
 
@@ -1190,7 +1189,7 @@ HWTEST_F(WallpaperTest, SetVideo006, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetVideo007, TestSize.Level0)
 {
     HILOG_INFO("SetVideo007 begin");
-    ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(URI_30FPS_3S_MP4, LOCKSCREEN);
+    ErrorCode ret = WallpaperManager::GetInstance().SetVideo(URI_30FPS_3S_MP4, LOCKSCREEN);
     EXPECT_EQ(ret, E_OK);
 }
 
@@ -1203,7 +1202,7 @@ HWTEST_F(WallpaperTest, SetVideo007, TestSize.Level0)
 HWTEST_F(WallpaperTest, SetVideo008, TestSize.Level0)
 {
     HILOG_INFO("SetVideo008 begin");
-    ErrorCode ret = WallpaperManagerkits::GetInstance().SetVideo(URI_15FPS_7S_MP4, LOCKSCREEN);
+    ErrorCode ret = WallpaperManager::GetInstance().SetVideo(URI_15FPS_7S_MP4, LOCKSCREEN);
     EXPECT_EQ(ret, E_PARAMETERS_INVALID);
 }
 /*********************   SetVideo    *********************/
@@ -1221,9 +1220,9 @@ HWTEST_F(WallpaperTest, SetCustomWallpaper001, TestSize.Level0)
     if (!Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
         testErrorCode = E_NO_PERMISSION;
     }
-    ErrorCode ret = WallpaperManagerkits::GetInstance().SetCustomWallpaper(URI_ZIP, SYSTYEM);
+    ErrorCode ret = WallpaperManager::GetInstance().SetCustomWallpaper(URI_ZIP, SYSTYEM);
     EXPECT_EQ(ret, testErrorCode);
-    ret = WallpaperManagerkits::GetInstance().SetCustomWallpaper(URI_ZIP, LOCKSCREEN);
+    ret = WallpaperManager::GetInstance().SetCustomWallpaper(URI_ZIP, LOCKSCREEN);
     EXPECT_EQ(ret, testErrorCode);
 }
 
@@ -1239,7 +1238,7 @@ HWTEST_F(WallpaperTest, SendEvent001, TestSize.Level0)
 {
     HILOG_INFO("SendEvent001 begin");
     std::string errEventType = "SHOW_ERROREVENTTYPE";
-    ErrorCode ret = WallpaperManagerkits::GetInstance().SendEvent("SHOW_ERROREVENTTYPE");
+    ErrorCode ret = WallpaperManager::GetInstance().SendEvent("SHOW_ERROREVENTTYPE");
     EXPECT_EQ(ret, E_PARAMETERS_INVALID);
 }
 
@@ -1252,7 +1251,7 @@ HWTEST_F(WallpaperTest, SendEvent001, TestSize.Level0)
 HWTEST_F(WallpaperTest, SendEvent002, TestSize.Level0)
 {
     HILOG_INFO("SendEvent002 begin");
-    ErrorCode ret = WallpaperManagerkits::GetInstance().SendEvent("SHOW_SYSTEMSCREEN");
+    ErrorCode ret = WallpaperManager::GetInstance().SendEvent("SHOW_SYSTEMSCREEN");
     EXPECT_EQ(ret, E_OK);
 }
 
@@ -1265,7 +1264,7 @@ HWTEST_F(WallpaperTest, SendEvent002, TestSize.Level0)
 HWTEST_F(WallpaperTest, SendEvent003, TestSize.Level0)
 {
     HILOG_INFO("SendEvent003 begin");
-    ErrorCode ret = WallpaperManagerkits::GetInstance().SendEvent("SHOW_LOCKSCREEN");
+    ErrorCode ret = WallpaperManager::GetInstance().SendEvent("SHOW_LOCKSCREEN");
     EXPECT_EQ(ret, E_OK);
 }
 
@@ -1316,7 +1315,7 @@ HWTEST_F(WallpaperTest, RegisterWallpaperCallback_001, TestSize.Level0)
 {
     HILOG_INFO("RegisterWallpaperCallback_001 begin");
     JScallback callback = &WallpaperTest::TestCallBack;
-    bool res = WallpaperManagerkits::GetInstance().RegisterWallpaperCallback(callback);
+    bool res = WallpaperManager::GetInstance().RegisterWallpaperCallback(callback);
     EXPECT_EQ(res, true);
 }
 
@@ -1329,7 +1328,7 @@ HWTEST_F(WallpaperTest, RegisterWallpaperCallback_001, TestSize.Level0)
 HWTEST_F(WallpaperTest, RegisterWallpaperListener_001, TestSize.Level0)
 {
     HILOG_INFO("RegisterWallpaperListener_001 begin");
-    bool res = WallpaperManagerkits::GetInstance().RegisterWallpaperListener();
+    bool res = WallpaperManager::GetInstance().RegisterWallpaperListener();
     EXPECT_EQ(res, true);
 }
 } // namespace WallpaperMgrService
