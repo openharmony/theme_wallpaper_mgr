@@ -299,9 +299,11 @@ void WallpaperService::RemoveExtensionDeathRecipient()
     if (extensionRemoteObject_ != nullptr && recipient_ != nullptr) {
         HILOG_INFO("Remove Extension DeathRecipient.");
         std::lock_guard<std::mutex> lock(remoteObjectMutex_);
-        extensionRemoteObject_->RemoveDeathRecipient(recipient_);
-        recipient_ = nullptr;
-        extensionRemoteObject_ = nullptr;
+        if (extensionRemoteObject_ != nullptr) {
+            extensionRemoteObject_->RemoveDeathRecipient(recipient_);
+            recipient_ = nullptr;
+            extensionRemoteObject_ = nullptr;
+        }
     }
 }
 
