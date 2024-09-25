@@ -33,7 +33,7 @@
 ### 接口说明
 
 -   Wallpaper接口文档
-    -   [js-apis-wallpaper.md](https://gitee.com/openharmony/docs/blob/master/zh-cn/application-dev/reference/apis/js-apis-wallpaper.md) 提供从API version 7开始的接口定义和示例代码。
+    -   [js-apis-wallpaper.md](https://gitee.com/openharmony/docs/blob/master/zh-cn/application-dev/reference/apis-basic-services-kit/js-apis-wallpaper.md) 提供从API version 7开始的接口定义和示例代码。
 
 ## 相关仓
 
