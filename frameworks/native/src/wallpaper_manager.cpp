@@ -373,7 +373,7 @@ ErrorCode WallpaperManager::CreatePixelMapByFd(
     opts.formatHint = "image/jpeg";
     std::unique_ptr<OHOS::Media::ImageSource> imageSource =
         OHOS::Media::ImageSource::CreateImageSource(buffer, size, opts, errorCode);
-    if (errorCode != 0) {
+    if (errorCode != 0 || imageSource == nullptr) {
         HILOG_ERROR("ImageSource::CreateImageSource failed, errcode= %{public}d!", errorCode);
         delete[] buffer;
         close(fd);
