@@ -69,6 +69,11 @@ void JsWallpaperExtensionAbility::Init(const std::shared_ptr<AbilityLocalRecord>
         HILOG_ERROR("Failed to get srcPath!");
         return;
     }
+    return InitMoudle(srcPath);
+}
+
+void JsWallpaperExtensionAbility::InitMoudle(std::string srcPath)
+{
     std::string moduleName(Extension::abilityInfo_->moduleName);
     moduleName.append("::").append(abilityInfo_->name);
     HandleScope handleScope(jsRuntime_);
@@ -91,6 +96,10 @@ void JsWallpaperExtensionAbility::Init(const std::shared_ptr<AbilityLocalRecord>
     }
     napi_value contextObj = CreateJsWallpaperExtensionContext(env, context);
     auto shellContextRef = jsRuntime_.LoadSystemModule("WallpaperExtensionContext", &contextObj, ARGC_ONE);
+    if (shellContextRef == nullptr) {
+        HILOG_ERROR("Failed to load system module!");
+        return;
+    }
     contextObj = shellContextRef->GetNapiValue();
     context->Bind(jsRuntime_, shellContextRef.release());
     napi_set_named_property(env, obj, "context", contextObj);
@@ -228,46 +237,45 @@ void JsWallpaperExtensionAbility::GetSrcPath(std::string &srcPath)
 
 void JsWallpaperExtensionAbility::RegisterWallpaperCallback()
 {
-    WallpaperMgrService::WallpaperManager::GetInstance().RegisterWallpaperCallback(
-        [](int32_t wallpaperType) -> bool {
-            HILOG_INFO("jsWallpaperExtensionAbility->CallObjectMethod.");
-            std::lock_guard<std::mutex> lock(mtx);
-            if (JsWallpaperExtensionAbility::jsWallpaperExtensionAbility == nullptr) {
-                return false;
-            }
-            napi_env napiEnv = (JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->jsRuntime_).GetNapiEnv();
-            WorkData *workData = new (std::nothrow) WorkData(napiEnv, nullptr, wallpaperType);
+    WallpaperMgrService::WallpaperManager::GetInstance().RegisterWallpaperCallback([](int32_t wallpaperType) -> bool {
+        HILOG_INFO("jsWallpaperExtensionAbility->CallObjectMethod.");
+        std::lock_guard<std::mutex> lock(mtx);
+        if (JsWallpaperExtensionAbility::jsWallpaperExtensionAbility == nullptr) {
+            return false;
+        }
+        napi_env napiEnv = (JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->jsRuntime_).GetNapiEnv();
+        WorkData *workData = new (std::nothrow) WorkData(napiEnv, nullptr, wallpaperType);
+        if (workData == nullptr) {
+            return false;
+        }
+        uv_after_work_cb afterCallback = [](uv_work_t *work, int32_t status) {
+            WorkData *workData = reinterpret_cast<WorkData *>(work->data);
             if (workData == nullptr) {
-                return false;
+                delete work;
+                return;
             }
-            uv_after_work_cb afterCallback = [](uv_work_t *work, int32_t status) {
-                WorkData *workData = reinterpret_cast<WorkData *>(work->data);
-                if (workData == nullptr) {
-                    delete work;
-                    return;
-                }
-                napi_handle_scope scope = nullptr;
-                napi_open_handle_scope(workData->env_, &scope);
-                if (scope == nullptr) {
-                    delete workData;
-                    delete work;
-                    return;
-                }
-                napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(workData->env_, workData->wallpaperType);
-
-                napi_value arg[] = { type };
-                std::lock_guard<std::mutex> lock(mtx);
-                if (JsWallpaperExtensionAbility::jsWallpaperExtensionAbility != nullptr) {
-                    JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->CallObjectMethod(
-                        "onWallpaperChange", arg, ARGC_ONE);
-                }
-                napi_close_handle_scope(workData->env_, scope);
+            napi_handle_scope scope = nullptr;
+            napi_open_handle_scope(workData->env_, &scope);
+            if (scope == nullptr) {
                 delete workData;
                 delete work;
-            };
-            UvQueue::Call(napiEnv, workData, afterCallback);
-            return true;
-        });
+                return;
+            }
+            napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(workData->env_, workData->wallpaperType);
+
+            napi_value arg[] = { type };
+            std::lock_guard<std::mutex> lock(mtx);
+            if (JsWallpaperExtensionAbility::jsWallpaperExtensionAbility != nullptr) {
+                JsWallpaperExtensionAbility::jsWallpaperExtensionAbility->CallObjectMethod(
+                    "onWallpaperChange", arg, ARGC_ONE);
+            }
+            napi_close_handle_scope(workData->env_, scope);
+            delete workData;
+            delete work;
+        };
+        UvQueue::Call(napiEnv, workData, afterCallback);
+        return true;
+    });
 }
 
 } // namespace AbilityRuntime
