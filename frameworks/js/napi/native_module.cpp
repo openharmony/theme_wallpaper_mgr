@@ -83,6 +83,7 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("setImage", NAPI_SetImage),
         DECLARE_NAPI_FUNCTION("getPixelMap", NAPI_GetPixelMap),
         DECLARE_NAPI_FUNCTION("getImage", NAPI_GetImage),
+        DECLARE_NAPI_FUNCTION("getCorrespondWallpaper", NAPI_GetCorrespondWallpaper),
         DECLARE_NAPI_FUNCTION("on", NAPI_On),
         DECLARE_NAPI_FUNCTION("off", NAPI_Off),
         DECLARE_NAPI_FUNCTION("setVideo", NAPI_SetVideo),

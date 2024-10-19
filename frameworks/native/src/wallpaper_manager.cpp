@@ -353,6 +353,13 @@ ErrorCode WallpaperManager::GetPixelMap(
     return wallpaperErrorCode;
 }
 
+// mock
+ErrorCode WallpaperManager::GetCorrespondWallpaper(int32_t wallpaperType, int32_t foldState, int32_t rotateState,
+    const ApiInfo &apiInfo, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
+{
+    return E_OK;
+}
+
 ErrorCode WallpaperManager::CreatePixelMapByFd(
     int32_t fd, int32_t size, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
 {

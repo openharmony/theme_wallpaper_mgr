@@ -34,6 +34,10 @@ constexpr const char *PERMISSION_FAILED_MESSAGE = "BusinessError 202: Permission
 constexpr const char *PARAMETER_COUNT = "Mandatory parameters are left unspecified.";
 constexpr const char *WALLPAPERTYPE_PARAMETER_TYPE = "The type must be WallpaperType, parameter range must be "
                                                      "WALLPAPER_LOCKSCREEN or WALLPAPER_SYSTEM.";
+constexpr const char *FOLDSTATE_PARAMETER_TYPE = "The type must be FoldState, parameter range must be "
+                                                     "NORMAL or UNFOLD_1 or UNFOLD_2.";
+constexpr const char *ROTATESTATE_PARAMETER_TYPE = "The type must be RotateState, parameter range must be "
+                                                     "PORT or LAND.";
 constexpr const char *DYNAMIC_WALLPAPERTYPE_PARAMETER_TYPE = "The dynamic wallpaper must be .mp4 or conform to the "
                                                              "video format requirements.";
 enum ErrorThrowType : int32_t {

@@ -23,8 +23,23 @@ import {describe, beforeAll, beforeEach, afterEach, afterAll, it, expect} from '
 const WALLPAPER_SYSTEM = 0;
 const WALLPAPER_LOCKSCREEN = 1;
 const INVALID_WALLPAPER_TYPE = 2;
+const NORMAL = 0;
+const UNFOLD_1 = 1;
+const UNFOLD_2 = 2;
+const INVALID_FOLDSTATE = 3;
+const PORT = 0;
+const LAND = 1;
+const INVALID_ROTATESTATE = 2;
 const DEFAULT_WALLPAPER_ID = -1;
 const PARAMETER_ERROR = 401;
+const PARAMETER_ERROR_MESSAGE = "BusinessError 401: Parameter error.";
+const PARAMETER_COUNT = "Mandatory parameters are left unspecified.";
+const WALLPAPERTYPE_PARAMETER_TYPE = "The type must be WallpaperType, parameter range must be " +
+    "WALLPAPER_LOCKSCREEN or WALLPAPER_SYSTEM.";
+const FOLDSTATE_PARAMETER_TYPE = "The type must be FoldState, parameter range must be " +
+    "NORMAL or UNFOLD_1 or UNFOLD_2.";
+const ROTATESTATE_PARAMETER_TYPE = "The type must be RotateState, parameter range must be " +
+    "PORT or LAND.";
 const URI = "/data/storage/el2/base/haps/js.jpeg";
 const URI_ZIP = "/system/etc/test.zip";
 const URI_30FPS_3S_MP4 = "/system/etc/30fps_3s.mp4";
@@ -501,19 +516,15 @@ describe('WallpaperJSTest', function () {
     it('getImageCallbackThrowErrorTest005', 0, async function (done) {
         try {
             wallpaper.getImage(INVALID_WALLPAPER_TYPE, function (err, data) {
-                if (err) {
-                    console.info(`getImageCallbackThrowErrorTest005 err : ${err}`);
-                    expect(err.code === PARAMETER_ERROR).assertTrue()
-                } else {
-                    console.info(`getImageCallbackThrowErrorTest005 data : ${data}`);
-                    if (data !== undefined) {
-                        expect(null).assertFail();
-                    }
-                }
+                console.error(`getImageCallbackThrowErrorTest005 err : ${err}`);
+                console.error(`getImageCallbackThrowErrorTest005 data : ${data}`);
+                expect(null).assertTrue();
                 done();
             })
         } catch (error) {
-            expect(null).assertFail();
+            console.info(`getImageCallbackThrowErrorTest005 error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue();
+            expect(error.message === PARAMETER_ERROR_MESSAGE + WALLPAPERTYPE_PARAMETER_TYPE).assertTrue();
             done();
         }
     })
@@ -553,18 +564,18 @@ describe('WallpaperJSTest', function () {
     it('getImagePromiseThrowErrorTest007', 0, async function (done) {
         try {
             wallpaper.getImage(INVALID_WALLPAPER_TYPE).then((data) => {
-                console.info(`getImagePromiseThrowErrorTest007 data : ${data}`);
-                if (data !== undefined) {
-                    expect(null).assertFail();
-                }
+                console.error(`getImagePromiseThrowErrorTest007 data : ${data}`);
+                expect(null).assertTrue();
                 done();
             }).catch((err) => {
-                console.info(`getImagePromiseThrowErrorTest007 err : ${err}`);
-                expect(err.code === PARAMETER_ERROR).assertTrue()
+                console.error(`getImagePromiseThrowErrorTest007 err : ${err}`);
+                expect(null).assertTrue();
                 done();
             });
         } catch (error) {
-            expect(null).assertFail();
+            console.info(`getImagePromiseThrowErrorTest007 error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue();
+            expect(error.message === PARAMETER_ERROR_MESSAGE + WALLPAPERTYPE_PARAMETER_TYPE).assertTrue();
             done();
         }
     })
@@ -590,6 +601,448 @@ describe('WallpaperJSTest', function () {
             });
         } catch (error) {
             expect(error.code === PARAMETER_ERROR).assertTrue()
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest001
+     * @tc.desc:    Test getCorrespondWallpaper() with normal argc 000.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest001', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_SYSTEM, NORMAL, PORT).then((data) => {
+                console.info(`getCorrespondWallpaperTest001 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest001 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getCorrespondWallpaperTest001 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest002
+     * @tc.desc:    Test getCorrespondWallpaper() with normal argc 001.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest002', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_SYSTEM, NORMAL, LAND).then((data) => {
+                console.info(`getCorrespondWallpaperTest002 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest002 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getCorrespondWallpaperTest002 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest003
+     * @tc.desc:    Test getCorrespondWallpaper() with normal argc 010.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest003', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_SYSTEM, UNFOLD_1, PORT).then((data) => {
+                console.info(`getCorrespondWallpaperTest003 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest003 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getCorrespondWallpaperTest003 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest004
+     * @tc.desc:    Test getCorrespondWallpaper() with normal argc 011.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest004', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_SYSTEM, UNFOLD_1, LAND).then((data) => {
+                console.info(`getCorrespondWallpaperTest004 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest004 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getCorrespondWallpaperTest004 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest005
+     * @tc.desc:    Test getCorrespondWallpaper() with normal argc 020.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest005', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_SYSTEM, UNFOLD_2, PORT).then((data) => {
+                console.info(`getCorrespondWallpaperTest005 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest005 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getCorrespondWallpaperTest005 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest006
+     * @tc.desc:    Test getCorrespondWallpaper() with normal argc 021.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest006', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_SYSTEM, UNFOLD_2, LAND).then((data) => {
+                console.info(`getCorrespondWallpaperTest006 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest006 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getCorrespondWallpaperTest006 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest007
+     * @tc.desc:    Test getCorrespondWallpaper() with normal argc 100.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest007', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_LOCKSCREEN, NORMAL, PORT).then((data) => {
+                console.info(`getCorrespondWallpaperTest007 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest007 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getCorrespondWallpaperTest007 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+    /**
+     * @tc.name:    getCorrespondWallpaperTest008
+     * @tc.desc:    Test getCorrespondWallpaper() with normal argc 101.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest008', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_LOCKSCREEN, NORMAL, LAND).then((data) => {
+                console.info(`getCorrespondWallpaperTest008 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest008 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getCorrespondWallpaperTest008 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+    /**
+     * @tc.name:    getCorrespondWallpaperTest009
+     * @tc.desc:    Test getCorrespondWallpaper() with normal argc 110.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest009', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_LOCKSCREEN, UNFOLD_1, PORT).then((data) => {
+                console.info(`getCorrespondWallpaperTest009 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest009 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getCorrespondWallpaperTest009 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest010
+     * @tc.desc:    Test getCorrespondWallpaper() with normal argc 111.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest010', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_LOCKSCREEN, UNFOLD_1, LAND).then((data) => {
+                console.info(`getCorrespondWallpaperTest010 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest010 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getCorrespondWallpaperTest010 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest011
+     * @tc.desc:    Test getCorrespondWallpaper() with normal argc 120.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest011', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_LOCKSCREEN, UNFOLD_2, PORT).then((data) => {
+                console.info(`getCorrespondWallpaperTest011 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest011 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getCorrespondWallpaperTest011 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest012
+     * @tc.desc:    Test getCorrespondWallpaper() with normal argc 121.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest012', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_LOCKSCREEN, UNFOLD_2, LAND).then((data) => {
+                console.info(`getCorrespondWallpaperTest012 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest012 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getCorrespondWallpaperTest012 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest013
+     * @tc.desc:    Test getCorrespondWallpaper() lack of argc.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest013', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_LOCKSCREEN, UNFOLD_1).then((data) => {
+                console.error(`getCorrespondWallpaperTest013 data : ${data}`);
+                expect(null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest013 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.info(`getCorrespondWallpaperTest013 error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue();
+            expect(error.message === PARAMETER_ERROR_MESSAGE + PARAMETER_COUNT).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest014
+     * @tc.desc:    Test getCorrespondWallpaper() with invalid wallpaper type.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest014', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(INVALID_WALLPAPER_TYPE, UNFOLD_2, LAND).then((data) => {
+                console.error(`getCorrespondWallpaperTest014 data : ${data}`);
+                expect(null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest014 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.info(`getCorrespondWallpaperTest014 error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue();
+            expect(error.message === PARAMETER_ERROR_MESSAGE + WALLPAPERTYPE_PARAMETER_TYPE).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest015
+     * @tc.desc:    Test getCorrespondWallpaper() with invalid foldstate.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest015', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_SYSTEM, INVALID_FOLDSTATE, PORT).then((data) => {
+                console.error(`getCorrespondWallpaperTest015 data : ${data}`);
+                expect(null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest015 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.info(`getCorrespondWallpaperTest015 error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue();
+            expect(error.message === PARAMETER_ERROR_MESSAGE + FOLDSTATE_PARAMETER_TYPE).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest016
+     * @tc.desc:    Test getCorrespondWallpaper() with invalid rotatestate.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest016', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_SYSTEM, NORMAL, INVALID_ROTATESTATE).then((data) => {
+                console.error(`getCorrespondWallpaperTest016 data : ${data}`);
+                expect(null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest016 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.info(`getCorrespondWallpaperTest016 error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue();
+            expect(error.message === PARAMETER_ERROR_MESSAGE + ROTATESTATE_PARAMETER_TYPE).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest017
+     * @tc.desc:    Test getCorrespondWallpaper() with invalid wallpaper type.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest017', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper("INVALID_TYPE", NORMAL, PORT).then((data) => {
+                console.error(`getCorrespondWallpaperTest017 data : ${data}`);
+                expect(null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest017 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.info(`getCorrespondWallpaperTest017 error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue();
+            expect(error.message === PARAMETER_ERROR_MESSAGE + WALLPAPERTYPE_PARAMETER_TYPE).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest018
+     * @tc.desc:    Test getCorrespondWallpaper() to get wallpaper.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest018', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_SYSTEM, "INVALID_TYPE", PORT).then((data) => {
+                console.error(`getCorrespondWallpaperTest018 data : ${data}`);
+                expect(null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest018 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.info(`getCorrespondWallpaperTest018 error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue();
+            expect(error.message === PARAMETER_ERROR_MESSAGE + FOLDSTATE_PARAMETER_TYPE).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getCorrespondWallpaperTest019
+     * @tc.desc:    Test getCorrespondWallpaper() to get wallpaper.
+     * @tc.type:    FUNC
+     */
+    it('getCorrespondWallpaperTest019', 0, async function (done) {
+        try {
+            wallpaper.getCorrespondWallpaper(WALLPAPER_SYSTEM, NORMAL, "INVALID_TYPE").then((data) => {
+                console.error(`getCorrespondWallpaperTest019 data : ${data}`);
+                expect(null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getCorrespondWallpaperTest019 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.info(`getCorrespondWallpaperTest019 error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue();
+            expect(error.message === PARAMETER_ERROR_MESSAGE + ROTATESTATE_PARAMETER_TYPE).assertTrue();
             done();
         }
     })
