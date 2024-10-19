@@ -83,6 +83,41 @@ bool FileDeal::DeleteFile(const std::string &sourceFile)
     return true;
 }
 
+bool FileDeal::DeleteDir(const std::string &path, bool deleteRootDir)
+{
+    DIR *dir = opendir(path.c_str());
+    if (dir == nullptr) {
+        return false;
+    }
+    dirent *dirent;
+    while ((dirent = readdir(dir)) != nullptr) {
+        if (strcmp(dirent->d_name, ".") == 0 || strcmp(dirent->d_name, "..") == 0) {
+            continue;
+        }
+        std::string fullPath = path;
+        if (path[path.size() - 1] != '/') {
+            fullPath += '/';
+        }
+        fullPath += dirent->d_name;
+        if (dirent->d_type == DT_DIR) {
+            if (!DeleteDir(fullPath)) {
+                closedir(dir);
+                return false;
+            }
+        } else if (remove(fullPath.c_str()) < 0) {
+            HILOG_ERROR("remove failed, fullPath=%{public}s, errInfo=%{public}s", fullPath.c_str(), strerror(errno));
+            closedir(dir);
+            return false;
+        }
+    }
+    closedir(dir);
+    if (deleteRootDir && rmdir(path.c_str()) != 0) {
+        HILOG_ERROR("remove failed, path=%{public}s, errInfo=%{public}s", path.c_str(), strerror(errno));
+        return false;
+    }
+    return true;
+}
+
 bool FileDeal::IsFileExist(const std::string &name)
 {
     if (access(name.c_str(), F_OK) != 0) {

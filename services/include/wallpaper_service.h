@@ -147,9 +147,10 @@ private:
     static void GetWallpaperFile(
         WallpaperResourceType resourceType, const WallpaperData &wallpaperData, std::string &wallpaperFile);
     std::string GetDefaultResDir();
-    std::string GetWallpaperDefaultPath(WallpaperType wallpaperType);
-    std::string GetWallpaperPathInJson(const std::string filePath);
+    WallpaperData GetWallpaperDefaultPath(WallpaperType wallpaperType);
+    std::string GetWallpaperPathInJson(const std::string manifestName, const std::string filePath);
     void ClearRedundantFile(int32_t userId, WallpaperType wallpaperType, std::string fileName);
+    std::string GetExistFilePath(const std::string &filePath);
 
 private:
     int32_t Init();
