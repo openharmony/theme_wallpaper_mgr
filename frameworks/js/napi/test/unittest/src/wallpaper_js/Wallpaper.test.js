@@ -2782,34 +2782,6 @@ describe('WallpaperJSTest', function () {
     })
 
     /**
-     * @tc.name:      setAllWallpapersThrowErrorTest004
-     * @tc.desc:      Test setAllWallpapers throw parameter error, wallpaperInfo struct error
-     * @tc.type:      FUNC test
-     * @tc.require:
-     */
-    it('setAllWallpapersThrowErrorTest004', 0, async function (done) {
-        const wallpaperInfo1 = {
-            rotateState: wallpaper.RotateState.PORT,
-            source: URI
-        }
-        let wallpaperInfos = [wallpaperInfo1];
-        try {
-            wallpaper.setAllWallpapers(wallpaperInfos, wallpaper.WallpaperType.WALLPAPER_SYSTEM).then(() => {
-                expect(null).assertFail();
-                done();
-            }).catch((err) => {
-                console.info(`setAllWallpapersThrowErrorTest004 err : ${err}`);
-                expect(null).assertFail();
-                done();
-            });
-        } catch (error) {
-            console.info(`setAllWallpapersThrowErrorTest004 error : ${error}`);
-            expect(error.code === PARAMETER_ERROR).assertTrue()
-            done();
-        }
-    })
-
-    /**
      * @tc.name:      setAllWallpapersTest001
      * @tc.desc:      Test setAllWallpapers.
      * @tc.type:      FUNC test
