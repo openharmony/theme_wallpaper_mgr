@@ -69,6 +69,10 @@ public:
     ErrorCode GetPixelMap(
         int32_t wallpaperType, const ApiInfo &apiInfo, std::shared_ptr<OHOS::Media::PixelMap> &PixelMap);
 
+    // mock
+    ErrorCode GetCorrespondWallpaper(int32_t wallpaperType, int32_t foldState, int32_t rotateState,
+        const ApiInfo &apiInfo, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap);
+
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
