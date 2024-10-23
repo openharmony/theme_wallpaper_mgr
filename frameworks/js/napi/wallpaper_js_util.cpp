@@ -78,4 +78,41 @@ napi_value WallpaperJSUtil::Convert2JSRgbaArray(napi_env env, const std::vector<
     }
     return result;
 }
+
+napi_status WallpaperJSUtil::Convert2WallpaperInfo(napi_env env, napi_value jsWallpaper, WallpaperInfo &wallpaperInfo)
+{
+    HILOG_DEBUG("Convert2WallpaperInfo in.");
+    napi_value value = nullptr;
+
+    NAPI_CALL_BASE(env, napi_get_named_property(env, jsWallpaper, "foldState", &value), napi_invalid_arg);
+    int32_t foldState;
+    NAPI_CALL_BASE(env, napi_get_value_int32(env, value, &foldState), napi_invalid_arg);
+    wallpaperInfo.foldState = static_cast<FoldState>(foldState);
+
+    NAPI_CALL_BASE(env, napi_get_named_property(env, jsWallpaper, "rotateState", &value), napi_invalid_arg);
+    int32_t rotateState;
+    NAPI_CALL_BASE(env, napi_get_value_int32(env, value, &rotateState), napi_invalid_arg);
+    wallpaperInfo.rotateState = static_cast<RotateState>(rotateState);
+
+    NAPI_CALL_BASE(env, napi_get_named_property(env, jsWallpaper, "source", &value), napi_invalid_arg);
+    wallpaperInfo.source = Convert2String(env, value);
+    return napi_ok;
+}
+
+napi_status WallpaperJSUtil::Convert2WallpaperInfos(napi_env env, napi_value jsWallpapers,
+    std::vector<WallpaperInfo> &wallpaperInfos)
+{
+    HILOG_DEBUG("Convert2WallpaperInfos in.");
+    uint32_t length = 0;
+    NAPI_CALL_BASE(env, napi_get_array_length(env, jsWallpapers, &length), napi_invalid_arg);
+    for (uint32_t i = 0; i < length; ++i) {
+        napi_value item = nullptr;
+        napi_status status = napi_get_element(env, jsWallpapers, i, &item);
+        NAPI_ASSERT_BASE(env, status == napi_ok && item != nullptr, "not a WallpaperInfo", napi_invalid_arg);
+        WallpaperInfo wallpaperInfo;
+        NAPI_CALL_BASE(env, Convert2WallpaperInfo(env, item, wallpaperInfo), napi_invalid_arg);
+        wallpaperInfos.push_back(std::move(wallpaperInfo));
+    }
+    return napi_ok;
+}
 } // namespace OHOS::WallpaperNAPI

@@ -57,6 +57,6 @@ enum RotateState {
 struct WallpaperInfo {
     FoldState foldState;
     RotateState rotateState;
-    std::string wallpaperPath;
+    std::string source;
 };
 #endif

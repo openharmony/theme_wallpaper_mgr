@@ -689,5 +689,11 @@ ErrorCode WallpaperManager::CheckWallpaperFormat(const std::string &realPath, bo
     return E_OK;
 }
 
+ErrorCode WallpaperManager::SetAllWallpapers(const std::vector<WallpaperInfo> &wallpaperInfos,
+    std::int32_t wallpaperType)
+{
+    return E_OK;
+}
+
 } // namespace WallpaperMgrService
 } // namespace OHOS

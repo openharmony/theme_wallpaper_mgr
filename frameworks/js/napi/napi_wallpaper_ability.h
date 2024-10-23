@@ -128,6 +128,7 @@ struct SetContextInfo : public Call::Context {
     int32_t xOffset = 0;
     int32_t yOffset = 0;
     bool isSetOffset = false;
+    std::vector<WallpaperInfo> wallpaperInfos;
     SetContextInfo() : Context(nullptr, nullptr) {};
     SetContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)) {};
 
@@ -199,6 +200,7 @@ public:
     static void SetVideoInner(std::shared_ptr<SetContextInfo> context);
     static void SendEventInner(std::shared_ptr<GetContextInfo> context);
     static void SetCustomWallpaper(std::shared_ptr<SetContextInfo> context);
+    static void SetAllWallpapers(std::shared_ptr<SetContextInfo> context);
 
 private:
     struct WallpaperChangedData {
@@ -256,6 +258,7 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info);
 napi_value NAPI_SetVideo(napi_env env, napi_callback_info info);
 napi_value NAPI_SendEvent(napi_env env, napi_callback_info info);
 napi_value NAPI_SetCustomWallpaper(napi_env env, napi_callback_info info);
+napi_value NAPI_SetAllWallpapers(napi_env env, napi_callback_info info);
 } // namespace WallpaperNAPI
 } // namespace OHOS
 #endif //  NAPI_WALLPAPER_ABILITY_H
