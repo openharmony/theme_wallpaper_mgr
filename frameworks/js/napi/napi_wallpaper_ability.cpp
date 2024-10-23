@@ -884,6 +884,58 @@ void NapiWallpaperAbility::SetCustomWallpaper(std::shared_ptr<SetContextInfo> co
     context->SetExecution(std::move(exec));
 }
 
+napi_value NAPI_SetAllWallpapers(napi_env env, napi_callback_info info)
+{
+    auto context = std::make_shared<SetContextInfo>();
+    NapiWallpaperAbility::SetAllWallpapers(context);
+    Call call(env, info, context, TWO, true);
+    return call.AsyncCall(env);
+}
+
+void NapiWallpaperAbility::SetAllWallpapers(std::shared_ptr<SetContextInfo> context)
+{
+    auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
+        if (argc < TWO) {
+            HILOG_ERROR("Input argc: %{public}zu", argc);
+            context->SetErrInfo(
+                ErrorThrowType::PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE) + PARAMETER_COUNT);
+            return napi_invalid_arg;
+        }
+        bool isArray = false;
+        napi_is_array(env, argv[0], &isArray);
+        if (!NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_object)
+            || !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_number)
+            || !isArray) {
+            HILOG_ERROR("Input argc: %{public}zu", argc);
+            context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE)
+                + "The first parameter type must be Array<WallpaperInfo>.The second type must be WallpaperType.");
+            return napi_invalid_arg;
+        }
+        if (WallpaperJSUtil::Convert2WallpaperInfos(env, argv[0], context->wallpaperInfos) != napi_ok) {
+            context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE)
+                + "The first parameter type must be Array<WallpaperInfo>.");
+            return napi_invalid_arg;
+        }
+        napi_get_value_int32(env, argv[1], &context->wallpaperType);
+        HILOG_DEBUG("Input wallpaperType: %{public}d", context->wallpaperType);
+        return napi_ok;
+    };
+
+    auto exec = [context](Call::Context *ctx) {
+        ErrorCode wallpaperErrorCode = WallpaperMgrService::WallpaperManager::GetInstance().SetAllWallpapers(
+            context->wallpaperInfos, context->wallpaperType);
+        if (wallpaperErrorCode == E_OK) {
+            context->status = napi_ok;
+        } else {
+            JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(wallpaperErrorCode);
+            context->SetErrInfo(jsErrorInfo.code, jsErrorInfo.message);
+        }
+        HILOG_DEBUG("Exec context status:[%{public}d]", context->status);
+    };
+    context->SetAction(std::move(input), nullptr);
+    context->SetExecution(std::move(exec));
+}
+
 NapiWallpaperAbility::NapiWallpaperAbility(napi_env env, napi_value callback) : env_(env)
 {
     napi_create_reference(env, callback, 1, &callback_);

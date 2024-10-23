@@ -32,6 +32,9 @@ public:
 
     static std::string Convert2String(napi_env env, napi_value jsString);
     static napi_value Convert2JSRgbaArray(napi_env env, const std::vector<uint64_t> &color);
+    static napi_status Convert2WallpaperInfo(napi_env env, napi_value jsWallpaper, WallpaperInfo &wallpaperInfo);
+    static napi_status Convert2WallpaperInfos(napi_env env, napi_value jsWallpapers,
+        std::vector<WallpaperInfo> &wallpaperInfos);
 };
 } // namespace OHOS::WallpaperNAPI
 #endif // WALLPAPER_JS_UTIL_H

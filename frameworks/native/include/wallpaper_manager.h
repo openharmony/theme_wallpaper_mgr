@@ -173,6 +173,8 @@ public:
 
     bool RegisterWallpaperListener();
 
+    ErrorCode SetAllWallpapers(const std::vector<WallpaperInfo> &wallpaperInfos, std::int32_t wallpaperType);
+
 private:
     class DeathRecipient final : public IRemoteObject::DeathRecipient {
     public:
