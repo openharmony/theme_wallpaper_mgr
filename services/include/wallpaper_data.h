@@ -26,8 +26,13 @@ namespace OHOS {
 namespace WallpaperMgrService {
 struct WallpaperData {
     int32_t userId;
-    std::string wallpaperFile;     // source image
-    std::string liveWallpaperFile; // source video
+    std::string wallpaperFile;       // source image
+    std::string normalLandFile;      // source image
+    std::string unfoldedOnePortFile; // source image
+    std::string unfoldedOneLandFile; // source image
+    std::string unfoldedTwoPortFile; // source image
+    std::string unfoldedTwoLandFile; // source image
+    std::string liveWallpaperFile;   // source video
     std::string customPackageUri;
     std::string cropFile; // eventual destination
     std::string name;
@@ -40,6 +45,13 @@ struct WallpaperData {
     ComponentName wallpaperComponent;
     WallpaperData(int32_t userId, std::string fileName);
     WallpaperData();
+};
+enum RotateState { PORT, LAND };
+enum FoldState { NORMAL, UNFOLD_1, UNFOLD_2 };
+struct WallpaperInfo {
+    FoldState foldState;
+    RotateState rotateState;
+    std::string source;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
