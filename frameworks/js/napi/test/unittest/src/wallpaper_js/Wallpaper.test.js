@@ -2771,7 +2771,7 @@ describe('WallpaperJSTest', function () {
                 done();
             }).catch((err) => {
                 console.info(`setAllWallpapersThrowErrorTest003 err : ${err}`);
-                expect(null).assertFail();
+                expect(err.code === PARAMETER_ERROR).assertTrue()
                 done();
             });
         } catch (error) {

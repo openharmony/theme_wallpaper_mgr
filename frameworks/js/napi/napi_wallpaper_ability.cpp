@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-#include <pthread.h>
 #include <unistd.h>
 #include <uv.h>
 
@@ -715,7 +714,7 @@ void NapiWallpaperAbility::GetCorrespondWallpaperInner(std::shared_ptr<GetContex
     auto exec = [context, apiInfo](Call::Context *ctx) {
         std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
         ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().GetCorrespondWallpaper(
-            context->wallpaperType, context->foldState, context->rotateState, apiInfo, pixelMap);
+            context->wallpaperType, context->foldState, context->rotateState, pixelMap);
         if (wallpaperErrorCode == E_OK) {
             context->status = napi_ok;
             context->pixelMap = pixelMap != nullptr ? std::move(pixelMap) : nullptr;
@@ -905,17 +904,18 @@ void NapiWallpaperAbility::SetAllWallpapers(std::shared_ptr<SetContextInfo> cont
         napi_is_array(env, argv[0], &isArray);
         if (!NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_object)
             || !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_number)
-            || !isArray) {
-            HILOG_ERROR("Input argc: %{public}zu", argc);
+            || !NapiWallpaperAbility::IsValidArgRange(env, argv[1]) || !isArray) {
             context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE)
                 + "The first parameter type must be Array<WallpaperInfo>.The second type must be WallpaperType.");
             return napi_invalid_arg;
         }
-        if (WallpaperJSUtil::Convert2WallpaperInfos(env, argv[0], context->wallpaperInfos) != napi_ok) {
+        if (!NapiWallpaperAbility::IsValidWallpaperInfos(env, argv[0])) {
             context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE)
-                + "The first parameter type must be Array<WallpaperInfo>.");
+                + "The first parameter type must be Array<WallpaperInfo>,"
+                "must include wallpaper with FoldState NORMAL and RotateState PORT.");
             return napi_invalid_arg;
         }
+        WallpaperJSUtil::Convert2WallpaperInfos(env, argv[0], context->wallpaperInfos);
         napi_get_value_int32(env, argv[1], &context->wallpaperType);
         HILOG_DEBUG("Input wallpaperType: %{public}d", context->wallpaperType);
         return napi_ok;
@@ -1024,6 +1024,20 @@ bool NapiWallpaperAbility::IsValidArgRange(napi_env env, napi_value argValue)
     int wallpaperType;
     napi_get_value_int32(env, argValue, &wallpaperType);
     return (wallpaperType != WALLPAPER_LOCKSCREEN && wallpaperType != WALLPAPER_SYSTEM) ? false : true;
+}
+
+bool NapiWallpaperAbility::IsValidWallpaperInfos(napi_env env, napi_value argValue)
+{
+    std::vector<WallpaperInfo> wallpaperInfos;
+    if (WallpaperJSUtil::Convert2WallpaperInfos(env, argValue, wallpaperInfos) != napi_ok) {
+        return false;
+    }
+    for (const auto &wallpaperInfo : wallpaperInfos) {
+        if (wallpaperInfo.foldState == FoldState::NORMAL && wallpaperInfo.rotateState == RotateState::PORT) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool NapiWallpaperAbility::IsValidFoldStateRange(napi_env env, napi_value argValue)
