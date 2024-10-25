@@ -183,6 +183,7 @@ public:
     static bool IsValidArgRange(napi_env env, napi_value argValue);
     static bool IsValidFoldStateRange(napi_env env, napi_value argValue);
     static bool IsValidRotateStateRange(napi_env env, napi_value argValue);
+    static bool IsValidWallpaperInfos(napi_env env, napi_value argValue);
     static bool CheckValidArgWallpaperType(
         napi_env env, size_t argc, napi_value argValue, std::shared_ptr<Call::Context> ctx);
     static void GetColorsInner(std::shared_ptr<GetContextInfo> context, const ApiInfo &apiInfo);

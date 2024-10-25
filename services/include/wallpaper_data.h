@@ -46,13 +46,6 @@ struct WallpaperData {
     WallpaperData(int32_t userId, std::string fileName);
     WallpaperData();
 };
-enum RotateState { PORT, LAND };
-enum FoldState { NORMAL, UNFOLD_1, UNFOLD_2 };
-struct WallpaperInfo {
-    FoldState foldState;
-    RotateState rotateState;
-    std::string source;
-};
 } // namespace WallpaperMgrService
 } // namespace OHOS
 #endif // SERVICES_INCLUDE_WALLPAPER_DATA_H

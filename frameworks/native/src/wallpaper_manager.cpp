@@ -52,6 +52,7 @@ constexpr int32_t MAX_TIME = 5000;
 constexpr int32_t MAX_VIDEO_SIZE = 104857600;
 constexpr int32_t MAX_RETRY_TIMES = 10;
 constexpr int32_t TIME_INTERVAL = 500000;
+constexpr mode_t MODE = 0660;
 
 using namespace OHOS::Media;
 
@@ -204,7 +205,7 @@ ErrorCode WallpaperManager::SetWallpaper(std::string uri, int32_t wallpaperType,
     std::string fileRealPath;
     if (!FileDeal::GetRealPath(uri, fileRealPath)) {
         HILOG_ERROR("get real path file failed, len = %{public}zu.", uri.size());
-        return E_FILE_ERROR;
+        return E_PARAMETERS_INVALID;
     }
 
     long length = 0;
@@ -214,7 +215,7 @@ ErrorCode WallpaperManager::SetWallpaper(std::string uri, int32_t wallpaperType,
         return wallpaperErrorCode;
     }
 
-    int32_t fd = open(fileRealPath.c_str(), O_RDONLY, 0660);
+    int32_t fd = open(fileRealPath.c_str(), O_RDONLY, MODE);
     if (fd < 0) {
         HILOG_ERROR("open file failed, errno %{public}d!", errno);
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
@@ -265,7 +266,7 @@ ErrorCode WallpaperManager::SetVideo(const std::string &uri, const int32_t wallp
     std::string fileRealPath;
     if (!FileDeal::GetRealPath(uri, fileRealPath)) {
         HILOG_ERROR("Get real path failed, uri: %{public}s!", uri.c_str());
-        return E_FILE_ERROR;
+        return E_PARAMETERS_INVALID;
     }
 
     long length = 0;
@@ -274,7 +275,7 @@ ErrorCode WallpaperManager::SetVideo(const std::string &uri, const int32_t wallp
         HILOG_ERROR("Check wallpaper format failed!");
         return wallpaperErrorCode;
     }
-    int32_t fd = open(fileRealPath.c_str(), O_RDONLY, 0660);
+    int32_t fd = open(fileRealPath.c_str(), O_RDONLY, MODE);
     if (fd < 0) {
         HILOG_ERROR("Open file failed, errno %{public}d!", errno);
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
@@ -297,7 +298,7 @@ ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int
     std::string fileRealPath;
     if (!FileDeal::GetRealPath(uri, fileRealPath)) {
         HILOG_ERROR("Get real path failed, uri: %{public}s!", uri.c_str());
-        return E_FILE_ERROR;
+        return E_PARAMETERS_INVALID;
     }
     if (!FileDeal::IsZipFile(uri)) {
         return E_FILE_ERROR;
@@ -308,7 +309,7 @@ ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int
         HILOG_ERROR("Check wallpaper format failed!");
         return wallpaperErrorCode;
     }
-    int32_t fd = open(fileRealPath.c_str(), O_RDONLY, 0660);
+    int32_t fd = open(fileRealPath.c_str(), O_RDONLY, MODE);
     if (fd < 0) {
         HILOG_ERROR("Open file failed, errno %{public}d!", errno);
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
@@ -351,13 +352,6 @@ ErrorCode WallpaperManager::GetPixelMap(
         return wallpaperErrorCode;
     }
     return wallpaperErrorCode;
-}
-
-// mock
-ErrorCode WallpaperManager::GetCorrespondWallpaper(int32_t wallpaperType, int32_t foldState, int32_t rotateState,
-    const ApiInfo &apiInfo, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
-{
-    return E_OK;
 }
 
 ErrorCode WallpaperManager::CreatePixelMapByFd(
@@ -689,10 +683,95 @@ ErrorCode WallpaperManager::CheckWallpaperFormat(const std::string &realPath, bo
     return E_OK;
 }
 
-ErrorCode WallpaperManager::SetAllWallpapers(const std::vector<WallpaperInfo> &wallpaperInfos,
-    std::int32_t wallpaperType)
+ErrorCode WallpaperManager::SetAllWallpapers(std::vector<WallpaperInfo> allWallpaperInfos, int32_t wallpaperType)
 {
-    return E_OK;
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
+        HILOG_ERROR("Get proxy failed!");
+        return E_DEAL_FAILED;
+    }
+    WallpaperPictureInfo wallpaperPictureInfo;
+    std::vector<WallpaperPictureInfo> WallpaperPictureInfos;
+    ErrorCode wallpaperCode;
+    for (const auto &wallpaperInfo : allWallpaperInfos) {
+        std::string fileRealPath;
+        if (!FileDeal::GetRealPath(wallpaperInfo.source, fileRealPath)) {
+            HILOG_ERROR("get real path file failed, len = %{public}zu.", wallpaperInfo.source.size());
+            return E_PARAMETERS_INVALID;
+        }
+        wallpaperCode = GetFdByPath(wallpaperInfo, wallpaperPictureInfo, fileRealPath);
+        if (wallpaperCode != E_OK) {
+            CloseWallpaperInfoFd(WallpaperPictureInfos);
+            HILOG_ERROR("PathConvertFd failed");
+            return E_FILE_ERROR;
+        }
+        WallpaperPictureInfos.push_back(wallpaperPictureInfo);
+    }
+
+    StartAsyncTrace(HITRACE_TAG_MISC, "SetAllWallpapers", static_cast<int32_t>(TraceTaskId::SET_ALL_WALLPAPERS));
+    ErrorCode wallpaperErrorCode = wallpaperServerProxy->SetAllWallpapers(WallpaperPictureInfos, wallpaperType);
+    if (wallpaperErrorCode == E_OK) {
+        CloseWallpaperFd(wallpaperType);
+    }
+    CloseWallpaperInfoFd(WallpaperPictureInfos);
+    FinishAsyncTrace(HITRACE_TAG_MISC, "SetAllWallpapers", static_cast<int32_t>(TraceTaskId::SET_ALL_WALLPAPERS));
+    return wallpaperErrorCode;
+}
+
+ErrorCode WallpaperManager::GetFdByPath(
+    const WallpaperInfo &wallpaperInfo, WallpaperPictureInfo &wallpaperPictureInfo, std::string fileRealPath)
+{
+    wallpaperPictureInfo.foldState = wallpaperInfo.foldState;
+    wallpaperPictureInfo.rotateState = wallpaperInfo.rotateState;
+    wallpaperPictureInfo.fd = open(fileRealPath.c_str(), O_RDONLY, MODE);
+    if (wallpaperPictureInfo.fd < 0) {
+        HILOG_ERROR("open file failed, errno %{public}d!", errno);
+        ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
+        return E_FILE_ERROR;
+    }
+    ErrorCode wallpaperErrorCode = CheckWallpaperFormat(fileRealPath, false, wallpaperPictureInfo.length);
+    if (wallpaperErrorCode != E_OK) {
+        HILOG_ERROR("Check wallpaper format failed!");
+        return wallpaperErrorCode;
+    }
+    return wallpaperErrorCode;
+}
+
+ErrorCode WallpaperManager::GetCorrespondWallpaper(
+    int32_t wallpaperType, int32_t foldState, int32_t rotateState, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
+{
+    HILOG_INFO("GetCorrespondWallpaper start.");
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
+        HILOG_ERROR("Get proxy failed!");
+        return E_SA_DIED;
+    }
+    IWallpaperService::FdInfo fdInfo;
+    ErrorCode wallpaperErrorCode = E_UNKNOWN;
+    wallpaperErrorCode = wallpaperServerProxy->GetCorrespondWallpaper(wallpaperType, foldState, rotateState, fdInfo);
+    if (wallpaperErrorCode != E_OK) {
+        return wallpaperErrorCode;
+    }
+    // current wallpaper is live video, not image
+    if (fdInfo.size == 0 && fdInfo.fd == -1) { // 0: empty file size; -1: invalid file description
+        pixelMap = nullptr;
+        return E_OK;
+    }
+    wallpaperErrorCode = CreatePixelMapByFd(fdInfo.fd, fdInfo.size, pixelMap);
+    if (wallpaperErrorCode != E_OK) {
+        pixelMap = nullptr;
+        return wallpaperErrorCode;
+    }
+    return wallpaperErrorCode;
+}
+
+void WallpaperManager::CloseWallpaperInfoFd(std::vector<WallpaperPictureInfo> wallpaperPictureInfos)
+{
+    for (auto &wallpaperInfo : wallpaperPictureInfos) {
+        if (wallpaperInfo.fd >= 0) {
+            close(wallpaperInfo.fd);
+        }
+    }
 }
 
 } // namespace WallpaperMgrService

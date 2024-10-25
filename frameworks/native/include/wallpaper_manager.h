@@ -69,10 +69,6 @@ public:
     ErrorCode GetPixelMap(
         int32_t wallpaperType, const ApiInfo &apiInfo, std::shared_ptr<OHOS::Media::PixelMap> &PixelMap);
 
-    // mock
-    ErrorCode GetCorrespondWallpaper(int32_t wallpaperType, int32_t foldState, int32_t rotateState,
-        const ApiInfo &apiInfo, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap);
-
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
@@ -161,7 +157,10 @@ public:
      * @permission ohos.permission.SET_WALLPAPER
      */
     ErrorCode SendEvent(const std::string &eventType);
+    ErrorCode SetAllWallpapers(std::vector<WallpaperInfo> wallpaperInfo, int32_t wallpaperType);
     bool RegisterWallpaperCallback(JScallback callback);
+    ErrorCode GetCorrespondWallpaper(int32_t wallpaperType, int32_t foldState, int32_t rotateState,
+        std::shared_ptr<OHOS::Media::PixelMap> &pixelMap);
 
     JScallback GetCallback();
 
@@ -173,12 +172,10 @@ public:
 
     bool RegisterWallpaperListener();
 
-    ErrorCode SetAllWallpapers(const std::vector<WallpaperInfo> &wallpaperInfos, std::int32_t wallpaperType);
-
 private:
     class DeathRecipient final : public IRemoteObject::DeathRecipient {
     public:
-        explicit DeathRecipient() ;
+        explicit DeathRecipient();
         ~DeathRecipient() override;
         DISALLOW_COPY_AND_MOVE(DeathRecipient);
 
@@ -193,6 +190,9 @@ private:
     bool OpenFile(const std::string &fileName, int32_t &fd, int64_t &fileSize);
     ErrorCode CheckWallpaperFormat(const std::string &realPath, bool isLive, long &length);
     ErrorCode CreatePixelMapByFd(int32_t fd, int32_t size, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap);
+    ErrorCode GetFdByPath(
+        const WallpaperInfo &wallpaperInfo, WallpaperPictureInfo &wallpaperPictureInfo, std::string fileRealPath);
+    void CloseWallpaperInfoFd(std::vector<WallpaperPictureInfo> wallpaperPictureInfos);
     sptr<IWallpaperService> wallpaperProxy_{};
     sptr<IRemoteObject::DeathRecipient> deathRecipient_{};
     std::mutex wallpaperFdLock_;

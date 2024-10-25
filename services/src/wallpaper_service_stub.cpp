@@ -73,6 +73,10 @@ WallpaperServiceStub::WallpaperServiceStub(bool serialInvokeFlag) : IRemoteStub(
             [this](MessageParcel &data, MessageParcel &reply) { return OnSetWallpaperByPixelMap(data, reply); } },
         { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_WALLPAPER_PIXELMAP_V9),
             [this](MessageParcel &data, MessageParcel &reply) { return OnSetWallpaperV9ByPixelMap(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_ALL_WALLPAPERS),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnSetAllWallpapers(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::GET_CORRESPOND_WALLPAPER),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnGetCorrespondWallpaper(data, reply); } },
     };
 }
 
@@ -472,5 +476,87 @@ std::shared_ptr<OHOS::Media::PixelMap> WallpaperServiceStub::VectorToPixelMap(st
     }
     return std::shared_ptr<PixelMap>(PixelMap::DecodeTlv(value));
 }
+
+int32_t WallpaperServiceStub::OnSetAllWallpapers(MessageParcel &data, MessageParcel &reply)
+{
+    HILOG_DEBUG("WallpaperServiceStub::OnSetAllWallpapers start.");
+    int32_t vectorSize = data.ReadInt32();
+    std::vector<WallpaperPictureInfo> wallpaperPictureInfos;
+    for (int32_t i = 0; i < vectorSize; i++) {
+        WallpaperPictureInfo wallpaperInfo;
+        int32_t foldStateVale = data.ReadInt32();
+        int32_t rotateStateVale = data.ReadInt32();
+        if (foldStateVale == static_cast<int32_t>(FoldState::NORMAL)) {
+            wallpaperInfo.foldState = NORMAL;
+        } else if (foldStateVale == static_cast<int32_t>(FoldState::UNFOLD_1)) {
+            wallpaperInfo.foldState = UNFOLD_1;
+        } else if (foldStateVale == static_cast<int32_t>(FoldState::UNFOLD_2)) {
+            wallpaperInfo.foldState = UNFOLD_2;
+        }
+        if (rotateStateVale == static_cast<int32_t>(RotateState::PORT)) {
+            wallpaperInfo.rotateState = PORT;
+        } else if (rotateStateVale == static_cast<int32_t>(RotateState::LAND)) {
+            wallpaperInfo.rotateState = LAND;
+        }
+        wallpaperInfo.fd = data.ReadFileDescriptor();
+        if (wallpaperInfo.fd < 0) {
+            CloseWallpaperInfoFd(wallpaperPictureInfos);
+            HILOG_ERROR("ReadFileDescriptor fail. fd[%{public}d]", wallpaperInfo.fd);
+            return IPC_STUB_INVALID_DATA_ERR;
+        }
+        wallpaperInfo.length = data.ReadInt32();
+        wallpaperPictureInfos.push_back(wallpaperInfo);
+    }
+    int32_t wallpaperType = data.ReadInt32();
+    ErrorCode wallpaperErrorCode = E_UNKNOWN;
+    wallpaperErrorCode = SetAllWallpapers(wallpaperPictureInfos, wallpaperType);
+    CloseWallpaperInfoFd(wallpaperPictureInfos);
+    if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
+        HILOG_ERROR("WriteInt32 fail!");
+        return IPC_STUB_WRITE_PARCEL_ERR;
+    }
+    return ERR_NONE;
+}
+
+int32_t WallpaperServiceStub::OnGetCorrespondWallpaper(MessageParcel &data, MessageParcel &reply)
+{
+    HILOG_DEBUG("WallpaperServiceStub::GetPixelMap start.");
+    int32_t wallpaperType = data.ReadInt32();
+    int32_t foldState = data.ReadInt32();
+    int32_t rotateState = data.ReadInt32();
+    IWallpaperService::FdInfo fdInfo;
+    ErrorCode wallpaperErrorCode = E_UNKNOWN;
+    wallpaperErrorCode = GetCorrespondWallpaper(wallpaperType, foldState, rotateState, fdInfo);
+    HILOG_INFO(" OnGetCorrespondWallpaper wallpaperErrorCode = %{public}d", wallpaperErrorCode);
+    if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
+        HILOG_ERROR("WriteInt32 fail!");
+        close(fdInfo.fd);
+        return IPC_STUB_WRITE_PARCEL_ERR;
+    }
+    if (wallpaperErrorCode == E_OK) {
+        if (!reply.WriteInt32(fdInfo.size)) {
+            HILOG_ERROR("WriteInt32 fail!");
+            close(fdInfo.fd);
+            return IPC_STUB_WRITE_PARCEL_ERR;
+        }
+        if (!reply.WriteFileDescriptor(fdInfo.fd)) {
+            HILOG_ERROR("WriteFileDescriptor fail!");
+            close(fdInfo.fd);
+            return IPC_STUB_WRITE_PARCEL_ERR;
+        }
+    }
+    close(fdInfo.fd);
+    return ERR_NONE;
+}
+
+void WallpaperServiceStub::CloseWallpaperInfoFd(std::vector<WallpaperPictureInfo> wallpaperPictureInfos)
+{
+    for (auto &wallpaperInfo : wallpaperPictureInfos) {
+        if (wallpaperInfo.fd >= 0) {
+            close(wallpaperInfo.fd);
+        }
+    }
+}
+
 } // namespace WallpaperMgrService
 } // namespace OHOS

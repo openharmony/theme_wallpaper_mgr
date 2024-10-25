@@ -18,6 +18,7 @@
 #include <string>
 
 #include "errors.h"
+#include "wallpaper_manager_common_info.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -62,6 +63,15 @@ enum ErrorCode : int32_t {
     E_UNKNOWN,
 };
 using JsCallbackOffset = bool (*)(int32_t, int32_t);
+
+struct WallpaperPictureInfo {
+    FoldState foldState;
+    RotateState rotateState;
+    int32_t fd;
+    long length;
+    std::string tempPath;
+};
+
 } // namespace WallpaperMgrService
 } // namespace OHOS
 

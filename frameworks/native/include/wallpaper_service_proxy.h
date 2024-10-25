@@ -55,6 +55,9 @@ public:
     ErrorCode GetPixelMapV9(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo) override;
     ErrorCode GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
     ErrorCode ResetWallpaperV9(int32_t wallpaperType) override;
+    ErrorCode SetAllWallpapers(std::vector<WallpaperPictureInfo> allWallpaperInfo, int32_t wallpaperType) override;
+    ErrorCode GetCorrespondWallpaper(int32_t wallpaperType, int32_t foldState, int32_t rotateState,
+        IWallpaperService::FdInfo &fdInfo) override;
 
 private:
     ErrorCode SetWallpaperInner(
@@ -66,6 +69,10 @@ private:
     ErrorCode GetColorsInner(
         int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code, std::vector<uint64_t> &colors);
     ErrorCode ResetWallpaperInner(int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code);
+    ErrorCode SetAllWallpapersInner(std::vector<WallpaperPictureInfo> allWallpaperInfo, int32_t wallpaperType,
+        WallpaperServiceIpcInterfaceCode code);
+    ErrorCode GetCorrespondWallpaperInner(int32_t wallpaperType, int32_t foldState, int32_t rotateState,
+        WallpaperServiceIpcInterfaceCode code, IWallpaperService::FdInfo &fdInfo);
     bool StartSocket(std::string uri, std::string name);
     std::vector<std::uint8_t> PixelMapToVector(std::shared_ptr<OHOS::Media::PixelMap> pixelMap);
     static inline BrokerDelegator<WallpaperServiceProxy> delegator_;

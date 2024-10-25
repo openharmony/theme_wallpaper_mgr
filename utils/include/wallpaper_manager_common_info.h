@@ -46,12 +46,12 @@ enum WallpaperResourceType {
 enum FoldState {
     NORMAL,
     UNFOLD_1,
-    UNFOLD_2,
+    UNFOLD_2
 };
 
 enum RotateState {
     PORT,
-    LAND,
+    LAND
 };
 
 struct WallpaperInfo {
