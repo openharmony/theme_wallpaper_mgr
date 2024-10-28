@@ -78,7 +78,7 @@ void NapiWallpaperAbility::GetColorsInner(std::shared_ptr<GetContextInfo> contex
     };
     auto exec = [context, apiInfo](Call::Context *ctx) {
         HILOG_DEBUG("exec GetColors.");
-        ErrorCode wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetColors(
+        ErrorCode wallpaperErrorCode = WallpaperMgrService::WallpaperManager::GetInstance().GetColors(
             context->wallpaperType, apiInfo, context->colors);
         if (wallpaperErrorCode == E_OK && !context->colors.empty()) {
             context->status = napi_ok;
@@ -123,7 +123,7 @@ void NapiWallpaperAbility::GetIdInner(std::shared_ptr<GetContextInfo> context)
     auto exec = [context](Call::Context *ctx) {
         HILOG_DEBUG("exec GetWallpaperId.");
         context->wallpaperId =
-            WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperId(context->wallpaperType);
+            WallpaperMgrService::WallpaperManager::GetInstance().GetWallpaperId(context->wallpaperType);
         HILOG_DEBUG("exec GetWallpaperId wallpaperId : %{public}d", context->wallpaperId);
         context->status = napi_ok;
     };
@@ -162,7 +162,7 @@ void NapiWallpaperAbility::GetFileInner(std::shared_ptr<GetFileContextInfo> cont
     };
     auto exec = [context, apiInfo](Call::Context *ctx) {
         HILOG_DEBUG("exec GetFile.");
-        ErrorCode wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(
+        ErrorCode wallpaperErrorCode = WallpaperMgrService::WallpaperManager::GetInstance().GetFile(
             context->wallpaperType, context->wallpaperFd);
         if (wallpaperErrorCode == E_OK && context->wallpaperFd >= 0) {
             context->status = napi_ok;
@@ -213,7 +213,7 @@ void NapiWallpaperAbility::GetMinHeightInner(std::shared_ptr<GetMinContextInfo> 
     };
     auto exec = [context, apiInfo](Call::Context *ctx) {
         HILOG_DEBUG("exec GetWallpaperMinHeight.");
-        ErrorCode wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperMinHeight(
+        ErrorCode wallpaperErrorCode = WallpaperMgrService::WallpaperManager::GetInstance().GetWallpaperMinHeight(
             apiInfo, context->minHeight);
         if (wallpaperErrorCode == E_OK && context->minHeight >= 0) {
             context->status = napi_ok;
@@ -261,7 +261,7 @@ void NapiWallpaperAbility::GetMinWidthInner(std::shared_ptr<GetMinContextInfo> c
     auto exec = [context, apiInfo](Call::Context *ctx) {
         HILOG_DEBUG("exec GetWallpaperMinWidth.");
         ErrorCode wallpaperErrorCode =
-            WallpaperMgrService::WallpaperManagerkits::GetInstance().GetWallpaperMinWidth(apiInfo, context->minWidth);
+            WallpaperMgrService::WallpaperManager::GetInstance().GetWallpaperMinWidth(apiInfo, context->minWidth);
         if (wallpaperErrorCode == E_OK && context->minWidth >= 0) {
             context->status = napi_ok;
         }
@@ -295,7 +295,7 @@ void NapiWallpaperAbility::IsChangeAllowedInner(std::shared_ptr<PermissionContex
     };
     auto exec = [context](Call::Context *ctx) {
         HILOG_DEBUG("exec IsChangePermitted.");
-        context->isChangePermitted = WallpaperMgrService::WallpaperManagerkits::GetInstance().IsChangePermitted();
+        context->isChangePermitted = WallpaperMgrService::WallpaperManager::GetInstance().IsChangePermitted();
         HILOG_DEBUG("exec IsChangePermitted : %{public}d", context->isChangePermitted);
         context->status = napi_ok;
     };
@@ -322,7 +322,7 @@ void NapiWallpaperAbility::IsUserChangeAllowedInner(std::shared_ptr<PermissionCo
     };
     auto exec = [context](Call::Context *ctx) {
         HILOG_DEBUG("exec IsOperationAllowed.");
-        context->isOperationAllowed = WallpaperMgrService::WallpaperManagerkits::GetInstance().IsOperationAllowed();
+        context->isOperationAllowed = WallpaperMgrService::WallpaperManager::GetInstance().IsOperationAllowed();
         HILOG_DEBUG("exec IsOperationAllowed[%{public}d]", context->isOperationAllowed);
         context->status = napi_ok;
     };
@@ -373,7 +373,7 @@ void NapiWallpaperAbility::RestoreInner(std::shared_ptr<SetContextInfo> context,
     auto exec = [context, apiInfo](Call::Context *ctx) {
         HILOG_DEBUG("exec ResetWallpaper.");
         ErrorCode wallpaperErrorCode =
-            WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(context->wallpaperType, apiInfo);
+            WallpaperMgrService::WallpaperManager::GetInstance().ResetWallpaper(context->wallpaperType, apiInfo);
         HILOG_DEBUG("exec ResetWallpaper[%{public}d]", wallpaperErrorCode);
         if (wallpaperErrorCode == E_OK) {
             context->status = napi_ok;
@@ -453,7 +453,7 @@ void NapiWallpaperAbility::SendEventInner(std::shared_ptr<GetContextInfo> contex
 
     auto exec = [context](Call::Context *ctx) {
         ErrorCode wallpaperErrorCode =
-            WallpaperMgrService::WallpaperManagerkits::GetInstance().SendEvent(context->eventType);
+            WallpaperMgrService::WallpaperManager::GetInstance().SendEvent(context->eventType);
         if (wallpaperErrorCode == E_OK) {
             context->status = napi_ok;
             context->result = true;
@@ -509,7 +509,7 @@ void NapiWallpaperAbility::SetVideoInner(std::shared_ptr<SetContextInfo> context
 
     auto exec = [context](Call::Context *ctx) {
         ErrorCode wallpaperErrorCode =
-            WallpaperMgrService::WallpaperManagerkits::GetInstance().SetVideo(context->uri, context->wallpaperType);
+            WallpaperMgrService::WallpaperManager::GetInstance().SetVideo(context->uri, context->wallpaperType);
         if (wallpaperErrorCode == E_OK) {
             context->status = napi_ok;
         } else {
@@ -578,12 +578,12 @@ void NapiWallpaperAbility::SetImageExec(std::shared_ptr<SetContextInfo> context,
         if (context->uri.length() == 0) {
             HILOG_DEBUG("exec setWallpaper by pixelMap.");
             if (!context->isPixelEmp) {
-                wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(
+                wallpaperErrorCode = WallpaperMgrService::WallpaperManager::GetInstance().SetWallpaper(
                     context->pixelMap, context->wallpaperType, apiInfo);
             }
         } else {
             HILOG_DEBUG("exec setWallpaper by uri.");
-            wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(
+            wallpaperErrorCode = WallpaperMgrService::WallpaperManager::GetInstance().SetWallpaper(
                 context->uri, context->wallpaperType, apiInfo);
         }
         if (wallpaperErrorCode == E_OK) {
@@ -651,7 +651,7 @@ void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context
     auto exec = [context, apiInfo](Call::Context *ctx) {
         HILOG_DEBUG("exec GetImageInner.");
         std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
-        ErrorCode wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(
+        ErrorCode wallpaperErrorCode = WallpaperMgrService::WallpaperManager::GetInstance().GetPixelMap(
             context->wallpaperType, apiInfo, pixelMap);
         HILOG_DEBUG("exec wallpaperErrorCode[%{public}d]", wallpaperErrorCode);
         if (wallpaperErrorCode == E_OK) {
@@ -707,9 +707,9 @@ napi_value NAPI_On(napi_env env, napi_callback_info info)
     }
     std::shared_ptr<WallpaperMgrService::WallpaperEventListener> listener =
         std::make_shared<NapiWallpaperAbility>(env, argv[1]);
-    ErrorCode errorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().On(type, listener);
+    ErrorCode errorCode = WallpaperMgrService::WallpaperManager::GetInstance().On(type, listener);
     if (errorCode != E_OK) {
-        HILOG_ERROR("WallpaperMgrService::WallpaperManagerkits::GetInstance().On failed!");
+        HILOG_ERROR("WallpaperMgrService::WallpaperManager::GetInstance().On failed!");
         if (type == COLOR_CHANGE_EVENT) {
             return nullptr;
         }
@@ -759,9 +759,9 @@ napi_value NAPI_Off(napi_env env, napi_callback_info info)
             return nullptr;
         }
     }
-    ErrorCode errorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().Off(type, listener);
+    ErrorCode errorCode = WallpaperMgrService::WallpaperManager::GetInstance().Off(type, listener);
     if (errorCode != E_OK) {
-        HILOG_ERROR("WallpaperMgrService::WallpaperManagerkits::GetInstance().Off failed!");
+        HILOG_ERROR("WallpaperMgrService::WallpaperManager::GetInstance().Off failed!");
         if (type == COLOR_CHANGE_EVENT) {
             return nullptr;
         }
@@ -808,7 +808,7 @@ void NapiWallpaperAbility::SetCustomWallpaper(std::shared_ptr<SetContextInfo> co
     };
 
     auto exec = [context](Call::Context *ctx) {
-        ErrorCode wallpaperErrorCode = WallpaperMgrService::WallpaperManagerkits::GetInstance().SetCustomWallpaper(
+        ErrorCode wallpaperErrorCode = WallpaperMgrService::WallpaperManager::GetInstance().SetCustomWallpaper(
             context->uri, context->wallpaperType);
         if (wallpaperErrorCode == E_OK) {
             context->status = napi_ok;
