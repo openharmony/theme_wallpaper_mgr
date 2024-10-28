@@ -22,7 +22,6 @@
 #include "image_packer.h"
 #include "pixel_map.h"
 #include "wallpaper_manager.h"
-#include "wallpaper_manager_kits.h"
 
 constexpr int32_t LOCKSCREEN = 1;
 constexpr uint8_t HUNDRED = 100;
@@ -114,7 +113,7 @@ HWTEST_F(WallpaperPermissionTest, ResetPermission001, TestSize.Level1)
     HILOG_INFO("ResetPermission001 begin");
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
+        OHOS::WallpaperMgrService::WallpaperManager::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_NO_PERMISSION) << "throw permission error successfully";
 }
 /*********************   ResetWallpaper   *********************/
@@ -131,7 +130,7 @@ HWTEST_F(WallpaperPermissionTest, GetFilePermission001, TestSize.Level0)
     HILOG_INFO("GetFilePermission001 begin");
     int32_t wallpaperFd = 0;
     ErrorCode wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetFile(LOCKSCREEN, wallpaperFd);
+        OHOS::WallpaperMgrService::WallpaperManager::GetInstance().GetFile(LOCKSCREEN, wallpaperFd);
     EXPECT_EQ(wallpaperErrorCode, E_NO_PERMISSION) << "throw permission error successfully";
 }
 /*********************   GetFile   *********************/
@@ -149,7 +148,7 @@ HWTEST_F(WallpaperPermissionTest, GetPixelMapPermission001, TestSize.Level0)
     ApiInfo apiInfo{ false, false };
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     ErrorCode wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().GetPixelMap(LOCKSCREEN, apiInfo, pixelMap);
+        OHOS::WallpaperMgrService::WallpaperManager::GetInstance().GetPixelMap(LOCKSCREEN, apiInfo, pixelMap);
     EXPECT_EQ(wallpaperErrorCode, E_NOT_SYSTEM_APP) << "throw permission error successfully";
 }
 /*********************   GetPixelMap   *********************/
@@ -167,7 +166,7 @@ HWTEST_F(WallpaperPermissionTest, SetWallpaperByMapPermission001, TestSize.Level
     std::shared_ptr<PixelMap> pixelMap = WallpaperPermissionTest::CreateTempPixelMap();
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(pixelMap, 2, apiInfo);
+        OHOS::WallpaperMgrService::WallpaperManager::GetInstance().SetWallpaper(pixelMap, 2, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_NO_PERMISSION) << "throw permission error successfully";
 }
 /*********************   SetWallpaperByMap   *********************/
@@ -184,7 +183,7 @@ HWTEST_F(WallpaperPermissionTest, SetWallpaperByUriPermission001, TestSize.Level
     HILOG_INFO("SetWallpaperByUriPermission001  begin");
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManagerkits::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
+        OHOS::WallpaperMgrService::WallpaperManager::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_NO_PERMISSION) << "throw permission error successfully";
     HILOG_INFO("SetWallpaperByUriPermission001  end");
 }

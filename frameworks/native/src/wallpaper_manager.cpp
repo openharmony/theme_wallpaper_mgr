@@ -66,7 +66,18 @@ WallpaperManager::~WallpaperManager()
         ++iter;
     }
 }
+WallpaperManager &WallpaperManager::GetInstance()
+{
+    static WallpaperManager wallpaperManager;
+    return wallpaperManager;
+}
 
+WallpaperManager::DeathRecipient::DeathRecipient()
+{
+}
+WallpaperManager::DeathRecipient::~DeathRecipient()
+{
+}
 void WallpaperManager::ResetService(const wptr<IRemoteObject> &remote)
 {
     HILOG_INFO("Remote is dead, reset service instance.");
@@ -115,12 +126,12 @@ sptr<IWallpaperService> WallpaperManager::GetService()
 
 void WallpaperManager::DeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &remote)
 {
-    DelayedRefSingleton<WallpaperManager>::GetInstance().ResetService(remote);
+    WallpaperManager::GetInstance().ResetService(remote);
     int32_t times = 0;
     bool result = false;
     do {
         times++;
-        result = DelayedRefSingleton<WallpaperManager>::GetInstance().RegisterWallpaperListener();
+        result = WallpaperManager::GetInstance().RegisterWallpaperListener();
         if (result != true) {
             usleep(TIME_INTERVAL);
         }
@@ -362,7 +373,7 @@ ErrorCode WallpaperManager::CreatePixelMapByFd(
     opts.formatHint = "image/jpeg";
     std::unique_ptr<OHOS::Media::ImageSource> imageSource =
         OHOS::Media::ImageSource::CreateImageSource(buffer, size, opts, errorCode);
-    if (errorCode != 0) {
+    if (errorCode != 0 || imageSource == nullptr) {
         HILOG_ERROR("ImageSource::CreateImageSource failed, errcode= %{public}d!", errorCode);
         delete[] buffer;
         close(fd);

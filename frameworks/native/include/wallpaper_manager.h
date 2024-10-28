@@ -28,17 +28,18 @@
 #include "ipc_skeleton.h"
 #include "singleton.h"
 #include "wallpaper_common.h"
-#include "wallpaper_manager_kits.h"
 
 using JScallback = bool (*)(int32_t);
 namespace OHOS {
 using namespace MiscServices;
 namespace WallpaperMgrService {
-class WallpaperManager final : public WallpaperManagerkits, public DelayedRefSingleton<WallpaperManager> {
-    DECLARE_DELAYED_REF_SINGLETON(WallpaperManager);
+class WallpaperManager {
+    WallpaperManager();
+    ~WallpaperManager();
 
 public:
     DISALLOW_COPY_AND_MOVE(WallpaperManager);
+    static WallpaperManager &GetInstance();
 
     /**
     * Wallpaper set.
@@ -46,7 +47,7 @@ public:
     * values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
     * @return  ErrorCode
     */
-    ErrorCode SetWallpaper(std::string uri, int32_t wallpaperType, const ApiInfo &apiInfo) final;
+    ErrorCode SetWallpaper(std::string uri, int32_t wallpaperType, const ApiInfo &apiInfo);
 
     /**
     * Wallpaper set.
@@ -55,7 +56,7 @@ public:
     * @return  ErrorCode
     */
     ErrorCode SetWallpaper(
-        std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType, const ApiInfo &apiInfo) final;
+        std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType, const ApiInfo &apiInfo);
 
     /**
         *Obtains the default pixel map of a wallpaper of the specified type.
@@ -66,54 +67,54 @@ public:
         * @systemapi Hide this for inner system use.
     */
     ErrorCode GetPixelMap(
-        int32_t wallpaperType, const ApiInfo &apiInfo, std::shared_ptr<OHOS::Media::PixelMap> &PixelMap) final;
+        int32_t wallpaperType, const ApiInfo &apiInfo, std::shared_ptr<OHOS::Media::PixelMap> &PixelMap);
 
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of array callback function
      */
-    ErrorCode GetColors(int32_t wallpaperType, const ApiInfo &apiInfo, std::vector<uint64_t> &colors) final;
+    ErrorCode GetColors(int32_t wallpaperType, const ApiInfo &apiInfo, std::vector<uint64_t> &colors);
 
     /**
      * Obtains the ID of the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @return number type of callback function
      */
-    int32_t GetWallpaperId(int32_t wallpaperType) final;
+    int32_t GetWallpaperId(int32_t wallpaperType);
 
-    ErrorCode GetFile(int32_t wallpaperType, int32_t &wallpaperFd) final;
+    ErrorCode GetFile(int32_t wallpaperType, int32_t &wallpaperFd);
 
     /**
      * Obtains the minimum height of the wallpaper.
      * @return number type of callback function
      */
-    ErrorCode GetWallpaperMinHeight(const ApiInfo &apiInfo, int32_t &minHeight) final;
+    ErrorCode GetWallpaperMinHeight(const ApiInfo &apiInfo, int32_t &minHeight);
 
     /**
      * Obtains the minimum width of the wallpaper.
      * @return number type of callback function
      */
-    ErrorCode GetWallpaperMinWidth(const ApiInfo &apiInfo, int32_t &minWidth) final;
+    ErrorCode GetWallpaperMinWidth(const ApiInfo &apiInfo, int32_t &minWidth);
 
     /**
      * Checks whether to allow the application to change the wallpaper for the current user.
      * @return boolean type of callback function
      */
-    bool IsChangePermitted() final;
+    bool IsChangePermitted();
 
     /**
      * Checks whether a user is allowed to set wallpapers.
      * @return boolean type of callback function
      */
-    bool IsOperationAllowed() final;
+    bool IsOperationAllowed();
 
     /**
      * Removes a wallpaper of the specified type and restores the default one.
      * @param wallpaperType  Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN
      * @permission ohos.permission.SET_WALLPAPER
      */
-    ErrorCode ResetWallpaper(std::int32_t wallpaperType, const ApiInfo &apiInfo) final;
+    ErrorCode ResetWallpaper(std::int32_t wallpaperType, const ApiInfo &apiInfo);
 
     /**
      * Registers a listener for wallpaper event to receive notifications about the changes.
@@ -121,7 +122,7 @@ public:
      * @param listener event listener
      * @return error code
      */
-    ErrorCode On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener) final;
+    ErrorCode On(const std::string &type, std::shared_ptr<WallpaperEventListener> listener);
 
     /**
      * Unregisters a listener for wallpaper event to receive notifications about the changes.
@@ -129,7 +130,7 @@ public:
      * @param listener event listener
      * @return error code
      */
-    ErrorCode Off(const std::string &type, std::shared_ptr<WallpaperEventListener> listener) final;
+    ErrorCode Off(const std::string &type, std::shared_ptr<WallpaperEventListener> listener);
 
     /**
      * Sets live wallpaper of the specified type based on the uri path of the MP4 file.
@@ -138,7 +139,7 @@ public:
      * @return ErrorCode
      * @permission ohos.permission.SET_WALLPAPER
      */
-    ErrorCode SetVideo(const std::string &uri, const int32_t wallpaperType) final;
+    ErrorCode SetVideo(const std::string &uri, const int32_t wallpaperType);
 
     /**
      * Sets custom wallpaper of the specified type based on the uri path.
@@ -147,7 +148,7 @@ public:
      * @return ErrorCode
      * @permission ohos.permission.SET_WALLPAPER
      */
-    ErrorCode SetCustomWallpaper(const std::string &uri, int32_t wallpaperType) final;
+    ErrorCode SetCustomWallpaper(const std::string &uri, int32_t wallpaperType);
 
     /**
      * The application sends the event to the wallpaper service.
@@ -155,12 +156,12 @@ public:
      * @return ErrorCode
      * @permission ohos.permission.SET_WALLPAPER
      */
-    ErrorCode SendEvent(const std::string &eventType) final;
-    bool RegisterWallpaperCallback(JScallback callback) final;
+    ErrorCode SendEvent(const std::string &eventType);
+    bool RegisterWallpaperCallback(JScallback callback);
 
-    JScallback GetCallback() final;
+    JScallback GetCallback();
 
-    void SetCallback(JScallback cb) final;
+    void SetCallback(JScallback cb);
 
     void ReporterFault(FaultType faultType, FaultCode faultCode);
 
@@ -171,11 +172,11 @@ public:
 private:
     class DeathRecipient final : public IRemoteObject::DeathRecipient {
     public:
-        DeathRecipient() = default;
-        ~DeathRecipient() final = default;
+        explicit DeathRecipient() ;
+        ~DeathRecipient() override;
         DISALLOW_COPY_AND_MOVE(DeathRecipient);
 
-        void OnRemoteDied(const wptr<IRemoteObject> &remote) final;
+        void OnRemoteDied(const wptr<IRemoteObject> &remote) override;
     };
 
     template<typename F, typename... Args> ErrCode CallService(F func, Args &&...args);

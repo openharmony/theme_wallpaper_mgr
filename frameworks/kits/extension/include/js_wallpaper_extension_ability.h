@@ -115,6 +115,7 @@ private:
     napi_value CallObjectMethod(const std::string &name, napi_value const *argv = nullptr, size_t argc = 0);
 
     void GetSrcPath(std::string &srcPath);
+    void InitMoudle(std::string srcPath);
 
     JsRuntime &jsRuntime_;
     std::unique_ptr<NativeReference> jsObj_;

@@ -183,16 +183,14 @@ private:
     sptr<IRemoteObject> extensionRemoteObject_;
     std::mutex remoteObjectMutex_;
 
-    std::string name_;
     std::mutex mtx_;
     uint64_t lockWallpaperColor_;
     uint64_t systemWallpaperColor_;
     std::map<std::string, WallpaperListenerMap> wallpaperEventMap_;
     std::mutex listenerMapMutex_;
-    int32_t pictureWidth_ = 0;
-    int32_t pictureHeight_ = 0;
-    std::string appBundleName_;
     std::int32_t currentUserId_;
+    std::string appBundleName_;
+    std::mutex wallpaperColorMtx_;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS
