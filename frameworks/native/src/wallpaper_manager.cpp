@@ -734,6 +734,19 @@ ErrorCode WallpaperManager::GetFdByPath(
         HILOG_ERROR("Check wallpaper format failed!");
         return wallpaperErrorCode;
     }
+    uint32_t errorCode = 0;
+    OHOS::Media::SourceOptions opts;
+    std::unique_ptr<OHOS::Media::ImageSource> imageSource =
+        OHOS::Media::ImageSource::CreateImageSource(fileRealPath, opts, errorCode);
+    if (errorCode != 0 || imageSource == nullptr) {
+        HILOG_ERROR("CreateImageSource failed!");
+        return E_PARAMETERS_INVALID;
+    }
+    ImageInfo imageInfo;
+    if (imageSource->GetImageInfo(imageInfo) != 0) {
+        HILOG_ERROR("GetImageInfo failed!");
+        return E_PARAMETERS_INVALID;
+    }
     return wallpaperErrorCode;
 }
 

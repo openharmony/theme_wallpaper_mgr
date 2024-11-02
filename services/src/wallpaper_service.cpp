@@ -1769,49 +1769,29 @@ ErrorCode WallpaperService::UpdateWallpaperData(
 ErrorCode WallpaperService::WriteFdToFile(WallpaperPictureInfo &wallpaperPictureInfo, std::string &path)
 {
     std::lock_guard<std::mutex> lock(mtx_);
-    mode_t mode = S_IRUSR | S_IWUSR;
-    int32_t fdw = open(path.c_str(), O_WRONLY | O_CREAT, mode);
-    if (fdw < 0) {
-        HILOG_ERROR("Open wallpaper tmpFullPath failed, errno %{public}d", errno);
-        return E_DEAL_FAILED;
+    char *wallpaperBuffer = new (std::nothrow) char[wallpaperPictureInfo.length]();
+    if (wallpaperBuffer == nullptr) {
+        HILOG_ERROR("create wallpaperBuffer failed!");
+        return E_NO_MEMORY;
     }
-    uint8_t *wallpaperBuffer = new uint8_t[wallpaperPictureInfo.length];
     if (read(wallpaperPictureInfo.fd, wallpaperBuffer, wallpaperPictureInfo.length) <= 0) {
         HILOG_ERROR("read fd failed!");
         delete[] wallpaperBuffer;
         return E_DEAL_FAILED;
     }
-    uint32_t errorCode = 0;
-    OHOS::Media::SourceOptions opts;
-    opts.formatHint = "image/jpeg";
-    std::unique_ptr<OHOS::Media::ImageSource> imageSource =
-        OHOS::Media::ImageSource::CreateImageSource(wallpaperBuffer, wallpaperPictureInfo.length, opts, errorCode);
-    if (errorCode != 0 || imageSource == nullptr) {
-        HILOG_ERROR("ImageSource::CreateImageSource failed, errcode= %{public}d!", errorCode);
+    mode_t mode = S_IRUSR | S_IWUSR;
+    int32_t fdw = open(path.c_str(), O_WRONLY | O_CREAT, mode);
+    if (fdw < 0) {
+        HILOG_ERROR("Open wallpaper tmpFullPath failed, errno %{public}d", errno);
         delete[] wallpaperBuffer;
-        close(fdw);
-        return E_PARAMETERS_INVALID;
+        return E_DEAL_FAILED;
     }
-    PackOption option = { .format = "image/jpeg" };
-    ImagePacker imagePacker;
-    errorCode = imagePacker.StartPacking(path, option);
-    if (errorCode != 0) {
+    if (write(fdw, wallpaperBuffer, wallpaperPictureInfo.length) <= 0) {
+        HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
+        ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
         delete[] wallpaperBuffer;
         close(fdw);
-        return E_PARAMETERS_INVALID;
-    }
-    errorCode = imagePacker.AddImage(*imageSource);
-    if (errorCode != 0) {
-        delete[] wallpaperBuffer;
-        close(fdw);
-        return E_PARAMETERS_INVALID;
-    }
-    int64_t size = 0;
-    errorCode = imagePacker.FinalizePacking(size);
-    if (errorCode != 0) {
-        delete[] wallpaperBuffer;
-        close(fdw);
-        return E_PARAMETERS_INVALID;
+        return E_DEAL_FAILED;
     }
     delete[] wallpaperBuffer;
     close(fdw);
@@ -1852,28 +1832,23 @@ void WallpaperService::UpdateWallpaperDataFile(WallpaperPictureInfo &wallpaperPi
                 wallpaperData.wallpaperFile = GetWallpaperDir(userId, wallpaperType) + "/"
                                               + (wallpaperType == WALLPAPER_SYSTEM ? WALLPAPER_HOME : WALLPAPER_LOCK);
             } else if (static_cast<RotateState>(wallpaperPictureInfo.rotateState) == RotateState::LAND) {
-                wallpaperData.normalLandFile =
-                    GetWallpaperDataFile(wallpaperPictureInfo, userId, wallpaperType);
+                wallpaperData.normalLandFile = GetWallpaperDataFile(wallpaperPictureInfo, userId, wallpaperType);
             }
             break;
 
         case FoldState::UNFOLD_1:
             if (static_cast<RotateState>(wallpaperPictureInfo.rotateState) == RotateState::PORT) {
-                wallpaperData.unfoldedOnePortFile =
-                    GetWallpaperDataFile(wallpaperPictureInfo, userId, wallpaperType);
+                wallpaperData.unfoldedOnePortFile = GetWallpaperDataFile(wallpaperPictureInfo, userId, wallpaperType);
             } else if (static_cast<RotateState>(wallpaperPictureInfo.rotateState) == RotateState::LAND) {
-                wallpaperData.unfoldedOneLandFile =
-                    GetWallpaperDataFile(wallpaperPictureInfo, userId, wallpaperType);
+                wallpaperData.unfoldedOneLandFile = GetWallpaperDataFile(wallpaperPictureInfo, userId, wallpaperType);
             }
             break;
 
         case FoldState::UNFOLD_2:
             if (static_cast<RotateState>(wallpaperPictureInfo.rotateState) == RotateState::PORT) {
-                wallpaperData.unfoldedTwoPortFile =
-                    GetWallpaperDataFile(wallpaperPictureInfo, userId, wallpaperType);
+                wallpaperData.unfoldedTwoPortFile = GetWallpaperDataFile(wallpaperPictureInfo, userId, wallpaperType);
             } else if (static_cast<RotateState>(wallpaperPictureInfo.rotateState) == RotateState::LAND) {
-                wallpaperData.unfoldedTwoLandFile =
-                    GetWallpaperDataFile(wallpaperPictureInfo, userId, wallpaperType);
+                wallpaperData.unfoldedTwoLandFile = GetWallpaperDataFile(wallpaperPictureInfo, userId, wallpaperType);
             }
             break;
         default:
