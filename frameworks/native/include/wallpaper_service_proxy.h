@@ -56,8 +56,9 @@ public:
     ErrorCode GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
     ErrorCode ResetWallpaperV9(int32_t wallpaperType) override;
     ErrorCode SetAllWallpapers(std::vector<WallpaperPictureInfo> allWallpaperInfo, int32_t wallpaperType) override;
-    ErrorCode GetCorrespondWallpaper(int32_t wallpaperType, int32_t foldState, int32_t rotateState,
-        IWallpaperService::FdInfo &fdInfo) override;
+    ErrorCode GetCorrespondWallpaper(
+        int32_t wallpaperType, int32_t foldState, int32_t rotateState, IWallpaperService::FdInfo &fdInfo) override;
+    bool IsDefaultWallpaperResource(int32_t userId, int32_t wallpaperType) override;
 
 private:
     ErrorCode SetWallpaperInner(

@@ -88,6 +88,7 @@ public:
     ErrorCode SetAllWallpapers(std::vector<WallpaperPictureInfo> allWallpaperInfo, int32_t wallpaperType) override;
     ErrorCode GetCorrespondWallpaper(
         int32_t wallpaperType, int32_t foldState, int32_t rotateState, IWallpaperService::FdInfo &fdInfo) override;
+    bool IsDefaultWallpaperResource(int32_t userId, int32_t wallpaperType) override;
 
 public:
     void OnInitUser(int32_t newUserId);
@@ -128,6 +129,7 @@ private:
     bool ConnectExtensionAbility();
 #endif
     bool IsSystemApp();
+    bool IsNativeSa();
     ErrorCode GetImageFd(int32_t userId, WallpaperType wallpaperType, int32_t &fd);
     ErrorCode GetImageSize(int32_t userId, WallpaperType wallpaperType, int32_t &size);
     bool RestoreUserResources(int32_t userId, WallpaperData &wallpaperData, WallpaperType wallpaperType);

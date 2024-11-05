@@ -63,6 +63,7 @@ private:
     int32_t HandleWallpaperRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option);
     int32_t OnSetAllWallpapers(MessageParcel &data, MessageParcel &reply);
     int32_t OnGetCorrespondWallpaper(MessageParcel &data, MessageParcel &reply);
+    int32_t OnISDefaultWallpaperResource(MessageParcel &data, MessageParcel &reply);
     void CloseWallpaperInfoFd(std::vector<WallpaperPictureInfo> wallpaperPictureInfos);
     std::shared_ptr<OHOS::Media::PixelMap> VectorToPixelMap(std::vector<std::uint8_t> value);
     WallpaperRequestHandler GetWallpaperRequestHandler(uint32_t code);

@@ -77,6 +77,8 @@ WallpaperServiceStub::WallpaperServiceStub(bool serialInvokeFlag) : IRemoteStub(
             [this](MessageParcel &data, MessageParcel &reply) { return OnSetAllWallpapers(data, reply); } },
         { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::GET_CORRESPOND_WALLPAPER),
             [this](MessageParcel &data, MessageParcel &reply) { return OnGetCorrespondWallpaper(data, reply); } },
+        { static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::IS_DEFAULY_RESOURCE),
+            [this](MessageParcel &data, MessageParcel &reply) { return OnISDefaultWallpaperResource(data, reply); } },
     };
 }
 
@@ -556,6 +558,19 @@ void WallpaperServiceStub::CloseWallpaperInfoFd(std::vector<WallpaperPictureInfo
             close(wallpaperInfo.fd);
         }
     }
+}
+
+int32_t WallpaperServiceStub::OnISDefaultWallpaperResource(MessageParcel &data, MessageParcel &reply)
+{
+    HILOG_DEBUG("WallpaperServiceStub::OnISDefaultWallpaperResource start.");
+    int32_t userId = data.ReadInt32();
+    int32_t wallpaperType = data.ReadInt32();
+    bool ret = IsDefaultWallpaperResource(userId, wallpaperType);
+    if (!reply.WriteBool(ret)) {
+        HILOG_ERROR("WriteInt32 fail!");
+        return IPC_STUB_WRITE_PARCEL_ERR;
+    }
+    return ERR_NONE;
 }
 
 } // namespace WallpaperMgrService

@@ -34,6 +34,7 @@ public:
     static std::string GetExtension(const std::string &filePath);
     static bool GetRealPath(const std::string &inOriPath, std::string &outRealPath);
     static bool IsZipFile(const std::string &filePath);
+    static bool IsFileExistInDir(const std::string &path);
 
 private:
     static bool ForcedRefreshDisk(const std::string &sourcePath);

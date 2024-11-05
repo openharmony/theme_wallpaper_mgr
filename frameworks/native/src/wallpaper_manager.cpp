@@ -787,5 +787,15 @@ void WallpaperManager::CloseWallpaperInfoFd(std::vector<WallpaperPictureInfo> wa
     }
 }
 
+bool WallpaperManager::IsDefaultWallpaperResource(int32_t userId, int32_t wallpaperType)
+{
+    auto wallpaperServerProxy = GetService();
+    if (wallpaperServerProxy == nullptr) {
+        HILOG_ERROR("Get proxy failed!");
+        return false;
+    }
+    return wallpaperServerProxy->IsDefaultWallpaperResource(userId, wallpaperType);
+}
+
 } // namespace WallpaperMgrService
 } // namespace OHOS

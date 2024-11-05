@@ -68,6 +68,17 @@
             "//base/theme/wallpaper_mgr:wallpaper_mgr_packages"
           ]
         },
+        "inner_api": [
+          {
+            "name":"//base/theme/wallpaper_mgr/frameworks/native:wallpapermanager",
+            "header":{
+              "header_files":[
+                "wallpaper_manager_client.h"
+              ],
+              "header_base":"//base/theme/wallpaper_mgr/interfaces/inner_api/include"
+            }
+          }
+        ],
         "test": [
           "//base/theme/wallpaper_mgr/test:unittest",
           "//base/theme/wallpaper_mgr/test/fuzztest:fuzztest",

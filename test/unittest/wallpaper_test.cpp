@@ -33,6 +33,7 @@
 #include "token_setproc.h"
 #include "wallpaper_common_event_subscriber.h"
 #include "wallpaper_manager.h"
+#include "wallpaper_manager_client.h"
 #include "wallpaper_service.h"
 
 namespace OHOS {
@@ -1563,5 +1564,85 @@ HWTEST_F(WallpaperTest, GetCorrespondWallpaper006, TestSize.Level0)
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetCorrespondWallpaper";
 }
 /*********************   GetCorrespondWallpaper   *********************/
+
+/*********************   Wallpaper_Inner_Api   *********************/
+/**
+* @tc.name:   IsDefaultWallpaperResource
+* @tc.desc:   IsDefaultWallpaperResource wallpaper resource is empty.
+* @tc.type:    FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, IsDefaultWallpaperResource001, TestSize.Level0)
+{
+    HILOG_INFO("IsDefaultWallpaperResource001  begin");
+    std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
+    int32_t userId = wallpaperService->QueryActiveUserId();
+    ApiInfo apiInfo{ false, false };
+    std::vector<WallpaperInfo> wallpaperInfo;
+    wallpaperInfo.push_back(wallpaperInfo_normal_port);
+    wallpaperInfo.push_back(wallpaperInfo_normal_land);
+    wallpaperInfo.push_back(wallpaperInfo_unfold1_port);
+    wallpaperInfo.push_back(wallpaperInfo_unfold1_land);
+    wallpaperInfo.push_back(wallpaperInfo_unfold2_port);
+    wallpaperInfo.push_back(wallpaperInfo_unfold2_land);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset lockscreen wallpaper";
+    auto ret = WallpaperManagerClient::GetInstance().IsDefaultWallpaperResource(userId, SYSTYEM);
+    EXPECT_EQ(ret, true) << "Failed to IsDefaultWallpaperResource";
+    wallpaperErrorCode = WallpaperManager::GetInstance().SetAllWallpapers(wallpaperInfo, SYSTYEM);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set system wallpaper";
+    ret = WallpaperManagerClient::GetInstance().IsDefaultWallpaperResource(userId, SYSTYEM);
+    EXPECT_EQ(ret, false) << "Failed to IsDefaultWallpaperResource";
+    wallpaperErrorCode = WallpaperManager::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to reset lockscreen wallpaper";
+    ret = WallpaperManagerClient::GetInstance().IsDefaultWallpaperResource(userId, LOCKSCREEN);
+    EXPECT_EQ(ret, true) << "Failed to IsDefaultWallpaperResource";
+    wallpaperErrorCode = WallpaperManager::GetInstance().SetAllWallpapers(wallpaperInfo, LOCKSCREEN);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set system wallpaper";
+    ret = WallpaperManagerClient::GetInstance().IsDefaultWallpaperResource(userId, SYSTYEM);
+    EXPECT_EQ(ret, false) << "Failed to IsDefaultWallpaperResource";
+}
+
+/**
+* @tc.name:   SetAllWallpapers
+* @tc.desc:   SetAllWallpapers unfold_2 device with wallpaperType[0].
+* @tc.type:    FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, SetAllWallpapersClient001, TestSize.Level0)
+{
+    HILOG_INFO("SetAllWallpapersClient001  begin");
+    std::vector<WallpaperInfo> wallpaperInfo;
+    wallpaperInfo.push_back(wallpaperInfo_normal_port);
+    wallpaperInfo.push_back(wallpaperInfo_normal_land);
+    wallpaperInfo.push_back(wallpaperInfo_unfold1_port);
+    wallpaperInfo.push_back(wallpaperInfo_unfold1_land);
+    wallpaperInfo.push_back(wallpaperInfo_unfold2_port);
+    wallpaperInfo.push_back(wallpaperInfo_unfold2_land);
+    auto ret = WallpaperManagerClient::GetInstance().SetAllWallpapers(wallpaperInfo, SYSTYEM);
+    EXPECT_EQ(ret, static_cast<int32_t>(E_OK)) << "Failed to SetAllWallpapers";
+}
+
+/**
+* @tc.name: SetAllWallpapers
+* @tc.desc: SetAllWallpapers unfold_2 device with wallpaperType[1]
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, SetAllWallpapersClient002, TestSize.Level0)
+{
+    HILOG_INFO("SetAllWallpapersClient002 begin");
+    std::vector<WallpaperInfo> wallpaperInfo;
+    wallpaperInfo.push_back(wallpaperInfo_normal_port);
+    wallpaperInfo.push_back(wallpaperInfo_normal_land);
+    wallpaperInfo.push_back(wallpaperInfo_unfold1_port);
+    wallpaperInfo.push_back(wallpaperInfo_unfold1_land);
+    wallpaperInfo.push_back(wallpaperInfo_unfold2_port);
+    wallpaperInfo.push_back(wallpaperInfo_unfold2_land);
+    auto ret = WallpaperManagerClient::GetInstance().SetAllWallpapers(wallpaperInfo, LOCKSCREEN);
+    EXPECT_EQ(ret, static_cast<int32_t>(E_OK)) << "Failed to SetAllWallpapers";
+}
+/*********************   Wallpaper_Inner_Api   *********************/
+
 } // namespace WallpaperMgrService
 } // namespace OHOS

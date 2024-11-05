@@ -1252,6 +1252,13 @@ bool WallpaperService::IsSystemApp()
     return TokenIdKit::IsSystemAppByFullTokenID(tokenId);
 }
 
+bool WallpaperService::IsNativeSa()
+{
+    HILOG_INFO("IsNativeSa start.");
+    AccessTokenID tokenId = IPCSkeleton::GetCallingTokenID();
+    return AccessTokenKit::GetTokenTypeFlag(tokenId) == TypeATokenTypeEnum::TOKEN_NATIVE;
+}
+
 ErrorCode WallpaperService::GetImageFd(int32_t userId, WallpaperType wallpaperType, int32_t &fd)
 {
     HILOG_INFO("WallpaperService::GetImageFd start.");
@@ -1698,8 +1705,8 @@ ErrorCode WallpaperService::SetAllWallpapers(
     std::vector<WallpaperPictureInfo> allWallpaperInfos, int32_t wallpaperType, WallpaperResourceType resourceType)
 {
     StartAsyncTrace(HITRACE_TAG_MISC, "SetAllWallpapers", static_cast<int32_t>(TraceTaskId::SET_ALL_WALLPAPERS));
-    if (!IsSystemApp()) {
-        HILOG_ERROR("CallingApp is not SystemApp.");
+    if (!IsSystemApp() && !IsNativeSa()) {
+        HILOG_ERROR("Is not SystemApp or NativeSA.");
         return E_NOT_SYSTEM_APP;
     }
     int32_t userId = QueryActiveUserId();
@@ -2071,6 +2078,27 @@ std::string WallpaperService::GetRotateStateName(RotateState rotateState)
             break;
     }
     return rotateStateName;
+}
+
+bool WallpaperService::IsDefaultWallpaperResource(int32_t userId, int32_t wallpaperType)
+{
+    HILOG_INFO("IsDefaultWallpaperResource start");
+    if (wallpaperType == static_cast<int32_t>(WALLPAPER_SYSTEM)) {
+        std::string wallpaperSystemPath = std::string(WALLPAPER_USERID_PATH) + std::to_string(userId) + "/"
+                                          + std::string(WALLPAPER_SYSTEM_DIRNAME) + "/";
+        if (!FileDeal::IsFileExistInDir(wallpaperSystemPath)) {
+            HILOG_INFO("System is empty");
+            return true;
+        }
+    } else if (wallpaperType == static_cast<int32_t>(WALLPAPER_LOCKSCREEN)) {
+        std::string wallpaperLockscreenPath = std::string(WALLPAPER_USERID_PATH) + std::to_string(userId) + "/"
+                                              + std::string(WALLPAPER_LOCKSCREEN_DIRNAME) + "/";
+        if (!FileDeal::IsFileExistInDir(wallpaperLockscreenPath)) {
+            HILOG_INFO("Lockscreen is empty");
+            return true;
+        }
+    }
+    return false;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS
