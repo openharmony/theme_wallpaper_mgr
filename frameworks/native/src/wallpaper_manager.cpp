@@ -703,7 +703,7 @@ ErrorCode WallpaperManager::SetAllWallpapers(std::vector<WallpaperInfo> allWallp
         if (wallpaperCode != E_OK) {
             CloseWallpaperInfoFd(WallpaperPictureInfos);
             HILOG_ERROR("PathConvertFd failed");
-            return E_FILE_ERROR;
+            return wallpaperCode;
         }
         WallpaperPictureInfos.push_back(wallpaperPictureInfo);
     }

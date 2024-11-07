@@ -68,7 +68,9 @@ static napi_value InitRotateState(napi_env &env)
     NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(RotateState::LAND), &land));
     NAPI_CALL(env, napi_create_object(env, &rotateState));
     NAPI_CALL(env, napi_set_named_property(env, rotateState, "PORT", port));
+    NAPI_CALL(env, napi_set_named_property(env, rotateState, "PORTRAIT", port));
     NAPI_CALL(env, napi_set_named_property(env, rotateState, "LAND", land));
+    NAPI_CALL(env, napi_set_named_property(env, rotateState, "LANDSCAPE", land));
     return rotateState;
 }
 
@@ -84,7 +86,9 @@ static napi_value InitFoldState(napi_env &env)
     NAPI_CALL(env, napi_create_object(env, &foldState));
     NAPI_CALL(env, napi_set_named_property(env, foldState, "NORMAL", normal));
     NAPI_CALL(env, napi_set_named_property(env, foldState, "UNFOLD_1", unfold_1));
+    NAPI_CALL(env, napi_set_named_property(env, foldState, "UNFOLD_ONCE_STATE", unfold_1));
     NAPI_CALL(env, napi_set_named_property(env, foldState, "UNFOLD_2", unfold_2));
+    NAPI_CALL(env, napi_set_named_property(env, foldState, "UNFOLD_TWICE_STATE", unfold_2));
     return foldState;
 }
 
@@ -114,6 +118,7 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("getPixelMap", NAPI_GetPixelMap),
         DECLARE_NAPI_FUNCTION("getImage", NAPI_GetImage),
         DECLARE_NAPI_FUNCTION("getCorrespondWallpaper", NAPI_GetCorrespondWallpaper),
+        DECLARE_NAPI_FUNCTION("getWallpaperByState", NAPI_GetCorrespondWallpaper),
         DECLARE_NAPI_FUNCTION("on", NAPI_On),
         DECLARE_NAPI_FUNCTION("off", NAPI_Off),
         DECLARE_NAPI_FUNCTION("setVideo", NAPI_SetVideo),

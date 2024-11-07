@@ -20,16 +20,20 @@ import bundleManager from "@ohos.bundle.bundleManager"
 
 import {describe, beforeAll, beforeEach, afterEach, afterAll, it, expect} from 'deccjsunit/index'
 
-const WALLPAPER_SYSTEM = 0;
-const WALLPAPER_LOCKSCREEN = 1;
+const WALLPAPER_SYSTEM = wallpaper.WallpaperType.WALLPAPER_SYSTEM;
+const WALLPAPER_LOCKSCREEN = wallpaper.WallpaperType.WALLPAPER_LOCKSCREEN;
 const INVALID_WALLPAPER_TYPE = 2;
-const NORMAL = 0;
-const UNFOLD_1 = 1;
-const UNFOLD_2 = 2;
-const INVALID_FOLDSTATE = 3;
-const PORT = 0;
-const LAND = 1;
-const INVALID_ROTATESTATE = 2;
+const NORMAL = wallpaper.FoldState.NORMAL;
+const UNFOLD_1 = wallpaper.FoldState.UNFOLD_1;
+const UNFOLD_2 = wallpaper.FoldState.UNFOLD_2;
+const UNFOLD_ONCE_STATE = wallpaper.FoldState.UNFOLD_ONCE_STATE;
+const UNFOLD_TWICE_STATE = wallpaper.FoldState.UNFOLD_TWICE_STATE;
+const INVALID_FOLDSTATE = 30;
+const PORT = wallpaper.RotateState.PORT;
+const LAND = wallpaper.RotateState.LAND;
+const PORTRAIT = wallpaper.RotateState.PORTRAIT;
+const LANDSCAPE = wallpaper.RotateState.LANDSCAPE;
+const INVALID_ROTATESTATE = 20;
 const DEFAULT_WALLPAPER_ID = -1;
 const PARAMETER_ERROR = 401;
 const PARAMETER_ERROR_MESSAGE = "BusinessError 401: Parameter error.";
@@ -37,9 +41,9 @@ const PARAMETER_COUNT = "Mandatory parameters are left unspecified.";
 const WALLPAPERTYPE_PARAMETER_TYPE = "The type must be WallpaperType, parameter range must be " +
     "WALLPAPER_LOCKSCREEN or WALLPAPER_SYSTEM.";
 const FOLDSTATE_PARAMETER_TYPE = "The type must be FoldState, parameter range must be " +
-    "NORMAL or UNFOLD_1 or UNFOLD_2.";
+    "NORMAL or UNFOLD_ONCE_STATE or UNFOLD_TWICE_STATE.";
 const ROTATESTATE_PARAMETER_TYPE = "The type must be RotateState, parameter range must be " +
-    "PORT or LAND.";
+    "PORTRAIT or LANDSCAPE.";
 const URI = "/data/storage/el2/base/haps/js.jpeg";
 const URI_ZIP = "/system/etc/test.zip";
 const URI_30FPS_3S_MP4 = "/system/etc/30fps_3s.mp4";
@@ -1041,6 +1045,447 @@ describe('WallpaperJSTest', function () {
             });
         } catch (error) {
             console.info(`getCorrespondWallpaperTest019 error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue();
+            expect(error.message === PARAMETER_ERROR_MESSAGE + ROTATESTATE_PARAMETER_TYPE).assertTrue();
+            done();
+        }
+    })
+    /**
+     * @tc.name:    getWallpaperByStateTest001
+     * @tc.desc:    Test getWallpaperByState() with normal argc 000.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest001', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_SYSTEM, NORMAL, PORTRAIT).then((data) => {
+                console.info(`getWallpaperByStateTest001 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest001 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getWallpaperByStateTest001 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getWallpaperByStateTest002
+     * @tc.desc:    Test getWallpaperByState() with normal argc 001.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest002', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_SYSTEM, NORMAL, LANDSCAPE).then((data) => {
+                console.info(`getWallpaperByStateTest002 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest002 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getWallpaperByStateTest002 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getWallpaperByStateTest003
+     * @tc.desc:    Test getWallpaperByState() with normal argc 010.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest003', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_SYSTEM, UNFOLD_ONCE_STATE, PORTRAIT).then((data) => {
+                console.info(`getWallpaperByStateTest003 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest003 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getWallpaperByStateTest003 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getWallpaperByStateTest004
+     * @tc.desc:    Test getWallpaperByState() with normal argc 011.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest004', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_SYSTEM, UNFOLD_ONCE_STATE, LANDSCAPE).then((data) => {
+                console.info(`getWallpaperByStateTest004 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest004 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getWallpaperByStateTest004 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getWallpaperByStateTest005
+     * @tc.desc:    Test getWallpaperByState() with normal argc 020.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest005', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_SYSTEM, UNFOLD_TWICE_STATE, PORTRAIT).then((data) => {
+                console.info(`getWallpaperByStateTest005 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest005 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getWallpaperByStateTest005 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getWallpaperByStateTest006
+     * @tc.desc:    Test getWallpaperByState() with normal argc 021.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest006', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_SYSTEM, UNFOLD_TWICE_STATE, LANDSCAPE).then((data) => {
+                console.info(`getWallpaperByStateTest006 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest006 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getWallpaperByStateTest006 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getWallpaperByStateTest007
+     * @tc.desc:    Test getWallpaperByState() with normal argc 100.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest007', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_LOCKSCREEN, NORMAL, PORTRAIT).then((data) => {
+                console.info(`getWallpaperByStateTest007 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest007 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getWallpaperByStateTest007 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+    /**
+     * @tc.name:    getWallpaperByStateTest008
+     * @tc.desc:    Test getWallpaperByState() with normal argc 101.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest008', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_LOCKSCREEN, NORMAL, LANDSCAPE).then((data) => {
+                console.info(`getWallpaperByStateTest008 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest008 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getWallpaperByStateTest008 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+    /**
+     * @tc.name:    getWallpaperByStateTest009
+     * @tc.desc:    Test getWallpaperByState() with normal argc 110.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest009', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_LOCKSCREEN, UNFOLD_ONCE_STATE, PORTRAIT).then((data) => {
+                console.info(`getWallpaperByStateTest009 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest009 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getWallpaperByStateTest009 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getWallpaperByStateTest010
+     * @tc.desc:    Test getWallpaperByState() with normal argc 111.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest010', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_LOCKSCREEN, UNFOLD_ONCE_STATE, LANDSCAPE).then((data) => {
+                console.info(`getWallpaperByStateTest010 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest010 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getWallpaperByStateTest010 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getWallpaperByStateTest011
+     * @tc.desc:    Test getWallpaperByState() with normal argc 120.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest011', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_LOCKSCREEN, UNFOLD_TWICE_STATE, PORTRAIT).then((data) => {
+                console.info(`getWallpaperByStateTest011 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest011 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getWallpaperByStateTest011 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getWallpaperByStateTest012
+     * @tc.desc:    Test getWallpaperByState() with normal argc 121.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest012', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_LOCKSCREEN, UNFOLD_TWICE_STATE, LANDSCAPE).then((data) => {
+                console.info(`getWallpaperByStateTest012 data : ${data}`);
+                expect(data !== undefined && data !== null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest012 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.error(`getWallpaperByStateTest012 error : ${error}`);
+            expect(null).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getWallpaperByStateTest013
+     * @tc.desc:    Test getWallpaperByState() lack of argc.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest013', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_LOCKSCREEN, UNFOLD_ONCE_STATE).then((data) => {
+                console.error(`getWallpaperByStateTest013 data : ${data}`);
+                expect(null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest013 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.info(`getWallpaperByStateTest013 error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue();
+            expect(error.message === PARAMETER_ERROR_MESSAGE + PARAMETER_COUNT).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getWallpaperByStateTest014
+     * @tc.desc:    Test getWallpaperByState() with invalid wallpaper type.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest014', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(INVALID_WALLPAPER_TYPE, UNFOLD_TWICE_STATE, LANDSCAPE).then((data) => {
+                console.error(`getWallpaperByStateTest014 data : ${data}`);
+                expect(null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest014 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.info(`getWallpaperByStateTest014 error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue();
+            expect(error.message === PARAMETER_ERROR_MESSAGE + WALLPAPERTYPE_PARAMETER_TYPE).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getWallpaperByStateTest015
+     * @tc.desc:    Test getWallpaperByState() with invalid foldstate.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest015', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_SYSTEM, INVALID_FOLDSTATE, PORTRAIT).then((data) => {
+                console.error(`getWallpaperByStateTest015 data : ${data}`);
+                expect(null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest015 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.info(`getWallpaperByStateTest015 error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue();
+            expect(error.message === PARAMETER_ERROR_MESSAGE + FOLDSTATE_PARAMETER_TYPE).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getWallpaperByStateTest016
+     * @tc.desc:    Test getWallpaperByState() with invalid rotatestate.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest016', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_SYSTEM, NORMAL, INVALID_ROTATESTATE).then((data) => {
+                console.error(`getWallpaperByStateTest016 data : ${data}`);
+                expect(null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest016 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.info(`getWallpaperByStateTest016 error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue();
+            expect(error.message === PARAMETER_ERROR_MESSAGE + ROTATESTATE_PARAMETER_TYPE).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getWallpaperByStateTest017
+     * @tc.desc:    Test getWallpaperByState() with invalid wallpaper type.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest017', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState("INVALID_TYPE", NORMAL, PORTRAIT).then((data) => {
+                console.error(`getWallpaperByStateTest017 data : ${data}`);
+                expect(null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest017 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.info(`getWallpaperByStateTest017 error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue();
+            expect(error.message === PARAMETER_ERROR_MESSAGE + WALLPAPERTYPE_PARAMETER_TYPE).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getWallpaperByStateTest018
+     * @tc.desc:    Test getWallpaperByState() to get wallpaper.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest018', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_SYSTEM, "INVALID_TYPE", PORTRAIT).then((data) => {
+                console.error(`getWallpaperByStateTest018 data : ${data}`);
+                expect(null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest018 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.info(`getWallpaperByStateTest018 error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue();
+            expect(error.message === PARAMETER_ERROR_MESSAGE + FOLDSTATE_PARAMETER_TYPE).assertTrue();
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:    getWallpaperByStateTest019
+     * @tc.desc:    Test getWallpaperByState() to get wallpaper.
+     * @tc.type:    FUNC
+     */
+    it('getWallpaperByStateTest019', 0, async function (done) {
+        try {
+            wallpaper.getWallpaperByState(WALLPAPER_SYSTEM, NORMAL, "INVALID_TYPE").then((data) => {
+                console.error(`getWallpaperByStateTest019 data : ${data}`);
+                expect(null).assertTrue();
+                done();
+            }).catch((err) => {
+                console.error(`getWallpaperByStateTest019 err : ${err}`);
+                expect(null).assertTrue();
+                done();
+            });
+        } catch (error) {
+            console.info(`getWallpaperByStateTest019 error : ${error}`);
             expect(error.code === PARAMETER_ERROR).assertTrue();
             expect(error.message === PARAMETER_ERROR_MESSAGE + ROTATESTATE_PARAMETER_TYPE).assertTrue();
             done();
@@ -2884,6 +3329,193 @@ describe('WallpaperJSTest', function () {
         } catch (error) {
             expect(null).assertFail();
             console.info(`setAllWallpapersTest003 fail : ${error}`);
+            done();
+        }
+    })
+    /**
+     * @tc.name:      setAllWallpapersThrowErrorTest001tmp
+     * @tc.desc:      Test setAllWallpapers throw parameter error, parameter count error
+     * @tc.type:      FUNC test
+     * @tc.require:
+     */
+    it('setAllWallpapersThrowErrorTest001tmp', 0, async function (done) {
+        try {
+            wallpaper.setAllWallpapers(wallpaper.WallpaperType.WALLPAPER_SYSTEM).then(() => {
+                expect(null).assertFail();
+                done();
+            }).catch((err) => {
+                console.info(`setAllWallpapersThrowErrorTest001tmp err : ${err}`);
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            console.info(`setAllWallpapersThrowErrorTest001tmp error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue()
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setAllWallpapersThrowErrorTest002tmp
+     * @tc.desc:      Test setAllWallpapers throw parameter error, wallpaperType range error
+     * @tc.type:      FUNC test
+     * @tc.require:
+     */
+    it('setAllWallpapersThrowErrorTest002tmp', 0, async function (done) {
+        const wallpaperInfo1 = {
+            foldState: wallpaper.FoldState.NORMAL,
+            rotateState: wallpaper.RotateState.PORT,
+            source: URI
+        }
+        let wallpaperInfos = [wallpaperInfo1];
+        try {
+            wallpaper.setAllWallpapers(wallpaperInfos, 2).then(() => {
+                expect(null).assertFail();
+                done();
+            }).catch((err) => {
+                console.info(`setAllWallpapersThrowErrorTest002tmp err : ${err}`);
+                expect(null).assertFail();
+                done();
+            });
+        } catch (error) {
+            console.info(`setAllWallpapersThrowErrorTest002tmp error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue()
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setAllWallpapersThrowErrorTest003tmp
+     * @tc.desc:      Test setAllWallpapers throw parameter error, wallpaperInfo source error
+     * @tc.type:      FUNC test
+     * @tc.require:
+     */
+    it('setAllWallpapersThrowErrorTest003tmp', 0, async function (done) {
+        const wallpaperInfo1 = {
+            foldState: wallpaper.FoldState.NORMAL,
+            rotateState: wallpaper.RotateState.PORTRAIT,
+            source: URI_ZIP
+        }
+        let wallpaperInfos = [wallpaperInfo1];
+        try {
+            wallpaper.setAllWallpapers(wallpaperInfos, wallpaper.WallpaperType.WALLPAPER_SYSTEM).then(() => {
+                expect(null).assertFail();
+                done();
+            }).catch((err) => {
+                console.info(`setAllWallpapersThrowErrorTest003tmp err : ${err}`);
+                expect(err.code === PARAMETER_ERROR).assertTrue()
+                done();
+            });
+        } catch (error) {
+            console.info(`setAllWallpapersThrowErrorTest003tmp error : ${error}`);
+            expect(error.code === PARAMETER_ERROR).assertTrue()
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setAllWallpapersTest001tmp
+     * @tc.desc:      Test setAllWallpapers.
+     * @tc.type:      FUNC test
+     * @tc.require:
+     */
+    it('setAllWallpapersTest001tmp', 0, async function (done) {
+        const wallpaperInfo1 = {
+            foldState: wallpaper.FoldState.NORMAL,
+            rotateState: wallpaper.RotateState.PORTRAIT,
+            source: URI
+        }
+        let wallpaperInfos = [wallpaperInfo1];
+        try {
+            wallpaper.setAllWallpapers(wallpaperInfos, wallpaper.WallpaperType.WALLPAPER_SYSTEM).then(async () => {
+                expect(true).assertTrue();
+                done();
+                await wallpaper.restore(WALLPAPER_SYSTEM);
+            }).catch((err) => {
+                console.info(`setAllWallpapersTest001tmp fail : ${err}`);
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            console.info(`setAllWallpapersTest001tmp fail : ${error}`);
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setAllWallpapersTest002tmp
+     * @tc.desc:      Test setAllWallpapers.
+     * @tc.type:      FUNC test
+     * @tc.require:
+     */
+    it('setAllWallpapersTest002tmp', 0, async function (done) {
+        const wallpaperInfo1 = {
+            foldState: wallpaper.FoldState.NORMAL,
+            rotateState: wallpaper.RotateState.PORTRAIT,
+            source: URI
+        }
+        const wallpaperInfo2 = {
+            foldState: wallpaper.FoldState.UNFOLD_ONCE_STATE,
+            rotateState: wallpaper.RotateState.LAND,
+            source: URI
+        }
+        let wallpaperInfos = [wallpaperInfo1, wallpaperInfo2];
+        try {
+            wallpaper.setAllWallpapers(wallpaperInfos, wallpaper.WallpaperType.WALLPAPER_LOCKSCREEN).then(async () => {
+                expect(true).assertTrue();
+                done();
+                await wallpaper.restore(WALLPAPER_LOCKSCREEN);
+            }).catch((err) => {
+                console.info(`setAllWallpapersTest002tmp fail : ${err}`);
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            console.info(`setAllWallpapersTest002tmp fail : ${error}`);
+            done();
+        }
+    })
+
+    /**
+     * @tc.name:      setAllWallpapersTest003tmp
+     * @tc.desc:      Test setAllWallpapers.
+     * @tc.type:      FUNC test
+     * @tc.require:
+     */
+    it('setAllWallpapersTest003tmp', 0, async function (done) {
+        const wallpaperInfo1 = {
+            foldState: wallpaper.FoldState.NORMAL,
+            rotateState: wallpaper.RotateState.PORTRAIT,
+            source: URI
+        }
+        const wallpaperInfo2 = {
+            foldState: wallpaper.FoldState.UNFOLD_ONCE_STATE,
+            rotateState: wallpaper.RotateState.LANDSCAPE,
+            source: URI
+        }
+        const wallpaperInfo3 = {
+            foldState: wallpaper.FoldState.UNFOLD_TWICE_STATE,
+            rotateState: wallpaper.RotateState.PORTRAIT,
+            source: URI
+        }
+        const wallpaperInfo4 = {
+            foldState: wallpaper.FoldState.UNFOLD_TWICE_STATE,
+            rotateState: wallpaper.RotateState.LANDSCAPE,
+            source: URI
+        }
+        let wallpaperInfos = [wallpaperInfo1, wallpaperInfo2, wallpaperInfo3, wallpaperInfo4];
+        try {
+            wallpaper.setAllWallpapers(wallpaperInfos, wallpaper.WallpaperType.WALLPAPER_LOCKSCREEN).then(async () => {
+                expect(true).assertTrue();
+                done();
+                await wallpaper.restore(WALLPAPER_LOCKSCREEN);
+            }).catch((err) => {
+                console.info(`setAllWallpapersTest003tmp fail : ${err}`);
+                done();
+            });
+        } catch (error) {
+            expect(null).assertFail();
+            console.info(`setAllWallpapersTest003tmp fail : ${error}`);
             done();
         }
     })

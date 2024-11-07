@@ -906,13 +906,17 @@ void NapiWallpaperAbility::SetAllWallpapers(std::shared_ptr<SetContextInfo> cont
             || !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_number)
             || !NapiWallpaperAbility::IsValidArgRange(env, argv[1]) || !isArray) {
             context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE)
-                + "The first parameter type must be Array<WallpaperInfo>.The second type must be WallpaperType.");
+                                                                     + "The first parameter type must be "
+                                                                       "Array<WallpaperInfo>.The second type must be "
+                                                                       "WallpaperType.");
             return napi_invalid_arg;
         }
         if (!NapiWallpaperAbility::IsValidWallpaperInfos(env, argv[0])) {
             context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE)
-                + "The first parameter type must be Array<WallpaperInfo>,"
-                "must include wallpaper with FoldState NORMAL and RotateState PORT.");
+                                                                     + "The first parameter type must be "
+                                                                       "Array<WallpaperInfo>,"
+                                                                       "must include wallpaper with FoldState NORMAL "
+                                                                       "and RotateState PORTRAIT.");
             return napi_invalid_arg;
         }
         WallpaperJSUtil::Convert2WallpaperInfos(env, argv[0], context->wallpaperInfos);
