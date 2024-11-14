@@ -30,6 +30,8 @@ namespace WallpaperMgrService {
 using namespace OHOS::HiviewDFX;
 using namespace OHOS::Media;
 
+constexpr int32_t VECTOR_SIZE_MAX = 6;
+
 WallpaperServiceStub::WallpaperServiceStub(bool serialInvokeFlag) : IRemoteStub(serialInvokeFlag)
 {
     requestHandlers = {
@@ -481,6 +483,10 @@ int32_t WallpaperServiceStub::OnSetAllWallpapers(MessageParcel &data, MessagePar
 {
     HILOG_DEBUG("WallpaperServiceStub::OnSetAllWallpapers start.");
     int32_t vectorSize = data.ReadInt32();
+    if (vectorSize > VECTOR_SIZE_MAX) {
+        HILOG_ERROR("vectorSize more than 6");
+        return E_PARAMETERS_INVALID;
+    }
     std::vector<WallpaperPictureInfo> wallpaperPictureInfos;
     for (int32_t i = 0; i < vectorSize; i++) {
         WallpaperPictureInfo wallpaperInfo;
