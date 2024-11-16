@@ -146,6 +146,7 @@ public:
      * @return ErrorCode
      */
     virtual ErrorCode SendEvent(const std::string &eventType) = 0;
+    virtual bool IsDefaultWallpaperResource(int32_t userId, int32_t wallpaperType) = 0;
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

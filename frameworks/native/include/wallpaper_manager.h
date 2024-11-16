@@ -171,6 +171,7 @@ public:
     void CloseWallpaperFd(int32_t wallpaperType);
 
     bool RegisterWallpaperListener();
+    bool IsDefaultWallpaperResource(int32_t userId, int32_t wallpaperType);
 
 private:
     class DeathRecipient final : public IRemoteObject::DeathRecipient {

@@ -624,6 +624,36 @@ ErrorCode WallpaperServiceProxy::GetCorrespondWallpaperInner(int32_t wallpaperTy
     }
     return wallpaperErrorCode;
 }
+
+bool WallpaperServiceProxy::IsDefaultWallpaperResource(int32_t userId, int32_t wallpaperType)
+{
+    HILOG_DEBUG("WallpaperServiceProxy::IsDefaultWallpaperResource --> start.");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        HILOG_ERROR("Failed to write parcelable!");
+        return false;
+    }
+
+    if (!data.WriteInt32(userId)) {
+        HILOG_ERROR("Failed to WriteInt32!");
+        return false;
+    }
+    if (!data.WriteInt32(wallpaperType)) {
+        HILOG_ERROR("Failed to WriteInt32!");
+        return false;
+    }
+    int32_t result = Remote()->SendRequest(
+        static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::IS_DEFAULY_RESOURCE), data, reply, option);
+    if (result != ERR_NONE) {
+        HILOG_ERROR("WallpaperServiceProxy:: IsDefaultWallpaperResource= %{public}d!", result);
+        return false;
+    }
+    int32_t status = reply.ReadInt32();
+    return static_cast<int32_t>(status);
+}
+
 ErrorCode WallpaperServiceProxy::ConvertIntToErrorCode(int32_t errorCode)
 {
     ErrorCode wallpaperErrorCode = E_UNKNOWN;

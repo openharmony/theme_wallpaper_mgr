@@ -200,5 +200,29 @@ bool FileDeal::ForcedRefreshDisk(const std::string &sourcePath)
     (void)fclose(file);
     return true;
 }
+bool FileDeal::IsFileExistInDir(const std::string &path)
+{
+    DIR *dp = opendir(path.c_str());
+    if (dp == nullptr) {
+        HILOG_ERROR("FileDeal : openDir  is error, errInfo=%{public}s", strerror(errno));
+        return false;
+    }
+    dirent *dir = readdir(dp);
+    while (dir != nullptr) {
+        if (dir->d_type == DT_DIR) {
+            if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0) {
+                closedir(dp);
+                return true;
+            }
+        } else {
+            closedir(dp);
+            return true;
+        }
+        dir = readdir(dp);
+    }
+    closedir(dp);
+    HILOG_INFO("Dir is empty");
+    return false;
+}
 } // namespace WallpaperMgrService
 } // namespace OHOS
