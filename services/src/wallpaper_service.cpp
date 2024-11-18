@@ -1891,7 +1891,7 @@ ErrorCode WallpaperService::GetCorrespondWallpaper(
 {
     StartAsyncTrace(
         HITRACE_TAG_MISC, "GetCorrespondWallpaper", static_cast<int32_t>(TraceTaskId::GET_CORRESPOND_WALLPAPER));
-    HILOG_INFO("WallpaperService::GetCorrespondWallpaper start.");
+    HILOG_DEBUG("WallpaperService::GetCorrespondWallpaper start.");
     if (!IsSystemApp()) {
         HILOG_ERROR("CallingApp is not SystemApp.");
         return E_NOT_SYSTEM_APP;
@@ -1931,12 +1931,12 @@ ErrorCode WallpaperService::GetCorrespondWallpaper(
 ErrorCode WallpaperService::GetImageSize(
     int32_t userId, WallpaperType wallpaperType, int32_t &size, int32_t foldState, int32_t rotateState)
 {
-    HILOG_INFO("WallpaperService::GetImageSize start.");
+    HILOG_DEBUG("WallpaperService::GetImageSize start.");
     std::string filePathName;
-    HILOG_INFO("userId = %{public}d", userId);
     if (!GetWallpaperDataPath(userId, wallpaperType, filePathName, foldState, rotateState)) {
         return E_DEAL_FAILED;
     }
+    HILOG_INFO("GetImageSize file: %{public}s", filePathName.c_str());
     if (!OHOS::FileExists(filePathName)) {
         HILOG_ERROR("file is not exist.");
         return E_NOT_FOUND;
@@ -1962,7 +1962,7 @@ ErrorCode WallpaperService::GetImageSize(
 ErrorCode WallpaperService::GetImageFd(
     int32_t userId, WallpaperType wallpaperType, int32_t &fd, int32_t foldState, int32_t rotateState)
 {
-    HILOG_INFO("WallpaperService::GetImageFd start.");
+    HILOG_DEBUG("WallpaperService::GetImageFd start.");
     std::string filePathName;
     if (!GetWallpaperDataPath(userId, wallpaperType, filePathName, foldState, rotateState)) {
         return E_DEAL_FAILED;
@@ -1993,7 +1993,6 @@ bool WallpaperService::GetWallpaperDataPath(
                                                      : lockWallpaperMap_.Find(userId);
     }
     filePathName = GetWallpaperPath(foldState, rotateState, iterator.second);
-    HILOG_INFO("Selected wallpaper file: %{public}s", filePathName.c_str());
     return filePathName != "";
 }
 
