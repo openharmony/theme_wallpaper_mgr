@@ -382,8 +382,8 @@ void WallpaperService::OnInitUser(int32_t userId)
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     if (FileDeal::IsFileExist(userDir)) {
         std::lock_guard<std::mutex> lock(mtx_);
-        if (!OHOS::ForceRemoveDirectory(userDir)) {
-            HILOG_ERROR("Force remove user directory path failed, errno %{public}d, userId:%{public}d", errno, userId);
+        if (!FileDeal::DeleteDir(userDir, true)) {
+            HILOG_ERROR("Force remove user directory path failed, errno %{public}d", errno);
             return;
         }
     }
@@ -485,7 +485,7 @@ void WallpaperService::OnRemovedUser(int32_t userId)
     ClearWallpaperLocked(userId, WALLPAPER_LOCKSCREEN);
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     std::lock_guard<std::mutex> lock(mtx_);
-    if (!OHOS::ForceRemoveDirectory(userDir)) {
+    if (!FileDeal::DeleteDir(userDir, true)) {
         HILOG_ERROR("Force remove user directory path failed, errno %{public}d", errno);
     }
     HILOG_INFO("OnRemovedUser end, userId = %{public}d", userId);

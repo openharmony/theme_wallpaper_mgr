@@ -32,6 +32,9 @@ bool Command::DoAction(const std::vector<std::string> &input, std::string &outpu
 
 std::string Command::GetOption()
 {
+    if (format_.empty()) {
+        return "";
+    }
     return format_.at(0);
 }
 
