@@ -54,7 +54,12 @@ int32_t WallpaperServiceCbStub::HandleOnCall(MessageParcel &data, MessageParcel 
 int32_t WallpaperServiceCbStub::OnCall(const int32_t num)
 {
     HILOG_INFO("WallpaperServiceCbStub::OnCall.");
-    WallpaperMgrService::WallpaperManager::GetInstance().GetCallback()(num);
+    auto callback = WallpaperMgrService::WallpaperManager::GetInstance().GetCallback();
+    if (callback == nullptr) {
+        HILOG_ERROR("callback is nullptr");
+        return 0;
+    }
+    callback(num);
     return 0;
 }
 

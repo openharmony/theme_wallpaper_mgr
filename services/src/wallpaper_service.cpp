@@ -143,10 +143,6 @@ constexpr int32_t DEFAULT_VALUE = -1;
 constexpr int32_t CONNECT_EXTENSION_MAX_RETRY_TIMES = 50;
 #endif
 
-std::mutex WallpaperService::instanceLock_;
-
-sptr<WallpaperService> WallpaperService::instance_;
-
 std::shared_ptr<AppExecFwk::EventHandler> WallpaperService::serviceHandler_;
 
 WallpaperService::WallpaperService(int32_t systemAbilityId, bool runOnCreate)

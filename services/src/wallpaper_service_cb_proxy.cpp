@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 #include "hilog_wrapper.h"
+#include "wallpaper_common.h"
 #include "wallpaper_service_cb_proxy.h"
 
 namespace OHOS {
@@ -26,14 +27,14 @@ int32_t WallpaperServiceCbProxy::OnCall(const int32_t wallpaperType)
 
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         HILOG_ERROR("Failed to write parcelable!");
-        return -1;
+        return E_WRITE_PARCEL_ERROR;
     }
     if (!data.WriteInt32(wallpaperType)) {
         HILOG_ERROR("Failed to WriteInt32!");
-        return -1;
+        return E_WRITE_PARCEL_ERROR;
     }
     Remote()->SendRequest(ONCALL, data, reply, option);
-    return 0;
+    return E_OK;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

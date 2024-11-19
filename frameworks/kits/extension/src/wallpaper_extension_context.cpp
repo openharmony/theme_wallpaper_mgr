@@ -26,7 +26,12 @@ int32_t WallpaperExtensionContext::ILLEGAL_REQUEST_CODE(-1);
 ErrCode WallpaperExtensionContext::StartAbility(const AAFwk::Want &want) const
 {
     HILOG_DEBUG("%{public}s begin.", __func__);
-    ErrCode err = AAFwk::AbilityManagerClient::GetInstance()->StartAbility(want, token_, ILLEGAL_REQUEST_CODE);
+    std::shared_ptr<AAFwk::AbilityManagerClient> abilityManagerClient = AAFwk::AbilityManagerClient::GetInstance();
+    if (abilityManagerClient == nullptr) {
+        HILOG_ERROR("abilityManagerClient is nullptr");
+        return ERR_NO_INIT;
+    }
+    ErrCode err = abilityManagerClient->StartAbility(want, token_, ILLEGAL_REQUEST_CODE);
     HILOG_DEBUG("%{public}s. End calling StartAbility. ret=%{public}d.", __func__, err);
     if (err != ERR_OK) {
         HILOG_ERROR("WallpaperContext::StartAbility is failed %{public}d!", err);
@@ -37,8 +42,12 @@ ErrCode WallpaperExtensionContext::StartAbility(const AAFwk::Want &want) const
 ErrCode WallpaperExtensionContext::StartAbility(const AAFwk::Want &want, const AAFwk::StartOptions &startOptions) const
 {
     HILOG_DEBUG("%{public}s begin.", __func__);
-    ErrCode err =
-        AAFwk::AbilityManagerClient::GetInstance()->StartAbility(want, startOptions, token_, ILLEGAL_REQUEST_CODE);
+    std::shared_ptr<AAFwk::AbilityManagerClient> abilityManagerClient = AAFwk::AbilityManagerClient::GetInstance();
+    if (abilityManagerClient == nullptr) {
+        HILOG_ERROR("abilityManagerClient is nullptr");
+        return ERR_NO_INIT;
+    }
+    ErrCode err = abilityManagerClient->StartAbility(want, startOptions, token_, ILLEGAL_REQUEST_CODE);
     HILOG_DEBUG("%{public}s. End calling StartAbility. ret=%{public}d", __func__, err);
     if (err != ERR_OK) {
         HILOG_ERROR("WallpaperContext::StartAbility is failed %{public}d!", err);
@@ -58,8 +67,12 @@ bool WallpaperExtensionContext::ConnectAbility(
 ErrCode WallpaperExtensionContext::StartAbilityWithAccount(const AAFwk::Want &want, int32_t accountId) const
 {
     HILOG_DEBUG("%{public}s begin.", __func__);
-    ErrCode err =
-        AAFwk::AbilityManagerClient::GetInstance()->StartAbility(want, token_, ILLEGAL_REQUEST_CODE, accountId);
+    std::shared_ptr<AAFwk::AbilityManagerClient> abilityManagerClient = AAFwk::AbilityManagerClient::GetInstance();
+    if (abilityManagerClient == nullptr) {
+        HILOG_ERROR("abilityManagerClient is nullptr");
+        return ERR_NO_INIT;
+    }
+    ErrCode err = abilityManagerClient->StartAbility(want, token_, ILLEGAL_REQUEST_CODE, accountId);
     HILOG_DEBUG("%{public}s. End calling StartAbilityWithAccount. ret=%{public}d.", __func__, err);
     if (err != ERR_OK) {
         HILOG_ERROR("WallpaperContext::StartAbilityWithAccount is failed %{public}d!", err);
@@ -71,8 +84,12 @@ ErrCode WallpaperExtensionContext::StartAbilityWithAccount(
     const AAFwk::Want &want, int32_t accountId, const AAFwk::StartOptions &startOptions) const
 {
     HILOG_DEBUG("%{public}s begin.", __func__);
-    ErrCode err = AAFwk::AbilityManagerClient::GetInstance()->StartAbility(
-        want, startOptions, token_, ILLEGAL_REQUEST_CODE, accountId);
+    std::shared_ptr<AAFwk::AbilityManagerClient> abilityManagerClient = AAFwk::AbilityManagerClient::GetInstance();
+    if (abilityManagerClient == nullptr) {
+        HILOG_ERROR("abilityManagerClient is nullptr");
+        return ERR_NO_INIT;
+    }
+    ErrCode err = abilityManagerClient->StartAbility(want, startOptions, token_, ILLEGAL_REQUEST_CODE, accountId);
     HILOG_DEBUG("%{public}s. End calling StartAbilityWithAccount. ret=%{public}d.", __func__, err);
     if (err != ERR_OK) {
         HILOG_ERROR("WallpaperContext::StartAbilityWithAccount is failed %{public}d!", err);
@@ -103,7 +120,12 @@ ErrCode WallpaperExtensionContext::DisconnectAbility(
 ErrCode WallpaperExtensionContext::TerminateAbility()
 {
     HILOG_DEBUG("%{public}s begin.", __func__);
-    ErrCode err = AAFwk::AbilityManagerClient::GetInstance()->TerminateAbility(token_, -1, nullptr);
+    std::shared_ptr<AAFwk::AbilityManagerClient> abilityManagerClient = AAFwk::AbilityManagerClient::GetInstance();
+    if (abilityManagerClient == nullptr) {
+        HILOG_ERROR("abilityManagerClient is nullptr");
+        return ERR_NO_INIT;
+    }
+    ErrCode err = abilityManagerClient->TerminateAbility(token_, -1, nullptr);
     if (err != ERR_OK) {
         HILOG_ERROR("WallpaperExtensionContext::TerminateAbility is failed %{public}d!", err);
     }

@@ -276,7 +276,7 @@ ErrorCode WallpaperServiceProxy::GetPixelMapInner(
 
     if (!data.WriteInt32(wallpaperType)) {
         HILOG_ERROR("Failed to WriteInt32!");
-        return E_DEAL_FAILED;
+        return E_WRITE_PARCEL_ERROR;
     }
     int32_t result = Remote()->SendRequest(static_cast<uint32_t>(code), data, reply, option);
     if (result != ERR_NONE) {
@@ -601,16 +601,16 @@ ErrorCode WallpaperServiceProxy::GetCorrespondWallpaperInner(int32_t wallpaperTy
 
     if (!data.WriteInt32(wallpaperType)) {
         HILOG_ERROR("Failed to WriteInt32!");
-        return E_DEAL_FAILED;
+        return E_WRITE_PARCEL_ERROR;
     }
 
     if (!data.WriteInt32(foldState)) {
         HILOG_ERROR("Failed to WriteInt32!");
-        return E_DEAL_FAILED;
+        return E_WRITE_PARCEL_ERROR;
     }
     if (!data.WriteInt32(rotateState)) {
         HILOG_ERROR("Failed to WriteInt32!");
-        return E_DEAL_FAILED;
+        return E_WRITE_PARCEL_ERROR;
     }
     int32_t result = Remote()->SendRequest(static_cast<uint32_t>(code), data, reply, option);
     if (result != ERR_NONE) {
@@ -654,32 +654,33 @@ bool WallpaperServiceProxy::IsDefaultWallpaperResource(int32_t userId, int32_t w
     return static_cast<int32_t>(status);
 }
 
+std::unordered_map<int32_t, ErrorCode> errorCodeMap = {
+    { static_cast<int32_t>(E_OK), E_OK },
+    { static_cast<int32_t>(E_SA_DIED), E_SA_DIED },
+    { static_cast<int32_t>(E_READ_PARCEL_ERROR), E_READ_PARCEL_ERROR },
+    { static_cast<int32_t>(E_WRITE_PARCEL_ERROR), E_WRITE_PARCEL_ERROR },
+    { static_cast<int32_t>(E_PUBLISH_FAIL), E_PUBLISH_FAIL },
+    { static_cast<int32_t>(E_TRANSACT_ERROR), E_TRANSACT_ERROR },
+    { static_cast<int32_t>(E_DEAL_FAILED), E_DEAL_FAILED },
+    { static_cast<int32_t>(E_PARAMETERS_INVALID), E_PARAMETERS_INVALID },
+    { static_cast<int32_t>(E_SET_RTC_FAILED), E_SET_RTC_FAILED },
+    { static_cast<int32_t>(E_NOT_FOUND), E_NOT_FOUND },
+    { static_cast<int32_t>(E_NO_PERMISSION), E_NO_PERMISSION },
+    { static_cast<int32_t>(E_FILE_ERROR), E_FILE_ERROR },
+    { static_cast<int32_t>(E_IMAGE_ERRCODE), E_IMAGE_ERRCODE },
+    { static_cast<int32_t>(E_NO_MEMORY), E_NO_MEMORY },
+    { static_cast<int32_t>(E_NOT_SYSTEM_APP), E_NOT_SYSTEM_APP },
+    { static_cast<int32_t>(E_USER_IDENTITY_ERROR), E_USER_IDENTITY_ERROR },
+    { static_cast<int32_t>(E_CHECK_DESCRIPTOR_ERROR), E_CHECK_DESCRIPTOR_ERROR },
+};
+
 ErrorCode WallpaperServiceProxy::ConvertIntToErrorCode(int32_t errorCode)
 {
-    ErrorCode wallpaperErrorCode = E_UNKNOWN;
-    switch (errorCode) {
-        case static_cast<int32_t>(E_OK):
-        case static_cast<int32_t>(E_SA_DIED):
-        case static_cast<int32_t>(E_READ_PARCEL_ERROR):
-        case static_cast<int32_t>(E_WRITE_PARCEL_ERROR):
-        case static_cast<int32_t>(E_PUBLISH_FAIL):
-        case static_cast<int32_t>(E_TRANSACT_ERROR):
-        case static_cast<int32_t>(E_DEAL_FAILED):
-        case static_cast<int32_t>(E_PARAMETERS_INVALID):
-        case static_cast<int32_t>(E_SET_RTC_FAILED):
-        case static_cast<int32_t>(E_NOT_FOUND):
-        case static_cast<int32_t>(E_NO_PERMISSION):
-        case static_cast<int32_t>(E_FILE_ERROR):
-        case static_cast<int32_t>(E_IMAGE_ERRCODE):
-        case static_cast<int32_t>(E_NO_MEMORY):
-        case static_cast<int32_t>(E_NOT_SYSTEM_APP):
-        case static_cast<int32_t>(E_USER_IDENTITY_ERROR):
-            wallpaperErrorCode = static_cast<ErrorCode>(errorCode);
-            break;
-        default:
-            break;
+    auto it = errorCodeMap.find(errorCode);
+    if (it == errorCodeMap.end()) {
+        return E_UNKNOWN;
     }
-    return wallpaperErrorCode;
+    return it->second;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

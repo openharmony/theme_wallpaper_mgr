@@ -66,7 +66,11 @@ void NapiWallpaperAbility::GetColorsInner(std::shared_ptr<GetContextInfo> contex
         if (!NapiWallpaperAbility::CheckValidArgWallpaperType(env, argc, argv[0], context)) {
             return napi_invalid_arg;
         }
-        napi_get_value_int32(env, argv[0], &context->wallpaperType);
+        auto res = napi_get_value_int32(env, argv[0], &context->wallpaperType);
+        if (res != napi_ok) {
+            HILOG_ERROR("get wallpaperType failed, res:%{public}d", res);
+            return res;
+        }
         HILOG_DEBUG("input wallpaperType : %{public}d", context->wallpaperType);
         return napi_ok;
     };
@@ -111,7 +115,11 @@ void NapiWallpaperAbility::GetIdInner(std::shared_ptr<GetContextInfo> context)
         if (!NapiWallpaperAbility::CheckValidArgWallpaperType(env, argc, argv[0], context)) {
             return napi_invalid_arg;
         }
-        napi_get_value_int32(env, argv[0], &context->wallpaperType);
+        auto res = napi_get_value_int32(env, argv[0], &context->wallpaperType);
+        if (res != napi_ok) {
+            HILOG_ERROR("get wallpaperType failed, res:%{public}d", res);
+            return res;
+        }
         HILOG_DEBUG("input wallpaperType : %{public}d", context->wallpaperType);
         return napi_ok;
     };
@@ -148,7 +156,11 @@ void NapiWallpaperAbility::GetFileInner(std::shared_ptr<GetFileContextInfo> cont
         if (!NapiWallpaperAbility::CheckValidArgWallpaperType(env, argc, argv[0], context)) {
             return napi_invalid_arg;
         }
-        napi_get_value_int32(env, argv[0], &context->wallpaperType);
+        auto res = napi_get_value_int32(env, argv[0], &context->wallpaperType);
+        if (res != napi_ok) {
+            HILOG_ERROR("get wallpaperType failed, res:%{public}d", res);
+            return res;
+        }
         HILOG_DEBUG("input wallpaperType : %{public}d", context->wallpaperType);
         return napi_ok;
     };
@@ -366,7 +378,11 @@ void NapiWallpaperAbility::RestoreInner(std::shared_ptr<SetContextInfo> context,
                 ErrorThrowType::PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE) + WALLPAPERTYPE_PARAMETER_TYPE);
             return napi_invalid_arg;
         }
-        napi_get_value_int32(env, argv[0], &context->wallpaperType);
+        auto res = napi_get_value_int32(env, argv[0], &context->wallpaperType);
+        if (res != napi_ok) {
+            HILOG_ERROR("get wallpaperType failed, res:%{public}d", res);
+            return res;
+        }
         HILOG_DEBUG("input wallpaperType : %{public}d", context->wallpaperType);
         return napi_pending_exception;
     };
@@ -502,7 +518,11 @@ void NapiWallpaperAbility::SetVideoInner(std::shared_ptr<SetContextInfo> context
             return napi_invalid_arg;
         }
         context->uri = WallpaperJSUtil::Convert2String(env, argv[0]);
-        napi_get_value_int32(env, argv[1], &context->wallpaperType);
+        auto res = napi_get_value_int32(env, argv[1], &context->wallpaperType);
+        if (res != napi_ok) {
+            HILOG_ERROR("get wallpaperType failed, res:%{public}d", res);
+            return res;
+        }
         HILOG_DEBUG("Input wallpaperType: %{public}d", context->wallpaperType);
         return napi_ok;
     };
@@ -563,7 +583,11 @@ void NapiWallpaperAbility::SetImageInput(std::shared_ptr<SetContextInfo> context
             }
             context->pixelMap = pixelMap;
         }
-        napi_get_value_int32(env, argv[1], &context->wallpaperType);
+        auto res = napi_get_value_int32(env, argv[1], &context->wallpaperType);
+        if (res != napi_ok) {
+            HILOG_ERROR("get wallpaperType failed, res:%{public}d", res);
+            return res;
+        }
         HILOG_DEBUG("input wallpaperType : %{public}d", context->wallpaperType);
         return napi_ok;
     };
@@ -624,7 +648,6 @@ napi_value NAPI_GetImage(napi_env env, napi_callback_info info)
 
 void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context, const ApiInfo &apiInfo)
 {
-    HILOG_DEBUG("GetImageInner in.");
     auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
         if (!NapiWallpaperAbility::IsValidArgCount(argc, 1)) {
             HILOG_DEBUG("input argc : %{public}zu", argc);
@@ -638,7 +661,11 @@ void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context
                 ErrorThrowType::PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE) + WALLPAPERTYPE_PARAMETER_TYPE);
             return napi_invalid_arg;
         }
-        napi_get_value_int32(env, argv[0], &context->wallpaperType);
+        auto res = napi_get_value_int32(env, argv[0], &context->wallpaperType);
+        if (res != napi_ok) {
+            HILOG_ERROR("get wallpaperType failed, res:%{public}d", res);
+            return res;
+        }
         return napi_ok;
     };
     auto output = [context](napi_env env, napi_value *result) -> napi_status {
@@ -649,7 +676,6 @@ void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context
         return napi_ok;
     };
     auto exec = [context, apiInfo](Call::Context *ctx) {
-        HILOG_DEBUG("exec GetImageInner.");
         std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
         ErrorCode wallpaperErrorCode = WallpaperMgrService::WallpaperManager::GetInstance().GetPixelMap(
             context->wallpaperType, apiInfo, pixelMap);
@@ -859,7 +885,11 @@ void NapiWallpaperAbility::SetCustomWallpaper(std::shared_ptr<SetContextInfo> co
             return napi_invalid_arg;
         }
         context->uri = WallpaperJSUtil::Convert2String(env, argv[0]);
-        napi_get_value_int32(env, argv[1], &context->wallpaperType);
+        auto res = napi_get_value_int32(env, argv[1], &context->wallpaperType);
+        if (res != napi_ok) {
+            HILOG_ERROR("get wallpaperType failed, res:%{public}d", res);
+            return res;
+        }
         HILOG_DEBUG("Input wallpaperType: %{public}d", context->wallpaperType);
         return napi_ok;
     };
@@ -920,7 +950,11 @@ void NapiWallpaperAbility::SetAllWallpapers(std::shared_ptr<SetContextInfo> cont
             return napi_invalid_arg;
         }
         WallpaperJSUtil::Convert2WallpaperInfos(env, argv[0], context->wallpaperInfos);
-        napi_get_value_int32(env, argv[1], &context->wallpaperType);
+        auto res = napi_get_value_int32(env, argv[1], &context->wallpaperType);
+        if (res != napi_ok) {
+            HILOG_ERROR("get wallpaperType failed, res:%{public}d", res);
+            return res;
+        }
         HILOG_DEBUG("Input wallpaperType: %{public}d", context->wallpaperType);
         return napi_ok;
     };
@@ -1026,7 +1060,11 @@ bool NapiWallpaperAbility::IsValidArgType(napi_env env, napi_value argValue, nap
 bool NapiWallpaperAbility::IsValidArgRange(napi_env env, napi_value argValue)
 {
     int wallpaperType;
-    napi_get_value_int32(env, argValue, &wallpaperType);
+    auto res = napi_get_value_int32(env, argValue, &wallpaperType);
+    if (res != napi_ok) {
+        HILOG_ERROR("get wallpaperType failed, res:%{public}d", res);
+        return res;
+    }
     return (wallpaperType != WALLPAPER_LOCKSCREEN && wallpaperType != WALLPAPER_SYSTEM) ? false : true;
 }
 
@@ -1047,14 +1085,22 @@ bool NapiWallpaperAbility::IsValidWallpaperInfos(napi_env env, napi_value argVal
 bool NapiWallpaperAbility::IsValidFoldStateRange(napi_env env, napi_value argValue)
 {
     int foldState;
-    napi_get_value_int32(env, argValue, &foldState);
+    auto res = napi_get_value_int32(env, argValue, &foldState);
+    if (res != napi_ok) {
+        HILOG_ERROR("get foldState failed, res:%{public}d", res);
+        return res;
+    }
     return foldState == NORMAL || foldState == UNFOLD_1 || foldState == UNFOLD_2;
 }
 
 bool NapiWallpaperAbility::IsValidRotateStateRange(napi_env env, napi_value argValue)
 {
     int rotateState;
-    napi_get_value_int32(env, argValue, &rotateState);
+    auto res = napi_get_value_int32(env, argValue, &rotateState);
+    if (res != napi_ok) {
+        HILOG_ERROR("get rotateState failed, res:%{public}d", res);
+        return res;
+    }
     return rotateState == PORT || rotateState == LAND;
 }
 
