@@ -184,8 +184,6 @@ private:
     int32_t Init();
     ServiceRunningState state_;
     void InitServiceHandler();
-    static std::mutex instanceLock_;
-    static sptr<WallpaperService> instance_;
     static std::shared_ptr<AppExecFwk::EventHandler> serviceHandler_;
     std::string wallpaperLockScreenFilePath_;
     std::string wallpaperSystemFilePath_;
