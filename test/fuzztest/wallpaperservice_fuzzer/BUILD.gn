@@ -119,10 +119,26 @@ setwallpaperpixelmapv9_test = {
   configFuzzer = "wallpapersetwallpaperpixelmapv9_fuzzer"
   source = "src/setwallpaperpixelmapv9_fuzz.cpp"
 }
+wallpapergetcorrespondwallpaper_test = {
+  targetName = "WallpaperGetcorrespondwallpaperFuzzTest"
+  configFuzzer = "wallpapergetcorrespondwallpaper_fuzzer"
+  source = "src/getcorrespondwallpaper_fuzzer.cpp"
+}
+wallpapersetallwallpapers_test = {
+  targetName = "WallpaperSetallwallpapersFuzzTest"
+  configFuzzer = "wallpapersetallwallpapers_fuzzer"
+  source = "src/setallwallpapers_fuzzer.cpp"
+}
 wallpaperstub_test = {
   targetName = "WallpaperStubFuzzTest"
   configFuzzer = "wallpaperstub_fuzzer"
   source = "src/wallpaperstub_fuzz.cpp"
+}
+
+wallpaperisdefaultwallpaperresource_test = {
+  targetName = "WallpaperIsDefaultWallpaperResourceFuzzTest"
+  configFuzzer = "wallpaperisdefaultwallpaperresource_fuzzer"
+  source = "src/isdefaultwallpaperresource_fuzzer.cpp"
 }
 
 wallpaper_fuzztests = [
@@ -146,7 +162,10 @@ wallpaper_fuzztests = [
   setwallpaper_test,
   setwallpaperv9_test,
   setwallpaperpixelmapv9_test,
+  wallpapergetcorrespondwallpaper_test,
+  wallpapersetallwallpapers_test,
   wallpaperstub_test,
+  wallpaperisdefaultwallpaperresource_test,
 ]
 foreach(item, wallpaper_fuzztests) {
   ohos_fuzztest(item.targetName) {
@@ -204,7 +223,9 @@ group("fuzztest") {
     ":WallpaperGetPixelMapFuzzTest",
     ":WallpaperGetPixelMapV9FuzzTest",
     ":WallpaperGetWallpaperIdFuzzTest",
+    ":WallpaperGetcorrespondwallpaperFuzzTest",
     ":WallpaperIsChangePermittedFuzzTest",
+    ":WallpaperIsDefaultWallpaperResourceFuzzTest",
     ":WallpaperIsOperationAllowedFuzzTest",
     ":WallpaperOffFuzzTest",
     ":WallpaperOnFuzzTest",
@@ -217,6 +238,7 @@ group("fuzztest") {
     ":WallpaperSetWallpaperFuzzTest",
     ":WallpaperSetWallpaperPixelmapV9FuzzTest",
     ":WallpaperSetWallpaperV9FuzzTest",
+    ":WallpaperSetallwallpapersFuzzTest",
     ":WallpaperStubFuzzTest",
   ]
 }
