@@ -19,10 +19,10 @@ import("//build/ohos.gni")
 import("//build/test.gni")
 
 ##############################fuzztest##########################################
-ohos_fuzztest("OnInitUserFuzzTest") {
+ohos_fuzztest("UpdataWallpaperMapFuzzTest") {
   module_out_path = "wallpaper_mgr/wallpaper_mgr"
 
-  fuzz_config_file = "${wallpaper_path}/test/fuzztest/oninituser_fuzzer"
+  fuzz_config_file = "${wallpaper_path}/test/fuzztest/theme_wallpaper_mgr_parcel/test/fuzztest/wallpapermanagerservice_fuzzer/wallpapermanager_service_fuzzer"
 
   include_dirs = [
     "${wallpaper_path}/services/include",
@@ -37,7 +37,7 @@ ohos_fuzztest("OnInitUserFuzzTest") {
     "-fno-omit-frame-pointer",
   ]
 
-  sources = [ "oninituser_fuzzer.cpp" ]
+  sources = [ "theme_wallpaper_mgr_parcel/test/fuzztest/wallpapermanagerservice_fuzzer/wallpapermanager_service_fuzzer.cpp" ]
 
   deps = [
     "${utils_path}:wallpaper_utils",
@@ -66,7 +66,7 @@ group("fuzztest") {
   deps = []
   deps += [
     # deps file
-    ":OnInitUserFuzzTest",
+    ":ClearRedundatFileFuzzTest",
   ]
 }
 ###############################################################################
