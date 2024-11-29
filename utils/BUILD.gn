@@ -30,6 +30,11 @@ ohos_shared_library("wallpaper_utils") {
     "dfx/hisysevent_adapter",
     "include",
   ]
+  cflags = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-Os",
+  ]
   external_deps = [
     "hilog:libhilog",
     "hisysevent:libhisysevent",

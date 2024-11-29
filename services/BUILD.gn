@@ -22,8 +22,6 @@ config("wallpaper_service_config") {
     "${wallpaper_path}/utils/dfx/hisysevent_adapter",
     "${wallpaper_path}/utils/dfx/hidumper_adapter",
   ]
-
-  cflags_cc = []
 }
 
 ohos_shared_library("wallpaper_service") {
@@ -68,9 +66,16 @@ ohos_shared_library("wallpaper_service") {
     "samgr:samgr_proxy",
     "window_manager:libwsutils",
   ]
+  cflags_cc = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-Os",
+  ]
+
   sanitize = {
     cfi = true
     cfi_cross_dso = true
+    cfi_vcall_icall_only = true
     debug = false
     integer_overflow = true
     boundary_sanitize = true

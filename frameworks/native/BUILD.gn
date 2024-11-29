@@ -23,7 +23,11 @@ config("wallpaper_manager_config") {
     "${wallpaper_path}/utils/include",
     "${wallpaper_path}/interfaces/inner_api/include",
   ]
-  cflags_cc = []
+  cflags_cc = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-Os",
+  ]
 }
 
 ohos_shared_library("wallpapermanager") {
