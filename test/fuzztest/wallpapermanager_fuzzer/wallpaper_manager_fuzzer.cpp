@@ -20,8 +20,9 @@
 #include "nativetoken_kit.h"
 #include "pixel_map.h"
 #include "token_setproc.h"
-#include "wallpaper_manager_common_info.h"
 #include "wallpaper_manager.h"
+#include "wallpaper_manager_client.h"
+#include "wallpaper_manager_common_info.h"
 
 using namespace OHOS::Security::AccessToken;
 using namespace OHOS::Media;
@@ -224,6 +225,62 @@ void SetCustomWallpaperFuzzTest(const uint8_t *data, size_t size)
     }
     WallpaperMgrService::WallpaperManager::GetInstance().SetCustomWallpaper(uri, wallpaperType);
 }
+
+void SetAllWallpapersFuzzTest(const uint8_t *data, size_t size)
+{
+    uint32_t wallpaperType = ConvertToUint32(data);
+    data = data + OFFSET;
+    size = size - OFFSET;
+    GrantNativePermission();
+    std::vector<WallpaperInfo> allWallpaperInfos;
+    WallpaperInfo wallpaperInfo;
+    wallpaperInfo.foldState = FoldState::NORMAL;
+    wallpaperInfo.rotateState = RotateState::PORT;
+    wallpaperInfo.source = std::string(reinterpret_cast<const char *>(data), size);
+    allWallpaperInfos.push_back(wallpaperInfo);
+    WallpaperMgrService::WallpaperManager::GetInstance().SetAllWallpapers(allWallpaperInfos, wallpaperType);
+    wallpaperType = 0;
+    WallpaperMgrService::WallpaperManager::GetInstance().SetAllWallpapers(allWallpaperInfos, wallpaperType);
+}
+
+void GetCorrespondWallpaperFuzzTest(const uint8_t *data, size_t size)
+{
+    uint32_t wallpaperType = ConvertToUint32(data);
+    GrantNativePermission();
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+    WallpaperMgrService::WallpaperManager::GetInstance().GetCorrespondWallpaper(
+        wallpaperType, FoldState::NORMAL, RotateState::PORT, pixelMap);
+}
+
+void IsDefaultWallpaperResourceFuzzTest(const uint8_t *data, size_t size)
+{
+    uint32_t userId = ConvertToUint32(data);
+    data = data + OFFSET;
+    size = size - OFFSET;
+    uint32_t wallpaperType = ConvertToUint32(data);
+    GrantNativePermission();
+    WallpaperMgrService::WallpaperManagerClient::GetInstance().IsDefaultWallpaperResource(userId, wallpaperType);
+    WallpaperMgrService::WallpaperManager::GetInstance().IsDefaultWallpaperResource(userId, wallpaperType);
+}
+
+void SetAllWallpapersClientFuzzTest(const uint8_t *data, size_t size)
+{
+    uint32_t wallpaperType = ConvertToUint32(data);
+    data = data + OFFSET;
+    size = size - OFFSET;
+    GrantNativePermission();
+    std::vector<WallpaperInfo> allWallpaperInfos;
+    WallpaperInfo wallpaperInfo;
+    wallpaperInfo.foldState = FoldState::NORMAL;
+    wallpaperInfo.rotateState = RotateState::PORT;
+    wallpaperInfo.source = std::string(reinterpret_cast<const char *>(data), size);
+    allWallpaperInfos.push_back(wallpaperInfo);
+    WallpaperMgrService::WallpaperManagerClient::GetInstance().SetAllWallpapers(allWallpaperInfos, wallpaperType);
+    wallpaperType = 0;
+    WallpaperMgrService::WallpaperManagerClient::GetInstance().SetAllWallpapers(allWallpaperInfos, wallpaperType);
+    WallpaperMgrService::WallpaperManager::GetInstance().SetAllWallpapers(allWallpaperInfos, wallpaperType);
+}
+
 } // namespace OHOS
 
 /* Fuzzer entry point */
@@ -244,5 +301,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::SendEventFuzzTest(data, size);
     OHOS::SetVideoFuzzTest(data, size);
     OHOS::SetCustomWallpaperFuzzTest(data, size);
+    OHOS::SetAllWallpapersFuzzTest(data, size);
+    OHOS::GetCorrespondWallpaperFuzzTest(data, size);
+    OHOS::IsDefaultWallpaperResourceFuzzTest(data, size);
+    OHOS::SetAllWallpapersClientFuzzTest(data, size);
     return 0;
 }
