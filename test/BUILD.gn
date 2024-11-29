@@ -12,6 +12,8 @@
 import("//build/test.gni")
 import("../wallpaper.gni")
 
+## UnitTest wallpaper_test {{{
+
 ohos_unittest("wallpaper_test") {
   testonly = true
   resource_config_file =
