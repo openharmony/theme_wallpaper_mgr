@@ -79,6 +79,7 @@ ohos_shared_library("wallpaperextensionability") {
   sanitize = {
     cfi = true
     cfi_cross_dso = true
+    cfi_vcall_icall_only = true
     debug = false
     integer_overflow = true
     boundary_sanitize = true
@@ -112,6 +113,7 @@ ohos_shared_library("wallpaper_extension_module") {
   sanitize = {
     cfi = true
     cfi_cross_dso = true
+    cfi_vcall_icall_only = true
     debug = false
     integer_overflow = true
     boundary_sanitize = true

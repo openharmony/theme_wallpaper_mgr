@@ -40,9 +40,15 @@ ohos_shared_library("wallpaper") {
     "player_framework:media_client",
   ]
 
+  cflags_cc = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-Os",
+  ]
   sanitize = {
     cfi = true
     cfi_cross_dso = true
+    cfi_vcall_icall_only = true
     debug = false
     integer_overflow = true
     boundary_sanitize = true

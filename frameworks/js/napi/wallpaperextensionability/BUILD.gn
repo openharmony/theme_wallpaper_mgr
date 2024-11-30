@@ -43,10 +43,16 @@ ohos_shared_library("wallpaperextensionability_napi") {
     ":wallpaper_extension_ability_js",
   ]
 
+  cflags_cc = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-Os",
+  ]
   external_deps = [ "napi:ace_napi" ]
   sanitize = {
     cfi = true
     cfi_cross_dso = true
+    cfi_vcall_icall_only = true
     debug = false
     integer_overflow = true
     boundary_sanitize = true
