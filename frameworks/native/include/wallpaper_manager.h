@@ -194,6 +194,7 @@ private:
     ErrorCode GetFdByPath(
         const WallpaperInfo &wallpaperInfo, WallpaperPictureInfo &wallpaperPictureInfo, std::string fileRealPath);
     void CloseWallpaperInfoFd(std::vector<WallpaperPictureInfo> wallpaperPictureInfos);
+    int32_t ConverString2Int(const std::string &value);
     sptr<IWallpaperService> wallpaperProxy_{};
     sptr<IRemoteObject::DeathRecipient> deathRecipient_{};
     std::mutex wallpaperFdLock_;
