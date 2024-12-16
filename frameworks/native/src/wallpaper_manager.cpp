@@ -52,6 +52,7 @@ constexpr int32_t MAX_TIME = 5000;
 constexpr int32_t MAX_VIDEO_SIZE = 104857600;
 constexpr int32_t MAX_RETRY_TIMES = 10;
 constexpr int32_t TIME_INTERVAL = 500000;
+constexpr int32_t BASE_NUMBER = 10;
 constexpr mode_t MODE = 0660;
 
 using namespace OHOS::Media;
@@ -621,7 +622,7 @@ bool WallpaperManager::CheckVideoFormat(const std::string &fileName)
     }
 
     if (metaData.find(Media::AV_KEY_DURATION) != metaData.end()) {
-        int32_t videoDuration = std::stoi(metaData[Media::AV_KEY_DURATION]);
+        int32_t videoDuration = ConverString2Int(metaData[Media::AV_KEY_DURATION]);
         if (videoDuration < MIN_TIME || videoDuration > MAX_TIME) {
             HILOG_ERROR("The durations of this vodeo is not between 0s ~ 5s!");
             close(videoFd);
@@ -795,6 +796,19 @@ bool WallpaperManager::IsDefaultWallpaperResource(int32_t userId, int32_t wallpa
         return false;
     }
     return wallpaperServerProxy->IsDefaultWallpaperResource(userId, wallpaperType);
+}
+
+int32_t WallpaperManager::ConverString2Int(const std::string &value)
+{
+    int32_t result = -1;
+    if (!value.empty() && std::all_of(value.begin(), value.end(), ::isdigit)) {
+        char *endPtr = nullptr;
+        result = strtol(value.c_str(), &endPtr, BASE_NUMBER);
+        if (*endPtr != '\0') {
+            return -1;
+        }
+    }
+    return result;
 }
 
 } // namespace WallpaperMgrService
