@@ -36,6 +36,7 @@ ohos_shared_library("wallpaper") {
     "hilog:libhilog",
     "image_framework:image",
     "image_framework:image_native",
+    "ipc:ipc_single",
     "napi:ace_napi",
     "player_framework:media_client",
   ]
