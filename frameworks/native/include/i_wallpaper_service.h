@@ -51,9 +51,13 @@ public:
     * @return  true or false
     */
     virtual ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) = 0;
+    virtual ErrorCode SetAllWallpapers(
+        std::vector<WallpaperPictureInfo> wallpaperPictureInfo, int32_t wallpaperType) = 0;
     virtual ErrorCode SetWallpaperByPixelMap(
         std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType) = 0;
     virtual ErrorCode GetPixelMap(int32_t wallpaperType, FdInfo &fdInfo) = 0;
+    virtual ErrorCode GetCorrespondWallpaper(
+        int32_t wallpaperType, int32_t foldState, int32_t rotateState, FdInfo &fdInfo) = 0;
     /**
      * Obtains the WallpaperColorsCollection instance for the wallpaper of the specified type.
      * @param wallpaperType Wallpaper type, values for WALLPAPER_SYSTEM or WALLPAPER_LOCKSCREEN

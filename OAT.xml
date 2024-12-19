@@ -82,6 +82,18 @@ Note:If the text contains special characters, please escape them according to th
                             desc="jpeg for prebuild"/>
                 <filteritem type="filepath" name="frameworks/native/data/wallpaperlockdefault.jpeg" 
                             desc="jpeg for prebuild"/>
+                <filteritem type="filepath" name="test/unittest/resource/normal_land_wallpaper.jpg" 
+                            desc="jpg for unittest"/>
+                <filteritem type="filepath" name="test/unittest/resource/normal_port_wallpaper.jpg" 
+                            desc="jpg for unittest"/>
+                <filteritem type="filepath" name="test/unittest/resource/unfold1_land_wallpaper.jpg" 
+                            desc="jpg for unittest"/>
+                <filteritem type="filepath" name="test/unittest/resource/unfold1_port_wallpaper.jpg" 
+                            desc="jpg for unittest"/>
+                <filteritem type="filepath" name="test/unittest/resource/unfold2_land_wallpaper.jpg" 
+                            desc="jpg for unittest"/>
+                <filteritem type="filepath" name="test/unittest/resource/unfold2_port_wallpaper.jpg" 
+                            desc="jpg for unittest"/>
             </filefilter>
         </filefilterlist>
     </oatconfig>

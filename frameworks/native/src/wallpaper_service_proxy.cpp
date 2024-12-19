@@ -524,6 +524,107 @@ std::vector<std::uint8_t> WallpaperServiceProxy::PixelMapToVector(std::shared_pt
     return value;
 }
 
+ErrorCode WallpaperServiceProxy::SetAllWallpapers(
+    std::vector<WallpaperPictureInfo> allWallpaperInfos, int32_t wallpaperType)
+{
+    return SetAllWallpapersInner(
+        allWallpaperInfos, wallpaperType, WallpaperServiceIpcInterfaceCode::SET_ALL_WALLPAPERS);
+}
+
+ErrorCode WallpaperServiceProxy::SetAllWallpapersInner(
+    std::vector<WallpaperPictureInfo> allWallpaperInfos, int32_t wallpaperType, WallpaperServiceIpcInterfaceCode code)
+{
+    HILOG_DEBUG("WallpaperServiceProxy::SetAllWallpapersInner --> start.");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        HILOG_ERROR("Failed to write parcelable!");
+        return E_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteInt32(allWallpaperInfos.size())) {
+        HILOG_ERROR("Failed to WriteInt32!");
+        return E_WRITE_PARCEL_ERROR;
+    }
+    for (const auto &wallpaperInfo : allWallpaperInfos) {
+        if (!data.WriteInt32(wallpaperInfo.foldState)) {
+            HILOG_ERROR("Failed to WriteInt32!");
+            return E_WRITE_PARCEL_ERROR;
+        }
+        if (!data.WriteInt32(wallpaperInfo.rotateState)) {
+            HILOG_ERROR("Failed to WriteInt32!");
+            return E_WRITE_PARCEL_ERROR;
+        }
+        if (!data.WriteFileDescriptor(wallpaperInfo.fd)) {
+            HILOG_ERROR("Failed to WriteInt32!");
+            return E_WRITE_PARCEL_ERROR;
+        }
+        if (!data.WriteInt32(wallpaperInfo.length)) {
+            HILOG_ERROR("Failed to WriteInt32!");
+            return E_WRITE_PARCEL_ERROR;
+        }
+    }
+    if (!data.WriteInt32(wallpaperType)) {
+        HILOG_ERROR("Failed to WriteInt32!");
+        return E_WRITE_PARCEL_ERROR;
+    }
+
+    int32_t result = Remote()->SendRequest(static_cast<uint32_t>(code), data, reply, option);
+    if (result != ERR_NONE) {
+        HILOG_ERROR("WallpaperCallbackProxy::SetAllWallpapersInner fail, result = %{public}d.", result);
+        return E_DEAL_FAILED;
+    }
+
+    return ConvertIntToErrorCode(reply.ReadInt32());
+}
+
+ErrorCode WallpaperServiceProxy::GetCorrespondWallpaper(
+    int32_t wallpaperType, int32_t foldState, int32_t rotateState, IWallpaperService::FdInfo &fdInfo)
+{
+    return GetCorrespondWallpaperInner(
+        wallpaperType, foldState, rotateState, WallpaperServiceIpcInterfaceCode::GET_CORRESPOND_WALLPAPER, fdInfo);
+}
+
+ErrorCode WallpaperServiceProxy::GetCorrespondWallpaperInner(int32_t wallpaperType, int32_t foldState,
+    int32_t rotateState, WallpaperServiceIpcInterfaceCode code, IWallpaperService::FdInfo &fdInfo)
+{
+    HILOG_DEBUG("WallpaperServiceProxy::getPixelMap --> start.");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        HILOG_ERROR("Failed to write parcelable!");
+        return E_WRITE_PARCEL_ERROR;
+    }
+
+    if (!data.WriteInt32(wallpaperType)) {
+        HILOG_ERROR("Failed to WriteInt32!");
+        return E_WRITE_PARCEL_ERROR;
+    }
+
+    if (!data.WriteInt32(foldState)) {
+        HILOG_ERROR("Failed to WriteInt32!");
+        return E_WRITE_PARCEL_ERROR;
+    }
+    if (!data.WriteInt32(rotateState)) {
+        HILOG_ERROR("Failed to WriteInt32!");
+        return E_WRITE_PARCEL_ERROR;
+    }
+    int32_t result = Remote()->SendRequest(static_cast<uint32_t>(code), data, reply, option);
+    if (result != ERR_NONE) {
+        HILOG_ERROR("WallpaperServiceProxy::GetPixelMapInner fail, result = %{public}d!", result);
+        return E_DEAL_FAILED;
+    }
+    ErrorCode wallpaperErrorCode = ConvertIntToErrorCode(reply.ReadInt32());
+    if (wallpaperErrorCode == E_OK) {
+        fdInfo.size = reply.ReadInt32();
+        fdInfo.fd = reply.ReadFileDescriptor();
+    }
+    return wallpaperErrorCode;
+}
+
 ErrorCode WallpaperServiceProxy::ConvertIntToErrorCode(int32_t errorCode)
 {
     ErrorCode wallpaperErrorCode = E_UNKNOWN;

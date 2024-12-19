@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-#include <pthread.h>
 #include <unistd.h>
 #include <uv.h>
 
@@ -33,6 +32,7 @@ namespace OHOS {
 namespace WallpaperNAPI {
 const int32_t ONE = 1;
 const int32_t TWO = 2;
+const int32_t THREE = 3;
 const int32_t EVENTTYPESIZE = 64;
 const int32_t BUFFERSIZE = 100;
 const int32_t PARAMETER_ERROR_CODE = 401;
@@ -633,7 +633,7 @@ void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context
             return napi_invalid_arg;
         }
         if (!NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_number)
-            || !NapiWallpaperAbility::IsValidArgRange(env, argv[1])) {
+            || !NapiWallpaperAbility::IsValidArgRange(env, argv[0])) {
             context->SetErrInfo(
                 ErrorThrowType::PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE) + WALLPAPERTYPE_PARAMETER_TYPE);
             return napi_invalid_arg;
@@ -666,6 +666,63 @@ void NapiWallpaperAbility::GetImageInner(std::shared_ptr<GetContextInfo> context
             } else {
                 context->SetErrInfo(jsErrorInfo.code, jsErrorInfo.message);
             }
+        }
+    };
+    context->SetAction(std::move(input), std::move(output));
+    context->SetExecution(std::move(exec));
+}
+
+napi_value NAPI_GetCorrespondWallpaper(napi_env env, napi_callback_info info)
+{
+    auto context = std::make_shared<GetContextInfo>();
+    ApiInfo apiInfo{ true, true };
+    NapiWallpaperAbility::GetCorrespondWallpaperInner(context, apiInfo);
+    Call call(env, info, context, TWO, apiInfo.needException);
+    return call.AsyncCall(env, "getCorrespondWallpaper");
+}
+
+void NapiWallpaperAbility::GetCorrespondWallpaperInner(std::shared_ptr<GetContextInfo> context, const ApiInfo &apiInfo)
+{
+    auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
+        if (!IsValidArgCount(argc, THREE)) {
+            context->SetErrInfo(PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE) + PARAMETER_COUNT);
+            return napi_invalid_arg;
+        }
+        if (!IsValidArgType(env, argv[0], napi_number) || !IsValidArgRange(env, argv[0])) {
+            context->SetErrInfo(PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE) + WALLPAPERTYPE_PARAMETER_TYPE);
+            return napi_invalid_arg;
+        }
+        if (!IsValidArgType(env, argv[1], napi_number) || !IsValidFoldStateRange(env, argv[1])) {
+            context->SetErrInfo(PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE) + FOLDSTATE_PARAMETER_TYPE);
+            return napi_invalid_arg;
+        }
+        if (!IsValidArgType(env, argv[2], napi_number) || !IsValidRotateStateRange(env, argv[2])) {
+            context->SetErrInfo(PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE) + ROTATESTATE_PARAMETER_TYPE);
+            return napi_invalid_arg;
+        }
+        napi_get_value_int32(env, argv[0], &context->wallpaperType);
+        napi_get_value_int32(env, argv[1], &context->foldState);
+        napi_get_value_int32(env, argv[2], &context->rotateState);
+        return napi_ok;
+    };
+    auto output = [context](napi_env env, napi_value *result) -> napi_status {
+        napi_value pixelVal =
+            context->pixelMap != nullptr ? PixelMapNapi::CreatePixelMap(env, std::move(context->pixelMap)) : nullptr;
+        *result = pixelVal;
+        return napi_ok;
+    };
+    auto exec = [context, apiInfo](Call::Context *ctx) {
+        std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+        ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().GetCorrespondWallpaper(
+            context->wallpaperType, context->foldState, context->rotateState, pixelMap);
+        if (wallpaperErrorCode == E_OK) {
+            context->status = napi_ok;
+            context->pixelMap = pixelMap != nullptr ? std::move(pixelMap) : nullptr;
+            return;
+        }
+        if (apiInfo.needException) {
+            JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(wallpaperErrorCode);
+            context->SetErrInfo(jsErrorInfo.code, jsErrorInfo.message);
         }
     };
     context->SetAction(std::move(input), std::move(output));
@@ -826,6 +883,67 @@ void NapiWallpaperAbility::SetCustomWallpaper(std::shared_ptr<SetContextInfo> co
     context->SetExecution(std::move(exec));
 }
 
+napi_value NAPI_SetAllWallpapers(napi_env env, napi_callback_info info)
+{
+    auto context = std::make_shared<SetContextInfo>();
+    NapiWallpaperAbility::SetAllWallpapers(context);
+    Call call(env, info, context, TWO, true);
+    return call.AsyncCall(env);
+}
+
+void NapiWallpaperAbility::SetAllWallpapers(std::shared_ptr<SetContextInfo> context)
+{
+    auto input = [context](napi_env env, size_t argc, napi_value *argv, napi_value self) -> napi_status {
+        if (argc < TWO) {
+            HILOG_ERROR("Input argc: %{public}zu", argc);
+            context->SetErrInfo(
+                ErrorThrowType::PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE) + PARAMETER_COUNT);
+            return napi_invalid_arg;
+        }
+        bool isArray = false;
+        napi_is_array(env, argv[0], &isArray);
+        if (!NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_object)
+            || !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_number)
+            || !NapiWallpaperAbility::IsValidArgRange(env, argv[1]) || !isArray) {
+            context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE)
+                                                                     + "The first parameter type must be "
+                                                                       "Array<WallpaperInfo>.The second type must be "
+                                                                       "WallpaperType.");
+            return napi_invalid_arg;
+        }
+        if (!NapiWallpaperAbility::IsValidWallpaperInfos(env, argv[0])) {
+            context->SetErrInfo(ErrorThrowType::PARAMETER_ERROR, std::string(PARAMETER_ERROR_MESSAGE)
+                                                                     + "The first parameter type must be "
+                                                                       "Array<WallpaperInfo>,"
+                                                                       "must include wallpaper with FoldState NORMAL "
+                                                                       "and RotateState PORTRAIT.");
+            return napi_invalid_arg;
+        }
+        WallpaperJSUtil::Convert2WallpaperInfos(env, argv[0], context->wallpaperInfos);
+        auto res = napi_get_value_int32(env, argv[1], &context->wallpaperType);
+        if (res != napi_ok) {
+            HILOG_ERROR("get wallpaperType failed, res:%{public}d", res);
+            return res;
+        }
+        HILOG_DEBUG("Input wallpaperType: %{public}d", context->wallpaperType);
+        return napi_ok;
+    };
+
+    auto exec = [context](Call::Context *ctx) {
+        ErrorCode wallpaperErrorCode = WallpaperMgrService::WallpaperManager::GetInstance().SetAllWallpapers(
+            context->wallpaperInfos, context->wallpaperType);
+        if (wallpaperErrorCode == E_OK) {
+            context->status = napi_ok;
+        } else {
+            JsErrorInfo jsErrorInfo = JsError::ConvertErrorCode(wallpaperErrorCode);
+            context->SetErrInfo(jsErrorInfo.code, jsErrorInfo.message);
+        }
+        HILOG_DEBUG("Exec context status:[%{public}d]", context->status);
+    };
+    context->SetAction(std::move(input), nullptr);
+    context->SetExecution(std::move(exec));
+}
+
 NapiWallpaperAbility::NapiWallpaperAbility(napi_env env, napi_value callback) : env_(env)
 {
     napi_create_reference(env, callback, 1, &callback_);
@@ -914,6 +1032,42 @@ bool NapiWallpaperAbility::IsValidArgRange(napi_env env, napi_value argValue)
     int wallpaperType;
     napi_get_value_int32(env, argValue, &wallpaperType);
     return (wallpaperType != WALLPAPER_LOCKSCREEN && wallpaperType != WALLPAPER_SYSTEM) ? false : true;
+}
+
+bool NapiWallpaperAbility::IsValidWallpaperInfos(napi_env env, napi_value argValue)
+{
+    std::vector<WallpaperInfo> wallpaperInfos;
+    if (WallpaperJSUtil::Convert2WallpaperInfos(env, argValue, wallpaperInfos) != napi_ok) {
+        return false;
+    }
+    for (const auto &wallpaperInfo : wallpaperInfos) {
+        if (wallpaperInfo.foldState == FoldState::NORMAL && wallpaperInfo.rotateState == RotateState::PORT) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool NapiWallpaperAbility::IsValidFoldStateRange(napi_env env, napi_value argValue)
+{
+    int foldState;
+    auto res = napi_get_value_int32(env, argValue, &foldState);
+    if (res != napi_ok) {
+        HILOG_ERROR("get foldState failed, res:%{public}d", res);
+        return res;
+    }
+    return foldState == NORMAL || foldState == UNFOLD_1 || foldState == UNFOLD_2;
+}
+
+bool NapiWallpaperAbility::IsValidRotateStateRange(napi_env env, napi_value argValue)
+{
+    int rotateState;
+    auto res = napi_get_value_int32(env, argValue, &rotateState);
+    if (res != napi_ok) {
+        HILOG_ERROR("get rotateState failed, res:%{public}d", res);
+        return res;
+    }
+    return rotateState == PORT || rotateState == LAND;
 }
 
 bool NapiWallpaperAbility::CheckValidArgWallpaperType(

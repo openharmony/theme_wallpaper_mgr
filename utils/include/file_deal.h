@@ -29,6 +29,7 @@ public:
     static bool Mkdir(const std::string &path);
     static bool CopyFile(const std::string &sourceFile, const std::string &newFile);
     static bool DeleteFile(const std::string &sourceFile);
+    static bool DeleteDir(const std::string &path, bool deleteRootDir = true);
     static bool IsFileExist(const std::string &name);
     static std::string GetExtension(const std::string &filePath);
     static bool GetRealPath(const std::string &inOriPath, std::string &outRealPath);
