@@ -43,4 +43,20 @@ enum WallpaperResourceType {
     PACKAGE
 };
 
+enum FoldState {
+    NORMAL,
+    UNFOLD_1,
+    UNFOLD_2
+};
+
+enum RotateState {
+    PORT,
+    LAND
+};
+
+struct WallpaperInfo {
+    FoldState foldState;
+    RotateState rotateState;
+    std::string source;
+};
 #endif

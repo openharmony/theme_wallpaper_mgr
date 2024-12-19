@@ -46,8 +46,19 @@ constexpr int32_t FOO_MAX_LEN = 60000000;
 constexpr int32_t TEST_USERID = 99;
 constexpr int32_t TEST_USERID1 = 98;
 constexpr int32_t INVALID_USERID = -1;
+constexpr int32_t NORMAL = 0;
+constexpr int32_t UNFOLD_1 = 1;
+constexpr int32_t UNFOLD_2 = 1;
+constexpr int32_t PORT = 0;
+constexpr int32_t LAND = 1;
 uint64_t selfTokenID_ = 0;
 constexpr const char *URI = "/data/test/theme/wallpaper/wallpaper_test.JPG";
+constexpr const char *NORMAL_PORT_URI = "/data/test/theme/wallpaper/normal_port_wallpaper.jpg";
+constexpr const char *NORMAL_LAND_URI = "/data/test/theme/wallpaper/normal_land_wallpaper.jpg";
+constexpr const char *UNFOLD1_PORT_URI = "/data/test/theme/wallpaper/unfold1_port_wallpaper.jpg";
+constexpr const char *UNFOLD1_LAND_URI = "/data/test/theme/wallpaper/unfold1_land_wallpaper.jpg";
+constexpr const char *UNFOLD2_PORT_URI = "/data/test/theme/wallpaper/unfold2_port_wallpaper.jpg";
+constexpr const char *UNFOLD2_LAND_URI = "/data/test/theme/wallpaper/unfold2_land_wallpaper.jpg";
 constexpr const char *URI_ZIP = "/data/test/theme/wallpaper/test.zip";
 constexpr const char *URI_30FPS_3S_MP4 = "/data/test/theme/wallpaper/30fps_3s.mp4";
 constexpr const char *URI_15FPS_7S_MP4 = "/data/test/theme/wallpaper/15fps_7s.mp4";
@@ -116,6 +127,13 @@ HapInfoParams infoParams = { .userID = 1,
     .appIDDesc = "test",
     .apiVersion = 9,
     .isSystemApp = true };
+
+static WallpaperInfo wallpaperInfo_normal_port = { FoldState::NORMAL, RotateState::PORT, NORMAL_PORT_URI };
+static WallpaperInfo wallpaperInfo_normal_land = { FoldState::NORMAL, RotateState::LAND, NORMAL_LAND_URI };
+static WallpaperInfo wallpaperInfo_unfold1_port = { FoldState::UNFOLD_1, RotateState::PORT, UNFOLD1_PORT_URI };
+static WallpaperInfo wallpaperInfo_unfold1_land = { FoldState::UNFOLD_1, RotateState::LAND, UNFOLD1_LAND_URI };
+static WallpaperInfo wallpaperInfo_unfold2_port = { FoldState::UNFOLD_2, RotateState::PORT, UNFOLD2_PORT_URI };
+static WallpaperInfo wallpaperInfo_unfold2_land = { FoldState::UNFOLD_2, RotateState::LAND, UNFOLD2_LAND_URI };
 
 void GrantNativePermission()
 {
@@ -856,8 +874,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri003, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaperByUri003  begin");
     ApiInfo apiInfo{ false, false };
-    ErrorCode wallpaperErrorCode =
-        WallpaperManager::GetInstance().SetWallpaper(URI, INVALID_WALLPAPER_TYPE, apiInfo);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().SetWallpaper(URI, INVALID_WALLPAPER_TYPE, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_PARAMETERS_INVALID) << "Failed to throw error";
 }
 
@@ -888,7 +905,7 @@ HWTEST_F(WallpaperTest, SetWallpaperByUri005, TestSize.Level0)
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode =
         WallpaperManager::GetInstance().SetWallpaper("../data/test/theme/wallpaper/errorURI", LOCKSCREEN, apiInfo);
-    EXPECT_EQ(wallpaperErrorCode, E_FILE_ERROR) << "Failed to return error";
+    EXPECT_EQ(wallpaperErrorCode, E_PARAMETERS_INVALID) << "Failed to return error";
 }
 
 /**
@@ -1124,7 +1141,7 @@ HWTEST_F(WallpaperTest, SetVideo002, TestSize.Level0)
     HILOG_INFO("SetVideo002 begin");
     std::string errUri = "errorPath/zm_30fps_4s.mp4";
     ErrorCode ret = WallpaperManager::GetInstance().SetVideo(errUri, SYSTYEM);
-    EXPECT_EQ(ret, E_FILE_ERROR);
+    EXPECT_EQ(ret, E_PARAMETERS_INVALID);
 }
 
 /**
@@ -1177,7 +1194,7 @@ HWTEST_F(WallpaperTest, SetVideo006, TestSize.Level0)
     HILOG_INFO("SetVideo006 begin");
     std::string errUri = "errorPath/zm_30fps_4s.mp4";
     ErrorCode ret = WallpaperManager::GetInstance().SetVideo(errUri, LOCKSCREEN);
-    EXPECT_EQ(ret, E_FILE_ERROR);
+    EXPECT_EQ(ret, E_PARAMETERS_INVALID);
 }
 
 /**
@@ -1331,5 +1348,220 @@ HWTEST_F(WallpaperTest, RegisterWallpaperListener_001, TestSize.Level0)
     bool res = WallpaperManager::GetInstance().RegisterWallpaperListener();
     EXPECT_EQ(res, true);
 }
+
+/*********************   SetAllWallpapers   *********************/
+/**
+* @tc.name: SetAllWallpapers001
+* @tc.desc: SetAllWallpapers normal device with wallpaperType[0]
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, SetAllWallpapers001, TestSize.Level0)
+{
+    HILOG_INFO("SetAllWallpapers001 begin");
+    std::vector<WallpaperInfo> wallpaperInfo;
+    wallpaperInfo.push_back(wallpaperInfo_normal_port);
+    wallpaperInfo.push_back(wallpaperInfo_normal_land);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().SetAllWallpapers(wallpaperInfo, SYSTYEM);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to SetAllWallpapers";
+}
+
+/**
+* @tc.name: SetAllWallpapers002
+* @tc.desc: SetAllWallpapers normal device with wallpaperType[1]
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, SetAllWallpapers002, TestSize.Level0)
+{
+    HILOG_INFO("SetAllWallpapers002 begin");
+    std::vector<WallpaperInfo> wallpaperInfo;
+    wallpaperInfo.push_back(wallpaperInfo_normal_port);
+    wallpaperInfo.push_back(wallpaperInfo_normal_land);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().SetAllWallpapers(wallpaperInfo, LOCKSCREEN);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to SetAllWallpapers";
+}
+
+/**
+* @tc.name: SetAllWallpapers003
+* @tc.desc: SetAllWallpapers unfold_1 device with wallpaperType[0]
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, SetAllWallpapers003, TestSize.Level0)
+{
+    HILOG_INFO("SetAllWallpapers003 begin");
+    std::vector<WallpaperInfo> wallpaperInfo;
+    wallpaperInfo.push_back(wallpaperInfo_normal_port);
+    wallpaperInfo.push_back(wallpaperInfo_normal_land);
+    wallpaperInfo.push_back(wallpaperInfo_unfold1_port);
+    wallpaperInfo.push_back(wallpaperInfo_unfold1_land);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().SetAllWallpapers(wallpaperInfo, SYSTYEM);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to SetAllWallpapers";
+}
+
+/**
+* @tc.name: SetAllWallpapers004
+* @tc.desc: SetAllWallpapers unfold_1 device with wallpaperType[1]
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, SetAllWallpapers004, TestSize.Level0)
+{
+    HILOG_INFO("SetAllWallpapers004 begin");
+    std::vector<WallpaperInfo> wallpaperInfo;
+    wallpaperInfo.push_back(wallpaperInfo_normal_port);
+    wallpaperInfo.push_back(wallpaperInfo_normal_land);
+    wallpaperInfo.push_back(wallpaperInfo_unfold1_port);
+    wallpaperInfo.push_back(wallpaperInfo_unfold1_land);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().SetAllWallpapers(wallpaperInfo, LOCKSCREEN);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to SetAllWallpapers";
+}
+
+/**
+* @tc.name: SetAllWallpapers005
+* @tc.desc: SetAllWallpapers unfold_2 device with wallpaperType[0]
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, SetAllWallpapers005, TestSize.Level0)
+{
+    HILOG_INFO("SetAllWallpapers005 begin");
+    std::vector<WallpaperInfo> wallpaperInfo;
+    wallpaperInfo.push_back(wallpaperInfo_normal_port);
+    wallpaperInfo.push_back(wallpaperInfo_normal_land);
+    wallpaperInfo.push_back(wallpaperInfo_unfold1_port);
+    wallpaperInfo.push_back(wallpaperInfo_unfold1_land);
+    wallpaperInfo.push_back(wallpaperInfo_unfold2_port);
+    wallpaperInfo.push_back(wallpaperInfo_unfold2_land);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().SetAllWallpapers(wallpaperInfo, SYSTYEM);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to SetAllWallpapers";
+}
+
+/**
+* @tc.name: SetAllWallpapers006
+* @tc.desc: SetAllWallpapers unfold_2 device with wallpaperType[1]
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, SetAllWallpapers006, TestSize.Level0)
+{
+    HILOG_INFO("SetAllWallpapers006 begin");
+    std::vector<WallpaperInfo> wallpaperInfo;
+    wallpaperInfo.push_back(wallpaperInfo_normal_port);
+    wallpaperInfo.push_back(wallpaperInfo_normal_land);
+    wallpaperInfo.push_back(wallpaperInfo_unfold1_port);
+    wallpaperInfo.push_back(wallpaperInfo_unfold1_land);
+    wallpaperInfo.push_back(wallpaperInfo_unfold2_port);
+    wallpaperInfo.push_back(wallpaperInfo_unfold2_land);
+    ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().SetAllWallpapers(wallpaperInfo, LOCKSCREEN);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to SetAllWallpapers";
+}
+
+/*********************   SetAllWallpapers   *********************/
+
+/*********************   GetCorrespondWallpaper   *********************/
+/**
+* @tc.name:   GetCorrespondWallpaper001
+* @tc.desc:   GetCorrespondWallpaper normal device with wallpaperType[0].
+* @tc.type:    FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, GetCorrespondWallpaper001, TestSize.Level0)
+{
+    HILOG_INFO("GetCorrespondWallpaper001  begin");
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+    ErrorCode wallpaperErrorCode =
+        WallpaperManager::GetInstance().GetCorrespondWallpaper(SYSTYEM, NORMAL, PORT, pixelMap);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetCorrespondWallpaper";
+    wallpaperErrorCode = WallpaperManager::GetInstance().GetCorrespondWallpaper(SYSTYEM, NORMAL, LAND, pixelMap);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetCorrespondWallpaper";
+}
+
+/**
+* @tc.name:   GetCorrespondWallpaper002
+* @tc.desc:   GetCorrespondWallpaper normal device with wallpaperType[1].
+* @tc.type:    FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, GetCorrespondWallpaper002, TestSize.Level0)
+{
+    HILOG_INFO("GetPixelMap002  begin");
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+    ErrorCode wallpaperErrorCode =
+        WallpaperManager::GetInstance().GetCorrespondWallpaper(LOCKSCREEN, NORMAL, PORT, pixelMap);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetCorrespondWallpaper";
+    wallpaperErrorCode = WallpaperManager::GetInstance().GetCorrespondWallpaper(LOCKSCREEN, NORMAL, LAND, pixelMap);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetCorrespondWallpaper";
+}
+
+/**
+* @tc.name:   GetCorrespondWallpaper003
+* @tc.desc:   GetCorrespondWallpaper unfold_1 device with wallpaperType[0].
+* @tc.type:    FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, GetCorrespondWallpaper003, TestSize.Level0)
+{
+    HILOG_INFO("GetCorrespondWallpaper003  begin");
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+    ErrorCode wallpaperErrorCode =
+        WallpaperManager::GetInstance().GetCorrespondWallpaper(SYSTYEM, UNFOLD_1, PORT, pixelMap);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetCorrespondWallpaper";
+    wallpaperErrorCode = WallpaperManager::GetInstance().GetCorrespondWallpaper(SYSTYEM, UNFOLD_1, LAND, pixelMap);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetCorrespondWallpaper";
+}
+
+/**
+* @tc.name:   GetCorrespondWallpaper004
+* @tc.desc:   GetCorrespondWallpaper unfold_1 device with wallpaperType[1].
+* @tc.type:    FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, GetCorrespondWallpaper004, TestSize.Level0)
+{
+    HILOG_INFO("GetCorrespondWallpaper004  begin");
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+    ErrorCode wallpaperErrorCode =
+        WallpaperManager::GetInstance().GetCorrespondWallpaper(LOCKSCREEN, UNFOLD_1, PORT, pixelMap);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetCorrespondWallpaper";
+    wallpaperErrorCode = WallpaperManager::GetInstance().GetCorrespondWallpaper(LOCKSCREEN, UNFOLD_1, LAND, pixelMap);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetCorrespondWallpaper";
+}
+
+/**
+* @tc.name:   GetCorrespondWallpaper005
+* @tc.desc:   GetCorrespondWallpaper unfold_2 device with wallpaperType[0].
+* @tc.type:    FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, GetCorrespondWallpaper005, TestSize.Level0)
+{
+    HILOG_INFO("GetCorrespondWallpaper005  begin");
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+    ErrorCode wallpaperErrorCode =
+        WallpaperManager::GetInstance().GetCorrespondWallpaper(SYSTYEM, UNFOLD_2, PORT, pixelMap);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetCorrespondWallpaper";
+    wallpaperErrorCode = WallpaperManager::GetInstance().GetCorrespondWallpaper(SYSTYEM, UNFOLD_2, LAND, pixelMap);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetCorrespondWallpaper";
+}
+
+/**
+* @tc.name:   GetCorrespondWallpaper006
+* @tc.desc:   GetCorrespondWallpaper unfold_2 device with wallpaperType[1].
+* @tc.type:    FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, GetCorrespondWallpaper006, TestSize.Level0)
+{
+    HILOG_INFO("GetCorrespondWallpaper006  begin");
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+    ErrorCode wallpaperErrorCode =
+        WallpaperManager::GetInstance().GetCorrespondWallpaper(LOCKSCREEN, UNFOLD_2, PORT, pixelMap);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetCorrespondWallpaper";
+    wallpaperErrorCode = WallpaperManager::GetInstance().GetCorrespondWallpaper(LOCKSCREEN, UNFOLD_2, LAND, pixelMap);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to GetCorrespondWallpaper";
+}
+/*********************   GetCorrespondWallpaper   *********************/
 } // namespace WallpaperMgrService
 } // namespace OHOS

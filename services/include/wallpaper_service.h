@@ -85,6 +85,9 @@ public:
     ErrorCode SetVideo(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode SetCustomWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
     ErrorCode SendEvent(const std::string &eventType) override;
+    ErrorCode SetAllWallpapers(std::vector<WallpaperPictureInfo> allWallpaperInfo, int32_t wallpaperType) override;
+    ErrorCode GetCorrespondWallpaper(
+        int32_t wallpaperType, int32_t foldState, int32_t rotateState, IWallpaperService::FdInfo &fdInfo) override;
 
 public:
     void OnInitUser(int32_t newUserId);
@@ -147,9 +150,33 @@ private:
     static void GetWallpaperFile(
         WallpaperResourceType resourceType, const WallpaperData &wallpaperData, std::string &wallpaperFile);
     std::string GetDefaultResDir();
-    std::string GetWallpaperDefaultPath(WallpaperType wallpaperType);
-    std::string GetWallpaperPathInJson(const std::string filePath);
+    WallpaperData GetWallpaperDefaultPath(WallpaperType wallpaperType);
+    std::string GetWallpaperPathInJson(const std::string manifestName, const std::string filePath);
     void ClearRedundantFile(int32_t userId, WallpaperType wallpaperType, std::string fileName);
+    std::string GetExistFilePath(const std::string &filePath);
+    ErrorCode SetAllWallpapers(
+        std::vector<WallpaperPictureInfo> allWallpaperInfo, int32_t wallpaperType, WallpaperResourceType resourceType);
+    ErrorCode WriteFdToFile(WallpaperPictureInfo &wallpaperPictureInfo, std::string &path);
+    ErrorCode SetAllWallpaperBackupData(std::vector<WallpaperPictureInfo> allWallpaperInfos, int32_t userId,
+        WallpaperType wallpaperType, WallpaperData &wallpaperData);
+    std::string GetWallpaperDataFile(
+        WallpaperPictureInfo &wallpaperPictureInfo, int32_t userId, WallpaperType wallpaperType);
+    ErrorCode GetImageSize(
+        int32_t userId, WallpaperType wallpaperType, int32_t &size, int32_t foldState, int32_t rotateState);
+    bool GetWallpaperDataPath(int32_t userId, WallpaperType wallpaperType, std::string &filePathName,
+        int32_t foldState, int32_t rotateState);
+    ErrorCode GetImageFd(
+        int32_t userId, WallpaperType wallpaperType, int32_t &fd, int32_t foldState, int32_t rotateState);
+    void DeleteTempResource(std::vector<WallpaperPictureInfo> &tempResourceFiles);
+    void UpdateWallpaperDataFile(WallpaperPictureInfo &wallpaperPictureInfo, int32_t userId,
+        WallpaperType wallpaperType, WallpaperData &wallpaperData);
+    ErrorCode UpdateWallpaperData(
+        std::vector<WallpaperPictureInfo> allWallpaperInfos, int32_t userId, WallpaperType wallpaperType);
+    std::string GetWallpaperPath(WallpaperData wallpaperData);
+    void ClearnWallpaperDataFile(WallpaperData &wallpaperData);
+    std::string GetFoldStateName(FoldState foldState);
+    std::string GetRotateStateName(RotateState rotateState);
+    std::string GetWallpaperPath(int32_t foldState, int32_t rotateState, WallpaperData &wallpaperData);
 
 private:
     int32_t Init();

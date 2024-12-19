@@ -104,13 +104,28 @@ constexpr const char *WALLPAPER_DEFAULT_LOCK_FILEFULLPATH = "/system/etc/wallpap
 constexpr const char *WALLPAPER_CROP_PICTURE = "crop_file";
 constexpr const char *RESOURCE_PATH = "resource/themes/theme/";
 constexpr const char *DEFAULT_PATH = "default/";
-constexpr const char *HOME_MANIFEST = "home/manifest.json";
-constexpr const char *LOCK_MANIFEST = "lock/manifest.json";
-constexpr const char *HOME_RES = "home/base/resources/";
-constexpr const char *LOCK_RES = "lock/base/resources/";
+constexpr const char *MANIFEST = "manifest.json";
+constexpr const char *RES = "resources/";
+constexpr const char *HOME = "home/";
+constexpr const char *LOCK = "lock/";
+constexpr const char *BASE = "base/";
+constexpr const char *LAND_PATH = "land/";
+constexpr const char *HOME_UNFOLDED = "home/unfolded/";
+constexpr const char *HOME_UNFOLDED2 = "home/unfolded2/";
+constexpr const char *LOCK_UNFOLDED = "lock/unfolded/";
+constexpr const char *LOCK_UNFOLDED2 = "lock/unfolded2/";
 constexpr const char *IMAGE = "image";
 constexpr const char *SRC = "src";
-
+constexpr const char *NORMAL_LAND_WALLPAPER_HOME = "normal_land_wallpaper_home";
+constexpr const char *UNFOLD1_PORT_WALLPAPER_HOME = "unfold1_port_wallpaper_home";
+constexpr const char *UNFOLD1_LAND_WALLPAPER_HOME = "unfold1_land_wallpaper_home";
+constexpr const char *UNFOLD2_PORT_WALLPAPER_HOME = "unfold2_port_wallpaper_home";
+constexpr const char *UNFOLD2_LAND_WALLPAPER_HOME = "unfold2_land_wallpaper_home";
+constexpr const char *NORMAL_LAND_WALLPAPER_LOCK = "normal_land_wallpaper_lock";
+constexpr const char *UNFOLD1_PORT_WALLPAPER_LOCK = "unfold1_port_wallpaper_lock";
+constexpr const char *UNFOLD1_LAND_WALLPAPER_LOCK = "unfold1_land_wallpaper_lock";
+constexpr const char *UNFOLD2_PORT_WALLPAPER_LOCK = "unfold2_port_wallpaper_lock";
+constexpr const char *UNFOLD2_LAND_WALLPAPER_LOCK = "unfold2_land_wallpaper_lock";
 constexpr int64_t INIT_INTERVAL = 10000L;
 constexpr int64_t DELAY_TIME = 1000L;
 constexpr int64_t QUERY_USER_ID_INTERVAL = 300L;
@@ -402,31 +417,61 @@ bool WallpaperService::InitUserDir(int32_t userId)
 
 bool WallpaperService::RestoreUserResources(int32_t userId, WallpaperData &wallpaperData, WallpaperType wallpaperType)
 {
-    if (wallpaperType == WALLPAPER_SYSTEM) {
-        ClearRedundantFile(userId, wallpaperType, WALLPAPER_HOME);
-    } else {
-        ClearRedundantFile(userId, wallpaperType, WALLPAPER_LOCK);
-    }
-    std::string wallpaperDefaultPath = GetWallpaperDefaultPath(wallpaperType);
-    if (wallpaperDefaultPath.empty()) {
+    if (!FileDeal::DeleteDir(GetWallpaperDir(userId, wallpaperType), false)) {
+        HILOG_ERROR("delete resources failed, userId:%{public}d, wallpaperType:%{public}d.", userId, wallpaperType);
         return false;
     }
-    wallpaperData.wallpaperFile = wallpaperDefaultPath;
+    std::string wallpaperPath = GetWallpaperDir(userId, wallpaperType);
+    wallpaperData = GetWallpaperDefaultPath(wallpaperType);
+    wallpaperData.userId = userId;
+    wallpaperData.allowBackup = true;
+    wallpaperData.resourceType = PICTURE;
+    wallpaperData.wallpaperId = DEFAULT_WALLPAPER_ID;
+    wallpaperData.liveWallpaperFile =
+        wallpaperPath + "/"
+        + (wallpaperType == WALLPAPER_SYSTEM ? LIVE_WALLPAPER_SYSTEM_ORIG : LIVE_WALLPAPER_LOCK_ORIG);
+    wallpaperData.customPackageUri =
+        wallpaperPath + "/" + (wallpaperType == WALLPAPER_SYSTEM ? CUSTOM_WALLPAPER_SYSTEM : CUSTOM_WALLPAPER_LOCK);
+    if (wallpaperData.wallpaperFile.empty()) {
+        HILOG_ERROR("get default path failed, userId:%{public}d, wallpaperType:%{public}d.", userId, wallpaperType);
+        return false;
+    }
     HILOG_INFO("Restore user resources end.");
     return true;
 }
 
-std::string WallpaperService::GetWallpaperDefaultPath(WallpaperType wallpaperType)
+WallpaperData WallpaperService::GetWallpaperDefaultPath(WallpaperType wallpaperType)
 {
-    std::string wallpaperDefaultPath = (wallpaperType == WallpaperType::WALLPAPER_SYSTEM)
-                                           ? GetWallpaperPathInJson(HOME_MANIFEST)
-                                           : GetWallpaperPathInJson(LOCK_MANIFEST);
-    if (wallpaperDefaultPath.empty()) {
-        wallpaperDefaultPath = (wallpaperType == WallpaperType::WALLPAPER_SYSTEM) ? WALLPAPER_DEFAULT_FILEFULLPATH
-                                                                                  : WALLPAPER_DEFAULT_LOCK_FILEFULLPATH;
+    WallpaperData wallpaperData;
+    std::string manifest = MANIFEST;
+    std::string res = RES;
+    std::string base = BASE;
+    std::string land = LAND_PATH;
+    if (wallpaperType == WallpaperType::WALLPAPER_SYSTEM) {
+        wallpaperData.wallpaperFile = GetWallpaperPathInJson(HOME + manifest, HOME + base + res);
+        wallpaperData.normalLandFile = GetWallpaperPathInJson(HOME + base + land + manifest, HOME + base + land + res);
+        wallpaperData.unfoldedOnePortFile = GetWallpaperPathInJson(HOME_UNFOLDED + manifest, HOME_UNFOLDED + res);
+        wallpaperData.unfoldedOneLandFile =
+            GetWallpaperPathInJson(HOME_UNFOLDED + land + manifest, HOME_UNFOLDED + land + res);
+        wallpaperData.unfoldedTwoPortFile = GetWallpaperPathInJson(HOME_UNFOLDED2 + manifest, HOME_UNFOLDED2 + res);
+        wallpaperData.unfoldedTwoLandFile =
+            GetWallpaperPathInJson(HOME_UNFOLDED2 + land + manifest, HOME_UNFOLDED2 + land + res);
+    } else {
+        wallpaperData.wallpaperFile = GetWallpaperPathInJson(LOCK + manifest, LOCK + base + res);
+        wallpaperData.normalLandFile = GetWallpaperPathInJson(LOCK + base + land + manifest, LOCK + base + land + res);
+        wallpaperData.unfoldedOnePortFile = GetWallpaperPathInJson(LOCK_UNFOLDED + manifest, LOCK_UNFOLDED + res);
+        wallpaperData.unfoldedOneLandFile =
+            GetWallpaperPathInJson(LOCK_UNFOLDED + land + manifest, LOCK_UNFOLDED + land + res);
+        wallpaperData.unfoldedTwoPortFile = GetWallpaperPathInJson(LOCK_UNFOLDED2 + manifest, LOCK_UNFOLDED2 + res);
+        wallpaperData.unfoldedTwoLandFile =
+            GetWallpaperPathInJson(LOCK_UNFOLDED2 + land + manifest, LOCK_UNFOLDED2 + land + res);
     }
-    HILOG_DEBUG("wallpaperDefaultPath is:%{public}s.", wallpaperDefaultPath.c_str());
-    return wallpaperDefaultPath;
+    if (wallpaperData.wallpaperFile.empty()) {
+        wallpaperData.wallpaperFile = (wallpaperType == WallpaperType::WALLPAPER_SYSTEM)
+                                          ? WALLPAPER_DEFAULT_FILEFULLPATH
+                                          : WALLPAPER_DEFAULT_LOCK_FILEFULLPATH;
+    }
+    return wallpaperData;
 }
 void WallpaperService::OnRemovedUser(int32_t userId)
 {
@@ -542,16 +587,9 @@ int32_t WallpaperService::MakeWallpaperIdLocked()
 void WallpaperService::UpdataWallpaperMap(int32_t userId, WallpaperType wallpaperType)
 {
     HILOG_INFO("updata wallpaperMap.");
-    WallpaperData wallpaperData;
     std::string wallpaperPath = GetWallpaperDir(userId, wallpaperType);
-    wallpaperData.liveWallpaperFile =
-        wallpaperPath + "/"
-        + (wallpaperType == WALLPAPER_SYSTEM ? LIVE_WALLPAPER_SYSTEM_ORIG : LIVE_WALLPAPER_LOCK_ORIG);
-    wallpaperData.customPackageUri =
-        wallpaperPath + "/" + (wallpaperType == WALLPAPER_SYSTEM ? CUSTOM_WALLPAPER_SYSTEM : CUSTOM_WALLPAPER_LOCK);
     std::string wallpaperFilePath =
         wallpaperPath + "/" + (wallpaperType == WALLPAPER_SYSTEM ? WALLPAPER_HOME : WALLPAPER_LOCK);
-    std::string wallpaperDefaultFilePath = GetWallpaperDefaultPath(wallpaperType);
     ConcurrentMap<int32_t, WallpaperData> &wallpaperMap = [&]() -> ConcurrentMap<int32_t, WallpaperData>& {
         if (wallpaperType == WALLPAPER_SYSTEM) {
             return systemWallpaperMap_;
@@ -559,13 +597,34 @@ void WallpaperService::UpdataWallpaperMap(int32_t userId, WallpaperType wallpape
             return lockWallpaperMap_;
         }
     }();
-    wallpaperData.wallpaperFile = wallpaperDefaultFilePath;
+    auto wallpaperData = GetWallpaperDefaultPath(wallpaperType);
     wallpaperData.userId = userId;
     wallpaperData.allowBackup = true;
     wallpaperData.resourceType = PICTURE;
     wallpaperData.wallpaperId = DEFAULT_WALLPAPER_ID;
+    wallpaperData.liveWallpaperFile =
+        wallpaperPath + "/"
+        + (wallpaperType == WALLPAPER_SYSTEM ? LIVE_WALLPAPER_SYSTEM_ORIG : LIVE_WALLPAPER_LOCK_ORIG);
+    wallpaperData.customPackageUri =
+        wallpaperPath + "/" + (wallpaperType == WALLPAPER_SYSTEM ? CUSTOM_WALLPAPER_SYSTEM : CUSTOM_WALLPAPER_LOCK);
     if (FileDeal::IsFileExist(wallpaperFilePath)) {
-        wallpaperData.wallpaperFile = wallpaperFilePath;
+        wallpaperData.wallpaperFile = GetExistFilePath(
+            wallpaperPath + "/" + (wallpaperType == WALLPAPER_SYSTEM ? WALLPAPER_HOME : WALLPAPER_LOCK));
+        wallpaperData.normalLandFile = GetExistFilePath(
+            wallpaperPath + "/"
+            + (wallpaperType == WALLPAPER_SYSTEM ? NORMAL_LAND_WALLPAPER_HOME : NORMAL_LAND_WALLPAPER_LOCK));
+        wallpaperData.unfoldedOnePortFile = GetExistFilePath(
+            wallpaperPath + "/"
+            + (wallpaperType == WALLPAPER_SYSTEM ? UNFOLD1_PORT_WALLPAPER_HOME : UNFOLD1_PORT_WALLPAPER_LOCK));
+        wallpaperData.unfoldedOneLandFile = GetExistFilePath(
+            wallpaperPath + "/"
+            + (wallpaperType == WALLPAPER_SYSTEM ? UNFOLD1_LAND_WALLPAPER_HOME : UNFOLD1_LAND_WALLPAPER_LOCK));
+        wallpaperData.unfoldedTwoPortFile = GetExistFilePath(
+            wallpaperPath + "/"
+            + (wallpaperType == WALLPAPER_SYSTEM ? UNFOLD2_PORT_WALLPAPER_HOME : UNFOLD2_PORT_WALLPAPER_LOCK));
+        wallpaperData.unfoldedTwoLandFile = GetExistFilePath(
+            wallpaperPath + "/"
+            + (wallpaperType == WALLPAPER_SYSTEM ? UNFOLD2_LAND_WALLPAPER_HOME : UNFOLD2_LAND_WALLPAPER_LOCK));
     }
     wallpaperMap.InsertOrAssign(userId, wallpaperData);
 }
@@ -700,6 +759,9 @@ ErrorCode WallpaperService::SetWallpaperBackupData(
 {
     HILOG_INFO("set wallpaper and backup data Start.");
     if (!OHOS::FileExists(uriOrPixelMap)) {
+        return E_DEAL_FAILED;
+    }
+    if (!FileDeal::DeleteDir(GetWallpaperDir(userId, wallpaperType), false)) {
         return E_DEAL_FAILED;
     }
     WallpaperData wallpaperData;
@@ -1093,6 +1155,7 @@ bool WallpaperService::GetWallpaperSafeLocked(int32_t userId, WallpaperType wall
         }
     }
     wallpaperData = iterator.second;
+    ClearnWallpaperDataFile(wallpaperData);
     return true;
 }
 
@@ -1582,14 +1645,15 @@ std::string WallpaperService::GetDefaultResDir()
     return resPath;
 }
 
-std::string WallpaperService::GetWallpaperPathInJson(const std::string filePath)
+std::string WallpaperService::GetWallpaperPathInJson(const std::string manifestName, const std::string filePath)
 {
+    std::string wallpaperPath;
     std::string resPath = GetDefaultResDir();
     if (resPath.empty() && !FileDeal::IsDirExist(resPath)) {
         HILOG_ERROR("wallpaperDefaultDir get failed!");
         return "";
     }
-    std::string manifestFile = resPath + filePath;
+    std::string manifestFile = resPath + manifestName;
     std::ifstream file(manifestFile);
     if (!file.is_open()) {
         HILOG_ERROR("open fail:%{public}s", manifestFile.c_str());
@@ -1605,16 +1669,404 @@ std::string WallpaperService::GetWallpaperPathInJson(const std::string filePath)
     auto root = nlohmann::json::parse(content.c_str());
     if (root.contains(IMAGE) && root[IMAGE].contains(SRC)) {
         std::string srcValue = root[IMAGE][SRC];
-        std::string imageSrc;
-        if (filePath == HOME_MANIFEST) {
-            imageSrc = resPath + HOME_RES + srcValue;
-        } else if (filePath == LOCK_MANIFEST) {
-            imageSrc = resPath + LOCK_RES + srcValue;
-        }
-        return imageSrc;
+        return GetExistFilePath(resPath + filePath + srcValue);
     }
     HILOG_ERROR("src not exist.");
     return "";
+}
+
+std::string WallpaperService::GetExistFilePath(const std::string &filePath)
+{
+    if (!FileDeal::IsFileExist(filePath)) {
+        HILOG_ERROR("path file is not exist! %{public}s", filePath.c_str());
+        return "";
+    }
+    return filePath;
+}
+ErrorCode WallpaperService::SetAllWallpapers(std::vector<WallpaperPictureInfo> allWallpaperInfos, int32_t wallpaperType)
+{
+    StartAsyncTrace(HITRACE_TAG_MISC, "SetAllWallpapers", static_cast<int32_t>(TraceTaskId::SET_ALL_WALLPAPERS));
+    ErrorCode wallpaperErrorCode = SetAllWallpapers(allWallpaperInfos, wallpaperType, PICTURE);
+    FinishAsyncTrace(HITRACE_TAG_MISC, "SetAllWallpapers", static_cast<int32_t>(TraceTaskId::SET_ALL_WALLPAPERS));
+    return wallpaperErrorCode;
+}
+
+ErrorCode WallpaperService::SetAllWallpapers(
+    std::vector<WallpaperPictureInfo> allWallpaperInfos, int32_t wallpaperType, WallpaperResourceType resourceType)
+{
+    StartAsyncTrace(HITRACE_TAG_MISC, "SetAllWallpapers", static_cast<int32_t>(TraceTaskId::SET_ALL_WALLPAPERS));
+    if (!IsSystemApp()) {
+        HILOG_ERROR("CallingApp is not SystemApp.");
+        return E_NOT_SYSTEM_APP;
+    }
+    int32_t userId = QueryActiveUserId();
+    HILOG_INFO("SetAllWallpapers userId: %{public}d", userId);
+    if (!CheckUserPermissionById(userId)) {
+        return E_USER_IDENTITY_ERROR;
+    }
+    ErrorCode errCode;
+    for (auto &wallpaperInfo : allWallpaperInfos) {
+        wallpaperInfo.tempPath = std::string(WALLPAPER_USERID_PATH) + GetFoldStateName(wallpaperInfo.foldState) + "_"
+                                 + GetRotateStateName(wallpaperInfo.rotateState);
+        errCode = CheckValid(wallpaperType, wallpaperInfo.length, resourceType);
+        if (errCode != E_OK) {
+            return errCode;
+        }
+        errCode = WriteFdToFile(wallpaperInfo, wallpaperInfo.tempPath);
+        if (errCode != E_OK) {
+            DeleteTempResource(allWallpaperInfos);
+            HILOG_ERROR("WriteFdToFile failed!");
+            return errCode;
+        }
+    }
+    WallpaperType type = static_cast<WallpaperType>(wallpaperType);
+    std::string wallpaperPath = GetWallpaperDir(userId, type);
+    FileDeal::DeleteDir(wallpaperPath, false);
+    errCode = UpdateWallpaperData(allWallpaperInfos, userId, type);
+    if (errCode != E_OK) {
+        HILOG_ERROR("UpdateWallpaperData failed!");
+        return errCode;
+    }
+    SaveColor(userId, type);
+    if (!SendWallpaperChangeEvent(userId, type)) {
+        HILOG_ERROR("Send wallpaper state failed!");
+        return E_DEAL_FAILED;
+    }
+    FinishAsyncTrace(HITRACE_TAG_MISC, "SetAllWallpapers", static_cast<int32_t>(TraceTaskId::SET_ALL_WALLPAPERS));
+    return errCode;
+}
+
+ErrorCode WallpaperService::UpdateWallpaperData(
+    std::vector<WallpaperPictureInfo> allWallpaperInfos, int32_t userId, WallpaperType wallpaperType)
+{
+    ErrorCode errCode;
+    WallpaperData wallpaperData;
+    bool ret = GetWallpaperSafeLocked(userId, wallpaperType, wallpaperData);
+    if (!ret) {
+        HILOG_ERROR("GetWallpaperSafeLocked failed!");
+        return E_DEAL_FAILED;
+    }
+    ClearnWallpaperDataFile(wallpaperData);
+    errCode = SetAllWallpaperBackupData(allWallpaperInfos, userId, wallpaperType, wallpaperData);
+    if (errCode != E_OK) {
+        DeleteTempResource(allWallpaperInfos);
+        HILOG_ERROR("SetAllWallpaperBackupData failed!");
+        return errCode;
+    }
+    wallpaperData.resourceType = PICTURE;
+    wallpaperData.wallpaperId = MakeWallpaperIdLocked();
+    if (wallpaperType == WALLPAPER_SYSTEM) {
+        systemWallpaperMap_.InsertOrAssign(userId, wallpaperData);
+    } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
+        lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
+    }
+    return E_OK;
+}
+
+ErrorCode WallpaperService::WriteFdToFile(WallpaperPictureInfo &wallpaperPictureInfo, std::string &path)
+{
+    std::lock_guard<std::mutex> lock(mtx_);
+    char *wallpaperBuffer = new (std::nothrow) char[wallpaperPictureInfo.length]();
+    if (wallpaperBuffer == nullptr) {
+        HILOG_ERROR("create wallpaperBuffer failed!");
+        return E_NO_MEMORY;
+    }
+    if (read(wallpaperPictureInfo.fd, wallpaperBuffer, wallpaperPictureInfo.length) <= 0) {
+        HILOG_ERROR("read fd failed!");
+        delete[] wallpaperBuffer;
+        return E_DEAL_FAILED;
+    }
+    mode_t mode = S_IRUSR | S_IWUSR;
+    int32_t fdw = open(path.c_str(), O_WRONLY | O_CREAT, mode);
+    if (fdw < 0) {
+        HILOG_ERROR("Open wallpaper tmpFullPath failed, errno %{public}d", errno);
+        delete[] wallpaperBuffer;
+        return E_DEAL_FAILED;
+    }
+    if (write(fdw, wallpaperBuffer, wallpaperPictureInfo.length) <= 0) {
+        HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
+        ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
+        delete[] wallpaperBuffer;
+        close(fdw);
+        return E_DEAL_FAILED;
+    }
+    delete[] wallpaperBuffer;
+    close(fdw);
+    return E_OK;
+}
+
+ErrorCode WallpaperService::SetAllWallpaperBackupData(std::vector<WallpaperPictureInfo> allWallpaperInfos,
+    int32_t userId, WallpaperType wallpaperType, WallpaperData &wallpaperData)
+{
+    HILOG_INFO("set All wallpaper and backup data Start.");
+    for (auto &wallpaperInfo : allWallpaperInfos) {
+        if (!OHOS::FileExists(wallpaperInfo.tempPath)) {
+            return E_DEAL_FAILED;
+        }
+        UpdateWallpaperDataFile(wallpaperInfo, userId, wallpaperType, wallpaperData);
+        std::string wallpaperFile = GetWallpaperDataFile(wallpaperInfo, userId, wallpaperType);
+        {
+            std::lock_guard<std::mutex> lock(mtx_);
+            if (!FileDeal::CopyFile(wallpaperInfo.tempPath, wallpaperFile)) {
+                HILOG_ERROR("CopyFile failed!");
+                FileDeal::DeleteFile(wallpaperInfo.tempPath);
+                return E_DEAL_FAILED;
+            }
+            if (!FileDeal::DeleteFile(wallpaperInfo.tempPath)) {
+                return E_DEAL_FAILED;
+            }
+        }
+    }
+    return E_OK;
+}
+
+void WallpaperService::UpdateWallpaperDataFile(WallpaperPictureInfo &wallpaperPictureInfo, int32_t userId,
+    WallpaperType wallpaperType, WallpaperData &wallpaperData)
+{
+    switch (static_cast<FoldState>(wallpaperPictureInfo.foldState)) {
+        case FoldState::NORMAL:
+            if (static_cast<RotateState>(wallpaperPictureInfo.rotateState) == RotateState::PORT) {
+                wallpaperData.wallpaperFile = GetWallpaperDir(userId, wallpaperType) + "/"
+                                              + (wallpaperType == WALLPAPER_SYSTEM ? WALLPAPER_HOME : WALLPAPER_LOCK);
+            } else if (static_cast<RotateState>(wallpaperPictureInfo.rotateState) == RotateState::LAND) {
+                wallpaperData.normalLandFile = GetWallpaperDataFile(wallpaperPictureInfo, userId, wallpaperType);
+            }
+            break;
+
+        case FoldState::UNFOLD_1:
+            if (static_cast<RotateState>(wallpaperPictureInfo.rotateState) == RotateState::PORT) {
+                wallpaperData.unfoldedOnePortFile = GetWallpaperDataFile(wallpaperPictureInfo, userId, wallpaperType);
+            } else if (static_cast<RotateState>(wallpaperPictureInfo.rotateState) == RotateState::LAND) {
+                wallpaperData.unfoldedOneLandFile = GetWallpaperDataFile(wallpaperPictureInfo, userId, wallpaperType);
+            }
+            break;
+
+        case FoldState::UNFOLD_2:
+            if (static_cast<RotateState>(wallpaperPictureInfo.rotateState) == RotateState::PORT) {
+                wallpaperData.unfoldedTwoPortFile = GetWallpaperDataFile(wallpaperPictureInfo, userId, wallpaperType);
+            } else if (static_cast<RotateState>(wallpaperPictureInfo.rotateState) == RotateState::LAND) {
+                wallpaperData.unfoldedTwoLandFile = GetWallpaperDataFile(wallpaperPictureInfo, userId, wallpaperType);
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+std::string WallpaperService::GetWallpaperDataFile(
+    WallpaperPictureInfo &wallpaperPictureInfo, int32_t userId, WallpaperType wallpaperType)
+{
+    std::string wallpaperTypeName = wallpaperType == WALLPAPER_SYSTEM ? WALLPAPER_HOME : WALLPAPER_LOCK;
+    std::string foldStateName = GetFoldStateName(wallpaperPictureInfo.foldState);
+    std::string rotateStateName = GetRotateStateName(wallpaperPictureInfo.rotateState);
+    if (foldStateName == "normal" && rotateStateName == "port") {
+        return GetWallpaperDir(userId, wallpaperType) + "/" + wallpaperTypeName;
+    }
+    std::string wallpaperFile =
+        GetWallpaperDir(userId, wallpaperType) + "/" + foldStateName + "_" + rotateStateName + "_" + wallpaperTypeName;
+    return wallpaperFile;
+}
+
+void WallpaperService::ClearnWallpaperDataFile(WallpaperData &wallpaperData)
+{
+    wallpaperData.normalLandFile = "";
+    wallpaperData.unfoldedOnePortFile = "";
+    wallpaperData.unfoldedOneLandFile = "";
+    wallpaperData.unfoldedTwoPortFile = "";
+    wallpaperData.unfoldedTwoLandFile = "";
+}
+
+ErrorCode WallpaperService::GetCorrespondWallpaper(
+    int32_t wallpaperType, int32_t foldState, int32_t rotateState, IWallpaperService::FdInfo &fdInfo)
+{
+    StartAsyncTrace(
+        HITRACE_TAG_MISC, "GetCorrespondWallpaper", static_cast<int32_t>(TraceTaskId::GET_CORRESPOND_WALLPAPER));
+    HILOG_DEBUG("WallpaperService::GetCorrespondWallpaper start.");
+    if (!IsSystemApp()) {
+        HILOG_ERROR("CallingApp is not SystemApp.");
+        return E_NOT_SYSTEM_APP;
+    }
+    if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER)) {
+        HILOG_ERROR("GetPixelMap no get permission!");
+        return E_NO_PERMISSION;
+    }
+    if (wallpaperType != static_cast<int32_t>(WALLPAPER_LOCKSCREEN)
+        && wallpaperType != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
+        return E_PARAMETERS_INVALID;
+    }
+    auto type = static_cast<WallpaperType>(wallpaperType);
+    int32_t userId = QueryActiveUserId();
+    HILOG_INFO("QueryCurrentOsAccount userId: %{public}d", userId);
+    // current user's wallpaper is live video, not image
+    WallpaperResourceType resType = GetResType(userId, type);
+    if (resType != PICTURE && resType != DEFAULT) {
+        HILOG_ERROR("Current user's wallpaper is live video, not image.");
+        fdInfo.size = 0; // 0: empty file size
+        fdInfo.fd = -1;  // -1: invalid file description
+        return E_OK;
+    }
+    ErrorCode ret = GetImageSize(userId, type, fdInfo.size, foldState, rotateState);
+    if (ret != E_OK) {
+        HILOG_ERROR("GetImageSize failed!");
+        return ret;
+    }
+    ret = GetImageFd(userId, type, fdInfo.fd, foldState, rotateState);
+    if (ret != E_OK) {
+        HILOG_ERROR("GetImageFd failed!");
+        return ret;
+    }
+    return E_OK;
+}
+
+ErrorCode WallpaperService::GetImageSize(
+    int32_t userId, WallpaperType wallpaperType, int32_t &size, int32_t foldState, int32_t rotateState)
+{
+    HILOG_DEBUG("WallpaperService::GetImageSize start.");
+    std::string filePathName;
+    if (!GetWallpaperDataPath(userId, wallpaperType, filePathName, foldState, rotateState)) {
+        return E_DEAL_FAILED;
+    }
+    HILOG_INFO("GetImageSize file: %{public}s", filePathName.c_str());
+    if (!OHOS::FileExists(filePathName)) {
+        HILOG_ERROR("file is not exist.");
+        return E_NOT_FOUND;
+    }
+    std::lock_guard<std::mutex> lock(mtx_);
+    FILE *fd = fopen(filePathName.c_str(), "rb");
+    if (fd == nullptr) {
+        HILOG_ERROR("fopen file failed, errno %{public}d", errno);
+        return E_FILE_ERROR;
+    }
+    int32_t fend = fseek(fd, 0, SEEK_END);
+    size = ftell(fd);
+    int32_t fset = fseek(fd, 0, SEEK_SET);
+    if (size <= 0 || fend != 0 || fset != 0) {
+        HILOG_ERROR("ftell file failed or fseek file failed, errno %{public}d", errno);
+        fclose(fd);
+        return E_FILE_ERROR;
+    }
+    fclose(fd);
+    return E_OK;
+}
+
+ErrorCode WallpaperService::GetImageFd(
+    int32_t userId, WallpaperType wallpaperType, int32_t &fd, int32_t foldState, int32_t rotateState)
+{
+    HILOG_DEBUG("WallpaperService::GetImageFd start.");
+    std::string filePathName;
+    if (!GetWallpaperDataPath(userId, wallpaperType, filePathName, foldState, rotateState)) {
+        return E_DEAL_FAILED;
+    }
+    if (GetResType(userId, wallpaperType) == WallpaperResourceType::PACKAGE) {
+        HILOG_INFO("The current wallpaper is a custom wallpaper");
+        return E_OK;
+    }
+    fd = open(filePathName.c_str(), O_RDONLY, S_IREAD);
+    if (fd < 0) {
+        HILOG_ERROR("Open file failed, errno %{public}d", errno);
+        ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
+        return E_DEAL_FAILED;
+    }
+    HILOG_INFO("fd = %{public}d", fd);
+    return E_OK;
+}
+
+bool WallpaperService::GetWallpaperDataPath(
+    int32_t userId, WallpaperType wallpaperType, std::string &filePathName, int32_t foldState, int32_t rotateState)
+{
+    auto iterator = wallpaperType == WALLPAPER_SYSTEM ? systemWallpaperMap_.Find(userId)
+                                                      : lockWallpaperMap_.Find(userId);
+    if (!iterator.first) {
+        HILOG_INFO("WallpaperType:%{public}d, WallpaperMap not found userId: %{public}d", wallpaperType, userId);
+        OnInitUser(userId);
+        iterator = wallpaperType == WALLPAPER_SYSTEM ? systemWallpaperMap_.Find(userId)
+                                                     : lockWallpaperMap_.Find(userId);
+    }
+    filePathName = GetWallpaperPath(foldState, rotateState, iterator.second);
+    return filePathName != "";
+}
+
+std::string WallpaperService::GetWallpaperPath(int32_t foldState, int32_t rotateState, WallpaperData &wallpaperData)
+{
+    std::string wallpaperFilePath;
+    if (foldState == static_cast<int32_t>(FoldState::UNFOLD_2)) {
+        if (rotateState == static_cast<int32_t>(RotateState::LAND)) {
+            wallpaperFilePath = wallpaperData.unfoldedTwoLandFile;
+            if (wallpaperFilePath != "") {
+                return wallpaperFilePath;
+            }
+        }
+        wallpaperFilePath = wallpaperData.unfoldedTwoPortFile;
+        if (wallpaperFilePath != "") {
+            return wallpaperFilePath;
+        }
+        wallpaperFilePath = wallpaperData.wallpaperFile;
+    }
+    if (foldState == static_cast<int32_t>(FoldState::UNFOLD_1)) {
+        if (rotateState == static_cast<int32_t>(RotateState::LAND)) {
+            wallpaperFilePath = wallpaperData.unfoldedOneLandFile;
+            if (wallpaperFilePath != "") {
+                return wallpaperFilePath;
+            }
+        }
+        wallpaperFilePath = wallpaperData.unfoldedOnePortFile;
+        if (wallpaperFilePath != "") {
+            return wallpaperFilePath;
+        }
+        wallpaperFilePath = wallpaperData.wallpaperFile;
+    }
+    if (foldState == static_cast<int32_t>(FoldState::NORMAL)) {
+        if (rotateState == static_cast<int32_t>(RotateState::LAND)) {
+            wallpaperFilePath = wallpaperData.normalLandFile;
+            if (wallpaperFilePath != "") {
+                return wallpaperFilePath;
+            }
+        }
+        wallpaperFilePath = wallpaperData.wallpaperFile;
+    }
+    return wallpaperFilePath;
+}
+
+void WallpaperService::DeleteTempResource(std::vector<WallpaperPictureInfo> &tempResourceFiles)
+{
+    for (auto &wallpaperFile : tempResourceFiles) {
+        FileDeal::DeleteFile(wallpaperFile.tempPath);
+    }
+}
+
+std::string WallpaperService::GetFoldStateName(FoldState foldState)
+{
+    std::string foldStateName;
+    switch (foldState) {
+        case FoldState::NORMAL:
+            foldStateName = "normal";
+            break;
+        case FoldState::UNFOLD_1:
+            foldStateName = "unfold1";
+            break;
+        case FoldState::UNFOLD_2:
+            foldStateName = "unfold2";
+            break;
+        default:
+            break;
+    }
+    return foldStateName;
+}
+
+std::string WallpaperService::GetRotateStateName(RotateState rotateState)
+{
+    std::string rotateStateName;
+    switch (rotateState) {
+        case RotateState::PORT:
+            rotateStateName = "port";
+            break;
+        case RotateState::LAND:
+            rotateStateName = "land";
+            break;
+        default:
+            break;
+    }
+    return rotateStateName;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

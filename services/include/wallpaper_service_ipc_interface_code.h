@@ -41,6 +41,8 @@ enum class WallpaperServiceIpcInterfaceCode : uint32_t {
     SEND_EVENT,
     SET_WALLPAPER_PIXELMAP,
     SET_WALLPAPER_PIXELMAP_V9,
+    SET_ALL_WALLPAPERS,
+    GET_CORRESPOND_WALLPAPER,
 };
 } // namespace WallpaperMgrService
 } // namespace OHOS

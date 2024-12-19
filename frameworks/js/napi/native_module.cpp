@@ -14,7 +14,6 @@
  */
 
 #include <napi/native_api.h>
-#include <pthread.h>
 #include <unistd.h>
 
 #include <string>
@@ -60,11 +59,46 @@ static napi_value InitWallpaperResourceType(napi_env &env)
     return wallpaperResourceType;
 }
 
+static napi_value InitRotateState(napi_env &env)
+{
+    napi_value rotateState = nullptr;
+    napi_value port = nullptr;
+    napi_value land = nullptr;
+    NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(RotateState::PORT), &port));
+    NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(RotateState::LAND), &land));
+    NAPI_CALL(env, napi_create_object(env, &rotateState));
+    NAPI_CALL(env, napi_set_named_property(env, rotateState, "PORT", port));
+    NAPI_CALL(env, napi_set_named_property(env, rotateState, "PORTRAIT", port));
+    NAPI_CALL(env, napi_set_named_property(env, rotateState, "LAND", land));
+    NAPI_CALL(env, napi_set_named_property(env, rotateState, "LANDSCAPE", land));
+    return rotateState;
+}
+
+static napi_value InitFoldState(napi_env &env)
+{
+    napi_value foldState = nullptr;
+    napi_value normal = nullptr;
+    napi_value unfold_1 = nullptr;
+    napi_value unfold_2 = nullptr;
+    NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(FoldState::NORMAL), &normal));
+    NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(FoldState::UNFOLD_1), &unfold_1));
+    NAPI_CALL(env, napi_create_int32(env, static_cast<int32_t>(FoldState::UNFOLD_2), &unfold_2));
+    NAPI_CALL(env, napi_create_object(env, &foldState));
+    NAPI_CALL(env, napi_set_named_property(env, foldState, "NORMAL", normal));
+    NAPI_CALL(env, napi_set_named_property(env, foldState, "UNFOLD_1", unfold_1));
+    NAPI_CALL(env, napi_set_named_property(env, foldState, "UNFOLD_ONCE_STATE", unfold_1));
+    NAPI_CALL(env, napi_set_named_property(env, foldState, "UNFOLD_2", unfold_2));
+    NAPI_CALL(env, napi_set_named_property(env, foldState, "UNFOLD_TWICE_STATE", unfold_2));
+    return foldState;
+}
+
 static napi_value Init(napi_env env, napi_value exports)
 {
     HILOG_DEBUG("napi_module Init start...");
     napi_value wallpaperType = InitWallpaperType(env);
     napi_value wallpaperResourceType = InitWallpaperResourceType(env);
+    napi_value rotateState = InitRotateState(env);
+    napi_value foldState = InitFoldState(env);
 
     napi_property_descriptor desc[] = {
         DECLARE_NAPI_FUNCTION("getColors", NAPI_GetColors),
@@ -83,13 +117,18 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("setImage", NAPI_SetImage),
         DECLARE_NAPI_FUNCTION("getPixelMap", NAPI_GetPixelMap),
         DECLARE_NAPI_FUNCTION("getImage", NAPI_GetImage),
+        DECLARE_NAPI_FUNCTION("getCorrespondWallpaper", NAPI_GetCorrespondWallpaper),
+        DECLARE_NAPI_FUNCTION("getWallpaperByState", NAPI_GetCorrespondWallpaper),
         DECLARE_NAPI_FUNCTION("on", NAPI_On),
         DECLARE_NAPI_FUNCTION("off", NAPI_Off),
         DECLARE_NAPI_FUNCTION("setVideo", NAPI_SetVideo),
         DECLARE_NAPI_FUNCTION("sendEvent", NAPI_SendEvent),
         DECLARE_NAPI_FUNCTION("setCustomWallpaper", NAPI_SetCustomWallpaper),
+        DECLARE_NAPI_FUNCTION("setAllWallpapers", NAPI_SetAllWallpapers),
         DECLARE_NAPI_STATIC_PROPERTY("WallpaperType", wallpaperType),
         DECLARE_NAPI_STATIC_PROPERTY("WallpaperResourceType", wallpaperResourceType),
+        DECLARE_NAPI_STATIC_PROPERTY("RotateState", rotateState),
+        DECLARE_NAPI_STATIC_PROPERTY("FoldState", foldState),
     };
 
     NAPI_CALL(env, napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc));

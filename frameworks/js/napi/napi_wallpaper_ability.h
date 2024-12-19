@@ -48,6 +48,8 @@ using namespace WallpaperMgrService;
 
 struct GetContextInfo : public Call::Context {
     int32_t wallpaperType = 0;
+    int32_t foldState = 0;
+    int32_t rotateState = 0;
     std::vector<uint64_t> colors;
     int32_t wallpaperId = 0;
     std::string eventType = "";
@@ -126,6 +128,7 @@ struct SetContextInfo : public Call::Context {
     int32_t xOffset = 0;
     int32_t yOffset = 0;
     bool isSetOffset = false;
+    std::vector<WallpaperInfo> wallpaperInfos;
     SetContextInfo() : Context(nullptr, nullptr) {};
     SetContextInfo(InputAction input, OutputAction output) : Context(std::move(input), std::move(output)) {};
 
@@ -178,6 +181,9 @@ public:
     static bool IsValidArgCount(size_t argc, size_t expectationSize);
     static bool IsValidArgType(napi_env env, napi_value argValue, napi_valuetype expectationType);
     static bool IsValidArgRange(napi_env env, napi_value argValue);
+    static bool IsValidFoldStateRange(napi_env env, napi_value argValue);
+    static bool IsValidRotateStateRange(napi_env env, napi_value argValue);
+    static bool IsValidWallpaperInfos(napi_env env, napi_value argValue);
     static bool CheckValidArgWallpaperType(
         napi_env env, size_t argc, napi_value argValue, std::shared_ptr<Call::Context> ctx);
     static void GetColorsInner(std::shared_ptr<GetContextInfo> context, const ApiInfo &apiInfo);
@@ -191,9 +197,11 @@ public:
     static void SetImageInput(std::shared_ptr<SetContextInfo> context);
     static void SetImageExec(std::shared_ptr<SetContextInfo> context, const ApiInfo &apiInfo);
     static void GetImageInner(std::shared_ptr<GetContextInfo> context, const ApiInfo &apiInfo);
+    static void GetCorrespondWallpaperInner(std::shared_ptr<GetContextInfo> context, const ApiInfo &apiInfo);
     static void SetVideoInner(std::shared_ptr<SetContextInfo> context);
     static void SendEventInner(std::shared_ptr<GetContextInfo> context);
     static void SetCustomWallpaper(std::shared_ptr<SetContextInfo> context);
+    static void SetAllWallpapers(std::shared_ptr<SetContextInfo> context);
 
 private:
     struct WallpaperChangedData {
@@ -245,11 +253,13 @@ napi_value NAPI_SetWallpaper(napi_env env, napi_callback_info info);
 napi_value NAPI_SetImage(napi_env env, napi_callback_info info);
 napi_value NAPI_GetPixelMap(napi_env env, napi_callback_info info);
 napi_value NAPI_GetImage(napi_env env, napi_callback_info info);
+napi_value NAPI_GetCorrespondWallpaper(napi_env env, napi_callback_info info);
 napi_value NAPI_On(napi_env env, napi_callback_info info);
 napi_value NAPI_Off(napi_env env, napi_callback_info info);
 napi_value NAPI_SetVideo(napi_env env, napi_callback_info info);
 napi_value NAPI_SendEvent(napi_env env, napi_callback_info info);
 napi_value NAPI_SetCustomWallpaper(napi_env env, napi_callback_info info);
+napi_value NAPI_SetAllWallpapers(napi_env env, napi_callback_info info);
 } // namespace WallpaperNAPI
 } // namespace OHOS
 #endif //  NAPI_WALLPAPER_ABILITY_H
