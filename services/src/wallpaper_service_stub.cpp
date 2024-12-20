@@ -31,6 +31,7 @@ using namespace OHOS::HiviewDFX;
 using namespace OHOS::Media;
 
 constexpr int32_t VECTOR_SIZE_MAX = 6;
+constexpr int32_t PIXELMAP_VECTOR_SIZE_MAX = 209715200;
 
 WallpaperServiceStub::WallpaperServiceStub(bool serialInvokeFlag) : IRemoteStub(serialInvokeFlag)
 {
@@ -171,6 +172,10 @@ int32_t WallpaperServiceStub::OnSetWallpaperInnerByPixelMap(MessageParcel &data,
     int32_t vectorPixelMapSize = data.ReadInt32();
     if (vectorPixelMapSize <= 0) {
         HILOG_ERROR("ReadInt32 fail!");
+        return IPC_STUB_INVALID_DATA_ERR;
+    }
+    if (vectorPixelMapSize > PIXELMAP_VECTOR_SIZE_MAX) {
+        HILOG_ERROR("Pixelmap size is too large!");
         return IPC_STUB_INVALID_DATA_ERR;
     }
     auto *rawData = (uint8_t *)data.ReadRawData(vectorPixelMapSize);
