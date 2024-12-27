@@ -17,10 +17,7 @@
 
 #include <uv.h>
 
-#include <iostream>
-
 #include "napi/native_api.h"
-#include "visibility.h"
 
 namespace OHOS::MiscServices {
 struct WorkData {
@@ -31,10 +28,6 @@ struct WorkData {
         : env_(env), callback_(callbackRef), wallpaperType(wallpaperType)
     {
     }
-};
-class UvQueue {
-public:
-    WALLPAPER_API static bool Call(napi_env env, void *data, uv_after_work_cb afterCallback);
 };
 } // namespace OHOS::MiscServices
 #endif // FRAMEWORKS_UV_QUEUE_H

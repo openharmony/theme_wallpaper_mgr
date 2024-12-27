@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
+#include "napi_wallpaper_ability.h"
+
 #include <unistd.h>
-#include <uv.h>
 
 #include <map>
 #include <string>
@@ -22,7 +23,7 @@
 
 #include "hilog_wrapper.h"
 #include "js_error.h"
-#include "napi_wallpaper_ability.h"
+#include "napi/native_node_api.h"
 #include "uv_queue.h"
 #include "wallpaper_manager.h"
 #include "wallpaper_manager_common_info.h"
@@ -985,13 +986,13 @@ NapiWallpaperAbility::~NapiWallpaperAbility()
     HILOG_INFO("~NapiWallpaperAbility start.");
     WorkData *workData = new (std::nothrow) WorkData(env_, callback_);
     if (workData != nullptr) {
-        uv_after_work_cb afterCallback = [](uv_work_t *work, int status) {
-            WorkData *workData = reinterpret_cast<WorkData *>(work->data);
+        auto task = [workData]() {
             napi_delete_reference(workData->env_, workData->callback_);
             delete workData;
-            delete work;
         };
-        MiscServices::UvQueue::Call(env_, workData, afterCallback);
+        if (napi_status::napi_ok != napi_send_event(workData->env_, task, napi_eprio_immediate)) {
+            HILOG_ERROR("~NapiWallpaperAbility: Failed to SendEvent");
+        }
     }
 }
 
@@ -1003,20 +1004,43 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
     if (eventDataWorker == nullptr) {
         return;
     }
-    uv_work_t *work = new (std::nothrow) uv_work_t;
-    if (work == nullptr) {
+
+    auto task = [eventDataWorker]() {
+        if (eventDataWorker == nullptr) {
+            delete eventDataWorker;
+            return;
+        }
+        if (eventDataWorker->listener == nullptr) {
+            delete eventDataWorker;
+            return;
+        }
+        napi_handle_scope scope = nullptr;
+        napi_open_handle_scope(eventDataWorker->listener->env_, &scope);
+        if (scope == nullptr) {
+            delete eventDataWorker;
+            return;
+        }
+        napi_value jsWallpaperType = nullptr;
+        napi_create_int32(eventDataWorker->listener->env_, eventDataWorker->wallpaperType, &jsWallpaperType);
+        napi_value jsRgbaArray =
+            WallpaperJSUtil::Convert2JSRgbaArray(eventDataWorker->listener->env_, eventDataWorker->color);
+        napi_value callback = nullptr;
+        napi_value args[2] = { jsRgbaArray, jsWallpaperType };
+        napi_get_reference_value(eventDataWorker->listener->env_, eventDataWorker->listener->callback_, &callback);
+        napi_value global = nullptr;
+        napi_get_global(eventDataWorker->listener->env_, &global);
+        napi_value result;
+        napi_status callStatus = napi_call_function(
+            eventDataWorker->listener->env_, global, callback, sizeof(args) / sizeof(args[0]), args, &result);
+        if (callStatus != napi_ok) {
+            HILOG_ERROR("notify data change failed, callStatus:%{public}d", callStatus);
+        }
+        napi_close_handle_scope(eventDataWorker->listener->env_, scope);
         delete eventDataWorker;
         return;
-    }
-    work->data = eventDataWorker;
-    auto ret = uv_queue_work_with_qos(
-        loop_, work, [](uv_work_t *work) {},
-        [](uv_work_t *work, int status) { OnColorsChangeLambdaFunction(work, status); }, uv_qos_user_initiated);
-    if (ret != 0) {
-        delete eventDataWorker;
-        delete work;
-        HILOG_ERROR("uv_queue_work failed, retCode:%{public}d", ret);
-        return;
+    };
+    if (napi_status::napi_ok != napi_send_event(eventDataWorker->listener->env_, task, napi_eprio_immediate)) {
+        HILOG_ERROR("OnColorsChange: Failed to SendEvent");
     }
 }
 
@@ -1028,20 +1052,43 @@ void NapiWallpaperAbility::OnWallpaperChange(
     if (data == nullptr) {
         return;
     }
-    uv_work_t *work = new (std::nothrow) uv_work_t;
-    if (work == nullptr) {
+    auto task = [data]() {
+        if (data == nullptr) {
+            return;
+        }
+        if (data->listener == nullptr) {
+            delete data;
+            return;
+        }
+        napi_handle_scope scope = nullptr;
+        napi_open_handle_scope(data->listener->env_, &scope);
+        if (scope == nullptr) {
+            delete data;
+            return;
+        }
+        napi_value jsWallpaperType = nullptr;
+        napi_value jsResourceType = nullptr;
+        napi_value jsResourceUri = nullptr;
+        napi_create_int32(data->listener->env_, data->wallpaperType, &jsWallpaperType);
+        napi_create_int32(data->listener->env_, data->resourceType, &jsResourceType);
+        napi_create_string_utf8(data->listener->env_, data->uri.c_str(), data->uri.length(), &jsResourceUri);
+        napi_value callback = nullptr;
+        napi_value args[3] = { jsWallpaperType, jsResourceType, jsResourceUri };
+        napi_get_reference_value(data->listener->env_, data->listener->callback_, &callback);
+        napi_value global = nullptr;
+        napi_get_global(data->listener->env_, &global);
+        napi_value result;
+        napi_status callStatus =
+            napi_call_function(data->listener->env_, global, callback, sizeof(args) / sizeof(args[0]), args, &result);
+        if (callStatus != napi_ok) {
+            HILOG_ERROR("notify data change failed, callStatus:%{public}d", callStatus);
+        }
+        napi_close_handle_scope(data->listener->env_, scope);
         delete data;
         return;
-    }
-    work->data = data;
-    auto ret = uv_queue_work_with_qos(
-        loop_, work, [](uv_work_t *work) {},
-        [](uv_work_t *work, int status) { OnWallpaperChangeLambdaFunction(work, status); }, uv_qos_user_initiated);
-    if (ret != 0) {
-        delete data;
-        delete work;
-        HILOG_ERROR("uv_queue_work failed, retCode:%{public}d", ret);
-        return;
+    };
+    if (napi_status::napi_ok != napi_send_event(data->listener->env_, task, napi_eprio_immediate)) {
+        HILOG_ERROR("OnWallpaperChange: Failed to SendEvent");
     }
 }
 
@@ -1120,88 +1167,6 @@ bool NapiWallpaperAbility::CheckValidArgWallpaperType(
         return false;
     }
     return true;
-}
-
-void NapiWallpaperAbility::OnColorsChangeLambdaFunction(uv_work_t *work, int status)
-{
-    EventDataWorker *eventDataInner = reinterpret_cast<EventDataWorker *>(work->data);
-    if (eventDataInner == nullptr) {
-        delete work;
-        return;
-    }
-    if (eventDataInner->listener == nullptr) {
-        delete eventDataInner;
-        delete work;
-        return;
-    }
-    napi_handle_scope scope = nullptr;
-    napi_open_handle_scope(eventDataInner->listener->env_, &scope);
-    if (scope == nullptr) {
-        delete eventDataInner;
-        delete work;
-        return;
-    }
-    napi_value jsWallpaperType = nullptr;
-    napi_create_int32(eventDataInner->listener->env_, eventDataInner->wallpaperType, &jsWallpaperType);
-    napi_value jsRgbaArray =
-        WallpaperJSUtil::Convert2JSRgbaArray(eventDataInner->listener->env_, eventDataInner->color);
-    napi_value callback = nullptr;
-    napi_value args[2] = { jsRgbaArray, jsWallpaperType };
-    napi_get_reference_value(eventDataInner->listener->env_, eventDataInner->listener->callback_, &callback);
-    napi_value global = nullptr;
-    napi_get_global(eventDataInner->listener->env_, &global);
-    napi_value result;
-    napi_status callStatus = napi_call_function(
-        eventDataInner->listener->env_, global, callback, sizeof(args) / sizeof(args[0]), args, &result);
-    if (callStatus != napi_ok) {
-        HILOG_ERROR("notify data change failed, callStatus:%{public}d", callStatus);
-    }
-    napi_close_handle_scope(eventDataInner->listener->env_, scope);
-    delete eventDataInner;
-    delete work;
-    return;
-}
-
-void NapiWallpaperAbility::OnWallpaperChangeLambdaFunction(uv_work_t *work, int status)
-{
-    WallpaperChangedData *dataInner = reinterpret_cast<WallpaperChangedData *>(work->data);
-    if (dataInner == nullptr) {
-        delete work;
-        return;
-    }
-    if (dataInner->listener == nullptr) {
-        delete dataInner;
-        delete work;
-        return;
-    }
-    napi_handle_scope scope = nullptr;
-    napi_open_handle_scope(dataInner->listener->env_, &scope);
-    if (scope == nullptr) {
-        delete dataInner;
-        delete work;
-        return;
-    }
-    napi_value jsWallpaperType = nullptr;
-    napi_value jsResourceType = nullptr;
-    napi_value jsResourceUri = nullptr;
-    napi_create_int32(dataInner->listener->env_, dataInner->wallpaperType, &jsWallpaperType);
-    napi_create_int32(dataInner->listener->env_, dataInner->resourceType, &jsResourceType);
-    napi_create_string_utf8(dataInner->listener->env_, dataInner->uri.c_str(), dataInner->uri.length(), &jsResourceUri);
-    napi_value callback = nullptr;
-    napi_value args[3] = { jsWallpaperType, jsResourceType, jsResourceUri };
-    napi_get_reference_value(dataInner->listener->env_, dataInner->listener->callback_, &callback);
-    napi_value global = nullptr;
-    napi_get_global(dataInner->listener->env_, &global);
-    napi_value result;
-    napi_status callStatus =
-        napi_call_function(dataInner->listener->env_, global, callback, sizeof(args) / sizeof(args[0]), args, &result);
-    if (callStatus != napi_ok) {
-        HILOG_ERROR("notify data change failed, callStatus:%{public}d", callStatus);
-    }
-    napi_close_handle_scope(dataInner->listener->env_, scope);
-    delete dataInner;
-    delete work;
-    return;
 }
 } // namespace WallpaperNAPI
 } // namespace OHOS
