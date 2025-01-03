@@ -60,6 +60,7 @@ enum ErrorCode : int32_t {
     E_NOT_SYSTEM_APP,
     E_USER_IDENTITY_ERROR,
     E_CHECK_DESCRIPTOR_ERROR,
+    E_PICTURE_OVERSIZED,
     E_UNKNOWN,
 };
 using JsCallbackOffset = bool (*)(int32_t, int32_t);

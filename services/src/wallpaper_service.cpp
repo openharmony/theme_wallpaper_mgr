@@ -1517,8 +1517,11 @@ ErrorCode WallpaperService::CheckValid(int32_t wallpaperType, int32_t length, Wa
     }
 
     int32_t maxLength = resourceType == VIDEO ? MAX_VIDEO_SIZE : FOO_MAX_LEN;
-    if (length <= 0 || length > maxLength) {
+    if (length <= 0) {
         return E_PARAMETERS_INVALID;
+    }
+    if (length > maxLength) {
+        return E_PICTURE_OVERSIZED;
     }
     return E_OK;
 }
