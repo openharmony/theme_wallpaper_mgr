@@ -176,7 +176,7 @@ int32_t WallpaperServiceStub::OnSetWallpaperInnerByPixelMap(MessageParcel &data,
     }
     if (vectorPixelMapSize > PIXELMAP_VECTOR_SIZE_MAX) {
         HILOG_ERROR("Pixelmap size is too large! vectorPixelMapSize = %{public}d", vectorPixelMapSize);
-        return E_PARAMETERS_INVALID;
+        return E_PICTURE_OVERSIZED;
     }
     auto *rawData = (uint8_t *)data.ReadRawData(vectorPixelMapSize);
     if (rawData == nullptr) {

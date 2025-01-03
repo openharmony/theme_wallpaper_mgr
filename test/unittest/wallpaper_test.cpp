@@ -987,7 +987,7 @@ HWTEST_F(WallpaperTest, SetWallpaper001, TestSize.Level0)
     EXPECT_EQ(wallpaperErrorCode, E_PARAMETERS_INVALID) << "Failed to throw error";
     wallpaperErrorCode = wallpaperService->SetWallpaper(0, 0, FOO_MAX_LEN);
 
-    EXPECT_EQ(wallpaperErrorCode, E_PARAMETERS_INVALID) << "Failed to throw error";
+    EXPECT_EQ(wallpaperErrorCode, E_PICTURE_OVERSIZED) << "Failed to throw error";
 }
 
 /*********************   USER_DEAL   *********************/
