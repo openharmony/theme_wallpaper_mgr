@@ -248,17 +248,11 @@ void JsWallpaperExtensionAbility::RegisterWallpaperCallback()
         if (workData == nullptr) {
             return false;
         }
-        uv_after_work_cb afterCallback = [](uv_work_t *work, int32_t status) {
-            WorkData *workData = reinterpret_cast<WorkData *>(work->data);
-            if (workData == nullptr) {
-                delete work;
-                return;
-            }
+        auto task = [workData]() {
             napi_handle_scope scope = nullptr;
             napi_open_handle_scope(workData->env_, &scope);
             if (scope == nullptr) {
                 delete workData;
-                delete work;
                 return;
             }
             napi_value type = OHOS::AppExecFwk::WrapInt32ToJS(workData->env_, workData->wallpaperType);
@@ -271,9 +265,11 @@ void JsWallpaperExtensionAbility::RegisterWallpaperCallback()
             }
             napi_close_handle_scope(workData->env_, scope);
             delete workData;
-            delete work;
         };
-        UvQueue::Call(napiEnv, workData, afterCallback);
+        if (napi_status::napi_ok != napi_send_event(workData->env_, task, napi_eprio_immediate)) {
+            HILOG_ERROR("RegisterWallpaperCallback: Failed to SendEvent");
+            return false;
+        }
         return true;
     });
 }
