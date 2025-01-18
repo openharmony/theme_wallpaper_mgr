@@ -992,6 +992,7 @@ NapiWallpaperAbility::~NapiWallpaperAbility()
         };
         if (napi_status::napi_ok != napi_send_event(workData->env_, task, napi_eprio_immediate)) {
             HILOG_ERROR("~NapiWallpaperAbility: Failed to SendEvent");
+            delete workData;
         }
     }
 }
@@ -1041,6 +1042,7 @@ void NapiWallpaperAbility::OnColorsChange(const std::vector<uint64_t> &color, in
     };
     if (napi_status::napi_ok != napi_send_event(eventDataWorker->listener->env_, task, napi_eprio_immediate)) {
         HILOG_ERROR("OnColorsChange: Failed to SendEvent");
+        delete eventDataWorker;
     }
 }
 
@@ -1089,6 +1091,7 @@ void NapiWallpaperAbility::OnWallpaperChange(
     };
     if (napi_status::napi_ok != napi_send_event(data->listener->env_, task, napi_eprio_immediate)) {
         HILOG_ERROR("OnWallpaperChange: Failed to SendEvent");
+        delete data;
     }
 }
 
