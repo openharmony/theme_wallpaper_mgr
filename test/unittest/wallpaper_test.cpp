@@ -52,6 +52,7 @@ constexpr int32_t UNFOLD_1 = 1;
 constexpr int32_t UNFOLD_2 = 1;
 constexpr int32_t PORT = 0;
 constexpr int32_t LAND = 1;
+constexpr int32_t DEFAULT_USERID = 100;
 uint64_t selfTokenID_ = 0;
 constexpr const char *URI = "/data/test/theme/wallpaper/wallpaper_test.JPG";
 constexpr const char *NORMAL_PORT_URI = "/data/test/theme/wallpaper/normal_port_wallpaper.jpg";
@@ -1051,7 +1052,7 @@ HWTEST_F(WallpaperTest, SwitchedUserIdDeal001, TestSize.Level0)
     ApiInfo apiInfo{ false, false };
     std::vector<int32_t> ids;
     AccountSA::OsAccountManager::QueryActiveOsAccountIds(ids);
-    int32_t beforeUserId = ids[0];
+    int32_t beforeUserId = ids.empty()? DEFAULT_USERID : ids[0];
     std::string addCommonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED;
     WallpaperTest::TriggerEvent(TEST_USERID, addCommonEvent);
     std::string userDir = WALLPAPER_DEFAULT_PATH + std::string("/") + std::to_string(TEST_USERID);
