@@ -1275,6 +1275,7 @@ ErrorCode WallpaperService::GetImageFd(int32_t userId, WallpaperType wallpaperTy
         ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         return E_DEAL_FAILED;
     }
+    fdsan_exchange_owner_tag(fd, 0, WP_DOMAIN);
     HILOG_INFO("fd = %{public}d", fd);
     return E_OK;
 }
@@ -1372,11 +1373,11 @@ ErrorCode WallpaperService::SetWallpaper(
             HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
             ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
             delete[] paperBuf;
-            close(fdw);
+            fdsan_close_with_tag(fdw, WP_DOMAIN);
             return E_DEAL_FAILED;
         }
         delete[] paperBuf;
-        close(fdw);
+        fdsan_close_with_tag(fdw, WP_DOMAIN);
     }
     WallpaperType type = static_cast<WallpaperType>(wallpaperType);
     ErrorCode wallpaperErrorCode = SetWallpaperBackupData(userId, resourceType, uri, type);
@@ -1446,15 +1447,16 @@ ErrorCode WallpaperService::WritePixelMapToFile(std::shared_ptr<OHOS::Media::Pix
             delete[] buffer;
             return E_DEAL_FAILED;
         }
+        fdsan_exchange_owner_tag(fdw, 0, WP_DOMAIN);
         if (write(fdw, buffer, mapSize) <= 0) {
             HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
             ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
             delete[] buffer;
-            close(fdw);
+            fdsan_close_with_tag(fdw, WP_DOMAIN);
             return E_DEAL_FAILED;
         }
         delete[] buffer;
-        close(fdw);
+        fdsan_close_with_tag(fdw, WP_DOMAIN);
     }
     return E_OK;
 }
@@ -1587,13 +1589,14 @@ bool WallpaperService::SaveWallpaperState(
         HILOG_ERROR("open user config file failed!");
         return false;
     }
+    fdsan_exchange_owner_tag(fd, 0, WP_DOMAIN);
     ssize_t size = write(fd, json.c_str(), json.size());
     if (size <= 0) {
         HILOG_ERROR("write user config file failed!");
-        close(fd);
+        fdsan_close_with_tag(fd, WP_DOMAIN);
         return false;
     }
-    close(fd);
+    fdsan_close_with_tag(fd, WP_DOMAIN);
     return true;
 }
 
@@ -1606,15 +1609,16 @@ void WallpaperService::LoadWallpaperState()
         HILOG_ERROR("open user config file failed!");
         return;
     }
+    fdsan_exchange_owner_tag(fd, 0, WP_DOMAIN);
     const size_t len = 255;
     char buf[len] = { 0 };
     ssize_t size = read(fd, buf, len);
     if (size <= 0) {
         HILOG_ERROR("read user config file failed!");
-        close(fd);
+        fdsan_close_with_tag(fd, WP_DOMAIN);
         return;
     }
-    close(fd);
+    fdsan_close_with_tag(fd, WP_DOMAIN);
 
     if (buf[0] == '\0') {
         return;
@@ -1792,15 +1796,16 @@ ErrorCode WallpaperService::WriteFdToFile(WallpaperPictureInfo &wallpaperPicture
         delete[] wallpaperBuffer;
         return E_DEAL_FAILED;
     }
+    fdsan_exchange_owner_tag(fdw, 0, WP_DOMAIN);
     if (write(fdw, wallpaperBuffer, wallpaperPictureInfo.length) <= 0) {
         HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
         delete[] wallpaperBuffer;
-        close(fdw);
+        fdsan_close_with_tag(fdw, WP_DOMAIN);
         return E_DEAL_FAILED;
     }
     delete[] wallpaperBuffer;
-    close(fdw);
+    fdsan_close_with_tag(fdw, WP_DOMAIN);
     return E_OK;
 }
 
@@ -1976,6 +1981,7 @@ ErrorCode WallpaperService::GetImageFd(
         ReporterFault(FaultType::LOAD_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         return E_DEAL_FAILED;
     }
+    fdsan_exchange_owner_tag(fd, 0, WP_DOMAIN);
     HILOG_INFO("fd = %{public}d", fd);
     return E_OK;
 }
