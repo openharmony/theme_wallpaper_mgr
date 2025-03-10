@@ -370,7 +370,7 @@ ErrorCode WallpaperManager::CreatePixelMapByFd(
     if (bytesRead < 0) {
         HILOG_ERROR("Read fd to buffer fail!");
         delete[] buffer;
-        fdsan_close_with_tag(fd, WP_DOMAIN);
+        close(fd);
         return E_IMAGE_ERRCODE;
     }
     uint32_t errorCode = 0;
@@ -381,7 +381,7 @@ ErrorCode WallpaperManager::CreatePixelMapByFd(
     if (errorCode != 0 || imageSource == nullptr) {
         HILOG_ERROR("ImageSource::CreateImageSource failed, errcode= %{public}d!", errorCode);
         delete[] buffer;
-        fdsan_close_with_tag(fd, WP_DOMAIN);
+        close(fd);
         return E_IMAGE_ERRCODE;
     }
     OHOS::Media::DecodeOptions decodeOpts;
@@ -389,11 +389,11 @@ ErrorCode WallpaperManager::CreatePixelMapByFd(
     if (errorCode != 0) {
         HILOG_ERROR("ImageSource::CreatePixelMap failed, errcode= %{public}d!", errorCode);
         delete[] buffer;
-        fdsan_close_with_tag(fd, WP_DOMAIN);
+        close(fd);
         return E_IMAGE_ERRCODE;
     }
     delete[] buffer;
-    fdsan_close_with_tag(fd, WP_DOMAIN);
+    close(fd);
     return E_OK;
 }
 
@@ -620,7 +620,7 @@ bool WallpaperManager::CheckVideoFormat(const std::string &fileName)
         }
     } else {
         HILOG_ERROR("Cannot get video mime type!");
-        close(videoFd);
+        fdsan_close_with_tag(videoFd, WP_DOMAIN);
         return false;
     }
 
@@ -734,6 +734,7 @@ ErrorCode WallpaperManager::GetFdByPath(
         ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_FD_INPUT_FAILED);
         return E_FILE_ERROR;
     }
+    fdsan_exchange_owner_tag(wallpaperPictureInfo.fd, 0, WP_DOMAIN);
     ErrorCode wallpaperErrorCode = CheckWallpaperFormat(fileRealPath, false, wallpaperPictureInfo.length);
     if (wallpaperErrorCode != E_OK) {
         HILOG_ERROR("Check wallpaper format failed!");
@@ -787,7 +788,7 @@ void WallpaperManager::CloseWallpaperInfoFd(std::vector<WallpaperPictureInfo> wa
 {
     for (auto &wallpaperInfo : wallpaperPictureInfos) {
         if (wallpaperInfo.fd >= 0) {
-            close(wallpaperInfo.fd);
+            fdsan_close_with_tag(wallpaperInfo.fd, WP_DOMAIN);
         }
     }
 }
