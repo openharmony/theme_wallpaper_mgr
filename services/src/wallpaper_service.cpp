@@ -1369,6 +1369,7 @@ ErrorCode WallpaperService::SetWallpaper(
             delete[] paperBuf;
             return E_DEAL_FAILED;
         }
+        fdsan_exchange_owner_tag(fdw, 0, WP_DOMAIN);
         if (write(fdw, paperBuf, length) <= 0) {
             HILOG_ERROR("Write to fdw failed, errno %{public}d", errno);
             ReporterFault(FaultType::SET_WALLPAPER_FAULT, FaultCode::RF_DROP_FAILED);
