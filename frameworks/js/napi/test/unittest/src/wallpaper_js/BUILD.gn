@@ -15,7 +15,7 @@ import("//build/test.gni")
 import("../../../../../../../wallpaper.gni")
 
 ohos_js_unittest("WallpaperJSTest") {
-  module_out_path = "theme/wallpaperJsTest"
+  module_out_path = "wallpaper_mgr/wallpaper_mgr/wallpaperJsTest"
 
   resource_config_file =
       "${wallpaper_path}/test/unittest/resource/ohos_test.xml"

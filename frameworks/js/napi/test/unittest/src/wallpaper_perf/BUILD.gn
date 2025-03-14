@@ -14,7 +14,7 @@
 import("//build/test.gni")
 
 ohos_js_unittest("WallpaperPerfJSTest") {
-  module_out_path = "theme/wallpaperPerfJSTest"
+  module_out_path = "wallpaper_mgr/wallpaper_mgr/wallpaperPerfJSTest"
 
   hap_profile = "./config.json"
 
