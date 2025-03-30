@@ -38,6 +38,12 @@ ohos_shared_library("wallpaperextensionability") {
     "-ffunction-sections",
     "-fvisibility=hidden",
     "-Os",
+    "-fstack-protector-strong",
+  ]
+  ldflags = [
+    "-Wl,-z,relro",
+    "-Wl,-z,now",
+    "-fpie",
   ]
 
   include_dirs = [
