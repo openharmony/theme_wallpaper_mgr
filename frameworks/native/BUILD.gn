@@ -59,6 +59,7 @@ ohos_shared_library("wallpapermanager") {
     "samgr:samgr_proxy",
     "window_manager:libdm",
   ]
+  branch_protector_ret = "pac_ret"
   subsystem_name = "theme"
   innerapi_tags = [ "platformsdk" ]
   part_name = "wallpaper_mgr"

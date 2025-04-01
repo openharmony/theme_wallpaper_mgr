@@ -45,6 +45,7 @@ ohos_shared_library("wallpaper_utils") {
     "hilog:libhilog",
     "hisysevent:libhisysevent",
   ]
+  branch_protector_ret = "pac_ret"
   subsystem_name = "theme"
   innerapi_tags = [ "platformsdk_indirect" ]
   part_name = "wallpaper_mgr"
