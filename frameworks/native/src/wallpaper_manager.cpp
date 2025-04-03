@@ -33,17 +33,18 @@
 #include "file_ex.h"
 #include "hilog_wrapper.h"
 #include "hitrace_meter.h"
-#include "i_wallpaper_service.h"
 #include "if_system_ability_manager.h"
 #include "image_packer.h"
 #include "image_source.h"
 #include "image_type.h"
 #include "iservice_registry.h"
+#include "iwallpaper_service.h"
 #include "system_ability_definition.h"
 #include "wallpaper_manager.h"
+#include "wallpaper_picture_info_by_parcel.h"
+#include "wallpaper_rawdata.h"
 #include "wallpaper_service_cb_stub.h"
 #include "wallpaper_service_proxy.h"
-
 namespace OHOS {
 using namespace MiscServices;
 namespace WallpaperMgrService {
@@ -171,9 +172,9 @@ ErrorCode WallpaperManager::GetColors(int32_t wallpaperType, const ApiInfo &apiI
         return E_DEAL_FAILED;
     }
     if (apiInfo.isSystemApi) {
-        return wallpaperServerProxy->GetColorsV9(wallpaperType, colors);
+        return ConvertIntToErrorCode(wallpaperServerProxy->GetColorsV9(wallpaperType, colors));
     }
-    return wallpaperServerProxy->GetColors(wallpaperType, colors);
+    return ConvertIntToErrorCode(wallpaperServerProxy->GetColors(wallpaperType, colors));
 }
 
 ErrorCode WallpaperManager::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
@@ -189,7 +190,7 @@ ErrorCode WallpaperManager::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
         close(iter->second);
         wallpaperFdMap_.erase(iter);
     }
-    ErrorCode wallpaperErrorCode = wallpaperServerProxy->GetFile(wallpaperType, wallpaperFd);
+    ErrorCode wallpaperErrorCode = ConvertIntToErrorCode(wallpaperServerProxy->GetFile(wallpaperType, wallpaperFd));
     if (wallpaperErrorCode == E_OK && wallpaperFd != -1) {
         wallpaperFdMap_.insert(std::pair<int32_t, int32_t>(wallpaperType, wallpaperFd));
     }
@@ -225,9 +226,9 @@ ErrorCode WallpaperManager::SetWallpaper(std::string uri, int32_t wallpaperType,
     fdsan_exchange_owner_tag(fd, 0, WP_DOMAIN);
     StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
     if (apiInfo.isSystemApi) {
-        wallpaperErrorCode = wallpaperServerProxy->SetWallpaperV9(fd, wallpaperType, length);
+        wallpaperErrorCode = ConvertIntToErrorCode(wallpaperServerProxy->SetWallpaperV9(fd, wallpaperType, length));
     } else {
-        wallpaperErrorCode = wallpaperServerProxy->SetWallpaper(fd, wallpaperType, length);
+        wallpaperErrorCode = ConvertIntToErrorCode(wallpaperServerProxy->SetWallpaper(fd, wallpaperType, length));
     }
     fdsan_close_with_tag(fd, WP_DOMAIN);
     if (wallpaperErrorCode == E_OK) {
@@ -247,10 +248,24 @@ ErrorCode WallpaperManager::SetWallpaper(
     }
 
     ErrorCode wallpaperErrorCode = E_UNKNOWN;
+    if (pixelMap == nullptr) {
+        HILOG_ERROR("pixelMap is nullptr!");
+        return E_DEAL_FAILED;
+    }
+    std::vector<std::uint8_t> value;
+    if (!pixelMap->EncodeTlv(value)) {
+        HILOG_ERROR("pixelMap encode failed!");
+        return E_DEAL_FAILED;
+    }
+    WallpaperRawData wallpaperRawData;
+    wallpaperRawData.size = value.size();
+    wallpaperRawData.data = value.data();
     if (apiInfo.isSystemApi) {
-        wallpaperErrorCode = wallpaperServerProxy->SetWallpaperV9ByPixelMap(pixelMap, wallpaperType);
+        wallpaperErrorCode =
+            ConvertIntToErrorCode(wallpaperServerProxy->SetWallpaperV9ByPixelMap(wallpaperRawData, wallpaperType));
     } else {
-        wallpaperErrorCode = wallpaperServerProxy->SetWallpaperByPixelMap(pixelMap, wallpaperType);
+        wallpaperErrorCode =
+            ConvertIntToErrorCode(wallpaperServerProxy->SetWallpaperByPixelMap(wallpaperRawData, wallpaperType));
     }
     if (wallpaperErrorCode == static_cast<int32_t>(E_OK)) {
         CloseWallpaperFd(wallpaperType);
@@ -285,7 +300,7 @@ ErrorCode WallpaperManager::SetVideo(const std::string &uri, const int32_t wallp
     }
     fdsan_exchange_owner_tag(fd, 0, WP_DOMAIN);
     StartAsyncTrace(HITRACE_TAG_MISC, "SetVideo", static_cast<int32_t>(TraceTaskId::SET_VIDEO));
-    wallpaperErrorCode = wallpaperServerProxy->SetVideo(fd, wallpaperType, length);
+    wallpaperErrorCode = ConvertIntToErrorCode(wallpaperServerProxy->SetVideo(fd, wallpaperType, length));
     fdsan_close_with_tag(fd, WP_DOMAIN);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetVideo", static_cast<int32_t>(TraceTaskId::SET_VIDEO));
     return wallpaperErrorCode;
@@ -320,7 +335,7 @@ ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int
     }
     fdsan_exchange_owner_tag(fd, 0, WP_DOMAIN);
     StartAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
-    wallpaperErrorCode = wallpaperServerProxy->SetCustomWallpaper(fd, wallpaperType, length);
+    wallpaperErrorCode = ConvertIntToErrorCode(wallpaperServerProxy->SetCustomWallpaper(fd, wallpaperType, length));
     fdsan_close_with_tag(fd, WP_DOMAIN);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
     return wallpaperErrorCode;
@@ -335,22 +350,23 @@ ErrorCode WallpaperManager::GetPixelMap(
         HILOG_ERROR("Get proxy failed!");
         return E_SA_DIED;
     }
-    IWallpaperService::FdInfo fdInfo;
     ErrorCode wallpaperErrorCode = E_UNKNOWN;
+    int32_t size = 0;
+    int32_t fd = -1;
     if (apiInfo.isSystemApi) {
-        wallpaperErrorCode = wallpaperServerProxy->GetPixelMapV9(wallpaperType, fdInfo);
+        wallpaperErrorCode = ConvertIntToErrorCode(wallpaperServerProxy->GetPixelMapV9(wallpaperType, size, fd));
     } else {
-        wallpaperErrorCode = wallpaperServerProxy->GetPixelMap(wallpaperType, fdInfo);
+        wallpaperErrorCode = ConvertIntToErrorCode(wallpaperServerProxy->GetPixelMap(wallpaperType, size, fd));
     }
     if (wallpaperErrorCode != E_OK) {
         return wallpaperErrorCode;
     }
     // current wallpaper is live video, not image
-    if (fdInfo.size == 0 && fdInfo.fd == -1) { // 0: empty file size; -1: invalid file description
+    if (size == 0 && fd == -1) { // 0: empty file size; -1: invalid file description
         pixelMap = nullptr;
         return E_OK;
     }
-    wallpaperErrorCode = CreatePixelMapByFd(fdInfo.fd, fdInfo.size, pixelMap);
+    wallpaperErrorCode = CreatePixelMapByFd(fd, size, pixelMap);
     if (wallpaperErrorCode != E_OK) {
         pixelMap = nullptr;
         return wallpaperErrorCode;
@@ -436,7 +452,9 @@ bool WallpaperManager::IsChangePermitted()
         HILOG_ERROR("Get proxy failed!");
         return false;
     }
-    return wallpaperServerProxy->IsChangePermitted();
+    bool isChangePermitted = false;
+    wallpaperServerProxy->IsChangePermitted(isChangePermitted);
+    return isChangePermitted;
 }
 
 bool WallpaperManager::IsOperationAllowed()
@@ -446,7 +464,9 @@ bool WallpaperManager::IsOperationAllowed()
         HILOG_ERROR("Get proxy failed!");
         return false;
     }
-    return wallpaperServerProxy->IsOperationAllowed();
+    bool isOperationAllowed = false;
+    wallpaperServerProxy->IsOperationAllowed(isOperationAllowed);
+    return isOperationAllowed;
 }
 ErrorCode WallpaperManager::ResetWallpaper(std::int32_t wallpaperType, const ApiInfo &apiInfo)
 {
@@ -457,9 +477,9 @@ ErrorCode WallpaperManager::ResetWallpaper(std::int32_t wallpaperType, const Api
     }
     ErrorCode wallpaperErrorCode = E_UNKNOWN;
     if (apiInfo.isSystemApi) {
-        wallpaperErrorCode = wallpaperServerProxy->ResetWallpaperV9(wallpaperType);
+        wallpaperErrorCode = ConvertIntToErrorCode(wallpaperServerProxy->ResetWallpaperV9(wallpaperType));
     } else {
-        wallpaperErrorCode = wallpaperServerProxy->ResetWallpaper(wallpaperType);
+        wallpaperErrorCode = ConvertIntToErrorCode(wallpaperServerProxy->ResetWallpaper(wallpaperType));
     }
     if (wallpaperErrorCode == E_OK) {
         CloseWallpaperFd(wallpaperType);
@@ -488,7 +508,7 @@ ErrorCode WallpaperManager::On(const std::string &type, std::shared_ptr<Wallpape
         std::lock_guard<std::mutex> lock(listenerMapLock_);
         listenerMap_.insert_or_assign(type, ipcListener);
     }
-    return wallpaperServerProxy->On(type, ipcListener);
+    return ConvertIntToErrorCode(wallpaperServerProxy->On(type, ipcListener));
 }
 
 ErrorCode WallpaperManager::Off(const std::string &type, std::shared_ptr<WallpaperEventListener> listener)
@@ -500,14 +520,12 @@ ErrorCode WallpaperManager::Off(const std::string &type, std::shared_ptr<Wallpap
         return E_SA_DIED;
     }
     sptr<WallpaperEventListenerClient> ipcListener = nullptr;
-    if (listener != nullptr) {
-        ipcListener = new (std::nothrow) WallpaperEventListenerClient(listener);
-        if (ipcListener == nullptr) {
-            HILOG_ERROR("new WallpaperEventListenerClient failed!");
-            return E_NO_MEMORY;
-        }
+    ipcListener = new (std::nothrow) WallpaperEventListenerClient(listener);
+    if (ipcListener == nullptr) {
+        HILOG_ERROR("new WallpaperEventListenerClient failed!");
+        return E_NO_MEMORY;
     }
-    return wallpaperServerProxy->Off(type, ipcListener);
+    return ConvertIntToErrorCode(wallpaperServerProxy->Off(type, ipcListener));
 }
 
 JScallback WallpaperManager::GetCallback()
@@ -534,13 +552,13 @@ bool WallpaperManager::RegisterWallpaperCallback(JScallback callback)
         HILOG_ERROR("callback is NULL.");
         return false;
     }
-
-    bool status = wallpaperServerProxy->RegisterWallpaperCallback(new WallpaperServiceCbStub());
-    if (!status) {
+    bool registerWallpaperCallback = false;
+    wallpaperServerProxy->RegisterWallpaperCallback(new WallpaperServiceCbStub(), registerWallpaperCallback);
+    if (!registerWallpaperCallback) {
         HILOG_ERROR("off failed code=%d.", ERR_NONE);
         return false;
     }
-    return true;
+    return registerWallpaperCallback;
 }
 
 void WallpaperManager::ReporterFault(FaultType faultType, FaultCode faultCode)
@@ -571,7 +589,7 @@ bool WallpaperManager::RegisterWallpaperListener()
 
     std::lock_guard<std::mutex> lock(listenerMapLock_);
     for (const auto &iter : listenerMap_) {
-        auto ret = service->On(iter.first, iter.second);
+        auto ret = ConvertIntToErrorCode(service->On(iter.first, iter.second));
         if (ret != E_OK) {
             HILOG_ERROR(
                 "Register WallpaperListener failed type:%{public}s, errcode:%{public}d", iter.first.c_str(), ret);
@@ -587,7 +605,7 @@ ErrorCode WallpaperManager::SendEvent(const std::string &eventType)
         HILOG_ERROR("Get proxy failed!");
         return E_DEAL_FAILED;
     }
-    return wallpaperServerProxy->SendEvent(eventType);
+    return ConvertIntToErrorCode(wallpaperServerProxy->SendEvent(eventType));
 }
 
 bool WallpaperManager::CheckVideoFormat(const std::string &fileName)
@@ -695,8 +713,9 @@ ErrorCode WallpaperManager::SetAllWallpapers(std::vector<WallpaperInfo> allWallp
         HILOG_ERROR("Get proxy failed!");
         return E_DEAL_FAILED;
     }
+    WallpaperPictureInfoByParcel wallpaperPictureInfoByParcel;
     WallpaperPictureInfo wallpaperPictureInfo;
-    std::vector<WallpaperPictureInfo> WallpaperPictureInfos;
+    std::vector<int32_t> fdVector;
     ErrorCode wallpaperCode;
     for (const auto &wallpaperInfo : allWallpaperInfos) {
         std::string fileRealPath;
@@ -706,19 +725,21 @@ ErrorCode WallpaperManager::SetAllWallpapers(std::vector<WallpaperInfo> allWallp
         }
         wallpaperCode = GetFdByPath(wallpaperInfo, wallpaperPictureInfo, fileRealPath);
         if (wallpaperCode != E_OK) {
-            CloseWallpaperInfoFd(WallpaperPictureInfos);
+            CloseWallpaperInfoFd(wallpaperPictureInfoByParcel.wallpaperPictureInfo_);
             HILOG_ERROR("PathConvertFd failed");
             return wallpaperCode;
         }
-        WallpaperPictureInfos.push_back(wallpaperPictureInfo);
+        wallpaperPictureInfoByParcel.wallpaperPictureInfo_.push_back(wallpaperPictureInfo);
+        fdVector.push_back(wallpaperPictureInfo.fd);
     }
 
     StartAsyncTrace(HITRACE_TAG_MISC, "SetAllWallpapers", static_cast<int32_t>(TraceTaskId::SET_ALL_WALLPAPERS));
-    ErrorCode wallpaperErrorCode = wallpaperServerProxy->SetAllWallpapers(WallpaperPictureInfos, wallpaperType);
+    ErrorCode wallpaperErrorCode = ConvertIntToErrorCode(
+        wallpaperServerProxy->SetAllWallpapers(wallpaperPictureInfoByParcel, wallpaperType, fdVector));
     if (wallpaperErrorCode == E_OK) {
         CloseWallpaperFd(wallpaperType);
     }
-    CloseWallpaperInfoFd(WallpaperPictureInfos);
+    CloseWallpaperInfoFd(wallpaperPictureInfoByParcel.wallpaperPictureInfo_);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetAllWallpapers", static_cast<int32_t>(TraceTaskId::SET_ALL_WALLPAPERS));
     return wallpaperErrorCode;
 }
@@ -765,18 +786,20 @@ ErrorCode WallpaperManager::GetCorrespondWallpaper(
         HILOG_ERROR("Get proxy failed!");
         return E_SA_DIED;
     }
-    IWallpaperService::FdInfo fdInfo;
     ErrorCode wallpaperErrorCode = E_UNKNOWN;
-    wallpaperErrorCode = wallpaperServerProxy->GetCorrespondWallpaper(wallpaperType, foldState, rotateState, fdInfo);
+    int32_t size = 0;
+    int32_t fd = -1;
+    wallpaperErrorCode = ConvertIntToErrorCode(
+        wallpaperServerProxy->GetCorrespondWallpaper(wallpaperType, foldState, rotateState, size, fd));
     if (wallpaperErrorCode != E_OK) {
         return wallpaperErrorCode;
     }
     // current wallpaper is live video, not image
-    if (fdInfo.size == 0 && fdInfo.fd == -1) { // 0: empty file size; -1: invalid file description
+    if (size == 0 && fd == -1) { // 0: empty file size; -1: invalid file description
         pixelMap = nullptr;
         return E_OK;
     }
-    wallpaperErrorCode = CreatePixelMapByFd(fdInfo.fd, fdInfo.size, pixelMap);
+    wallpaperErrorCode = CreatePixelMapByFd(fd, size, pixelMap);
     if (wallpaperErrorCode != E_OK) {
         pixelMap = nullptr;
         return wallpaperErrorCode;
@@ -800,7 +823,9 @@ bool WallpaperManager::IsDefaultWallpaperResource(int32_t userId, int32_t wallpa
         HILOG_ERROR("Get proxy failed!");
         return false;
     }
-    return wallpaperServerProxy->IsDefaultWallpaperResource(userId, wallpaperType);
+    bool isDefaultWallpaperResource = false;
+    wallpaperServerProxy->IsDefaultWallpaperResource(userId, wallpaperType, isDefaultWallpaperResource);
+    return isDefaultWallpaperResource;
 }
 
 int32_t WallpaperManager::ConverString2Int(const std::string &value)
@@ -814,6 +839,36 @@ int32_t WallpaperManager::ConverString2Int(const std::string &value)
         }
     }
     return result;
+}
+
+std::unordered_map<int32_t, ErrorCode> errorCodeMap = {
+    { static_cast<int32_t>(NO_ERROR), E_OK },
+    { static_cast<int32_t>(E_OK), E_OK },
+    { static_cast<int32_t>(E_SA_DIED), E_SA_DIED },
+    { static_cast<int32_t>(E_READ_PARCEL_ERROR), E_READ_PARCEL_ERROR },
+    { static_cast<int32_t>(E_WRITE_PARCEL_ERROR), E_WRITE_PARCEL_ERROR },
+    { static_cast<int32_t>(E_PUBLISH_FAIL), E_PUBLISH_FAIL },
+    { static_cast<int32_t>(E_TRANSACT_ERROR), E_TRANSACT_ERROR },
+    { static_cast<int32_t>(E_DEAL_FAILED), E_DEAL_FAILED },
+    { static_cast<int32_t>(E_PARAMETERS_INVALID), E_PARAMETERS_INVALID },
+    { static_cast<int32_t>(E_SET_RTC_FAILED), E_SET_RTC_FAILED },
+    { static_cast<int32_t>(E_NOT_FOUND), E_NOT_FOUND },
+    { static_cast<int32_t>(E_NO_PERMISSION), E_NO_PERMISSION },
+    { static_cast<int32_t>(E_FILE_ERROR), E_FILE_ERROR },
+    { static_cast<int32_t>(E_IMAGE_ERRCODE), E_IMAGE_ERRCODE },
+    { static_cast<int32_t>(E_NO_MEMORY), E_NO_MEMORY },
+    { static_cast<int32_t>(E_NOT_SYSTEM_APP), E_NOT_SYSTEM_APP },
+    { static_cast<int32_t>(E_USER_IDENTITY_ERROR), E_USER_IDENTITY_ERROR },
+    { static_cast<int32_t>(E_CHECK_DESCRIPTOR_ERROR), E_CHECK_DESCRIPTOR_ERROR },
+};
+
+ErrorCode WallpaperManager::ConvertIntToErrorCode(int32_t errorCode)
+{
+    auto it = errorCodeMap.find(errorCode);
+    if (it == errorCodeMap.end()) {
+        return E_UNKNOWN;
+    }
+    return it->second;
 }
 
 } // namespace WallpaperMgrService

@@ -19,6 +19,11 @@ ohos_unittest("wallpaper_test") {
   module_out_path = "wallpaper_mgr/wallpaper_mgr/wallpaper_test"
   sources = [ "unittest/wallpaper_test.cpp" ]
 
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
   include_dirs = [ "${wallpaper_path}/services/include" ]
   deps = [
     "${utils_path}:wallpaper_utils",

@@ -29,6 +29,7 @@
 #include "i_wallpaper_manager_callback.h"
 #include "image_source.h"
 #include "ipc_skeleton.h"
+#include "iwallpaper_service.h"
 #include "os_account_manager.h"
 #include "pixel_map.h"
 #include "system_ability.h"
@@ -63,32 +64,35 @@ public:
     WallpaperService();
     ~WallpaperService();
 
-    ErrorCode SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
-    ErrorCode SetWallpaperByPixelMap(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType) override;
-    ErrorCode GetPixelMap(int32_t wallpaperType, FdInfo &fdInfo) override;
-    ErrorCode GetColors(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
-    ErrorCode GetFile(int32_t wallpaperType, int32_t &wallpaperFd) override;
-    int32_t GetWallpaperId(int32_t wallpaperType) override;
-    bool IsChangePermitted() override;
-    bool IsOperationAllowed() override;
-    ErrorCode ResetWallpaper(int32_t wallpaperType) override;
-    ErrorCode On(const std::string &type, sptr<IWallpaperEventListener> listener) override;
-    ErrorCode Off(const std::string &type, sptr<IWallpaperEventListener> listener) override;
-    bool RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback) override;
+    ErrCode SetWallpaper(int fd, int32_t wallpaperType, int32_t length) override;
+    ErrCode SetAllWallpapers(const WallpaperPictureInfoByParcel &wallpaperPictureInfoByParcel, int32_t wallpaperType,
+        const std::vector<int> &fdVector) override;
+    ErrCode SetWallpaperByPixelMap(const WallpaperRawData &wallpaperRawdata, int32_t wallpaperType) override;
+    ErrCode GetPixelMap(int32_t wallpaperType, int32_t &size, int &fd) override;
+    ErrCode GetCorrespondWallpaper(
+        int32_t wallpaperType, int32_t foldState, int32_t rotateState, int32_t &size, int &fd) override;
+    ErrCode GetColors(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
+    ErrCode GetFile(int32_t wallpaperType, int &wallpaperFd) override;
+    ErrCode GetWallpaperId(int32_t wallpaperType) override;
+    ErrCode IsChangePermitted(bool &isChangePermitted) override;
+    ErrCode IsOperationAllowed(bool &isOperationAllowed) override;
+    ErrCode ResetWallpaper(int32_t wallpaperType) override;
+    ErrCode On(const std::string &type, const sptr<IWallpaperEventListener> &listener) override;
+    ErrCode Off(const std::string &type, const sptr<IWallpaperEventListener> &listener) override;
+    ErrCode RegisterWallpaperCallback(
+        const sptr<IWallpaperCallback> &wallpaperCallback, bool &registerWallpaperCallback) override;
+    ErrCode SetWallpaperV9(int fd, int32_t wallpaperType, int32_t length) override;
+    ErrCode SetWallpaperV9ByPixelMap(const WallpaperRawData &wallpaperRawdata, int32_t wallpaperType) override;
+    ErrCode GetPixelMapV9(int32_t wallpaperType, int32_t &size, int &fd) override;
+    ErrCode GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
+    ErrCode ResetWallpaperV9(int32_t wallpaperType) override;
+    ErrCode SetVideo(int fd, int32_t wallpaperType, int32_t length) override;
+    ErrCode SetCustomWallpaper(int fd, int32_t wallpaperType, int32_t length) override;
+    ErrCode SendEvent(const std::string &eventType) override;
+    ErrCode IsDefaultWallpaperResource(
+        int32_t userId, int32_t wallpaperType, bool &isDefaultWallpaperResource) override;
+    int32_t CallbackParcel(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
     int32_t Dump(int32_t fd, const std::vector<std::u16string> &args) override;
-
-    ErrorCode SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length) override;
-    ErrorCode SetWallpaperV9ByPixelMap(std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType) override;
-    ErrorCode GetPixelMapV9(int32_t wallpaperType, FdInfo &fdInfo) override;
-    ErrorCode GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors) override;
-    ErrorCode ResetWallpaperV9(int32_t wallpaperType) override;
-    ErrorCode SetVideo(int32_t fd, int32_t wallpaperType, int32_t length) override;
-    ErrorCode SetCustomWallpaper(int32_t fd, int32_t wallpaperType, int32_t length) override;
-    ErrorCode SendEvent(const std::string &eventType) override;
-    ErrorCode SetAllWallpapers(std::vector<WallpaperPictureInfo> allWallpaperInfo, int32_t wallpaperType) override;
-    ErrorCode GetCorrespondWallpaper(
-        int32_t wallpaperType, int32_t foldState, int32_t rotateState, IWallpaperService::FdInfo &fdInfo) override;
-    bool IsDefaultWallpaperResource(int32_t userId, int32_t wallpaperType) override;
 
 public:
     void OnInitUser(int32_t newUserId);
@@ -179,6 +183,10 @@ private:
     std::string GetFoldStateName(FoldState foldState);
     std::string GetRotateStateName(RotateState rotateState);
     std::string GetWallpaperPath(int32_t foldState, int32_t rotateState, WallpaperData &wallpaperData);
+    int32_t GetPixleMapParcel(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
+    int32_t GetCorrespondWallpaperParcel(MessageParcel &data, MessageParcel &reply);
+    int32_t GetFileParcel(MessageParcel &data, MessageParcel &reply);
+    int32_t SetwallpaperByPixelMapParcel(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
 
 private:
     int32_t Init();

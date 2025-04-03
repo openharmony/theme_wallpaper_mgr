@@ -11,17 +11,58 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import("//build/config/components/idl_tool/idl.gni")
 import("//build/ohos.gni")
 import("//foundation/ability/ability_runtime/ability_runtime.gni")
 import("../wallpaper.gni")
+
+config("wallpaper_service_gen_config") {
+  include_dirs = [ "${target_gen_dir}" ]
+}
 
 config("wallpaper_service_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "include",
+    "${target_gen_dir}",
     "${wallpaper_path}/utils/dfx/hisysevent_adapter",
     "${wallpaper_path}/utils/dfx/hidumper_adapter",
   ]
+}
+
+idl_gen_interface("wallpaperservice_interface") {
+  sources = [ "IWallpaperService.idl" ]
+  log_domainid = "0xD001C20"
+  log_tag = "WallpaperClient"
+  subsystem_name = "theme"
+  part_name = "wallpaper_mgr"
+}
+
+ohos_source_set("wallpaper_service_proxy") {
+  configs = [ ":wallpaper_service_gen_config" ]
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+  output_values = get_target_outputs(":wallpaperservice_interface")
+  sources = filter_include(output_values, [ "*_stub.cpp" ])
+  sources += filter_include(output_values, [ "*_proxy.cpp" ])
+
+  deps = [ ":wallpaperservice_interface" ]
+  include_dirs = [
+    "include",
+    "${wallpaper_path}/frameworks/native/include/",
+    "${wallpaper_path}/utils/include/",
+  ]
+  external_deps = [
+    "ability_runtime:wantagent_innerkits",
+    "hilog:libhilog",
+    "ipc:ipc_single",
+    "samgr:samgr_proxy",
+  ]
+  subsystem_name = "theme"
+  part_name = "wallpaper_mgr"
 }
 
 ohos_shared_library("wallpaper_service") {
@@ -33,8 +74,12 @@ ohos_shared_library("wallpaper_service") {
     "src/wallpaper_event_listener_proxy.cpp",
     "src/wallpaper_service.cpp",
     "src/wallpaper_service_cb_proxy.cpp",
-    "src/wallpaper_service_stub.cpp",
   ]
+
+  output_values = get_target_outputs(":wallpaperservice_interface")
+  sources += filter_include(output_values, [ "*_stub.cpp" ])
+  sources += filter_include(output_values, [ "*_proxy.cpp" ])
+
   public_configs = [ ":wallpaper_service_config" ]
   include_dirs = [
     "${wallpaper_path}/frameworks/native/include",
@@ -42,7 +87,11 @@ ohos_shared_library("wallpaper_service") {
     "${graphic_2d_path}/rosen/modules/effect/color_picker/include",
     "${graphic_2d_path}/utils/color_manager",
   ]
-  deps = [ "${utils_path}:wallpaper_utils" ]
+  deps = [
+    ":wallpaperservice_interface",
+    "${utils_path}:wallpaper_utils",
+    "${wallpaper_path}/frameworks/native:wallpapermanager",
+  ]
   external_deps = [
     "ability_base:want",
     "ability_base:zuri",

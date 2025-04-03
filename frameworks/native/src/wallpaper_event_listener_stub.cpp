@@ -41,7 +41,7 @@ int32_t WallpaperEventListenerStub::OnRemoteRequest(
             int32_t wallpaperType = data.ReadInt32();
             OnColorsChange(color, wallpaperType);
             HILOG_DEBUG("WallpaperEventListenerStub::OnRemoteRequest End.");
-            return E_OK;
+            return NO_ERROR;
         }
         case ON_WALLPAPER_CHANGE: {
             int32_t wallpaperType = data.ReadInt32();
@@ -50,7 +50,7 @@ int32_t WallpaperEventListenerStub::OnRemoteRequest(
             OnWallpaperChange(
                 static_cast<WallpaperType>(wallpaperType), static_cast<WallpaperResourceType>(resouceType), uri);
             HILOG_DEBUG("WallpaperEventListenerStub::OnRemoteRequest End.");
-            return E_OK;
+            return NO_ERROR;
         }
         default: {
             HILOG_ERROR("code:%{public}d error, WallpaperEventListenerStub::OnRemoteRequest End.", code);

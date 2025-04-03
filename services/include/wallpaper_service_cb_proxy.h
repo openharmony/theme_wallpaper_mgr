@@ -17,7 +17,7 @@
 
 #include <cstdint>
 
-#include "i_wallpaper_callback.h"
+#include "iwallpaper_callback.h"
 #include "iremote_object.h"
 #include "iremote_proxy.h"
 #include "refbase.h"

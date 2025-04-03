@@ -1,0 +1,46 @@
+/*
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+option_parcel_hooks on;
+sequenceable WallpaperPictureInfoByParcel..WallpaperPictureInfoByParcel;
+rawdata WallpaperRawdata..WallpaperRawData;
+interface OHOS.WallpaperMgrService.IWallpaperEventListener;
+interface OHOS.WallpaperMgrService.IWallpaperCallback;
+
+interface OHOS.WallpaperMgrService.IWallpaperService {
+    void SetWallpaper([in] FileDescriptor fd, [in] int wallpaperType, [in] int length);
+    void SetAllWallpapers([in] WallpaperPictureInfoByParcel allWallpaperPictures, [in] int wallpaperType, [in] FileDescriptor[] fdVector);
+    void SetWallpaperByPixelMap([in] WallpaperRawData wallpaperRawdata, [in] int wallpaperType);
+    void GetPixelMap([in] int wallpaperType, [out] int size, [out] FileDescriptor fd);
+    void GetCorrespondWallpaper([in] int wallpaperType, [in] int foldState, [in] int rotateState, [out] int size, [out] FileDescriptor fd);
+    void GetColors([in] int wallpaperType, [out] unsigned long[] colors);
+    void GetFile([in] int wallpaperType, [out] FileDescriptor wallpaperFd);
+    void GetWallpaperId([in] int wallpaperType);
+    void IsChangePermitted([out] boolean isChangePermitted);
+    void IsOperationAllowed([out] boolean isOperationAllowed);
+    void ResetWallpaper([in] int wallpaperType);
+    void On([in] String type, [in] IWallpaperEventListener listener);
+    void Off([in] String type, [in] IWallpaperEventListener listener);
+    void RegisterWallpaperCallback([in] IWallpaperCallback wallpaperCallback, [out] boolean registerWallpaperCallback);
+    void SetWallpaperV9([in] FileDescriptor fd, [in] int wallpaperType, [in] int length);
+    void SetWallpaperV9ByPixelMap([in] WallpaperRawData wallpaperRawdata, [in] int wallpaperType);
+    void GetPixelMapV9([in] int wallpaperType, [out] int size, [out] FileDescriptor fd);
+    void GetColorsV9([in] int wallpaperType, [out] unsigned long[] colors);
+    void ResetWallpaperV9([in] int wallpaperType);
+    void SetVideo([in] FileDescriptor fd, [in] int wallpaperType, [in] int length);
+    void SetCustomWallpaper([in] FileDescriptor fd, [in] int wallpaperType, [in] int length);
+    void SendEvent([in] String eventType);
+    void IsDefaultWallpaperResource([in] int userId, [in] int wallpaperType, [out] boolean isDefaultWallpaperResource);
+}
