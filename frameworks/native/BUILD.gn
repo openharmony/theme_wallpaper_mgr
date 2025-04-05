@@ -22,6 +22,7 @@ config("wallpaper_manager_config") {
     "${wallpaper_path}/services/include",
     "${wallpaper_path}/utils/include",
     "${wallpaper_path}/interfaces/inner_api/include",
+    "${wallpaper_path}/frameworks/native/include",
   ]
   cflags_cc = [
     "-fdata-sections",
@@ -42,12 +43,24 @@ ohos_shared_library("wallpapermanager") {
     "src/wallpaper_event_listener_stub.cpp",
     "src/wallpaper_manager.cpp",
     "src/wallpaper_manager_client.cpp",
+    "src/wallpaper_picture_info_by_parcel.cpp",
+    "src/wallpaper_rawdata.cpp",
     "src/wallpaper_service_cb_stub.cpp",
-    "src/wallpaper_service_proxy.cpp",
   ]
   configs = [ ":wallpaper_manager_config" ]
-  public_configs = [ ":wallpaper_manager_config" ]
-  deps = [ "${utils_path}:wallpaper_utils" ]
+  public_configs = [
+    ":wallpaper_manager_config",
+    "${wallpaper_path}/services:wallpaper_service_gen_config",
+  ]
+  deps = [
+    "${utils_path}:wallpaper_utils",
+    "${wallpaper_path}/services:wallpaper_service_proxy",
+  ]
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
   external_deps = [
     "c_utils:utils",
     "hilog:libhilog",
@@ -72,12 +85,24 @@ ohos_static_library("wallpapermanager_static") {
     "src/wallpaper_event_listener_stub.cpp",
     "src/wallpaper_manager.cpp",
     "src/wallpaper_manager_client.cpp",
+    "src/wallpaper_picture_info_by_parcel.cpp",
+    "src/wallpaper_rawdata.cpp",
     "src/wallpaper_service_cb_stub.cpp",
-    "src/wallpaper_service_proxy.cpp",
   ]
   configs = [ ":wallpaper_manager_config" ]
-  public_configs = [ ":wallpaper_manager_config" ]
-  deps = [ "${utils_path}:wallpaper_utils" ]
+  public_configs = [
+    ":wallpaper_manager_config",
+    "${wallpaper_path}/services:wallpaper_service_gen_config",
+  ]
+  deps = [
+    "${utils_path}:wallpaper_utils",
+    "${wallpaper_path}/services:wallpaper_service_proxy",
+  ]
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
   external_deps = [
     "c_utils:utils",
     "hilog:libhilog",

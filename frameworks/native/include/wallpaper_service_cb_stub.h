@@ -17,9 +17,9 @@
 
 #include <map>
 
-#include "i_wallpaper_callback.h"
 #include "ipc_skeleton.h"
 #include "iremote_stub.h"
+#include "iwallpaper_callback.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {

@@ -23,7 +23,7 @@
 
 using namespace OHOS::WallpaperMgrService;
 constexpr size_t THRESHOLD = 4;
-constexpr uint32_t CODE = static_cast<uint32_t>(WallpaperServiceIpcInterfaceCode::SET_VIDEO);
+constexpr uint32_t CODE = static_cast<uint32_t>(IWallpaperServiceIpcCode::COMMAND_SET_VIDEO);
 
 /* Fuzzer entry point */
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)

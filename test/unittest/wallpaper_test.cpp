@@ -984,7 +984,7 @@ HWTEST_F(WallpaperTest, SetWallpaper001, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaper001  begin");
     std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
-    ErrorCode wallpaperErrorCode = wallpaperService->SetWallpaper(0, 0, -1);
+    ErrCode wallpaperErrorCode = wallpaperService->SetWallpaper(0, 0, -1);
     EXPECT_EQ(wallpaperErrorCode, E_PARAMETERS_INVALID) << "Failed to throw error";
     wallpaperErrorCode = wallpaperService->SetWallpaper(0, 0, FOO_MAX_LEN);
 

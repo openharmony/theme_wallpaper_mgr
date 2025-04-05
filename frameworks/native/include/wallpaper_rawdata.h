@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,24 +13,20 @@
  * limitations under the License.
  */
 
-#include <cstddef>
+#ifndef SERVICES_INCLUDE_WALLPAPER_SERVICE_WALLPAPER_RAWDATA_H
+#define SERVICES_INCLUDE_WALLPAPER_SERVICE_WALLPAPER_RAWDATA_H
 #include <cstdint>
+#include <string>
+namespace OHOS::WallpaperMgrService {
+class WallpaperRawData {
+public:
+    WallpaperRawData();
+    ~WallpaperRawData() = default;
 
-#include "fuzztest_utils.h"
-#include "message_parcel.h"
-#include "on_fuzzer.h"
-#include "wallpaper_service.h"
+    uint32_t size;
+    const void *data;
+    int32_t RawDataCpy(const void *readData);
+};
+} // namespace OHOS::WallpaperMgrService
 
-using namespace OHOS::WallpaperMgrService;
-constexpr size_t THRESHOLD = 4;
-constexpr uint32_t CODE = static_cast<uint32_t>(IWallpaperServiceIpcCode::COMMAND_ON);
-
-/* Fuzzer entry point */
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
-{
-    if (size < THRESHOLD) {
-        return 0;
-    }
-    OHOS::FuzzTestUtils::FuzzTestRemoteRequest(data, size, CODE);
-    return 0;
-}
+#endif // SERVICES_INCLUDE_WALLPAPER_SERVICE_WALLPAPER_RAWDATA_H

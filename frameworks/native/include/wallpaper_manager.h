@@ -24,10 +24,14 @@
 
 #include "avmetadatahelper.h"
 #include "fault_reporter.h"
-#include "i_wallpaper_service.h"
 #include "ipc_skeleton.h"
+#include "iwallpaper_callback.h"
+#include "iwallpaper_event_listener.h"
+#include "iwallpaper_service.h"
 #include "singleton.h"
 #include "wallpaper_common.h"
+#include "wallpaper_event_listener.h"
+#include "wallpaper_event_listener_client.h"
 
 using JScallback = bool (*)(int32_t);
 namespace OHOS {
@@ -195,6 +199,7 @@ private:
         const WallpaperInfo &wallpaperInfo, WallpaperPictureInfo &wallpaperPictureInfo, std::string fileRealPath);
     void CloseWallpaperInfoFd(std::vector<WallpaperPictureInfo> wallpaperPictureInfos);
     int32_t ConverString2Int(const std::string &value);
+    ErrorCode ConvertIntToErrorCode(int32_t errorCode);
     sptr<IWallpaperService> wallpaperProxy_{};
     sptr<IRemoteObject::DeathRecipient> deathRecipient_{};
     std::mutex wallpaperFdLock_;

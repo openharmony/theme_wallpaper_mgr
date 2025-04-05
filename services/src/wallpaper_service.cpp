@@ -173,7 +173,7 @@ int32_t WallpaperService::Init()
 #ifndef THEME_SERVICE
     StartExtensionAbility(CONNECT_EXTENSION_MAX_RETRY_TIMES);
 #endif
-    return E_OK;
+    return NO_ERROR;
 }
 
 void WallpaperService::OnStart()
@@ -195,7 +195,7 @@ void WallpaperService::OnStart()
             return true;
         });
     DumpHelper::GetInstance().RegisterCommand(cmd);
-    if (Init() != E_OK) {
+    if (Init() != NO_ERROR) {
         auto callback = [=]() { Init(); };
         serviceHandler_->PostTask(callback, INIT_INTERVAL);
         HILOG_ERROR("Init failed. Try again 10s later.");
@@ -627,7 +627,7 @@ void WallpaperService::UpdataWallpaperMap(int32_t userId, WallpaperType wallpape
     wallpaperMap.InsertOrAssign(userId, wallpaperData);
 }
 
-ErrorCode WallpaperService::GetColors(int32_t wallpaperType, std::vector<uint64_t> &colors)
+ErrCode WallpaperService::GetColors(int32_t wallpaperType, std::vector<uint64_t> &colors)
 {
     if (wallpaperType == WALLPAPER_SYSTEM) {
         std::lock_guard<std::mutex> lock(wallpaperColorMtx_);
@@ -637,10 +637,10 @@ ErrorCode WallpaperService::GetColors(int32_t wallpaperType, std::vector<uint64_
         colors.emplace_back(lockWallpaperColor_);
     }
     HILOG_INFO("GetColors Service End.");
-    return E_OK;
+    return NO_ERROR;
 }
 
-ErrorCode WallpaperService::GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors)
+ErrCode WallpaperService::GetColorsV9(int32_t wallpaperType, std::vector<uint64_t> &colors)
 {
     if (!IsSystemApp()) {
         HILOG_ERROR("CallingApp is not SystemApp.");
@@ -649,7 +649,7 @@ ErrorCode WallpaperService::GetColorsV9(int32_t wallpaperType, std::vector<uint6
     return GetColors(wallpaperType, colors);
 }
 
-ErrorCode WallpaperService::GetFile(int32_t wallpaperType, int32_t &wallpaperFd)
+ErrCode WallpaperService::GetFile(int32_t wallpaperType, int &wallpaperFd)
 {
     if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_GET_WALLPAPER)) {
         HILOG_ERROR("GetPixelMap no get permission!");
@@ -708,7 +708,7 @@ bool WallpaperService::SaveColor(int32_t userId, WallpaperType wallpaperType)
     return true;
 }
 
-ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int32_t length)
+ErrCode WallpaperService::SetWallpaper(int fd, int32_t wallpaperType, int32_t length)
 {
     StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
     ErrorCode wallpaperErrorCode = SetWallpaper(fd, wallpaperType, length, PICTURE);
@@ -716,9 +716,19 @@ ErrorCode WallpaperService::SetWallpaper(int32_t fd, int32_t wallpaperType, int3
     return wallpaperErrorCode;
 }
 
-ErrorCode WallpaperService::SetWallpaperByPixelMap(
-    std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType)
+ErrCode WallpaperService::SetWallpaperByPixelMap(const WallpaperRawData &wallpaperRawdata, int32_t wallpaperType)
 {
+    auto *rawData = (uint8_t *)wallpaperRawdata.data;
+    if (rawData == nullptr) {
+        HILOG_ERROR("rawData is nullptr!");
+        return E_FILE_ERROR;
+    }
+    std::vector<uint8_t> VectorPixelMap(rawData, rawData + wallpaperRawdata.size);
+    if (VectorPixelMap.size() == 0) {
+        HILOG_ERROR("VectorPixelMap  is nullptr!");
+        return E_FILE_ERROR;
+    }
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap = std::shared_ptr<PixelMap>(PixelMap::DecodeTlv(VectorPixelMap));
     if (pixelMap == nullptr) {
         HILOG_ERROR("pixelMap is nullptr");
         return E_FILE_ERROR;
@@ -729,7 +739,7 @@ ErrorCode WallpaperService::SetWallpaperByPixelMap(
     return wallpaperErrorCode;
 }
 
-ErrorCode WallpaperService::SetWallpaperV9(int32_t fd, int32_t wallpaperType, int32_t length)
+ErrCode WallpaperService::SetWallpaperV9(int fd, int32_t wallpaperType, int32_t length)
 {
     if (!IsSystemApp()) {
         HILOG_ERROR("CallingApp is not SystemApp.");
@@ -738,18 +748,13 @@ ErrorCode WallpaperService::SetWallpaperV9(int32_t fd, int32_t wallpaperType, in
     return SetWallpaper(fd, wallpaperType, length);
 }
 
-ErrorCode WallpaperService::SetWallpaperV9ByPixelMap(
-    std::shared_ptr<OHOS::Media::PixelMap> pixelMap, int32_t wallpaperType)
+ErrCode WallpaperService::SetWallpaperV9ByPixelMap(const WallpaperRawData &wallpaperRawdata, int32_t wallpaperType)
 {
     if (!IsSystemApp()) {
         HILOG_INFO("CallingApp is not SystemApp.");
         return E_NOT_SYSTEM_APP;
     }
-    if (pixelMap == nullptr) {
-        HILOG_ERROR("pixelMap is nullptr");
-        return E_FILE_ERROR;
-    }
-    return SetWallpaperByPixelMap(pixelMap, wallpaperType);
+    return SetWallpaperByPixelMap(wallpaperRawdata, wallpaperType);
 }
 
 ErrorCode WallpaperService::SetWallpaperBackupData(
@@ -800,7 +805,7 @@ ErrorCode WallpaperService::SetWallpaperBackupData(
         HILOG_ERROR("Send wallpaper state failed!");
         return E_DEAL_FAILED;
     }
-    return E_OK;
+    return NO_ERROR;
 }
 
 void WallpaperService::GetWallpaperFile(
@@ -841,7 +846,7 @@ WallpaperResourceType WallpaperService::GetResType(int32_t userId, WallpaperType
     return WallpaperResourceType::DEFAULT;
 }
 
-ErrorCode WallpaperService::SendEvent(const std::string &eventType)
+ErrCode WallpaperService::SendEvent(const std::string &eventType)
 {
     HILOG_INFO("Send event start.");
     if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
@@ -868,7 +873,7 @@ ErrorCode WallpaperService::SendEvent(const std::string &eventType)
     std::string uri;
     GetFileNameFromMap(userId, WALLPAPER_SYSTEM, uri);
     WallpaperChanged(wallpaperType, data.resourceType, uri);
-    return E_OK;
+    return NO_ERROR;
 }
 
 bool WallpaperService::SendWallpaperChangeEvent(int32_t userId, WallpaperType wallpaperType)
@@ -895,7 +900,7 @@ bool WallpaperService::SendWallpaperChangeEvent(int32_t userId, WallpaperType wa
     return true;
 }
 
-ErrorCode WallpaperService::SetVideo(int32_t fd, int32_t wallpaperType, int32_t length)
+ErrCode WallpaperService::SetVideo(int fd, int32_t wallpaperType, int32_t length)
 {
     if (!IsSystemApp()) {
         HILOG_ERROR("current app is not SystemApp.");
@@ -907,7 +912,7 @@ ErrorCode WallpaperService::SetVideo(int32_t fd, int32_t wallpaperType, int32_t 
     return wallpaperErrorCode;
 }
 
-ErrorCode WallpaperService::SetCustomWallpaper(int32_t fd, int32_t type, int32_t length)
+ErrCode WallpaperService::SetCustomWallpaper(int fd, int32_t type, int32_t length)
 {
     if (!IsSystemApp()) {
         HILOG_ERROR("current app is not SystemApp.");
@@ -952,7 +957,7 @@ ErrorCode WallpaperService::SetCustomWallpaper(int32_t fd, int32_t type, int32_t
     return wallpaperErrorCode;
 }
 
-ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
+ErrCode WallpaperService::GetPixelMap(int32_t wallpaperType, int32_t &size, int &fd)
 {
     HILOG_INFO("WallpaperService::getPixelMap start.");
     if (!IsSystemApp()) {
@@ -974,26 +979,26 @@ ErrorCode WallpaperService::GetPixelMap(int32_t wallpaperType, IWallpaperService
     WallpaperResourceType resType = GetResType(userId, type);
     if (resType != PICTURE && resType != DEFAULT) {
         HILOG_ERROR("Current user's wallpaper is live video, not image.");
-        fdInfo.size = 0; // 0: empty file size
-        fdInfo.fd = -1;  // -1: invalid file description
-        return E_OK;
+        size = 0; // 0: empty file size
+        fd = -1;  // -1: invalid file description
+        return NO_ERROR;
     }
-    ErrorCode ret = GetImageSize(userId, type, fdInfo.size);
-    if (ret != E_OK) {
+    ErrorCode ret = GetImageSize(userId, type, size);
+    if (ret != NO_ERROR) {
         HILOG_ERROR("GetImageSize failed!");
         return ret;
     }
-    ret = GetImageFd(userId, type, fdInfo.fd);
-    if (ret != E_OK) {
+    ret = GetImageFd(userId, type, fd);
+    if (ret != NO_ERROR) {
         HILOG_ERROR("GetImageFd failed!");
         return ret;
     }
-    return E_OK;
+    return NO_ERROR;
 }
 
-ErrorCode WallpaperService::GetPixelMapV9(int32_t wallpaperType, IWallpaperService::FdInfo &fdInfo)
+ErrCode WallpaperService::GetPixelMapV9(int32_t wallpaperType, int32_t &size, int &fd)
 {
-    return GetPixelMap(wallpaperType, fdInfo);
+    return GetPixelMap(wallpaperType, size, fd);
 }
 
 int32_t WallpaperService::GetWallpaperId(int32_t wallpaperType)
@@ -1017,21 +1022,21 @@ int32_t WallpaperService::GetWallpaperId(int32_t wallpaperType)
     return iWallpaperId;
 }
 
-bool WallpaperService::IsChangePermitted()
+ErrCode WallpaperService::IsChangePermitted(bool &isChangePermitted)
 {
     HILOG_INFO("IsChangePermitted wallpaper Start.");
-    bool bFlag = CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
-    return bFlag;
+    isChangePermitted = CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
+    return NO_ERROR;
 }
 
-bool WallpaperService::IsOperationAllowed()
+ErrCode WallpaperService::IsOperationAllowed(bool &isOperationAllowed)
 {
     HILOG_INFO("IsOperationAllowed wallpaper Start.");
-    bool bFlag = CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
-    return bFlag;
+    isOperationAllowed = CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
+    return NO_ERROR;
 }
 
-ErrorCode WallpaperService::ResetWallpaper(int32_t wallpaperType)
+ErrCode WallpaperService::ResetWallpaper(int32_t wallpaperType)
 {
     HILOG_INFO("reset wallpaper Start.");
     bool permissionSet = CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER);
@@ -1055,7 +1060,7 @@ ErrorCode WallpaperService::ResetWallpaper(int32_t wallpaperType)
     return wallpaperErrorCode;
 }
 
-ErrorCode WallpaperService::ResetWallpaperV9(int32_t wallpaperType)
+ErrCode WallpaperService::ResetWallpaperV9(int32_t wallpaperType)
 {
     if (!IsSystemApp()) {
         HILOG_ERROR("CallingApp is not SystemApp.");
@@ -1091,10 +1096,10 @@ ErrorCode WallpaperService::SetDefaultDataForWallpaper(int32_t userId, Wallpaper
         return E_DEAL_FAILED;
     }
     SaveColor(userId, wallpaperType);
-    return E_OK;
+    return NO_ERROR;
 }
 
-ErrorCode WallpaperService::On(const std::string &type, sptr<IWallpaperEventListener> listener)
+ErrCode WallpaperService::On(const std::string &type, const sptr<IWallpaperEventListener> &listener)
 {
     HILOG_DEBUG("WallpaperService::On in.");
     if (listener == nullptr) {
@@ -1107,10 +1112,10 @@ ErrorCode WallpaperService::On(const std::string &type, sptr<IWallpaperEventList
     }
     std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
     wallpaperEventMap_[type].insert_or_assign(IPCSkeleton::GetCallingTokenID(), listener);
-    return E_OK;
+    return NO_ERROR;
 }
 
-ErrorCode WallpaperService::Off(const std::string &type, sptr<IWallpaperEventListener> listener)
+ErrCode WallpaperService::Off(const std::string &type, const sptr<IWallpaperEventListener> &listener)
 {
     HILOG_DEBUG("WallpaperService::Off in.");
     (void)listener;
@@ -1127,14 +1132,16 @@ ErrorCode WallpaperService::Off(const std::string &type, sptr<IWallpaperEventLis
             iter->second.erase(it);
         }
     }
-    return E_OK;
+    return NO_ERROR;
 }
 
-bool WallpaperService::RegisterWallpaperCallback(const sptr<IWallpaperCallback> callback)
+ErrCode WallpaperService::RegisterWallpaperCallback(
+    const sptr<IWallpaperCallback> &wallpaperCallback, bool &registerWallpaperCallback)
 {
     HILOG_INFO("  WallpaperService::RegisterWallpaperCallback.");
-    callbackProxy_ = callback;
-    return true;
+    callbackProxy_ = wallpaperCallback;
+    registerWallpaperCallback = true;
+    return NO_ERROR;
 }
 
 bool WallpaperService::GetWallpaperSafeLocked(int32_t userId, WallpaperType wallpaperType, WallpaperData &wallpaperData)
@@ -1264,7 +1271,7 @@ ErrorCode WallpaperService::GetImageFd(int32_t userId, WallpaperType wallpaperTy
     }
     if (GetResType(userId, wallpaperType) == WallpaperResourceType::PACKAGE) {
         HILOG_INFO("The current wallpaper is a custom wallpaper");
-        return E_OK;
+        return NO_ERROR;
     }
     {
         std::lock_guard<std::mutex> lock(mtx_);
@@ -1277,7 +1284,7 @@ ErrorCode WallpaperService::GetImageFd(int32_t userId, WallpaperType wallpaperTy
     }
     fdsan_exchange_owner_tag(fd, 0, WP_DOMAIN);
     HILOG_INFO("fd = %{public}d", fd);
-    return E_OK;
+    return NO_ERROR;
 }
 
 ErrorCode WallpaperService::GetImageSize(int32_t userId, WallpaperType wallpaperType, int32_t &size)
@@ -1308,7 +1315,7 @@ ErrorCode WallpaperService::GetImageSize(int32_t userId, WallpaperType wallpaper
         return E_FILE_ERROR;
     }
     fclose(fd);
-    return E_OK;
+    return NO_ERROR;
 }
 
 int32_t WallpaperService::QueryActiveUserId()
@@ -1347,7 +1354,7 @@ ErrorCode WallpaperService::SetWallpaper(
         return E_USER_IDENTITY_ERROR;
     }
     ErrorCode errCode = CheckValid(wallpaperType, length, resourceType);
-    if (errCode != E_OK) {
+    if (errCode != NO_ERROR) {
         return errCode;
     }
     std::string uri = wallpaperTmpFullPath_;
@@ -1402,7 +1409,7 @@ ErrorCode WallpaperService::SetWallpaperByPixelMap(
     }
     std::string uri = wallpaperTmpFullPath_;
     ErrorCode errCode = WritePixelMapToFile(pixelMap, uri, wallpaperType, resourceType);
-    if (errCode != E_OK) {
+    if (errCode != NO_ERROR) {
         HILOG_ERROR("WritePixelMapToFile failed!");
         return errCode;
     }
@@ -1429,7 +1436,7 @@ ErrorCode WallpaperService::WritePixelMapToFile(std::shared_ptr<OHOS::Media::Pix
         return E_WRITE_PARCEL_ERROR;
     }
     ErrorCode errCode = CheckValid(wallpaperType, mapSize, resourceType);
-    if (errCode != E_OK) {
+    if (errCode != NO_ERROR) {
         HILOG_ERROR("CheckValid failed!");
         return errCode;
     }
@@ -1459,7 +1466,7 @@ ErrorCode WallpaperService::WritePixelMapToFile(std::shared_ptr<OHOS::Media::Pix
         delete[] buffer;
         fdsan_close_with_tag(fdw, WP_DOMAIN);
     }
-    return E_OK;
+    return NO_ERROR;
 }
 
 int64_t WallpaperService::WritePixelMapToStream(
@@ -1526,7 +1533,7 @@ ErrorCode WallpaperService::CheckValid(int32_t wallpaperType, int32_t length, Wa
     if (length > maxLength) {
         return E_PICTURE_OVERSIZED;
     }
-    return E_OK;
+    return NO_ERROR;
 }
 
 bool WallpaperService::WallpaperChanged(
@@ -1587,7 +1594,7 @@ bool WallpaperService::SaveWallpaperState(
     mode_t mode = S_IRUSR | S_IWUSR;
     int fd = open(userPath.c_str(), O_CREAT | O_WRONLY | O_SYNC, mode);
     if (fd <= 0) {
-        HILOG_ERROR("open user config file failed!");
+        HILOG_ERROR("open user config file failed! %{public}d", errno);
         return false;
     }
     fdsan_exchange_owner_tag(fd, 0, WP_DOMAIN);
@@ -1697,10 +1704,16 @@ std::string WallpaperService::GetExistFilePath(const std::string &filePath)
     return filePath;
 }
 
-ErrorCode WallpaperService::SetAllWallpapers(std::vector<WallpaperPictureInfo> allWallpaperInfos, int32_t wallpaperType)
+ErrCode WallpaperService::SetAllWallpapers(const WallpaperPictureInfoByParcel &wallpaperPictureInfoByParcel,
+    int32_t wallpaperType, const std::vector<int> &fdVector)
 {
     StartAsyncTrace(HITRACE_TAG_MISC, "SetAllWallpapers", static_cast<int32_t>(TraceTaskId::SET_ALL_WALLPAPERS));
-    ErrorCode wallpaperErrorCode = SetAllWallpapers(allWallpaperInfos, wallpaperType, PICTURE);
+    std::vector<WallpaperPictureInfo> wallpaperPictureInfo;
+    wallpaperPictureInfo = wallpaperPictureInfoByParcel.wallpaperPictureInfo_;
+    for (std::size_t i = 0; i < wallpaperPictureInfo.size(); ++i) {
+        wallpaperPictureInfo[i].fd = fdVector[i];
+    }
+    ErrorCode wallpaperErrorCode = SetAllWallpapers(wallpaperPictureInfo, wallpaperType, PICTURE);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetAllWallpapers", static_cast<int32_t>(TraceTaskId::SET_ALL_WALLPAPERS));
     return wallpaperErrorCode;
 }
@@ -1723,11 +1736,11 @@ ErrorCode WallpaperService::SetAllWallpapers(
         wallpaperInfo.tempPath = std::string(WALLPAPER_USERID_PATH) + GetFoldStateName(wallpaperInfo.foldState) + "_"
                                  + GetRotateStateName(wallpaperInfo.rotateState);
         errCode = CheckValid(wallpaperType, wallpaperInfo.length, resourceType);
-        if (errCode != E_OK) {
+        if (errCode != NO_ERROR) {
             return errCode;
         }
         errCode = WriteFdToFile(wallpaperInfo, wallpaperInfo.tempPath);
-        if (errCode != E_OK) {
+        if (errCode != NO_ERROR) {
             DeleteTempResource(allWallpaperInfos);
             HILOG_ERROR("WriteFdToFile failed!");
             return errCode;
@@ -1737,7 +1750,7 @@ ErrorCode WallpaperService::SetAllWallpapers(
     std::string wallpaperPath = GetWallpaperDir(userId, type);
     FileDeal::DeleteDir(wallpaperPath, false);
     errCode = UpdateWallpaperData(allWallpaperInfos, userId, type);
-    if (errCode != E_OK) {
+    if (errCode != NO_ERROR) {
         HILOG_ERROR("UpdateWallpaperData failed!");
         return errCode;
     }
@@ -1762,7 +1775,7 @@ ErrorCode WallpaperService::UpdateWallpaperData(
     }
     ClearnWallpaperDataFile(wallpaperData);
     errCode = SetAllWallpaperBackupData(allWallpaperInfos, userId, wallpaperType, wallpaperData);
-    if (errCode != E_OK) {
+    if (errCode != NO_ERROR) {
         DeleteTempResource(allWallpaperInfos);
         HILOG_ERROR("SetAllWallpaperBackupData failed!");
         return errCode;
@@ -1774,7 +1787,7 @@ ErrorCode WallpaperService::UpdateWallpaperData(
     } else if (wallpaperType == WALLPAPER_LOCKSCREEN) {
         lockWallpaperMap_.InsertOrAssign(userId, wallpaperData);
     }
-    return E_OK;
+    return NO_ERROR;
 }
 
 ErrorCode WallpaperService::WriteFdToFile(WallpaperPictureInfo &wallpaperPictureInfo, std::string &path)
@@ -1807,7 +1820,7 @@ ErrorCode WallpaperService::WriteFdToFile(WallpaperPictureInfo &wallpaperPicture
     }
     delete[] wallpaperBuffer;
     fdsan_close_with_tag(fdw, WP_DOMAIN);
-    return E_OK;
+    return NO_ERROR;
 }
 
 ErrorCode WallpaperService::SetAllWallpaperBackupData(std::vector<WallpaperPictureInfo> allWallpaperInfos,
@@ -1832,7 +1845,7 @@ ErrorCode WallpaperService::SetAllWallpaperBackupData(std::vector<WallpaperPictu
             }
         }
     }
-    return E_OK;
+    return NO_ERROR;
 }
 
 void WallpaperService::UpdateWallpaperDataFile(WallpaperPictureInfo &wallpaperPictureInfo, int32_t userId,
@@ -1891,8 +1904,8 @@ void WallpaperService::ClearnWallpaperDataFile(WallpaperData &wallpaperData)
     wallpaperData.unfoldedTwoLandFile = "";
 }
 
-ErrorCode WallpaperService::GetCorrespondWallpaper(
-    int32_t wallpaperType, int32_t foldState, int32_t rotateState, IWallpaperService::FdInfo &fdInfo)
+ErrCode WallpaperService::GetCorrespondWallpaper(
+    int32_t wallpaperType, int32_t foldState, int32_t rotateState, int32_t &size, int &fd)
 {
     StartAsyncTrace(
         HITRACE_TAG_MISC, "GetCorrespondWallpaper", static_cast<int32_t>(TraceTaskId::GET_CORRESPOND_WALLPAPER));
@@ -1916,21 +1929,21 @@ ErrorCode WallpaperService::GetCorrespondWallpaper(
     WallpaperResourceType resType = GetResType(userId, type);
     if (resType != PICTURE && resType != DEFAULT) {
         HILOG_ERROR("Current user's wallpaper is live video, not image.");
-        fdInfo.size = 0; // 0: empty file size
-        fdInfo.fd = -1;  // -1: invalid file description
-        return E_OK;
+        size = 0; // 0: empty file size
+        fd = -1;  // -1: invalid file description
+        return NO_ERROR;
     }
-    ErrorCode ret = GetImageSize(userId, type, fdInfo.size, foldState, rotateState);
-    if (ret != E_OK) {
+    ErrorCode ret = GetImageSize(userId, type, size, foldState, rotateState);
+    if (ret != NO_ERROR) {
         HILOG_ERROR("GetImageSize failed!");
         return ret;
     }
-    ret = GetImageFd(userId, type, fdInfo.fd, foldState, rotateState);
-    if (ret != E_OK) {
+    ret = GetImageFd(userId, type, fd, foldState, rotateState);
+    if (ret != NO_ERROR) {
         HILOG_ERROR("GetImageFd failed!");
         return ret;
     }
-    return E_OK;
+    return NO_ERROR;
 }
 
 ErrorCode WallpaperService::GetImageSize(
@@ -1961,7 +1974,7 @@ ErrorCode WallpaperService::GetImageSize(
         return E_FILE_ERROR;
     }
     fclose(fd);
-    return E_OK;
+    return NO_ERROR;
 }
 
 ErrorCode WallpaperService::GetImageFd(
@@ -1974,7 +1987,7 @@ ErrorCode WallpaperService::GetImageFd(
     }
     if (GetResType(userId, wallpaperType) == WallpaperResourceType::PACKAGE) {
         HILOG_INFO("The current wallpaper is a custom wallpaper");
-        return E_OK;
+        return NO_ERROR;
     }
     fd = open(filePathName.c_str(), O_RDONLY, S_IREAD);
     if (fd < 0) {
@@ -1984,7 +1997,7 @@ ErrorCode WallpaperService::GetImageFd(
     }
     fdsan_exchange_owner_tag(fd, 0, WP_DOMAIN);
     HILOG_INFO("fd = %{public}d", fd);
-    return E_OK;
+    return NO_ERROR;
 }
 
 bool WallpaperService::GetWallpaperDataPath(
@@ -2085,7 +2098,8 @@ std::string WallpaperService::GetRotateStateName(RotateState rotateState)
     return rotateStateName;
 }
 
-bool WallpaperService::IsDefaultWallpaperResource(int32_t userId, int32_t wallpaperType)
+ErrCode WallpaperService::IsDefaultWallpaperResource(
+    int32_t userId, int32_t wallpaperType, bool &isDefaultWallpaperResource)
 {
     HILOG_INFO("IsDefaultWallpaperResource start");
     if (wallpaperType == static_cast<int32_t>(WALLPAPER_SYSTEM)) {
@@ -2093,17 +2107,202 @@ bool WallpaperService::IsDefaultWallpaperResource(int32_t userId, int32_t wallpa
                                           + std::string(WALLPAPER_SYSTEM_DIRNAME) + "/";
         if (!FileDeal::IsFileExistInDir(wallpaperSystemPath)) {
             HILOG_INFO("System is empty");
-            return true;
+            isDefaultWallpaperResource = true;
+            return NO_ERROR;
         }
     } else if (wallpaperType == static_cast<int32_t>(WALLPAPER_LOCKSCREEN)) {
         std::string wallpaperLockscreenPath = std::string(WALLPAPER_USERID_PATH) + std::to_string(userId) + "/"
                                               + std::string(WALLPAPER_LOCKSCREEN_DIRNAME) + "/";
         if (!FileDeal::IsFileExistInDir(wallpaperLockscreenPath)) {
             HILOG_INFO("Lockscreen is empty");
-            return true;
+            isDefaultWallpaperResource = true;
+            return NO_ERROR;
         }
     }
-    return false;
+    isDefaultWallpaperResource = false;
+    return NO_ERROR;
+}
+
+int32_t WallpaperService::CallbackParcel(
+    uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+{
+    switch (static_cast<IWallpaperServiceIpcCode>(code)) {
+        case IWallpaperServiceIpcCode::COMMAND_GET_PIXEL_MAP: {
+            return GetPixleMapParcel(data, reply, false);
+        }
+        case IWallpaperServiceIpcCode::COMMAND_GET_PIXEL_MAP_V9: {
+            return GetPixleMapParcel(data, reply, true);
+        }
+        case IWallpaperServiceIpcCode::COMMAND_GET_CORRESPOND_WALLPAPER: {
+            return GetCorrespondWallpaperParcel(data, reply);
+        }
+        case IWallpaperServiceIpcCode::COMMAND_GET_FILE: {
+            return GetFileParcel(data, reply);
+        }
+        case IWallpaperServiceIpcCode::COMMAND_SET_WALLPAPER_BY_PIXEL_MAP: {
+            return SetwallpaperByPixelMapParcel(data, reply, false);
+        }
+        case IWallpaperServiceIpcCode::COMMAND_SET_WALLPAPER_V9_BY_PIXEL_MAP: {
+            return SetwallpaperByPixelMapParcel(data, reply, true);
+        }
+        default:
+            return NO_ERROR;
+    }
+}
+
+int32_t WallpaperService::GetPixleMapParcel(MessageParcel &data, MessageParcel &reply, bool isSystemApi)
+{
+    std::u16string myDescriptor = WallpaperServiceStub::GetDescriptor();
+    std::u16string remoteDescriptor = data.ReadInterfaceToken();
+    if (myDescriptor != remoteDescriptor) {
+        HILOG_ERROR("Remote descriptor not the same as local descriptor.");
+        return E_CHECK_DESCRIPTOR_ERROR;
+    }
+    int32_t wallpaperType = data.ReadInt32();
+    int32_t size;
+    int fd = DEFAULT_WALLPAPER_ID;
+    ErrCode errCode = E_UNKNOWN;
+    if (isSystemApi) {
+        errCode = GetPixelMapV9(wallpaperType, size, fd);
+    } else {
+        errCode = GetPixelMap(wallpaperType, size, fd);
+    }
+    if (!reply.WriteInt32(errCode)) {
+        HILOG_ERROR("WriteInt32 fail!");
+        if (fd > DEFAULT_WALLPAPER_ID) {
+            fdsan_close_with_tag(fd, WP_DOMAIN);
+        }
+        return ERR_INVALID_VALUE;
+    }
+    if (!reply.WriteInt32(size)) {
+        HILOG_ERROR("WriteInt32 fail!");
+        if (fd > DEFAULT_WALLPAPER_ID) {
+            fdsan_close_with_tag(fd, WP_DOMAIN);
+        }
+        return ERR_INVALID_DATA;
+    }
+    HILOG_ERROR("getpixelmap fd %{public}d!", fd);
+    if (!reply.WriteFileDescriptor(fd)) {
+        HILOG_ERROR("WriteFileDescriptor fail!");
+        if (fd > DEFAULT_WALLPAPER_ID) {
+            fdsan_close_with_tag(fd, WP_DOMAIN);
+        }
+        return ERR_INVALID_DATA;
+    }
+    if (fd > DEFAULT_WALLPAPER_ID) {
+        fdsan_close_with_tag(fd, WP_DOMAIN);
+    }
+    if (errCode == NO_ERROR) {
+        return E_OK;
+    }
+    return errCode;
+}
+
+int32_t WallpaperService::GetCorrespondWallpaperParcel(MessageParcel &data, MessageParcel &reply)
+{
+    std::u16string myDescriptor = WallpaperServiceStub::GetDescriptor();
+    std::u16string remoteDescriptor = data.ReadInterfaceToken();
+    if (myDescriptor != remoteDescriptor) {
+        HILOG_ERROR("Remote descriptor not the same as local descriptor.");
+        return E_CHECK_DESCRIPTOR_ERROR;
+    }
+    int32_t wallpaperType = data.ReadInt32();
+    int32_t foldState = data.ReadInt32();
+    int32_t rotateState = data.ReadInt32();
+    int32_t size;
+    int fd = DEFAULT_WALLPAPER_ID;
+    ErrCode errCode = GetCorrespondWallpaper(wallpaperType, foldState, rotateState, size, fd);
+    if (!reply.WriteInt32(errCode)) {
+        HILOG_ERROR("WriteInt32 fail!");
+        if (fd > DEFAULT_WALLPAPER_ID) {
+            fdsan_close_with_tag(fd, WP_DOMAIN);
+        }
+        return ERR_INVALID_VALUE;
+    }
+    if (!reply.WriteInt32(size)) {
+        HILOG_ERROR("WriteInt32 fail!");
+        if (fd > DEFAULT_WALLPAPER_ID) {
+            fdsan_close_with_tag(fd, WP_DOMAIN);
+        }
+        return ERR_INVALID_DATA;
+    }
+    if (!reply.WriteFileDescriptor(fd)) {
+        HILOG_ERROR("WriteFileDescriptor fail!");
+        if (fd > DEFAULT_WALLPAPER_ID) {
+            fdsan_close_with_tag(fd, WP_DOMAIN);
+        }
+        return ERR_INVALID_DATA;
+    }
+    if (fd > DEFAULT_WALLPAPER_ID) {
+        fdsan_close_with_tag(fd, WP_DOMAIN);
+    }
+    if (errCode == NO_ERROR) {
+        return E_OK;
+    }
+    return errCode;
+}
+
+int32_t WallpaperService::GetFileParcel(MessageParcel &data, MessageParcel &reply)
+{
+    std::u16string myDescriptor = WallpaperServiceStub::GetDescriptor();
+    std::u16string remoteDescriptor = data.ReadInterfaceToken();
+    if (myDescriptor != remoteDescriptor) {
+        HILOG_ERROR("Remote descriptor not the same as local descriptor.");
+        return E_CHECK_DESCRIPTOR_ERROR;
+    }
+    int32_t wallpaperType = data.ReadInt32();
+    int wallpaperFd = DEFAULT_WALLPAPER_ID;
+    ErrCode errCode = GetFile(wallpaperType, wallpaperFd);
+    if (!reply.WriteInt32(errCode)) {
+        HILOG_ERROR("WriteInt32 fail!");
+        if (wallpaperFd > DEFAULT_WALLPAPER_ID) {
+            fdsan_close_with_tag(wallpaperFd, WP_DOMAIN);
+        }
+        return ERR_INVALID_VALUE;
+    }
+    if (!reply.WriteFileDescriptor(wallpaperFd)) {
+        HILOG_ERROR("WriteFileDescriptor fail!");
+        if (wallpaperFd > DEFAULT_WALLPAPER_ID) {
+            fdsan_close_with_tag(wallpaperFd, WP_DOMAIN);
+        }
+        return ERR_INVALID_DATA;
+    }
+    HILOG_ERROR("GetFileParcel fd %{public}d!", wallpaperFd);
+    if (wallpaperFd > DEFAULT_WALLPAPER_ID) {
+        fdsan_close_with_tag(wallpaperFd, WP_DOMAIN);
+    }
+    if (errCode == NO_ERROR) {
+        return E_OK;
+    }
+    return errCode;
+}
+
+int32_t WallpaperService::SetwallpaperByPixelMapParcel(MessageParcel &data, MessageParcel &reply, bool isSystemApi)
+{
+    std::u16string myDescriptor = WallpaperServiceStub::GetDescriptor();
+    std::u16string remoteDescriptor = data.ReadInterfaceToken();
+    if (myDescriptor != remoteDescriptor) {
+        HILOG_ERROR("Remote descriptor not the same as local descriptor.");
+        return E_CHECK_DESCRIPTOR_ERROR;
+    }
+    WallpaperRawData wallpaperRawData;
+    wallpaperRawData.size = data.ReadInt32();
+    if (wallpaperRawData.size <= 0) {
+        HILOG_ERROR("ReadInt32 fail!");
+        return ERR_INVALID_VALUE;
+    }
+    wallpaperRawData.data = data.ReadRawData(wallpaperRawData.size);
+    int32_t wallpaperType = data.ReadInt32();
+    ErrCode errCode = E_UNKNOWN;
+    if (isSystemApi) {
+        errCode = SetWallpaperV9ByPixelMap(wallpaperRawData, wallpaperType);
+    } else {
+        errCode = SetWallpaperByPixelMap(wallpaperRawData, wallpaperType);
+    }
+    if (errCode == NO_ERROR) {
+        return E_OK;
+    }
+    return errCode;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

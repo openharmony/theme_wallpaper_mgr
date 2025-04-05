@@ -43,6 +43,7 @@ enum WallpaperModule {
 constexpr ErrCode WALLPAPER_ERR_OFFSET = ErrCodeOffset(SUBSYS_SMALLSERVICES, WALLPAPER_MODULE_SERVICE_ID);
 
 enum ErrorCode : int32_t {
+    NO_ERROR = 0,
     E_OK = WALLPAPER_ERR_OFFSET,
     E_SA_DIED,
     E_READ_PARCEL_ERROR,
