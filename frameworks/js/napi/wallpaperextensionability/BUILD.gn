@@ -47,12 +47,6 @@ ohos_shared_library("wallpaperextensionability_napi") {
     "-fdata-sections",
     "-ffunction-sections",
     "-Os",
-    "-fstack-protector-strong",
-  ]
-  ldflags = [
-    "-Wl,-z,relro",
-    "-Wl,-z,now",
-    "-fpie",
   ]
   external_deps = [ "napi:ace_napi" ]
   sanitize = {
