@@ -82,6 +82,7 @@ ohos_static_library("wallpapermanager_static") {
     "samgr:samgr_proxy",
     "window_manager:libdm",
   ]
+  branch_protector_ret = "pac_ret"
   subsystem_name = "theme"
   part_name = "wallpaper_mgr"
 }
