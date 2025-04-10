@@ -194,6 +194,7 @@ foreach(item, wallpaper_fuzztests) {
 
     deps = [
       "${utils_path}:wallpaper_utils",
+      "${wallpaper_path}/frameworks/native:wallpapermanager_static",
       "${wallpaper_path}/services:wallpaper_service",
     ]
 
