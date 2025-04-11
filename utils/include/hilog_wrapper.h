@@ -52,21 +52,26 @@ static constexpr OHOS::HiviewDFX::HiLogLabel LOG_LABEL = { LOG_CORE, WP_DOMAIN, 
 
 #define WALLFILENAME__ (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
 
-#define HILOG_DEBUG(fmt, ...)                                                                                         \
-    (void)HILOG_IMPL(LOG_CORE, LOG_DEBUG, LOG_LABEL.domain, LOG_LABEL.tag, "[%{public}s(%{public}s:%{public}d)]" fmt, \
-        WALLFILENAME__, __FUNCTION__, __LINE__, ##__VA_ARGS__)
-#define HILOG_ERROR(fmt, ...)                                                                                         \
-    (void)HILOG_IMPL(LOG_CORE, LOG_ERROR, LOG_LABEL.domain, LOG_LABEL.tag, "[%{public}s(%{public}s:%{public}d)]" fmt, \
-        WALLFILENAME__, __FUNCTION__, __LINE__, ##__VA_ARGS__)
-#define HILOG_FATAL(fmt, ...)                                                                                         \
-    (void)HILOG_IMPL(LOG_CORE, LOG_FATAL, LOG_LABEL.domain, LOG_LABEL.tag, "[%{public}s(%{public}s:%{public}d)]" fmt, \
-        WALLFILENAME__, __FUNCTION__, __LINE__, ##__VA_ARGS__)
-#define HILOG_INFO(fmt, ...)                                                                                         \
-    (void)HILOG_IMPL(LOG_CORE, LOG_INFO, LOG_LABEL.domain, LOG_LABEL.tag, "[%{public}s(%{public}s:%{public}d)]" fmt, \
-        WALLFILENAME__, __FUNCTION__, __LINE__, ##__VA_ARGS__)
-#define HILOG_WARN(fmt, ...)                                                                                         \
-    (void)HILOG_IMPL(LOG_CORE, LOG_WARN, LOG_LABEL.domain, LOG_LABEL.tag, "[%{public}s(%{public}s:%{public}d)]" fmt, \
-        WALLFILENAME__, __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define HILOG_DEBUG(fmt, ...)                                                                                \
+    (void)HILOG_IMPL(LOG_CORE, LOG_DEBUG, OHOS::WallpaperMgrService::LOG_LABEL.domain,                       \
+        OHOS::WallpaperMgrService::LOG_LABEL.tag, "[%{public}s(%{public}s:%{public}d)]" fmt, WALLFILENAME__, \
+        __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define HILOG_ERROR(fmt, ...)                                                                                \
+    (void)HILOG_IMPL(LOG_CORE, LOG_ERROR, OHOS::WallpaperMgrService::LOG_LABEL.domain,                       \
+        OHOS::WallpaperMgrService::LOG_LABEL.tag, "[%{public}s(%{public}s:%{public}d)]" fmt, WALLFILENAME__, \
+        __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define HILOG_FATAL(fmt, ...)                                                                                \
+    (void)HILOG_IMPL(LOG_CORE, LOG_FATAL, OHOS::WallpaperMgrService::LOG_LABEL.domain,                       \
+        OHOS::WallpaperMgrService::LOG_LABEL.tag, "[%{public}s(%{public}s:%{public}d)]" fmt, WALLFILENAME__, \
+        __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define HILOG_INFO(fmt, ...)                                                                                 \
+    (void)HILOG_IMPL(LOG_CORE, LOG_INFO, OHOS::WallpaperMgrService::LOG_LABEL.domain,                        \
+        OHOS::WallpaperMgrService::LOG_LABEL.tag, "[%{public}s(%{public}s:%{public}d)]" fmt, WALLFILENAME__, \
+        __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define HILOG_WARN(fmt, ...)                                                                                 \
+    (void)HILOG_IMPL(LOG_CORE, LOG_WARN, OHOS::WallpaperMgrService::LOG_LABEL.domain,                        \
+        OHOS::WallpaperMgrService::LOG_LABEL.tag, "[%{public}s(%{public}s:%{public}d)]" fmt, WALLFILENAME__, \
+        __FUNCTION__, __LINE__, ##__VA_ARGS__)
 #else
 
 #define HILOG_FATAL(...)

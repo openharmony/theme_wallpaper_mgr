@@ -36,7 +36,7 @@
 #include "directory_ex.h"
 #include "dump_helper.h"
 #include "effect_errors.h"
-#include "export/color.h"
+#include "color.h"
 #include "file_deal.h"
 #include "file_ex.h"
 #include "hilog_wrapper.h"
