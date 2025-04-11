@@ -11,6 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import("//build/config/components/idl_tool/idl.gni")
 import("//build/ohos.gni")
 import("../../wallpaper.gni")
 
@@ -18,6 +19,7 @@ config("wallpaper_manager_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "include",
+    "${target_gen_dir}",
     "${wallpaper_path}/utils/dfx/hisysevent_adapter",
     "${wallpaper_path}/services/include",
     "${wallpaper_path}/utils/include",
@@ -37,6 +39,40 @@ config("wallpaper_manager_config") {
   ]
 }
 
+idl_gen_interface("wallpaperservice_interface") {
+  sources = [ "IWallpaperService.idl" ]
+  log_domainid = "0xD001C20"
+  log_tag = "WallpaperClient"
+  subsystem_name = "theme"
+  part_name = "wallpaper_mgr"
+}
+
+ohos_source_set("wallpaper_service_proxy") {
+  public_configs = [ ":wallpaper_manager_config" ]
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+  sources = [
+    "src/wallpaper_picture_info_by_parcel.cpp",
+    "src/wallpaper_rawdata.cpp",
+  ]
+  output_values = get_target_outputs(":wallpaperservice_interface")
+  sources += filter_include(output_values, [ "*_stub.cpp" ])
+  sources += filter_include(output_values, [ "*_proxy.cpp" ])
+
+  deps = [ ":wallpaperservice_interface" ]
+  external_deps = [
+    "ability_runtime:wantagent_innerkits",
+    "hilog:libhilog",
+    "ipc:ipc_single",
+    "samgr:samgr_proxy",
+  ]
+  subsystem_name = "theme"
+  part_name = "wallpaper_mgr"
+}
+
 ohos_shared_library("wallpapermanager") {
   sources = [
     "src/wallpaper_event_listener_client.cpp",
@@ -47,14 +83,15 @@ ohos_shared_library("wallpapermanager") {
     "src/wallpaper_rawdata.cpp",
     "src/wallpaper_service_cb_stub.cpp",
   ]
-  configs = [ ":wallpaper_manager_config" ]
-  public_configs = [
-    ":wallpaper_manager_config",
-    "${wallpaper_path}/services:wallpaper_service_gen_config",
-  ]
+
+  output_values = get_target_outputs(":wallpaperservice_interface")
+  sources += filter_include(output_values, [ "*_stub.cpp" ])
+  sources += filter_include(output_values, [ "*_proxy.cpp" ])
+
+  public_configs = [ ":wallpaper_manager_config" ]
   deps = [
+    ":wallpaperservice_interface",
     "${utils_path}:wallpaper_utils",
-    "${wallpaper_path}/services:wallpaper_service_proxy",
   ]
   sanitize = {
     cfi = true
@@ -89,14 +126,15 @@ ohos_static_library("wallpapermanager_static") {
     "src/wallpaper_rawdata.cpp",
     "src/wallpaper_service_cb_stub.cpp",
   ]
-  configs = [ ":wallpaper_manager_config" ]
-  public_configs = [
-    ":wallpaper_manager_config",
-    "${wallpaper_path}/services:wallpaper_service_gen_config",
-  ]
+
+  output_values = get_target_outputs(":wallpaperservice_interface")
+  sources += filter_include(output_values, [ "*_stub.cpp" ])
+  sources += filter_include(output_values, [ "*_proxy.cpp" ])
+
+  public_configs = [ ":wallpaper_manager_config" ]
   deps = [
+    ":wallpaperservice_interface",
     "${utils_path}:wallpaper_utils",
-    "${wallpaper_path}/services:wallpaper_service_proxy",
   ]
   sanitize = {
     cfi = true
