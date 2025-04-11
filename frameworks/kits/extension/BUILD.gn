@@ -19,7 +19,6 @@ config("ability_config") {
   include_dirs = [
     "${wallpaper_path}/frameworks/native/include",
     "${wallpaper_path}/frameworks/kits/extension/include",
-    "${ability_runtime_services_path}/common/include",
   ]
 
   cflags = []
@@ -49,6 +48,7 @@ ohos_shared_library("wallpaperextensionability") {
   include_dirs = [
     "${wallpaper_path}/frameworks/native/include",
     "${wallpaper_path}/frameworks/kits/extension/include",
+    "${wallpaper_path}/utils/include",
   ]
 
   sources = [
