@@ -71,12 +71,6 @@ ohos_shared_library("wallpaper_service") {
     "-fdata-sections",
     "-ffunction-sections",
     "-Os",
-    "-fstack-protector-strong",
-  ]
-  ldflags = [
-    "-Wl,-z,relro",
-    "-Wl,-z,now",
-    "-fpie",
   ]
 
   sanitize = {
