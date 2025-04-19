@@ -30,15 +30,20 @@ describe('WallpaperPerfJSTest', function () {
 
     const SAMPLE_SIZE = 100;
 
-    function calcAverageTime(times, callback, info) {
-        let startTime = new Date().getTime();
-        for (let index = 0; index < times; index++) {
-            callback();
-        }
-        let endTime = new Date().getTime();
-        let averageTime = ((endTime - startTime) * 1000) / times;
-        console.info(info + averageTime);
-    }
+    /**
+     * @tc.name      on_performance_test_001
+     * @tc.desc      on interface promise performance test
+     * @tc.type      PERF
+     * @tc.require
+     */
+    it('on_performance_test_001', 0, function (done) {
+        let info = "on_performance_test_001 averageTime:";
+        calcAverageTime(SAMPLE_SIZE, () => {
+            wallpaper.off('colorChange', function (colors, wallpaperType) {
+            }, info);
+            done();
+        })
+    })
 
     /**
      * @tc.name      getColorsSync_performance_test_001
@@ -181,21 +186,6 @@ describe('WallpaperPerfJSTest', function () {
     })
 
     /**
-     * @tc.name      on_performance_test_001
-     * @tc.desc      on interface promise performance test
-     * @tc.type      PERF
-     * @tc.require
-     */
-    it('on_performance_test_001', 0, function (done) {
-        let info = "on_performance_test_001 averageTime:";
-        calcAverageTime(SAMPLE_SIZE, () => {
-            wallpaper.off('colorChange', function (colors, wallpaperType) {
-            }, info);
-            done();
-        })
-    })
-
-    /**
      * @tc.name      off_performance_test_001
      * @tc.desc      off interface promise performance test
      * @tc.type      PERF
@@ -209,4 +199,14 @@ describe('WallpaperPerfJSTest', function () {
         }, info);
         done();
     })
+
+    function calcAverageTime(times, callback, info) {
+        let startTime = new Date().getTime();
+        for (let index = 0; index < times; index++) {
+            callback();
+        }
+        let endTime = new Date().getTime();
+        let averageTime = ((endTime - startTime) * 1000) / times;
+        console.info(info + averageTime);
+    }
 });
