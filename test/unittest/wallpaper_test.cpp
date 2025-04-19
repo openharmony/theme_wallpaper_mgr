@@ -49,7 +49,7 @@ constexpr int32_t TEST_USERID1 = 98;
 constexpr int32_t INVALID_USERID = -1;
 constexpr int32_t NORMAL = 0;
 constexpr int32_t UNFOLD_1 = 1;
-constexpr int32_t UNFOLD_2 = 1;
+constexpr int32_t UNFOLD_2 = 2;
 constexpr int32_t PORT = 0;
 constexpr int32_t LAND = 1;
 constexpr int32_t DEFAULT_USERID = 100;
@@ -803,6 +803,9 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap001, TestSize.Level0)
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().SetWallpaper(pixelMap, SYSTYEM, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set SYSTYEM PixelMap.";
+    apiInfo.isSystemApi = true;
+    wallpaperErrorCode = WallpaperManager::GetInstance().SetWallpaper(pixelMap, SYSTYEM, apiInfo);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set SYSTYEM PixelMap.";
 }
 
 /**
@@ -817,6 +820,9 @@ HWTEST_F(WallpaperTest, SetWallpaperByMap002, TestSize.Level0)
     std::shared_ptr<PixelMap> pixelMap = WallpaperTest::CreateTempPixelMap();
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode = WallpaperManager::GetInstance().SetWallpaper(pixelMap, LOCKSCREEN, apiInfo);
+    EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set LOCKSCREEN PixelMap.";
+    apiInfo.isSystemApi = true;
+    wallpaperErrorCode = WallpaperManager::GetInstance().SetWallpaper(pixelMap, LOCKSCREEN, apiInfo);
     EXPECT_EQ(wallpaperErrorCode, E_OK) << "Failed to set LOCKSCREEN PixelMap.";
 }
 
@@ -1052,7 +1058,7 @@ HWTEST_F(WallpaperTest, SwitchedUserIdDeal001, TestSize.Level0)
     ApiInfo apiInfo{ false, false };
     std::vector<int32_t> ids;
     AccountSA::OsAccountManager::QueryActiveOsAccountIds(ids);
-    int32_t beforeUserId = ids.empty()? DEFAULT_USERID : ids[0];
+    int32_t beforeUserId = ids.empty() ? DEFAULT_USERID : ids[0];
     std::string addCommonEvent = EventFwk::CommonEventSupport::COMMON_EVENT_USER_ADDED;
     WallpaperTest::TriggerEvent(TEST_USERID, addCommonEvent);
     std::string userDir = WALLPAPER_DEFAULT_PATH + std::string("/") + std::to_string(TEST_USERID);
@@ -1644,6 +1650,5 @@ HWTEST_F(WallpaperTest, SetAllWallpapersClient002, TestSize.Level0)
     EXPECT_EQ(ret, static_cast<int32_t>(E_OK)) << "Failed to SetAllWallpapers";
 }
 /*********************   Wallpaper_Inner_Api   *********************/
-
 } // namespace WallpaperMgrService
 } // namespace OHOS

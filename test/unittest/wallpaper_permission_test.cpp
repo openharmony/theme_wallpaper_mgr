@@ -23,6 +23,7 @@
 #include "pixel_map.h"
 #include "wallpaper_manager.h"
 
+constexpr int32_t SYSTEM = 0;
 constexpr int32_t LOCKSCREEN = 1;
 constexpr uint8_t HUNDRED = 100;
 using namespace testing::ext;
@@ -162,12 +163,30 @@ HWTEST_F(WallpaperPermissionTest, GetPixelMapPermission001, TestSize.Level0)
 */
 HWTEST_F(WallpaperPermissionTest, SetWallpaperByMapPermission001, TestSize.Level0)
 {
-    HILOG_INFO("SetWallpaperByMapPermission001  begin");
-    std::shared_ptr<PixelMap> pixelMap = WallpaperPermissionTest::CreateTempPixelMap();
+    HILOG_INFO("SetWallpaperByMapPermission001 begin");
     ApiInfo apiInfo{ false, false };
+    std::shared_ptr<PixelMap> pixelMap = WallpaperPermissionTest::CreateTempPixelMap();
     ErrorCode wallpaperErrorCode =
-        OHOS::WallpaperMgrService::WallpaperManager::GetInstance().SetWallpaper(pixelMap, 2, apiInfo);
-    EXPECT_EQ(wallpaperErrorCode, E_NO_PERMISSION) << "throw permission error successfully";
+        OHOS::WallpaperMgrService::WallpaperManager::GetInstance().SetWallpaper(pixelMap, SYSTEM, apiInfo);
+    EXPECT_EQ(wallpaperErrorCode, E_NO_PERMISSION) << "throw permission error failed";
+    HILOG_INFO("SetWallpaperByMapPermission001 end");
+}
+
+/**
+* @tc.name:    SetWallpaperByMapPermission002
+* @tc.desc:    SetWallpaperByMap with wallpaperType[1] throw not system app.
+* @tc.type:    FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperPermissionTest, SetWallpaperByMapPermission002, TestSize.Level0)
+{
+    HILOG_INFO("SetWallpaperByMapPermission002 begin");
+    ApiInfo apiInfo{ false, true };
+    std::shared_ptr<PixelMap> pixelMap = WallpaperPermissionTest::CreateTempPixelMap();
+    ErrorCode wallpaperErrorCode =
+        OHOS::WallpaperMgrService::WallpaperManager::GetInstance().SetWallpaper(pixelMap, SYSTEM, apiInfo);
+    EXPECT_EQ(wallpaperErrorCode, E_NOT_SYSTEM_APP) << "throw not system app failed";
+    HILOG_INFO("SetWallpaperByMapPermission002 begin");
 }
 /*********************   SetWallpaperByMap   *********************/
 
@@ -180,13 +199,48 @@ HWTEST_F(WallpaperPermissionTest, SetWallpaperByMapPermission001, TestSize.Level
 */
 HWTEST_F(WallpaperPermissionTest, SetWallpaperByUriPermission001, TestSize.Level0)
 {
-    HILOG_INFO("SetWallpaperByUriPermission001  begin");
+    HILOG_INFO("SetWallpaperByUriPermission001 begin");
     ApiInfo apiInfo{ false, false };
     ErrorCode wallpaperErrorCode =
         OHOS::WallpaperMgrService::WallpaperManager::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
-    EXPECT_EQ(wallpaperErrorCode, E_NO_PERMISSION) << "throw permission error successfully";
-    HILOG_INFO("SetWallpaperByUriPermission001  end");
+    EXPECT_EQ(wallpaperErrorCode, E_NO_PERMISSION) << "throw permission error failed";
+    HILOG_INFO("SetWallpaperByUriPermission001 end");
+}
+
+/**
+* @tc.name:    SetWallpaperByUriPermission002
+* @tc.desc:    SetWallpaperByUri with wallpaperType[1] throw not system app.
+* @tc.type:    FUNC
+* @tc.require: issueI60MT1
+*/
+HWTEST_F(WallpaperPermissionTest, SetWallpaperByUriPermission002, TestSize.Level0)
+{
+    HILOG_INFO("SetWallpaperByUriPermission002 begin");
+    ApiInfo apiInfo{ false, true };
+    ErrorCode wallpaperErrorCode =
+        OHOS::WallpaperMgrService::WallpaperManager::GetInstance().SetWallpaper(URI, LOCKSCREEN, apiInfo);
+    EXPECT_EQ(wallpaperErrorCode, E_NOT_SYSTEM_APP) << "hrow not system app failed";
+    HILOG_INFO("SetWallpaperByUriPermission002 end");
 }
 /*********************   SetWallpaperByUri   *********************/
+
+/*********************   GetColors   *********************/
+/**
+* @tc.name:    GetColorPermission001
+* @tc.desc:    GetColors throw not system app.
+* @tc.type:    FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperPermissionTest, GetColorPermission001, TestSize.Level0)
+{
+    HILOG_INFO("GetColorPermission001 begin");
+    ApiInfo apiInfo{ false, true };
+    std::vector<uint64_t> colors;
+    ErrorCode wallpaperErrorCode =
+        OHOS::WallpaperMgrService::WallpaperManager::GetInstance().GetColors(LOCKSCREEN, apiInfo, colors);
+    EXPECT_EQ(wallpaperErrorCode, E_NOT_SYSTEM_APP) << "throw not system app failed";
+    HILOG_INFO("GetColorPermission001 end");
+}
+/*********************   GetColor   *********************/
 } // namespace WallpaperMgrService
 } // namespace OHOS
