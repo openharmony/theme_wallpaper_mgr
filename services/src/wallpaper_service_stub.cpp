@@ -257,22 +257,22 @@ int32_t WallpaperServiceStub::OnGetPixelMapInner(MessageParcel &data, MessagePar
     HILOG_INFO(" OnGetPixelMap wallpaperErrorCode = %{public}d", wallpaperErrorCode);
     if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
         HILOG_ERROR("WriteInt32 fail!");
-        fdsan_close_with_tag(fdInfo.fd, WP_DOMAIN);
+        close(fdInfo.fd);
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     if (wallpaperErrorCode == E_OK) {
         if (!reply.WriteInt32(fdInfo.size)) {
             HILOG_ERROR("WriteInt32 fail!");
-            fdsan_close_with_tag(fdInfo.fd, WP_DOMAIN);
+            close(fdInfo.fd);
             return IPC_STUB_WRITE_PARCEL_ERR;
         }
         if (!reply.WriteFileDescriptor(fdInfo.fd)) {
             HILOG_ERROR("WriteFileDescriptor fail!");
-            fdsan_close_with_tag(fdInfo.fd, WP_DOMAIN);
+            close(fdInfo.fd);
             return IPC_STUB_WRITE_PARCEL_ERR;
         }
     }
-    fdsan_close_with_tag(fdInfo.fd, WP_DOMAIN);
+    close(fdInfo.fd);
     return ERR_NONE;
 }
 
@@ -320,17 +320,17 @@ int32_t WallpaperServiceStub::OnGetFile(MessageParcel &data, MessageParcel &repl
     if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
         HILOG_ERROR("WriteInt32 fail!");
         if (wallpaperFd > INVALID_FD) {
-            fdsan_close_with_tag(wallpaperFd, WP_DOMAIN);
+            close(wallpaperFd);
         }
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     if (wallpaperErrorCode == E_OK && !reply.WriteFileDescriptor(wallpaperFd)) {
         HILOG_ERROR("WriteFileDescriptor fail!");
-        fdsan_close_with_tag(wallpaperFd, WP_DOMAIN);
+        close(wallpaperFd);
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     if (wallpaperFd > INVALID_FD) {
-        fdsan_close_with_tag(wallpaperFd, WP_DOMAIN);
+        close(wallpaperFd);
     }
     return ERR_NONE;
 }
@@ -543,22 +543,22 @@ int32_t WallpaperServiceStub::OnGetCorrespondWallpaper(MessageParcel &data, Mess
     HILOG_INFO(" OnGetCorrespondWallpaper wallpaperErrorCode = %{public}d", wallpaperErrorCode);
     if (!reply.WriteInt32(static_cast<int32_t>(wallpaperErrorCode))) {
         HILOG_ERROR("WriteInt32 fail!");
-        fdsan_close_with_tag(fdInfo.fd, WP_DOMAIN);
+        close(fdInfo.fd);
         return IPC_STUB_WRITE_PARCEL_ERR;
     }
     if (wallpaperErrorCode == E_OK) {
         if (!reply.WriteInt32(fdInfo.size)) {
             HILOG_ERROR("WriteInt32 fail!");
-            fdsan_close_with_tag(fdInfo.fd, WP_DOMAIN);
+            close(fdInfo.fd);
             return IPC_STUB_WRITE_PARCEL_ERR;
         }
         if (!reply.WriteFileDescriptor(fdInfo.fd)) {
             HILOG_ERROR("WriteFileDescriptor fail!");
-            fdsan_close_with_tag(fdInfo.fd, WP_DOMAIN);
+            close(fdInfo.fd);
             return IPC_STUB_WRITE_PARCEL_ERR;
         }
     }
-    fdsan_close_with_tag(fdInfo.fd, WP_DOMAIN);
+    close(fdInfo.fd);
     return ERR_NONE;
 }
 
