@@ -713,6 +713,7 @@ ErrCode WallpaperService::SetWallpaper(int fd, int32_t wallpaperType, int32_t le
     StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
     ErrorCode wallpaperErrorCode = SetWallpaper(fd, wallpaperType, length, PICTURE);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
+    close(fd);
     return wallpaperErrorCode;
 }
 
@@ -909,6 +910,7 @@ ErrCode WallpaperService::SetVideo(int fd, int32_t wallpaperType, int32_t length
     StartAsyncTrace(HITRACE_TAG_MISC, "SetVideo", static_cast<int32_t>(TraceTaskId::SET_VIDEO));
     ErrorCode wallpaperErrorCode = SetWallpaper(fd, wallpaperType, length, VIDEO);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetVideo", static_cast<int32_t>(TraceTaskId::SET_VIDEO));
+    close(fd);
     return wallpaperErrorCode;
 }
 
@@ -954,6 +956,7 @@ ErrCode WallpaperService::SetCustomWallpaper(int fd, int32_t type, int32_t lengt
         return E_DEAL_FAILED;
     }
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
+    close(fd);
     return wallpaperErrorCode;
 }
 

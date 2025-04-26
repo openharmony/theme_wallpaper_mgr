@@ -27,10 +27,10 @@ bool WallpaperPictureInfoByParcel::Marshalling(Parcel &parcel) const
     bool status = true;
     status &= parcel.WriteInt32(wallpaperPictureInfo_.size());
     for (const auto &wallpaperInfo : wallpaperPictureInfo_) {
-        status &= parcel.WriteInt32(wallpaperInfo.foldState);
-        status &= parcel.WriteInt32(wallpaperInfo.rotateState);
+        status &= parcel.WriteInt32(static_cast<int32_t>(wallpaperInfo.foldState));
+        status &= parcel.WriteInt32(static_cast<int32_t>(wallpaperInfo.rotateState));
         status &= parcel.WriteInt32(wallpaperInfo.fd);
-        status &= parcel.WriteInt32(wallpaperInfo.length);
+        status &= parcel.WriteInt64(wallpaperInfo.length);
     }
     return status;
 }
@@ -39,9 +39,15 @@ WallpaperPictureInfoByParcel *WallpaperPictureInfoByParcel::Unmarshalling(Parcel
 {
     WallpaperPictureInfoByParcel *obj = new (std::nothrow) WallpaperPictureInfoByParcel();
     if (obj == nullptr) {
+        HILOG_ERROR("obj is nullptr");
         return nullptr;
     }
     int32_t vectorSize = parcel.ReadInt32();
+    if (vectorSize > VECTOR_MAX_SIZE) {
+        HILOG_ERROR("More than maxNum 6 of wallpaper pictures");
+        delete obj;
+        return nullptr;
+    }
     for (int32_t i = 0; i < vectorSize; i++) {
         WallpaperPictureInfo wallpaperInfo;
         int32_t foldStateVale = parcel.ReadInt32();
@@ -59,7 +65,7 @@ WallpaperPictureInfoByParcel *WallpaperPictureInfoByParcel::Unmarshalling(Parcel
             wallpaperInfo.rotateState = LAND;
         }
         wallpaperInfo.fd = parcel.ReadInt32();
-        wallpaperInfo.length = parcel.ReadInt32();
+        wallpaperInfo.length = parcel.ReadInt64();
         obj->wallpaperPictureInfo_.push_back(wallpaperInfo);
     }
     return obj;

@@ -20,11 +20,12 @@
 using namespace OHOS::WallpaperMgrService;
 namespace OHOS {
 const std::u16string WALLPAPERSERVICES_INTERFACE_TOKEN = u"OHOS.WallpaperMgrService.IWallpaperService";
-void FuzzTestUtils::FuzzTestRemoteRequest(const uint8_t *rawData, size_t size, uint32_t code)
+void FuzzTestUtils::FuzzTestRemoteRequest(FuzzedDataProvider &provider, uint32_t code)
 {
     MessageParcel data;
     data.WriteInterfaceToken(WALLPAPERSERVICES_INTERFACE_TOKEN);
-    data.WriteBuffer(rawData, size);
+    std::vector<uint8_t> remaining_data = provider.ConsumeRemainingBytes<uint8_t>();
+    data.WriteBuffer(static_cast<void *>(remaining_data.data()), remaining_data.size());
     data.RewindRead(0);
     MessageParcel reply;
     MessageOption option;
