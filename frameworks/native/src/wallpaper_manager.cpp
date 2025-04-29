@@ -612,34 +612,34 @@ bool WallpaperManager::CheckVideoFormat(const std::string &fileName)
 {
     int32_t fd = -1;
     int64_t length = 0;
-    FILE *videoFile = OpenFile(fileName, fd, length);
-    if (videoFile == nullptr) {
+    FILE *wallpaperFile = OpenFile(fileName, fd, length);
+    if (wallpaperFile == nullptr) {
         HILOG_ERROR("Open file: %{public}s failed!", fileName.c_str());
         return false;
     }
     std::shared_ptr<Media::AVMetadataHelper> helper = Media::AVMetadataHelperFactory::CreateAVMetadataHelper();
     if (helper == nullptr) {
         HILOG_ERROR("Create metadata helper failed!");
-        fclose(videoFile);
+        fclose(wallpaperFile);
         return false;
     }
     int32_t offset = 0;
     int32_t errorCode = helper->SetSource(fd, offset, length);
     if (errorCode != 0) {
         HILOG_ERROR("Set helper source failed!");
-        fclose(videoFile);
+        fclose(wallpaperFile);
         return false;
     }
     auto metaData = helper->ResolveMetadata();
     if (metaData.find(Media::AV_KEY_MIME_TYPE) != metaData.end()) {
         if (metaData[Media::AV_KEY_MIME_TYPE] != "video/mp4") {
             HILOG_ERROR("Video mime type is not video/mp4!");
-            fclose(videoFile);
+            fclose(wallpaperFile);
             return false;
         }
     } else {
         HILOG_ERROR("Cannot get video mime type!");
-        fclose(videoFile);
+        fclose(wallpaperFile);
         return false;
     }
 
@@ -647,15 +647,15 @@ bool WallpaperManager::CheckVideoFormat(const std::string &fileName)
         int32_t videoDuration = ConverString2Int(metaData[Media::AV_KEY_DURATION]);
         if (videoDuration < MIN_TIME || videoDuration > MAX_TIME) {
             HILOG_ERROR("The durations of this vodeo is not between 0s ~ 5s!");
-            fclose(videoFile);
+            fclose(wallpaperFile);
             return false;
         }
     } else {
         HILOG_ERROR("Cannot get the duration of this video!");
-        fclose(videoFile);
+        fclose(wallpaperFile);
         return false;
     }
-    fclose(videoFile);
+    fclose(wallpaperFile);
     return true;
 }
 
@@ -666,25 +666,25 @@ FILE *WallpaperManager::OpenFile(const std::string &fileName, int &fd, int64_t &
         return nullptr;
     }
 
-    FILE *videoFile = fopen(fileName.c_str(), "r");
-    if (videoFile == nullptr) {
-        HILOG_ERROR("Get video videoFile failed!");
+    FILE *file = fopen(fileName.c_str(), "r");
+    if (file == nullptr) {
+        HILOG_ERROR("Get video file failed!");
         return nullptr;
     }
-    fd = fileno(videoFile);
-    if (videoFd < 0) {
+    fd = fileno(file);
+    if (fd < 0) {
         HILOG_ERROR("Get video videoFd failed!");
-        fclose(videoFile);
+        fclose(file);
         return nullptr;
     }
     struct stat64 st;
-    if (fstat64(videoFd, &st) != 0) {
+    if (fstat64(fd, &st) != 0) {
         HILOG_ERROR("Failed to fstat64!");
-        fclose(videoFile);
+        fclose(file);
         return nullptr;
     }
     fileSize = static_cast<int64_t>(st.st_size);
-    return videoFile;
+    return file;
 }
 
 ErrorCode WallpaperManager::CheckWallpaperFormat(const std::string &realPath, bool isLive, long &length)
