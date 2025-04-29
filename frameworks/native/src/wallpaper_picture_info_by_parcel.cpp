@@ -15,9 +15,11 @@
 
 #include <vector>
 
+#include "hilog_wrapper.h"
 #include "wallpaper_picture_info_by_parcel.h"
 
 namespace OHOS::WallpaperMgrService {
+constexpr int32_t VECTOR_MAX_SIZE = 6;
 WallpaperPictureInfoByParcel::WallpaperPictureInfoByParcel()
 {
 }
@@ -39,9 +41,15 @@ WallpaperPictureInfoByParcel *WallpaperPictureInfoByParcel::Unmarshalling(Parcel
 {
     WallpaperPictureInfoByParcel *obj = new (std::nothrow) WallpaperPictureInfoByParcel();
     if (obj == nullptr) {
+        HILOG_ERROR("obj is nullptr");
         return nullptr;
     }
     int32_t vectorSize = parcel.ReadInt32();
+    if (vectorSize > VECTOR_MAX_SIZE) {
+        HILOG_ERROR("More than maxNum 6 of wallpaper pictures");
+        delete obj;
+        return nullptr;
+    }
     for (int32_t i = 0; i < vectorSize; i++) {
         WallpaperPictureInfo wallpaperInfo;
         int32_t foldStateVale = parcel.ReadInt32();

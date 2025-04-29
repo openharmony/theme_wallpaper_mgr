@@ -2286,9 +2286,9 @@ int32_t WallpaperService::SetwallpaperByPixelMapParcel(MessageParcel &data, Mess
         return E_CHECK_DESCRIPTOR_ERROR;
     }
     WallpaperRawData wallpaperRawData;
-    wallpaperRawData.size = data.ReadInt32();
+    wallpaperRawData.size = data.ReadUint32();
     if (wallpaperRawData.size <= 0) {
-        HILOG_ERROR("ReadInt32 fail!");
+        HILOG_ERROR("ReadUint32 fail!");
         return ERR_INVALID_VALUE;
     }
     wallpaperRawData.data = data.ReadRawData(wallpaperRawData.size);
