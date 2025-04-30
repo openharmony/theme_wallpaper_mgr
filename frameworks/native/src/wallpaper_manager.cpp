@@ -610,35 +610,36 @@ ErrorCode WallpaperManager::SendEvent(const std::string &eventType)
 
 bool WallpaperManager::CheckVideoFormat(const std::string &fileName)
 {
-    int32_t videoFd = -1;
+    int32_t fd = -1;
     int64_t length = 0;
-    if (!OpenFile(fileName, videoFd, length)) {
+    FILE *wallpaperFile = OpenFile(fileName, fd, length);
+    if (wallpaperFile == nullptr) {
         HILOG_ERROR("Open file: %{public}s failed!", fileName.c_str());
         return false;
     }
     std::shared_ptr<Media::AVMetadataHelper> helper = Media::AVMetadataHelperFactory::CreateAVMetadataHelper();
     if (helper == nullptr) {
         HILOG_ERROR("Create metadata helper failed!");
-        fdsan_close_with_tag(videoFd, WP_DOMAIN);
+        fclose(wallpaperFile);
         return false;
     }
     int32_t offset = 0;
-    int32_t errorCode = helper->SetSource(videoFd, offset, length);
+    int32_t errorCode = helper->SetSource(fd, offset, length);
     if (errorCode != 0) {
         HILOG_ERROR("Set helper source failed!");
-        fdsan_close_with_tag(videoFd, WP_DOMAIN);
+        fclose(wallpaperFile);
         return false;
     }
     auto metaData = helper->ResolveMetadata();
     if (metaData.find(Media::AV_KEY_MIME_TYPE) != metaData.end()) {
         if (metaData[Media::AV_KEY_MIME_TYPE] != "video/mp4") {
             HILOG_ERROR("Video mime type is not video/mp4!");
-            fdsan_close_with_tag(videoFd, WP_DOMAIN);
+            fclose(wallpaperFile);
             return false;
         }
     } else {
         HILOG_ERROR("Cannot get video mime type!");
-        fdsan_close_with_tag(videoFd, WP_DOMAIN);
+        fclose(wallpaperFile);
         return false;
     }
 
@@ -646,39 +647,44 @@ bool WallpaperManager::CheckVideoFormat(const std::string &fileName)
         int32_t videoDuration = ConverString2Int(metaData[Media::AV_KEY_DURATION]);
         if (videoDuration < MIN_TIME || videoDuration > MAX_TIME) {
             HILOG_ERROR("The durations of this vodeo is not between 0s ~ 5s!");
-            fdsan_close_with_tag(videoFd, WP_DOMAIN);
+            fclose(wallpaperFile);
             return false;
         }
     } else {
         HILOG_ERROR("Cannot get the duration of this video!");
-        fdsan_close_with_tag(videoFd, WP_DOMAIN);
+        fclose(wallpaperFile);
         return false;
     }
-    fdsan_close_with_tag(videoFd, WP_DOMAIN);
+    fclose(wallpaperFile);
     return true;
 }
 
-bool WallpaperManager::OpenFile(const std::string &fileName, int32_t &fd, int64_t &fileSize)
+FILE *WallpaperManager::OpenFile(const std::string &fileName, int &fd, int64_t &fileSize)
 {
     if (!OHOS::FileExists(fileName)) {
         HILOG_ERROR("File is not exist, file: %{public}s.", fileName.c_str());
-        return false;
+        return nullptr;
     }
 
-    fd = open(fileName.c_str(), O_RDONLY);
-    if (fd <= 0) {
-        HILOG_ERROR("Get video fd failed!");
-        return false;
+    FILE *file = fopen(fileName.c_str(), "r");
+    if (file == nullptr) {
+        HILOG_ERROR("Get video file failed!");
+        return nullptr;
     }
-    fdsan_exchange_owner_tag(fd, 0, WP_DOMAIN);
+    fd = fileno(file);
+    if (fd < 0) {
+        HILOG_ERROR("Get video videoFd failed!");
+        fclose(file);
+        return nullptr;
+    }
     struct stat64 st;
     if (fstat64(fd, &st) != 0) {
         HILOG_ERROR("Failed to fstat64!");
-        fdsan_close_with_tag(fd, WP_DOMAIN);
-        return false;
+        fclose(file);
+        return nullptr;
     }
     fileSize = static_cast<int64_t>(st.st_size);
-    return true;
+    return file;
 }
 
 ErrorCode WallpaperManager::CheckWallpaperFormat(const std::string &realPath, bool isLive, long &length)
