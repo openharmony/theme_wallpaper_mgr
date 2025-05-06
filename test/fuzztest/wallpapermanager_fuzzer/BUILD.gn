@@ -31,6 +31,8 @@ ohos_fuzztest("WallpaperManagerFuzzTest") {
   ]
 
   cflags = [
+    "-Dprivate=public",
+    "-Dprotected=public",
     "-g",
     "-O0",
     "-Wno-unused-variable",

@@ -22,15 +22,12 @@
 #include "wallpaper_service.h"
 
 using namespace OHOS::WallpaperMgrService;
-constexpr size_t THRESHOLD = 4;
 constexpr uint32_t CODE = static_cast<uint32_t>(IWallpaperServiceIpcCode::COMMAND_OFF);
 
 /* Fuzzer entry point */
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
-    if (size < THRESHOLD) {
-        return 0;
-    }
-    OHOS::FuzzTestUtils::FuzzTestRemoteRequest(data, size, CODE);
+    FuzzedDataProvider provider(data, size);
+    OHOS::FuzzTestUtils::FuzzTestRemoteRequest(provider, CODE);
     return 0;
 }

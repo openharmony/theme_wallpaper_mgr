@@ -15,12 +15,14 @@
 
 #ifndef WALLPAPER_MGR_FUZZTEST_UTILS_H
 #define WALLPAPER_MGR_FUZZTEST_UTILS_H
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include <cstddef>
 #include <cstdint>
 namespace OHOS {
 class FuzzTestUtils {
 public:
-    static void FuzzTestRemoteRequest(const uint8_t *rawData, size_t size, uint32_t code);
+    static void FuzzTestRemoteRequest(FuzzedDataProvider &provider, uint32_t code);
 };
 } // namespace OHOS
 
