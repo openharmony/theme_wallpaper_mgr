@@ -1714,7 +1714,7 @@ ErrCode WallpaperService::SetAllWallpapers(const WallpaperPictureInfoByParcel &w
     std::vector<WallpaperPictureInfo> wallpaperPictureInfo;
     wallpaperPictureInfo = wallpaperPictureInfoByParcel.wallpaperPictureInfo_;
     if (wallpaperPictureInfo.size() != fdVector.size() || fdVector.size() == 0) {
-        HILOG_ERROR("wallpaperPictureInfo size = %{public}d and fdVector size = %{public} is inconsistent",
+        HILOG_ERROR("wallpaperPictureInfo size = %{public}zu and fdVector size = %{public}zu is inconsistent",
             wallpaperPictureInfo.size(), fdVector.size());
         return E_DEAL_FAILED;
     }
