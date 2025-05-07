@@ -46,6 +46,7 @@ ohos_source_set("wallpaper_service_proxy") {
   sanitize = {
     cfi = true
     cfi_cross_dso = true
+    cfi_vcall_icall_only = true
     debug = false
   }
   sources = [
@@ -87,11 +88,6 @@ ohos_shared_library("wallpapermanager") {
     ":wallpaperservice_interface",
     "${utils_path}:wallpaper_utils",
   ]
-  sanitize = {
-    cfi = true
-    cfi_cross_dso = true
-    debug = false
-  }
   external_deps = [
     "c_utils:utils",
     "hilog:libhilog",
