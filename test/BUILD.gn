@@ -28,7 +28,7 @@ ohos_unittest("wallpaper_test") {
   deps = [
     "${utils_path}:wallpaper_utils",
     "${wallpaper_path}/frameworks/native:wallpapermanager_static",
-    "${wallpaper_path}/services:wallpaper_service",
+    "${wallpaper_path}/services:wallpaper_service_static",
   ]
   external_deps = [
     "ability_base:want",
@@ -88,7 +88,7 @@ ohos_unittest("wallpaper_dfx_test") {
   deps = [
     "${utils_path}:wallpaper_utils",
     "${wallpaper_path}/frameworks/native:wallpapermanager_static",
-    "${wallpaper_path}/services:wallpaper_service",
+    "${wallpaper_path}/services:wallpaper_service_static",
   ]
   external_deps = [
     "c_utils:utils",
