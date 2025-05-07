@@ -46,7 +46,7 @@ WallpaperPictureInfoByParcel *WallpaperPictureInfoByParcel::Unmarshalling(Parcel
     }
     int32_t vectorSize = parcel.ReadInt32();
     if (vectorSize > VECTOR_MAX_SIZE) {
-        HILOG_ERROR("More than maxNum 6 of wallpaper pictures");
+        HILOG_ERROR("More than maxNum 6 of wallpaper pictures, size:%{public}d", vectorSize);
         delete obj;
         return nullptr;
     }
