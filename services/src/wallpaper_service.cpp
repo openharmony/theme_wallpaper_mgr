@@ -1716,6 +1716,24 @@ std::string WallpaperService::GetExistFilePath(const std::string &filePath)
     return filePath;
 }
 
+void WallpaperService::CloseVectorFd(const std::vector<int> &fdVector)
+{
+    for (auto &fd : fdVector) {
+        if (fd >= 0) {
+            close(fd);
+        }
+    }
+}
+
+void WallpaperService::CloseWallpaperInfoFd(const std::vector<WallpaperPictureInfo> &wallpaperPictureInfo)
+{
+    for (auto &wallpaperInfo : wallpaperPictureInfo) {
+        if (wallpaperInfo.fd >= 0) {
+            close(wallpaperInfo.fd);
+        }
+    }
+}
+
 ErrCode WallpaperService::SetAllWallpapers(const WallpaperPictureInfoByParcel &wallpaperPictureInfoByParcel,
     int32_t wallpaperType, const std::vector<int> &fdVector)
 {
@@ -1725,11 +1743,7 @@ ErrCode WallpaperService::SetAllWallpapers(const WallpaperPictureInfoByParcel &w
     if (wallpaperPictureInfo.size() != fdVector.size() || fdVector.size() == 0) {
         HILOG_ERROR("wallpaperPictureInfo size = %{public}zu and fdVector size = %{public}zu is inconsistent",
             wallpaperPictureInfo.size(), fdVector.size());
-        for (auto &fd : fdVector) {
-            if (fd >= 0) {
-                close(fd);
-            }
-        }
+        CloseVectorFd(fdVector);
         return E_DEAL_FAILED;
     }
     for (std::size_t i = 0; i < fdVector.size(); ++i) {
@@ -1737,11 +1751,7 @@ ErrCode WallpaperService::SetAllWallpapers(const WallpaperPictureInfoByParcel &w
     }
     ErrorCode wallpaperErrorCode = SetAllWallpapers(wallpaperPictureInfo, wallpaperType, PICTURE);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetAllWallpapers", static_cast<int32_t>(TraceTaskId::SET_ALL_WALLPAPERS));
-    for (auto &wallpaperInfo : wallpaperPictureInfo) {
-        if (wallpaperInfo.fd >= 0) {
-            close(wallpaperInfo.fd);
-        }
-    }
+    CloseWallpaperInfoFd(wallpaperPictureInfo);
     return wallpaperErrorCode;
 }
 

@@ -187,6 +187,8 @@ private:
     int32_t GetCorrespondWallpaperParcel(MessageParcel &data, MessageParcel &reply);
     int32_t GetFileParcel(MessageParcel &data, MessageParcel &reply);
     int32_t SetwallpaperByPixelMapParcel(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
+    void CloseVectorFd(const std::vector<int> &fdVector);
+    void CloseWallpaperInfoFd(const std::vector<WallpaperPictureInfo> &wallpaperPictureInfo);
 
 private:
     int32_t Init();
