@@ -744,6 +744,7 @@ ErrCode WallpaperService::SetWallpaperV9(int fd, int32_t wallpaperType, int32_t 
 {
     if (!IsSystemApp()) {
         HILOG_ERROR("CallingApp is not SystemApp.");
+        close(fd);
         return E_NOT_SYSTEM_APP;
     }
     return SetWallpaper(fd, wallpaperType, length);
@@ -905,6 +906,7 @@ ErrCode WallpaperService::SetVideo(int fd, int32_t wallpaperType, int32_t length
 {
     if (!IsSystemApp()) {
         HILOG_ERROR("current app is not SystemApp.");
+        close(fd);
         return E_NOT_SYSTEM_APP;
     }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetVideo", static_cast<int32_t>(TraceTaskId::SET_VIDEO));
@@ -918,13 +920,16 @@ ErrCode WallpaperService::SetCustomWallpaper(int fd, int32_t type, int32_t lengt
 {
     if (!IsSystemApp()) {
         HILOG_ERROR("current app is not SystemApp.");
+        close(fd);
         return E_NOT_SYSTEM_APP;
     }
     if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
         HILOG_ERROR("SetWallpaper no set permission!");
+        close(fd);
         return E_NO_PERMISSION;
     }
     if (type != static_cast<int32_t>(WALLPAPER_LOCKSCREEN) && type != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
+        close(fd);
         return E_PARAMETERS_INVALID;
     }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
@@ -933,14 +938,17 @@ ErrCode WallpaperService::SetCustomWallpaper(int fd, int32_t type, int32_t lengt
     WallpaperData wallpaperData;
     if (!GetWallpaperSafeLocked(userId, wallpaperType, wallpaperData)) {
         HILOG_ERROR("GetWallpaper data failed!");
+        close(fd);
         return E_DEAL_FAILED;
     }
     if (!Rosen::SceneBoardJudgement::IsSceneBoardEnabled()) {
+        close(fd);
         HILOG_ERROR("SceneBoard is not Enabled.");
         return E_NO_PERMISSION;
     }
     if (!SaveWallpaperState(userId, wallpaperType, PACKAGE)) {
         HILOG_ERROR("Save wallpaper state failed!");
+        close(fd);
         return E_DEAL_FAILED;
     }
     ErrorCode wallpaperErrorCode = SetWallpaper(fd, wallpaperType, length, PACKAGE);
@@ -953,6 +961,7 @@ ErrCode WallpaperService::SetCustomWallpaper(int fd, int32_t type, int32_t lengt
     }
     if (!SendWallpaperChangeEvent(userId, wallpaperType)) {
         HILOG_ERROR("Send wallpaper state failed!");
+        close(fd);
         return E_DEAL_FAILED;
     }
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetCustomWallpaper", static_cast<int32_t>(TraceTaskId::SET_CUSTOM_WALLPAPER));
@@ -1716,6 +1725,11 @@ ErrCode WallpaperService::SetAllWallpapers(const WallpaperPictureInfoByParcel &w
     if (wallpaperPictureInfo.size() != fdVector.size() || fdVector.size() == 0) {
         HILOG_ERROR("wallpaperPictureInfo size = %{public}zu and fdVector size = %{public}zu is inconsistent",
             wallpaperPictureInfo.size(), fdVector.size());
+        for (auto &fd : fdVector) {
+            if (fd >= 0) {
+                close(fd);
+            }
+        }
         return E_DEAL_FAILED;
     }
     for (std::size_t i = 0; i < fdVector.size(); ++i) {
