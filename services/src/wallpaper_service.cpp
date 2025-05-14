@@ -1649,7 +1649,7 @@ void WallpaperService::LoadWallpaperState()
         || !GetWallpaperSafeLocked(userId, WALLPAPER_LOCKSCREEN, lockScreenData)) {
         return;
     }
-    if (Json::accept(buf)) {
+    if (nlohmann::json::accept(buf)) {
         auto root = nlohmann::json::parse(buf);
         if (root.contains(SYSTEM_RES_TYPE) && root[SYSTEM_RES_TYPE].is_number()) {
             systemData.resourceType = static_cast<WallpaperResourceType>(root[SYSTEM_RES_TYPE].get<int>());

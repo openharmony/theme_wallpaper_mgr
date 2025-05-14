@@ -46,7 +46,8 @@
           "eventhandler",
           "init",
           "memmgr",
-          "config_policy"
+          "config_policy",
+          "json"
         ],
         "third_party": []
       },
