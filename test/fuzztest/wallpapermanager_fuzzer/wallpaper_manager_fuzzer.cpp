@@ -35,17 +35,15 @@ using namespace OHOS::Media;
 namespace OHOS {
 constexpr const char *WALLPAPER_DEFAULT_FILEFULLPATH = "/system/etc/wallpaperdefault.jpeg";
 constexpr int32_t PIXELMAP_SIZE = 100;
+static const char *g_perms[2] = { "ohos.permission.GET_WALLPAPER", "ohos.permission.SET_WALLPAPER" };
 void GrantNativePermission()
 {
-    const char **perms = new const char *[2];
-    perms[0] = "ohos.permission.GET_WALLPAPER";
-    perms[1] = "ohos.permission.SET_WALLPAPER";
     TokenInfoParams infoInstance = {
         .dcapsNum = 0,
         .permsNum = 2,
         .aclsNum = 0,
         .dcaps = nullptr,
-        .perms = perms,
+        .perms = g_perms,
         .acls = nullptr,
         .processName = "wallpaper_service",
         .aplStr = "system_core",
@@ -53,7 +51,6 @@ void GrantNativePermission()
     uint64_t tokenId = GetAccessTokenId(&infoInstance);
     SetSelfTokenID(tokenId);
     AccessTokenKit::ReloadNativeTokenInfo();
-    delete[] perms;
 }
 
 class WallpaperEventListenerFuzzTestImpl : public OHOS::WallpaperMgrService::WallpaperEventListener {
