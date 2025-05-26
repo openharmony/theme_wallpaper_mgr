@@ -377,7 +377,7 @@ ErrorCode WallpaperManager::GetPixelMap(
 ErrorCode WallpaperManager::CreatePixelMapByFd(
     int32_t fd, int32_t size, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
 {
-    if (size <= 0 && fd < 0) {
+    if (size <= 0 || fd < 0) {
         HILOG_ERROR("Size or fd error!");
         return E_IMAGE_ERRCODE;
     }
