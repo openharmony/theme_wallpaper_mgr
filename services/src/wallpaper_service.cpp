@@ -924,7 +924,6 @@ ErrCode WallpaperService::SetCustomWallpaper(int fd, int32_t type, int32_t lengt
         return E_NOT_SYSTEM_APP;
     }
     if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
-        HILOG_ERROR("SetWallpaper no set permission!");
         close(fd);
         return E_NO_PERMISSION;
     }
