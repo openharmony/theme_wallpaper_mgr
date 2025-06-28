@@ -13,9 +13,13 @@
 * limitations under the License.
 */
 
+#include <fcntl.h>
 #include <fuzzer/FuzzedDataProvider.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include <cstdint>
+#include <cstdio>
 #include <iostream>
 
 #include "accesstoken_kit.h"
@@ -120,7 +124,7 @@ void SetWallpaperByUriFuzzTest(FuzzedDataProvider &provider)
     WallpaperMgrService::WallpaperManager::GetInstance().SetWallpaper(uri, wallpaperType, apiInfo);
     WallpaperMgrService::WallpaperManager::GetInstance().Off("colorChange", listener);
     WallpaperMgrService::WallpaperManager::GetInstance().SetWallpaper(
-        WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperType, apiInfo);
+        std::string(WALLPAPER_DEFAULT_FILEFULLPATH), wallpaperType, apiInfo);
 }
 
 void SetWallpaperByMapFuzzTest(FuzzedDataProvider &provider)
@@ -206,7 +210,8 @@ void SetVideoFuzzTest(FuzzedDataProvider &provider)
     uint32_t wallpaperType = provider.ConsumeIntegral<uint32_t>();
     std::string uri = provider.ConsumeRandomLengthString();
     WallpaperMgrService::WallpaperManager::GetInstance().SetVideo(uri, wallpaperType);
-    WallpaperMgrService::WallpaperManager::GetInstance().SetVideo(WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperType);
+    WallpaperMgrService::WallpaperManager::GetInstance().SetVideo(
+        std::string(WALLPAPER_DEFAULT_FILEFULLPATH), wallpaperType);
 }
 
 void SendEventFuzzTest(FuzzedDataProvider &provider)
@@ -223,7 +228,7 @@ void SetCustomWallpaperFuzzTest(FuzzedDataProvider &provider)
     std::string uri = provider.ConsumeRandomLengthString();
     WallpaperMgrService::WallpaperManager::GetInstance().SetCustomWallpaper(uri, wallpaperType);
     WallpaperMgrService::WallpaperManager::GetInstance().SetCustomWallpaper(
-        WALLPAPER_DEFAULT_FILEFULLPATH, wallpaperType);
+        std::string(WALLPAPER_DEFAULT_FILEFULLPATH), wallpaperType);
 }
 
 void SetAllWallpapersFuzzTest(FuzzedDataProvider &provider)
@@ -237,7 +242,8 @@ void SetAllWallpapersFuzzTest(FuzzedDataProvider &provider)
     wallpaperInfo.source = provider.ConsumeRandomLengthString();
     allWallpaperInfos.push_back(wallpaperInfo);
     WallpaperMgrService::WallpaperManager::GetInstance().SetAllWallpapers(allWallpaperInfos, wallpaperType);
-    wallpaperInfo.source = WALLPAPER_DEFAULT_FILEFULLPATH;
+    allWallpaperInfos.clear();
+    wallpaperInfo.source = std::string(WALLPAPER_DEFAULT_FILEFULLPATH);
     allWallpaperInfos.push_back(wallpaperInfo);
     WallpaperMgrService::WallpaperManager::GetInstance().SetAllWallpapers(allWallpaperInfos, wallpaperType);
 }
@@ -313,7 +319,42 @@ void WallpaperManagerProxyFuzzTest(FuzzedDataProvider &provider)
     int32_t foldState = 0;
     int32_t rotateState = 0;
     wallpaperProxy->GetCorrespondWallpaper(wallpaperType, foldState, rotateState, pixelmapSize, pixelmapFd);
+}
 
+void WallpaperManagerCallbackFuzzTest(FuzzedDataProvider &provider)
+{
+    GrantNativePermission();
+    uint32_t color[100] = { 3, 7, 9, 9, 7, 6 };
+    InitializationOptions opts = { { 5, 7 }, OHOS::Media::PixelFormat::ARGB_8888 };
+    std::unique_ptr<PixelMap> uniquePixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
+    std::shared_ptr<PixelMap> pixelMap = std::move(uniquePixelMap);
+    int32_t size = provider.ConsumeIntegral<int32_t>();
+    int32_t fd = provider.ConsumeIntegral<int32_t>();
+    WallpaperMgrService::WallpaperManager::GetInstance().CreatePixelMapByFd(fd, size, pixelMap);
+    std::string wallpaperPath = "/data/service/el1/public/wallpaper/100/system/wallpaper_home";
+    int32_t wallpaperFd = open(wallpaperPath.c_str(), O_RDONLY, S_IREAD);
+    FILE *file = fopen(wallpaperPath.c_str(), "rb");
+    if (file == nullptr) {
+        return;
+    }
+    int32_t fend = fseek(file, 0, SEEK_END);
+    size = ftell(file);
+    int32_t fset = fseek(file, 0, SEEK_SET);
+    if (size <= 0 || fend != 0 || fset != 0) {
+        fclose(file);
+        close(wallpaperFd);
+        return;
+    }
+    if (fclose(file) < 0) {
+        close(wallpaperFd);
+        return;
+    }
+    WallpaperMgrService::WallpaperManager::GetInstance().CreatePixelMapByFd(wallpaperFd, size, pixelMap);
+    close(wallpaperFd);
+
+    auto wallpaperProxy = WallpaperMgrService::WallpaperManager::GetInstance().GetService();
+    JScallback callback = nullptr;
+    WallpaperMgrService::WallpaperManager::GetInstance().RegisterWallpaperCallback(callback);
     bool registerWallpaperCallback;
     sptr<IWallpaperCallback> wallpaperCallback;
     wallpaperProxy->RegisterWallpaperCallback(wallpaperCallback, registerWallpaperCallback);
@@ -341,6 +382,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
     OHOS::GetCorrespondWallpaperFuzzTest(provider);
     OHOS::IsDefaultWallpaperResourceFuzzTest(provider);
     OHOS::WallpaperManagerProxyFuzzTest(provider);
-    OHOS::IsDefaultWallpaperResourceFuzzTest(provider);
+    OHOS::WallpaperManagerCallbackFuzzTest(provider);
     return 0;
 }
