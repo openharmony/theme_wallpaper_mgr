@@ -263,7 +263,7 @@ public:
         MessageParcel data;
         MessageParcel reply;
         MessageOption option;
-        code = CODE_LIST[provider.ConsumeIntegralInRange<int32_t>(1, CODE_LIST.size())];
+        code = CODE_LIST[provider.ConsumeIntegralInRange<int32_t>(0, CODE_LIST.size() - 1)];
         data.WriteInterfaceToken(WALLPAPERSERVICES_INTERFACE_TOKEN);
         std::vector<uint8_t> remaining_data = provider.ConsumeRemainingBytes<uint8_t>();
         data.WriteBuffer(static_cast<void *>(remaining_data.data()), remaining_data.size());
