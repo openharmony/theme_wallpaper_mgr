@@ -1650,5 +1650,24 @@ HWTEST_F(WallpaperTest, SetAllWallpapersClient002, TestSize.Level0)
     EXPECT_EQ(ret, static_cast<int32_t>(E_OK)) << "Failed to SetAllWallpapers";
 }
 /*********************   Wallpaper_Inner_Api   *********************/
+
+/*********************   Wallpaper_SaveWallpaperState   *********************/
+/**
+* @tc.name: SaveWallpaperState
+* @tc.desc: save wallpaper state
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, SaveWallpaperState001, TestSize.Level0)
+{
+    HILOG_INFO("SaveWallpaperState001 begin");
+    std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
+    wallpaperService->LoadWallpaperState();
+    int32_t userId = wallpaperService->QueryActiveUserId();
+    auto ret =
+        wallpaperService->SaveWallpaperState(userId, WallpaperType::WALLPAPER_SYSTEM, WallpaperResourceType::DEFAULT);
+    EXPECT_EQ(ret, true) << "Failed to SaveWallpaperState";
+}
+/*********************   Wallpaper_SaveWallpaperState   *********************/
 } // namespace WallpaperMgrService
 } // namespace OHOS

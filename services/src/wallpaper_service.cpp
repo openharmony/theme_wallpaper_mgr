@@ -12,6 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "wallpaper_service.h"
+
 #include <fcntl.h>
 #include <sys/prctl.h>
 #include <sys/sendfile.h>
@@ -20,6 +22,7 @@
 #include <unistd.h>
 
 #include <cerrno>
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -30,13 +33,14 @@
 
 #include "bundle_mgr_interface.h"
 #include "bundle_mgr_proxy.h"
+#include "cJSON.h"
+#include "color.h"
 #include "color_picker.h"
 #include "command.h"
 #include "config_policy_utils.h"
 #include "directory_ex.h"
 #include "dump_helper.h"
 #include "effect_errors.h"
-#include "color.h"
 #include "file_deal.h"
 #include "file_ex.h"
 #include "hilog_wrapper.h"
@@ -49,7 +53,6 @@
 #include "mem_mgr_client.h"
 #include "mem_mgr_proxy.h"
 #include "memory_guard.h"
-#include "nlohmann/json.hpp"
 #include "parameter.h"
 #include "pixel_map.h"
 #include "scene_board_judgement.h"
@@ -59,7 +62,6 @@
 #include "wallpaper_common.h"
 #include "wallpaper_common_event_manager.h"
 #include "wallpaper_manager_common_info.h"
-#include "wallpaper_service.h"
 #include "wallpaper_service_cb_proxy.h"
 #include "want.h"
 #include "window.h"
@@ -1587,20 +1589,44 @@ bool WallpaperService::SaveWallpaperState(
         || !GetWallpaperSafeLocked(userId, WALLPAPER_LOCKSCREEN, lockScreenData)) {
         return false;
     }
-    nlohmann::json root;
-    if (wallpaperType == WALLPAPER_SYSTEM) {
-        root[SYSTEM_RES_TYPE] = static_cast<int32_t>(resourceType);
-        root[LOCKSCREEN_RES_TYPE] = static_cast<int32_t>(lockScreenData.resourceType);
-    } else {
-        root[LOCKSCREEN_RES_TYPE] = static_cast<int32_t>(resourceType);
-        root[SYSTEM_RES_TYPE] = static_cast<int32_t>(systemData.resourceType);
+    cJSON *root = cJSON_CreateObject();
+    if (root == nullptr) {
+        HILOG_ERROR("create object failed.");
+        return false;
     }
-    std::string json = root.dump();
-    if (json.empty()) {
-        HILOG_ERROR("write user config file failed. because json content is empty.");
+    int32_t systemResourceType = (wallpaperType == WALLPAPER_SYSTEM) ? static_cast<int32_t>(resourceType)
+                                                                     : static_cast<int32_t>(systemData.resourceType);
+
+    int32_t lockScreenResourceType = (wallpaperType == WALLPAPER_SYSTEM)
+                                         ? static_cast<int32_t>(lockScreenData.resourceType)
+                                         : static_cast<int32_t>(resourceType);
+
+    if (cJSON_AddNumberToObject(root, SYSTEM_RES_TYPE, systemResourceType) == nullptr
+        || cJSON_AddNumberToObject(root, LOCKSCREEN_RES_TYPE, lockScreenResourceType) == nullptr) {
+        HILOG_ERROR("add number to object fail.");
+        cJSON_Delete(root);
         return false;
     }
 
+    char *json = cJSON_Print(root);
+    if (json == nullptr || json[0] == '\0') {
+        HILOG_ERROR("write user config file failed. because json content is empty.");
+        cJSON_Delete(root);
+        return false;
+    }
+    cJSON_Delete(root);
+
+    if (!WriteWallpapercfgFile(json, userId)) {
+        HILOG_ERROR("write wallpapercfg fail.");
+        cJSON_free(json);
+        return false;
+    }
+    cJSON_free(json);
+    return true;
+}
+
+bool WallpaperService::WriteWallpapercfgFile(char *wallpaperJson, int32_t userId)
+{
     std::string userPath = WALLPAPER_USERID_PATH + std::to_string(userId) + "/wallpapercfg";
     mode_t mode = S_IRUSR | S_IWUSR;
     int fd = open(userPath.c_str(), O_CREAT | O_WRONLY | O_SYNC, mode);
@@ -1609,7 +1635,7 @@ bool WallpaperService::SaveWallpaperState(
         return false;
     }
     fdsan_exchange_owner_tag(fd, 0, WP_DOMAIN);
-    ssize_t size = write(fd, json.c_str(), json.size());
+    ssize_t size = write(fd, wallpaperJson, strlen(wallpaperJson));
     if (size <= 0) {
         HILOG_ERROR("write user config file failed!");
         fdsan_close_with_tag(fd, WP_DOMAIN);
@@ -1648,15 +1674,22 @@ void WallpaperService::LoadWallpaperState()
         || !GetWallpaperSafeLocked(userId, WALLPAPER_LOCKSCREEN, lockScreenData)) {
         return;
     }
-    if (nlohmann::json::accept(buf)) {
-        auto root = nlohmann::json::parse(buf);
-        if (root.contains(SYSTEM_RES_TYPE) && root[SYSTEM_RES_TYPE].is_number()) {
-            systemData.resourceType = static_cast<WallpaperResourceType>(root[SYSTEM_RES_TYPE].get<int>());
-        }
-        if (root.contains(LOCKSCREEN_RES_TYPE) && root[SYSTEM_RES_TYPE].is_number()) {
-            lockScreenData.resourceType = static_cast<WallpaperResourceType>(root[LOCKSCREEN_RES_TYPE].get<int>());
-        }
+    cJSON *root = cJSON_Parse(buf);
+    if (root == nullptr) {
+        HILOG_ERROR("Failed to parse json.");
+        return;
     }
+    if (cJSON_GetObjectItemCaseSensitive(root, SYSTEM_RES_TYPE) != nullptr
+        && cJSON_IsNumber(cJSON_GetObjectItemCaseSensitive(root, SYSTEM_RES_TYPE))) {
+        systemData.resourceType =
+            static_cast<WallpaperResourceType>(cJSON_GetObjectItemCaseSensitive(root, SYSTEM_RES_TYPE)->valueint);
+    }
+    if (cJSON_GetObjectItemCaseSensitive(root, LOCKSCREEN_RES_TYPE) != nullptr
+        && cJSON_IsNumber(cJSON_GetObjectItemCaseSensitive(root, LOCKSCREEN_RES_TYPE))) {
+        lockScreenData.resourceType =
+            static_cast<WallpaperResourceType>(cJSON_GetObjectItemCaseSensitive(root, LOCKSCREEN_RES_TYPE)->valueint);
+    }
+    cJSON_Delete(root);
 }
 
 std::string WallpaperService::GetDefaultResDir()
@@ -1693,15 +1726,21 @@ std::string WallpaperService::GetWallpaperPathInJson(const std::string manifestN
     }
     std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     file.close();
-    if (!nlohmann::json::accept(content)) {
-        HILOG_ERROR("accept failed!");
+    cJSON *root = cJSON_Parse(content.c_str());
+    if (root == nullptr) {
+        HILOG_ERROR("Failed to parse json.");
         return "";
     }
-    auto root = nlohmann::json::parse(content.c_str());
-    if (root.contains(IMAGE) && root[IMAGE].contains(SRC)) {
-        std::string srcValue = root[IMAGE][SRC];
-        return GetExistFilePath(resPath + filePath + srcValue);
+    cJSON *image = cJSON_GetObjectItemCaseSensitive(root, IMAGE);
+    if (image != nullptr && cJSON_IsObject(image)) {
+        cJSON *src = cJSON_GetObjectItemCaseSensitive(image, SRC);
+        if (src != nullptr && cJSON_IsString(src)) {
+            std::string srcValue = src->valuestring;
+            cJSON_Delete(root);
+            return GetExistFilePath(resPath + filePath + srcValue);
+        }
     }
+    cJSON_Delete(root);
     HILOG_ERROR("src not exist.");
     return "";
 }
