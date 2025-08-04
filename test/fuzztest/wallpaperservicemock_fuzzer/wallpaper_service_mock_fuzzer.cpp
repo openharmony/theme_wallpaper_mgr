@@ -28,33 +28,11 @@ namespace {
 using namespace OHOS;
 using namespace OHOS::WallpaperMgrService;
 
-const std::u16string WALLPAPERSERVICES_INTERFACE_TOKEN = u"OHOS.WallpaperMgrService.IWallpaperService";
+constexpr uint32_t CODE_MIN = 0;
+constexpr uint32_t CODE_MAX =
+    static_cast<uint32_t>(IWallpaperServiceIpcCode::COMMAND_IS_DEFAULT_WALLPAPER_RESOURCE) + 1;
 
-const std::vector<IWallpaperServiceIpcCode> CODE_LIST = {
-    IWallpaperServiceIpcCode::COMMAND_SET_WALLPAPER,
-    IWallpaperServiceIpcCode::COMMAND_SET_ALL_WALLPAPERS,
-    IWallpaperServiceIpcCode::COMMAND_SET_WALLPAPER_BY_PIXEL_MAP,
-    IWallpaperServiceIpcCode::COMMAND_GET_PIXEL_MAP,
-    IWallpaperServiceIpcCode::COMMAND_GET_CORRESPOND_WALLPAPER,
-    IWallpaperServiceIpcCode::COMMAND_GET_COLORS,
-    IWallpaperServiceIpcCode::COMMAND_GET_FILE,
-    IWallpaperServiceIpcCode::COMMAND_GET_WALLPAPER_ID,
-    IWallpaperServiceIpcCode::COMMAND_IS_CHANGE_PERMITTED,
-    IWallpaperServiceIpcCode::COMMAND_IS_OPERATION_ALLOWED,
-    IWallpaperServiceIpcCode::COMMAND_RESET_WALLPAPER,
-    IWallpaperServiceIpcCode::COMMAND_ON,
-    IWallpaperServiceIpcCode::COMMAND_OFF,
-    IWallpaperServiceIpcCode::COMMAND_REGISTER_WALLPAPER_CALLBACK,
-    IWallpaperServiceIpcCode::COMMAND_SET_WALLPAPER_V9,
-    IWallpaperServiceIpcCode::COMMAND_SET_WALLPAPER_V9_BY_PIXEL_MAP,
-    IWallpaperServiceIpcCode::COMMAND_GET_PIXEL_MAP_V9,
-    IWallpaperServiceIpcCode::COMMAND_GET_COLORS_V9,
-    IWallpaperServiceIpcCode::COMMAND_RESET_WALLPAPER_V9,
-    IWallpaperServiceIpcCode::COMMAND_SET_VIDEO,
-    IWallpaperServiceIpcCode::COMMAND_SET_CUSTOM_WALLPAPER,
-    IWallpaperServiceIpcCode::COMMAND_SEND_EVENT,
-    IWallpaperServiceIpcCode::COMMAND_IS_DEFAULT_WALLPAPER_RESOURCE,
-};
+const std::u16string WALLPAPERSERVICES_INTERFACE_TOKEN = u"OHOS.WallpaperMgrService.IWallpaperService";
 
 class WallpaperServiceStubMock : public WallpaperServiceStub {
 public:
@@ -259,17 +237,16 @@ public:
 
     void DoRemoteRequest(FuzzedDataProvider &provider)
     {
-        IWallpaperServiceIpcCode code;
         MessageParcel data;
         MessageParcel reply;
         MessageOption option;
-        code = CODE_LIST[provider.ConsumeIntegralInRange<int32_t>(0, CODE_LIST.size() - 1)];
+        uint32_t code = provider.ConsumeIntegralInRange<uint32_t>(CODE_MIN, CODE_MAX);
         data.WriteInterfaceToken(WALLPAPERSERVICES_INTERFACE_TOKEN);
         std::vector<uint8_t> remaining_data = provider.ConsumeRemainingBytes<uint8_t>();
         data.WriteBuffer(static_cast<void *>(remaining_data.data()), remaining_data.size());
         data.RewindRead(0);
         if (stub_ != nullptr) {
-            stub_->OnRemoteRequest(static_cast<uint32_t>(code), data, reply, option);
+            stub_->OnRemoteRequest(code, data, reply, option);
         }
     }
 
