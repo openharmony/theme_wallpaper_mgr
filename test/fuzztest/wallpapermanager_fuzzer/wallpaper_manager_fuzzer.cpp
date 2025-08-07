@@ -198,7 +198,7 @@ void WallpaperManagerFuzzTest(FuzzedDataProvider &provider)
 void GetPixelMapFuzzTest(FuzzedDataProvider &provider)
 {
     GrantNativePermission();
-    uint32_t wallpaperType = provider.ConsumeIntegral<int32_t>();
+    uint32_t wallpaperType = provider.ConsumeIntegral<uint32_t>();
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     WallpaperMgrService::ApiInfo apiInfo{ provider.ConsumeBool(), provider.ConsumeBool() };
     WallpaperMgrService::WallpaperManager::GetInstance().GetPixelMap(wallpaperType, apiInfo, pixelMap);
@@ -335,6 +335,7 @@ void WallpaperManagerCallbackFuzzTest(FuzzedDataProvider &provider)
     int32_t wallpaperFd = open(wallpaperPath.c_str(), O_RDONLY, S_IREAD);
     FILE *file = fopen(wallpaperPath.c_str(), "rb");
     if (file == nullptr) {
+        close(wallpaperFd);
         return;
     }
     int32_t fend = fseek(file, 0, SEEK_END);
