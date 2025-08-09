@@ -1650,5 +1650,36 @@ HWTEST_F(WallpaperTest, SetAllWallpapersClient002, TestSize.Level0)
     EXPECT_EQ(ret, static_cast<int32_t>(E_OK)) << "Failed to SetAllWallpapers";
 }
 /*********************   Wallpaper_Inner_Api   *********************/
+
+/*********************   Wallpaper_file_deal   *********************/
+/**
+* @tc.name: ToBeAnonymous
+* @tc.desc: ToBeAnonymous parameter is path length <= 4.
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, ToBeAnonymous001, TestSize.Level0)
+{
+    HILOG_INFO("ToBeAnonymous001 begin");
+    std::string path = "***";
+    auto ret = FileDeal::ToBeAnonymous(path);
+    EXPECT_EQ(ret, path) << "Failed to ToBeAnonymous";
+}
+
+/**
+* @tc.name: ToBeAnonymous
+* @tc.desc: ToBeAnonymous parameter is path length > 4.
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, ToBeAnonymous002, TestSize.Level0)
+{
+    HILOG_INFO("ToBeAnonymous002 begin");
+    std::string path = "data/test/test/test/test/wallpaper";
+    auto ret = FileDeal::ToBeAnonymous(path);
+    std::string expectPath = "data/test/***/test/wallpaper";
+    EXPECT_EQ(ret, expectPath) << "Failed to ToBeAnonymous";
+}
+/*********************   Wallpaper_file_deal   *********************/
 } // namespace WallpaperMgrService
 } // namespace OHOS

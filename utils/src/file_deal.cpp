@@ -20,6 +20,9 @@
 #include <algorithm>
 #include <cstdio>
 #include <filesystem>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #include "file_deal.h"
 #include "hilog_wrapper.h"
@@ -27,7 +30,10 @@
 namespace fs = std::filesystem;
 namespace OHOS {
 namespace WallpaperMgrService {
-constexpr mode_t MODE = 0740;
+constexpr const mode_t MODE = 0740;
+constexpr const int32_t SLICE_SIZE = 2;
+constexpr const int32_t PATH_SIZE_MIX = 4;
+constexpr const char *DEFAULT_ANONYMOUS = "***";
 FileDeal::FileDeal(void)
 {
 }
@@ -105,7 +111,8 @@ bool FileDeal::DeleteDir(const std::string &path, bool deleteRootDir)
                 return false;
             }
         } else if (remove(fullPath.c_str()) < 0) {
-            HILOG_ERROR("remove failed, fullPath=%{public}s, errInfo=%{public}s", fullPath.c_str(), strerror(errno));
+            HILOG_ERROR("remove failed, fullPath=%{public}s, errInfo=%{public}s", ToBeAnonymous(fullPath).c_str(),
+                strerror(errno));
             closedir(dir);
             return false;
         }
@@ -223,6 +230,25 @@ bool FileDeal::IsFileExistInDir(const std::string &path)
     closedir(dp);
     HILOG_INFO("Dir is empty");
     return false;
+}
+
+std::string FileDeal::ToBeAnonymous(const std::string &path)
+{
+    std::vector<std::string> pathVector;
+    std::stringstream wallpaperPath(path);
+    std::string pathName;
+    char delimiter = '/';
+    while (std::getline(wallpaperPath, pathName, delimiter)) {
+        if (!pathName.empty()) {
+            pathVector.push_back(pathName);
+        }
+    }
+
+    if (pathVector.size() <= PATH_SIZE_MIX) {
+        return DEFAULT_ANONYMOUS;
+    }
+    return pathVector[0] + "/" + pathVector[1] + "/" + DEFAULT_ANONYMOUS + "/"
+           + pathVector[pathVector.size() - SLICE_SIZE] + "/" + pathVector.back();
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS
