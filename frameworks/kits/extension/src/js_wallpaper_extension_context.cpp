@@ -374,9 +374,10 @@ private:
                 });
             if (item == connects_.end()) {
                 HILOG_INFO("%{public}s not find conn exist.", __func__);
+            } else {
+                want = item->first.want;
+                connection = item->second;
             }
-            want = item->first.want;
-            connection = item->second;
         }
         napi_value lastParam = (argc == ARGC_ONE) ? nullptr : argv[INDEX_ONE];
         napi_value result = nullptr;

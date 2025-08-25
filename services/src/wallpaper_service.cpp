@@ -138,6 +138,7 @@ constexpr int32_t DEFAULT_WALLPAPER_ID = -1;
 constexpr int32_t DEFAULT_USER_ID = 0;
 constexpr int32_t MAX_VIDEO_SIZE = 104857600;
 constexpr int32_t OPTION_QUALITY = 100;
+constexpr int32_t SCALE_SIZE = 100;
 
 #ifndef THEME_SERVICE
 constexpr int32_t CONNECT_EXTENSION_INTERVAL = 100;
@@ -691,9 +692,16 @@ bool WallpaperService::SaveColor(int32_t userId, WallpaperType wallpaperType)
     }
     OHOS::Media::DecodeOptions decodeOpts;
     std::unique_ptr<PixelMap> wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
-    if (errorCode != 0) {
+    if (errorCode != 0 || wallpaperPixelMap == nullptr) {
         HILOG_ERROR("CreatePixelMap failed!");
         return false;
+    }
+    int32_t height = wallpaperPixelMap->GetHeight();
+    int32_t width = wallpaperPixelMap->GetWidth();
+    if (height != 0 && width != 0 && height > SCALE_SIZE && width > SCALE_SIZE) {
+        float scaleRatio = (height > width) ? static_cast<float>(SCALE_SIZE) / width
+                                            : static_cast<float>(SCALE_SIZE) / height;
+        wallpaperPixelMap->scale(scaleRatio, scaleRatio);
     }
     auto colorPicker = Rosen::ColorPicker::CreateColorPicker(std::move(wallpaperPixelMap), errorCode);
     if (errorCode != 0) {
