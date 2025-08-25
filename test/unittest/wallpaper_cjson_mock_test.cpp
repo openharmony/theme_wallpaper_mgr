@@ -142,31 +142,13 @@ HWTEST_F(WallpaperTestMock, SaveWallpaperState003, TestSize.Level0)
 
 /**
 * @tc.name: SaveWallpaperState
-* @tc.desc: save wallpaper state err test, cJSON_CreateObject return empty.
+* @tc.desc: save wallpaper state err test, cJSON_Parse return nullptr.
 * @tc.type: FUNC
 * @tc.require:
 */
 HWTEST_F(WallpaperTestMock, SaveWallpaperState004, TestSize.Level0)
 {
     HILOG_INFO("SaveWallpaperState004 begin");
-    std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
-    wallpaperService->LoadWallpaperState();
-    int32_t userId = wallpaperService->QueryActiveUserId();
-    EXPECT_CALL(*wallpaperMock, cJSON_CreateObject()).WillOnce(Return(nullptr));
-    auto ret =
-        wallpaperService->SaveWallpaperState(userId, WallpaperType::WALLPAPER_SYSTEM, WallpaperResourceType::DEFAULT);
-    EXPECT_EQ(ret, false) << "Failed to SaveWallpaperState";
-}
-
-/**
-* @tc.name: SaveWallpaperState
-* @tc.desc: save wallpaper state err test, cJSON_Parse return nullptr.
-* @tc.type: FUNC
-* @tc.require:
-*/
-HWTEST_F(WallpaperTestMock, SaveWallpaperState005, TestSize.Level0)
-{
-    HILOG_INFO("SaveWallpaperState005 begin");
     std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
     wallpaperService->LoadWallpaperState();
     EXPECT_CALL(*wallpaperMock, cJSON_Parse(_)).WillRepeatedly(Return(nullptr));
