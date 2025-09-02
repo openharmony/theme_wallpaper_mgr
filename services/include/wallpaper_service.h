@@ -189,6 +189,7 @@ private:
     int32_t SetwallpaperByPixelMapParcel(MessageParcel &data, MessageParcel &reply, bool isSystemApi);
     void CloseVectorFd(const std::vector<int> &fdVector);
     void CloseWallpaperInfoFd(const std::vector<WallpaperPictureInfo> &wallpaperPictureInfo);
+    bool WriteWallpapercfgFile(char *wallpaperJson, int32_t userId);
 
 private:
     int32_t Init();

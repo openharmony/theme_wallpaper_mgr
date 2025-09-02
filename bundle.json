@@ -47,7 +47,7 @@
           "init",
           "memmgr",
           "config_policy",
-          "json"
+          "cJSON"
         ],
         "third_party": []
       },
