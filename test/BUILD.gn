@@ -99,6 +99,56 @@ ohos_unittest("wallpaper_dfx_test") {
   ]
 }
 
+ohos_unittest("wallpaper_cjson_mock_test") {
+  testonly = true
+  resource_config_file =
+      "${wallpaper_path}/test/unittest/resource/ohos_test.xml"
+  module_out_path = "wallpaper_mgr/wallpaper_mgr/wallpaper_cjson_mock_test"
+  sources = [
+    "unittest/wallpaper_cjson_mock_test.cpp",
+    "unittest/mock/wallpaper_cjson_mock.cpp"
+  ]
+
+  defines = [
+    "private=public",
+  ]
+
+  include_dirs = [
+    "${wallpaper_path}/services/include",
+    "${wallpaper_path}/test/unittest/mock",
+  ]
+  deps = [
+    "${utils_path}:wallpaper_utils",
+    "${wallpaper_path}/frameworks/native:wallpapermanager_static",
+    "${wallpaper_path}/services:wallpaper_service_static",
+  ]
+  external_deps = [
+    "ability_base:want",
+    "ability_runtime:ability_manager",
+    "ability_runtime:abilitykit_native",
+    "access_token:libaccesstoken_sdk",
+    "access_token:libnativetoken",
+    "access_token:libtoken_setproc",
+    "access_token:libtokenid_sdk",
+    "c_utils:utils",
+    "common_event_service:cesfwk_innerkits",
+    "cJSON:cjson",
+    "googletest:gmock_main",
+    "hilog:libhilog",
+    "hisysevent:libhisysevent",
+    "hitrace:hitrace_meter",
+    "image_framework:image",
+    "image_framework:image_native",
+    "ipc:ipc_single",
+    "os_account:os_account_innerkits",
+    "player_framework:media_client",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
+    "window_manager:libwm",
+    "window_manager:libwsutils",
+  ]
+}
+
 group("unittest") {
   testonly = true
 
@@ -108,5 +158,6 @@ group("unittest") {
     ":wallpaper_dfx_test",
     ":wallpaper_permission_test",
     ":wallpaper_test",
+    ":wallpaper_cjson_mock_test",
   ]
 }
