@@ -1617,7 +1617,7 @@ bool WallpaperService::SaveWallpaperState(
     }
 
     char *json = cJSON_Print(root);
-    if (json == nullptr || json[0] == '\0') {
+    if (json == nullptr) {
         HILOG_ERROR("write user config file failed. because json content is empty.");
         cJSON_Delete(root);
         return false;
@@ -1687,15 +1687,14 @@ void WallpaperService::LoadWallpaperState()
         HILOG_ERROR("Failed to parse json.");
         return;
     }
-    if (cJSON_GetObjectItemCaseSensitive(root, SYSTEM_RES_TYPE) != nullptr
-        && cJSON_IsNumber(cJSON_GetObjectItemCaseSensitive(root, SYSTEM_RES_TYPE))) {
-        systemData.resourceType =
-            static_cast<WallpaperResourceType>(cJSON_GetObjectItemCaseSensitive(root, SYSTEM_RES_TYPE)->valueint);
+    cJSON *systemResTypeItem = cJSON_GetObjectItemCaseSensitive(root, SYSTEM_RES_TYPE);
+    if (systemResTypeItem != nullptr && cJSON_IsNumber(systemResTypeItem)) {
+        systemData.resourceType = static_cast<WallpaperResourceType>(systemResTypeItem->valueint);
     }
-    if (cJSON_GetObjectItemCaseSensitive(root, LOCKSCREEN_RES_TYPE) != nullptr
-        && cJSON_IsNumber(cJSON_GetObjectItemCaseSensitive(root, LOCKSCREEN_RES_TYPE))) {
-        lockScreenData.resourceType =
-            static_cast<WallpaperResourceType>(cJSON_GetObjectItemCaseSensitive(root, LOCKSCREEN_RES_TYPE)->valueint);
+
+    cJSON *lockScreenResTypeItem = cJSON_GetObjectItemCaseSensitive(root, LOCKSCREEN_RES_TYPE);
+    if (lockScreenResTypeItem != nullptr && cJSON_IsNumber(lockScreenResTypeItem)) {
+        lockScreenData.resourceType = static_cast<WallpaperResourceType>(lockScreenResTypeItem->valueint);
     }
     cJSON_Delete(root);
 }
