@@ -44,6 +44,7 @@
           "image_framework",
           "player_framework",
           "eventhandler",
+          "runtime_core",
           "init",
           "memmgr",
           "config_policy",
@@ -62,6 +63,7 @@
             "//base/theme/wallpaper_mgr/frameworks/js/napi/wallpaper_extension_context:wallpaperextensioncontext_napi",
             "//base/theme/wallpaper_mgr/frameworks/js/napi:wallpaper",
             "//base/theme/wallpaper_mgr/utils:wallpaper_utils",
+            "//base/theme/wallpaper_mgr/frameworks/ets/taihe/wallpapermgr:wallpapermgr_taihe",
             "//base/theme/wallpaper_mgr/frameworks/native:wallpaperdefault.jpeg",
             "//base/theme/wallpaper_mgr/frameworks/native:wallpaperlockdefault.jpeg"
           ],

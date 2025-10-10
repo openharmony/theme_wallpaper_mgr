@@ -1,0 +1,113 @@
+# Copyright (C) 2025 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/config/components/ets_frontend/ets2abc_config.gni")
+import("//build/ohos.gni")
+import("//build/ohos/taihe_idl/taihe.gni")
+import("//base/theme/wallpaper_mgr/wallpaper.gni")
+
+subsystem_name = "theme"
+part_name = "wallpaper_mgr"
+taihe_generated_file_path = "$taihe_file_path/out/$subsystem_name/$part_name"
+
+copy_taihe_idl("copy_taihe") {
+  sources = [ "${wallpaper_path}/frameworks/ets/taihe/wallpapermgr/idl/ohos.wallpaper.taihe" ]
+}
+
+ohos_taihe("run_taihe") {
+  taihe_generated_file_path = "$taihe_generated_file_path"
+  deps = [ ":copy_taihe" ]
+  outputs = [
+    "$taihe_generated_file_path/src/ohos.wallpaper.ani.cpp",
+    "$taihe_generated_file_path/src/ohos.wallpaper.abi.c",
+  ]
+}
+
+taihe_shared_library("wallpapermgr_ani") {
+  taihe_generated_file_path = "$taihe_generated_file_path"
+  subsystem_name = "$subsystem_name"
+  part_name = "$part_name"
+  include_dirs = [
+    "${wallpaper_path}/frameworks/js/napi",
+    "${wallpaper_path}/frameworks/native/include",
+    "${wallpaper_path}/utils/include",
+    "${wallpaper_path}/utils/dfx/hisysevent_adapter",
+    "${wallpaper_path}/frameworks/ets/taihe/wallpapermgr/include",
+  ]
+  sources = get_target_outputs(":run_taihe")
+  sources += [
+    "${wallpaper_path}/frameworks/ets/taihe/wallpapermgr/src/ani_constructor.cpp",
+    "${wallpaper_path}/frameworks/ets/taihe/wallpapermgr/src/ohos.wallpaper.impl.cpp",
+    "${wallpaper_path}/frameworks/ets/taihe/wallpapermgr/src/ani_wallpaper.cpp",
+  ]
+  deps = [
+    ":run_taihe",
+    "${wallpaper_path}/frameworks/native:wallpapermanager",
+  ]
+
+  sanitize = {
+    boundary_sanitize = true
+    ubsan = true
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+  cflags = [
+    "-DHILOG_ENABLE",
+    "-fPIC",
+    "-g3",
+  ]
+  external_deps = [
+    "ability_runtime:abilitykit_native",
+    "ability_runtime:ani_base_context",
+    "ability_runtime:app_context",
+    "ability_runtime:extensionkit_native",
+    "ability_runtime:napi_base_context",
+    "hilog:libhilog",
+    "player_framework:media_client",
+    "image_framework:image_taihe",
+    "image_framework:image_native",
+  ]
+}
+
+generate_static_abc("wallpapermgr_abc") {
+  base_url = "$taihe_generated_file_path"
+  files = [ "$taihe_generated_file_path/@ohos.wallpaper.ets" ]
+  dst_file = "$target_out_dir/wallpapermgr.abc"
+  is_boot_abc = "True"
+  device_dst_file = "/system/framework/wallpapermgr.abc"
+  dependencies = [ ":run_taihe" ]
+}
+
+ohos_prebuilt_etc("wallpapermgr_etc") {
+  source = "$target_out_dir/wallpapermgr.abc"
+  module_install_dir = "framework"
+  subsystem_name = "theme"
+  part_name = "wallpaper_mgr"
+  deps = [ ":wallpapermgr_abc" ]
+}
+
+generate_static_abc("wallpapermgr_framework_test") {
+  base_url =
+      "${wallpaper_path}/framework/ets/taihe/wallpapermgr/test"
+  files = [ "${wallpaper_path}/framework/ets/taihe/wallpapermgr/test/test_main.ets" ]
+  is_boot_abc = "True"
+  device_dst_file = "/system/framework/wallpapermgr_framework_test.abc"
+}
+
+group("wallpapermgr_taihe") {
+  deps = [
+    ":wallpapermgr_ani",
+    ":wallpapermgr_etc",
+  ]
+}
