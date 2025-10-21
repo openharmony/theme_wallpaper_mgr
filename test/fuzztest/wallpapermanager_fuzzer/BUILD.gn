@@ -1,4 +1,4 @@
-# Copyright (c) 2022 Huawei Device Co., Ltd.
+# Copyright (c) 2023 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -19,48 +19,146 @@ import("//build/ohos.gni")
 import("//build/test.gni")
 
 ##############################fuzztest##########################################
-ohos_fuzztest("WallpaperManagerFuzzTest") {
-  module_out_path = "wallpaper_mgr/wallpaper_mgr"
+getcolors_test = {
+  targetName = "GetColorsFuzzTest"
+  configFuzzer = "getcolors_fuzzer"
+  source = "getcolors_fuzzer/getcolors_fuzzer.cpp"
+}
+getfile_test = {
+  targetName = "GetFileFuzzTest"
+  configFuzzer = "getfile_fuzzer"
+  source = "getfile_fuzzer/getfile_fuzzer.cpp"
+}
+getpixelmap_test = {
+  targetName = "GetPixelMapFuzzTest"
+  configFuzzer = "getimage_fuzzer"
+  source = "getimage_fuzzer/getimage_fuzzer.cpp"
+}
+getwallpaperid_test = {
+  targetName = "GetWallpaperIdFuzzTest"
+  configFuzzer = "getwallpaperid_fuzzer"
+  source = "getwallpaperid_fuzzer/getwallpaperid_fuzzer.cpp"
+}
+isdefaultwallpaperresource_test = {
+  targetName = "IsDefaultWallpaperResourceFuzzTest"
+  configFuzzer = "isdefaultwallpaperresource_fuzzer"
+  source =
+      "isdefaultwallpaperresource_fuzzer/isdefaultwallpaperresource_fuzzer.cpp"
+}
+resetwallpaper_test = {
+  targetName = "ResetWallpaperFuzzTest"
+  configFuzzer = "resetwallpaper_fuzzer"
+  source = "resetwallpaper_fuzzer/resetwallpaper_fuzzer.cpp"
+}
+setallwallpapers_test = {
+  targetName = "SetAllWallpapersFuzzTest"
+  configFuzzer = "setallwallpapers_fuzzer"
+  source = "setallwallpapers_fuzzer/setallwallpapers_fuzzer.cpp"
+}
+setcustomwallpaper_test = {
+  targetName = "SetCustomWallpaperFuzzTest"
+  configFuzzer = "setcustomwallpaper_fuzzer"
+  source = "setcustomwallpaper_fuzzer/setcustomwallpaper_fuzzer.cpp"
+}
+sendevent_test = {
+  targetName = "SendEventFuzzTest"
+  configFuzzer = "sendevent_fuzzer"
+  source = "sendevent_fuzzer/sendevent_fuzzer.cpp"
+}
+setvideo_test = {
+  targetName = "SetVideoFuzzTest"
+  configFuzzer = "setvideo_fuzzer"
+  source = "setvideo_fuzzer/setvideo_fuzzer.cpp"
+}
+setwallpaperbypixelmap_test = {
+  targetName = "SetWallpaperByMapFuzzTest"
+  configFuzzer = "setwallpaperbypixelmap_fuzzer"
+  source = "setwallpaperbypixelmap_fuzzer/setwallpaperbypixelmap_fuzzer.cpp"
+}
+setwallpaperbyuri_test = {
+  targetName = "SetWallpaperByUriFuzzTest"
+  configFuzzer = "setwallpaperbyuri_fuzzer"
+  source = "setwallpaperbyuri_fuzzer/setwallpaperbyuri_fuzzer.cpp"
+}
+wallpapermanager_test = {
+  targetName = "WallpaperManagerFuzzTest"
+  configFuzzer = "wallpapermanager_fuzzer"
+  source = "wallpapermanager_fuzzer/wallpapermanager_fuzzer.cpp"
+}
+wallpapermanagercallback_test = {
+  targetName = "WallpaperManagerCallbackFuzzTest"
+  configFuzzer = "wallpapermanagercallback_fuzzer"
+  source = "wallpapermanagercallback_fuzzer/wallpapermanagercallback_fuzzer.cpp"
+}
+wallpapermanagerproxy_test = {
+  targetName = "WallpaperManagerProxyFuzzTest"
+  configFuzzer = "wallpapermanagerproxy_fuzzer"
+  source = "wallpapermanagerproxy_fuzzer/wallpapermanagerproxy_fuzzer.cpp"
+}
 
-  fuzz_config_file = "${wallpaper_path}/test/fuzztest/wallpapermanager_fuzzer"
+wallpaper_fuzztests = [
+  getcolors_test,
+  getfile_test,
+  getpixelmap_test,
+  getwallpaper_test,
+  getwallpaperid_test,
+  isdefaultwallpaperresource_test,
+  resetwallpaper_test,
+  setallwallpapers_test,
+  setcustomwallpaper_test,
+  sendevent_test,
+  setvideo_test,
+  setwallpaperbypixelmap_test,
+  setwallpaperbyuri_test,
+  wallpapermanager_test,
+  wallpapermanagercallback_test,
+  wallpapermanagerproxy_test,
+]
+foreach(item, wallpaper_fuzztests) {
+  ohos_fuzztest(item.targetName) {
+    module_out_path = "wallpaper_mgr/wallpaper_mgr"
 
-  include_dirs = [
-    "${wallpaper_path}/services/include",
-    "${wallpaper_path}/frameworks/native/include",
-    "${wallpaper_path}/utils/include",
-  ]
+    fuzz_config_file = "${wallpaper_path}/test/fuzztest/wallpapermanager_fuzzer"
 
-  cflags = [
-    "-Dprivate=public",
-    "-Dprotected=public",
-    "-g",
-    "-O0",
-    "-Wno-unused-variable",
-    "-fno-omit-frame-pointer",
-  ]
+    include_dirs = [
+      "${wallpaper_path}/services/include",
+      "${wallpaper_path}/frameworks/native/include",
+      "${wallpaper_path}/utils/include",
+      "${wallpaper_path}/test/fuzztest/wallpapermanager_fuzzer",
+    ]
 
-  sources = [ "wallpaper_manager_fuzzer.cpp" ]
+    cflags = [
+      "-Dprivate=public",
+      "-Dprotected=public",
+      "-g",
+      "-O0",
+      "-Wno-unused-variable",
+      "-fno-omit-frame-pointer",
+    ]
 
-  deps = [
-    "${utils_path}:wallpaper_utils",
-    "${wallpaper_path}/frameworks/native:wallpapermanager_static",
-    "${wallpaper_path}/services:wallpaper_service_static",
-  ]
+    sources = [ item.source ]
 
-  external_deps = [
-    "ability_runtime:abilitykit_native",
-    "access_token:libaccesstoken_sdk",
-    "access_token:libnativetoken",
-    "access_token:libtoken_setproc",
-    "access_token:libtokenid_sdk",
-    "c_utils:utils",
-    "hilog:libhilog",
-    "ipc:ipc_single",
-    "os_account:os_account_innerkits",
-    "player_framework:media_client",
-    "safwk:system_ability_fwk",
-    "window_manager:libwm",
-  ]
+    deps = [
+      "${utils_path}:wallpaper_utils",
+      "${wallpaper_path}/frameworks/native:wallpapermanager_static",
+      "${wallpaper_path}/services:wallpaper_service_static",
+    ]
+
+    external_deps = [
+      "ability_runtime:abilitykit_native",
+      "access_token:libaccesstoken_sdk",
+      "access_token:libnativetoken",
+      "access_token:libtoken_setproc",
+      "access_token:libtokenid_sdk",
+      "c_utils:utils",
+      "hilog:libhilog",
+      "ipc:ipc_single",
+      "os_account:os_account_innerkits",
+      "player_framework:media_client",
+      "safwk:system_ability_fwk",
+      "window_manager:libwm",
+    ]
+  }
 }
 
 ###############################################################################
@@ -69,7 +167,21 @@ group("fuzztest") {
   deps = []
   deps += [
     # deps file
+    ":GetColorsFuzzTest",
+    ":GetFileFuzzTest",
+    ":GetPixelMapFuzzTest",
+    ":GetWallpaperIdFuzzTest",
+    ":IsDefaultWallpaperResourceFuzzTest",
+    ":ResetWallpaperFuzzTest",
+    ":SendEventFuzzTest",
+    ":SetAllWallpapersFuzzTest",
+    ":SetCustomWallpaperFuzzTest",
+    ":SetVideoFuzzTest",
+    ":SetWallpaperByMapFuzzTest",
+    ":SetWallpaperByUriFuzzTest",
+    ":WallpaperManagerCallbackFuzzTest",
     ":WallpaperManagerFuzzTest",
+    ":WallpaperManagerProxyFuzzTest",
   ]
 }
 ###############################################################################
