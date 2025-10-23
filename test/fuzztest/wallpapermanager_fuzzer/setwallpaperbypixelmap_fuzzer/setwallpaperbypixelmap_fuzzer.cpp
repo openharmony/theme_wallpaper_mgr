@@ -88,7 +88,7 @@ WallpaperEventListenerFuzzTestImpl::WallpaperEventListenerFuzzTestImpl() : wallp
 {
 }
 
-void SetWallpaperByMapFuzzTest(FuzzedDataProvider &provider)
+void SetWallpaperByPixelmapFuzzTest(FuzzedDataProvider &provider)
 {
     GrantNativePermission();
     uint32_t wallpaperType = provider.ConsumeIntegral<uint32_t>();
@@ -109,6 +109,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
     FuzzedDataProvider provider(data, size);
     /* Run your code on data */
-    OHOS::SetWallpaperByMapFuzzTest(provider);
+    OHOS::SetWallpaperByPixelmapFuzzTest(provider);
     return 0;
 }
