@@ -32,7 +32,7 @@
 #include "wallpaper_manager_common_info.h"
 #include "wallpaper_picture_info_by_parcel.h"
 #include "wallpaper_rawdata.h"
-#include "wallpapermanager_fuzzer.h"
+#include "wallpapermanagercallback_fuzzer.h"
 
 using namespace OHOS::Media;
 using namespace OHOS::Security::AccessToken;
