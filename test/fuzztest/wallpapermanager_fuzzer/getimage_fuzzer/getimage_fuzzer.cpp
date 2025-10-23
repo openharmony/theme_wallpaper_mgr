@@ -56,7 +56,7 @@ void GrantNativePermission()
     AccessTokenKit::ReloadNativeTokenInfo();
 }
 
-void GetPixelMapFuzzTest(FuzzedDataProvider &provider)
+void GetImageFuzzTest(FuzzedDataProvider &provider)
 {
     GrantNativePermission();
     uint32_t wallpaperType = provider.ConsumeIntegral<uint32_t>();
@@ -73,6 +73,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
     FuzzedDataProvider provider(data, size);
     /* Run your code on data */
-    OHOS::GetPixelMapFuzzTest(provider);
+    OHOS::GetImageFuzzTest(provider);
     return 0;
 }
