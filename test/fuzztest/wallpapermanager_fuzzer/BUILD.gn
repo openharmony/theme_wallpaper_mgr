@@ -29,8 +29,8 @@ getfile_test = {
   configFuzzer = "getfile_fuzzer"
   source = "getfile_fuzzer/getfile_fuzzer.cpp"
 }
-getpixelmap_test = {
-  targetName = "GetPixelMapFuzzTest"
+getimage_test = {
+  targetName = "GetImageFuzzTest"
   configFuzzer = "getimage_fuzzer"
   source = "getimage_fuzzer/getimage_fuzzer.cpp"
 }
@@ -71,7 +71,7 @@ setvideo_test = {
   source = "setvideo_fuzzer/setvideo_fuzzer.cpp"
 }
 setwallpaperbypixelmap_test = {
-  targetName = "SetWallpaperByMapFuzzTest"
+  targetName = "SetWallpaperByPixelmapFuzzTest"
   configFuzzer = "setwallpaperbypixelmap_fuzzer"
   source = "setwallpaperbypixelmap_fuzzer/setwallpaperbypixelmap_fuzzer.cpp"
 }
@@ -99,7 +99,7 @@ wallpapermanagerproxy_test = {
 wallpaper_fuzztests = [
   getcolors_test,
   getfile_test,
-  getpixelmap_test,
+  getimage_test,
   getwallpaperid_test,
   isdefaultwallpaperresource_test,
   resetwallpaper_test,
