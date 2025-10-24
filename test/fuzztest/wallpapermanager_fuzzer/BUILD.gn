@@ -168,7 +168,7 @@ group("fuzztest") {
     # deps file
     ":GetColorsFuzzTest",
     ":GetFileFuzzTest",
-    ":GetPixelMapFuzzTest",
+    ":GetImageFuzzTest",
     ":GetWallpaperIdFuzzTest",
     ":IsDefaultWallpaperResourceFuzzTest",
     ":ResetWallpaperFuzzTest",
@@ -176,7 +176,7 @@ group("fuzztest") {
     ":SetAllWallpapersFuzzTest",
     ":SetCustomWallpaperFuzzTest",
     ":SetVideoFuzzTest",
-    ":SetWallpaperByMapFuzzTest",
+    ":SetWallpaperByPixelmapFuzzTest",
     ":SetWallpaperByUriFuzzTest",
     ":WallpaperManagerCallbackFuzzTest",
     ":WallpaperManagerFuzzTest",
