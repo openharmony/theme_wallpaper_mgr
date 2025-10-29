@@ -310,14 +310,12 @@ void WallpaperService::AddWallpaperExtensionDeathRecipient(const sptr<IRemoteObj
 
 void WallpaperService::RemoveExtensionDeathRecipient()
 {
+    std::lock_guard<std::mutex> lock(remoteObjectMutex_);
     if (extensionRemoteObject_ != nullptr && recipient_ != nullptr) {
         HILOG_INFO("Remove Extension DeathRecipient.");
-        std::lock_guard<std::mutex> lock(remoteObjectMutex_);
-        if (extensionRemoteObject_ != nullptr) {
-            extensionRemoteObject_->RemoveDeathRecipient(recipient_);
-            recipient_ = nullptr;
-            extensionRemoteObject_ = nullptr;
-        }
+        extensionRemoteObject_->RemoveDeathRecipient(recipient_);
+        recipient_ = nullptr;
+        extensionRemoteObject_ = nullptr;
     }
 }
 
@@ -672,6 +670,7 @@ ErrCode WallpaperService::GetFile(int32_t wallpaperType, int &wallpaperFd)
 
 bool WallpaperService::CompareColor(const uint64_t &localColor, const ColorManager::Color &color)
 {
+    std::lock_guard<std::mutex> lock(wallpaperColorMtx_);
     return localColor == color.PackValue();
 }
 
