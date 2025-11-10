@@ -120,7 +120,7 @@ sptr<IWallpaperService> WallpaperManager::GetService()
         HILOG_ERROR("Failed to add death recipient!");
     }
 
-    wallpaperProxy_ = iface_cast<WallpaperServiceProxy>(object);
+    wallpaperProxy_ = iface_cast<IWallpaperService>(object);
     if (wallpaperProxy_ == nullptr) {
         HILOG_ERROR("iface_cast failed!");
     }
