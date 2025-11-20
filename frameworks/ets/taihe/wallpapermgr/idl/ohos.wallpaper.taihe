@@ -1,0 +1,113 @@
+/*
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@!namespace("@ohos.wallpaper", "wallpaper")
+
+@!sts_inject_into_module("""
+import { AsyncCallback } from '@ohos.base';
+import image from '@ohos.multimedia.image';
+""")
+
+@!sts_inject("""
+static { loadLibrary("wallpapermgr_ani.z"); }
+""")
+
+enum WallpaperResourceType: i32 {
+    TYPE_NULL = 0,
+    TYPE_LONG = 1,
+    TYPE_DOUBLE = 2,
+    TYPE_STRING = 3,
+    TYPE_BLOB = 4
+}
+
+enum WallpaperType: i32 {
+    WALLPAPER_SYSTEM,
+    WALLPAPER_LOCKSCREEN
+}
+
+struct RgbaColor {
+    red: u64;
+    green: u64;
+    blue: u64;
+    alpha: u64;
+}
+
+enum FoldState: i32 {
+    NORMAL = 0,
+    UNFOLD_ONCE_STATE = 1,
+    UNFOLD_TWICE_STATE = 2
+}
+
+enum RotateState: i32 {
+    PORTRAIT = 0,
+    LANDSCAPE = 1
+}
+
+struct WallpaperInfo {
+    foldState: FoldState;
+    rotateState: RotateState;
+    source: String;
+}
+
+union SourceType {
+    source: String;
+    pixelMap: @sts_type("image.PixelMap") Opaque;
+}
+
+@gen_async("setImage")
+@gen_promise("setImage")
+function SetImageAsync(sourceType: SourceType, wallpaperType: WallpaperType): void;
+
+@gen_async("restore")
+@gen_promise("restore")
+function RestoreAsync(wallpaperType: WallpaperType): void;
+
+function GetColorsSync(wallpaperType: WallpaperType): Array<RgbaColor>;
+
+function GetMinHeightSync(): i32;
+
+function GetMinWidthSync(): i32;
+
+@gen_async("setCustomWallpaper")
+@gen_promise("setCustomWallpaper")
+function SetCustomWallpaperAsync(source: String, wallpaperType: WallpaperType): void;
+
+@gen_async("setVideo")
+@gen_promise("setVideo")
+function SetVideoAsync(source: String, wallpaperType: WallpaperType): void;
+
+@gen_async("getImage")
+@gen_promise("getImage")
+function GetImageAsync(wallpaperType: WallpaperType): @sts_type("image.PixelMap") Opaque;
+
+@gen_promise("getWallpaperByState")
+function GetWallpaperByStateSync(wallpaperType: WallpaperType, foldState: FoldState, 
+    rotateState: RotateState): @sts_type("image.PixelMap") Opaque;
+
+@gen_promise("setAllWallpapers")
+function SetAllWallpapersSync(wallpaperInfos: Array<WallpaperInfo>, wallpaperType: WallpaperType): void;
+
+@!sts_inject("""
+    function OnWallpaperChange(callback :(data1: Object, data2: Object, data3?: Object) => void) : void {
+        return onWallpaperChange(callback as (
+        data1: WallpaperType, data2: WallpaperResourceType, data3?: string) => void, callback);
+    }
+    function OffWallpaperChange(callback?:(data1: Object, data2: Object, data3?: Object) => void) : void {
+        return offWallpaperChange(callback);
+    }
+""")
+function OnWallpaperChange(func: (wallpaperType: WallpaperType, resourceType: WallpaperResourceType, 
+    uri: Optional<String>) => void, opaque: Opaque);
+function OffWallpaperChange(opaque: Optional<Opaque>);
