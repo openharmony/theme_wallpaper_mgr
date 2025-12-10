@@ -48,7 +48,8 @@
           "init",
           "memmgr",
           "config_policy",
-          "cJSON"
+          "cJSON",
+          "selinux_adapter"
         ],
         "third_party": []
       },

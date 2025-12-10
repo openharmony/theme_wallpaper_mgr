@@ -155,6 +155,7 @@ foreach(item, wallpaper_fuzztests) {
       "os_account:os_account_innerkits",
       "player_framework:media_client",
       "safwk:system_ability_fwk",
+      "selinux_adapter:librestorecon",
       "window_manager:libwm",
     ]
   }
