@@ -25,11 +25,10 @@ static { loadLibrary("wallpapermgr_ani.z"); }
 """)
 
 enum WallpaperResourceType: i32 {
-    TYPE_NULL = 0,
-    TYPE_LONG = 1,
-    TYPE_DOUBLE = 2,
-    TYPE_STRING = 3,
-    TYPE_BLOB = 4
+    DEFAULT,
+    PICTURE,
+    VIDEO,
+    PACKAGE
 }
 
 enum WallpaperType: i32 {
@@ -99,15 +98,8 @@ function GetWallpaperByStateSync(wallpaperType: WallpaperType, foldState: FoldSt
 @gen_promise("setAllWallpapers")
 function SetAllWallpapersSync(wallpaperInfos: Array<WallpaperInfo>, wallpaperType: WallpaperType): void;
 
-@!sts_inject("""
-    function OnWallpaperChange(callback :(data1: Object, data2: Object, data3?: Object) => void) : void {
-        return onWallpaperChange(callback as (
-        data1: WallpaperType, data2: WallpaperResourceType, data3?: string) => void, callback);
-    }
-    function OffWallpaperChange(callback?:(data1: Object, data2: Object, data3?: Object) => void) : void {
-        return offWallpaperChange(callback);
-    }
-""")
 function OnWallpaperChange(func: (wallpaperType: WallpaperType, resourceType: WallpaperResourceType, 
-    uri: Optional<String>) => void, opaque: Opaque);
-function OffWallpaperChange(opaque: Optional<Opaque>);
+    @optional uri: Optional<String>) => void, @sts_last opq: Opaque): void;
+
+function OffWallpaperChange(opq: Optional<@sts_type(
+    "((wallpaperType: WallpaperType, resourceType: WallpaperResourceType, uri?: string) => void)") Opaque>);

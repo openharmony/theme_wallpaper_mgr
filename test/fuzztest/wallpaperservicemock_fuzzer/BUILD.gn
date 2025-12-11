@@ -58,6 +58,7 @@ ohos_fuzztest("WallpaperServiceMockFuzzTest") {
     "ipc:ipc_single",
     "os_account:os_account_innerkits",
     "player_framework:media_client",
+    "selinux_adapter:librestorecon",
     "window_manager:libwm",
   ]
 }
