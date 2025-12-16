@@ -763,7 +763,7 @@ napi_value NAPI_On(napi_env env, napi_callback_info info)
     napi_value argv[TWO] = { nullptr };
     napi_value thisVar = nullptr;
     void *data = nullptr;
-    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
+    TF_CALL(napi_get_cb_info(env, info, &argc, argv, &thisVar, &data));
     if (!NapiWallpaperAbility::IsValidArgCount(argc, TWO)
         || !NapiWallpaperAbility::IsValidArgType(env, argv[0], napi_string)
         || !NapiWallpaperAbility::IsValidArgType(env, argv[1], napi_function)) {

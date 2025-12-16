@@ -20,6 +20,16 @@
 #ifdef CONFIG_HILOG
 #include "hilog/log.h"
 
+#define TF_CALL_BASE(theCall, retVal)                                      \
+    do {                                                                    \
+        if ((theCall) != napi_ok) {                                         \
+            IMSA_HILOGE("napi call failed, theCall: %{public}s", #theCall); \
+            return retVal;                                                  \
+        }                                                                   \
+    } while (0)
+#define TF_CALL(theCall)             TF_CALL_BASE(theCall, nullptr)
+
+
 #ifdef HILOG_FATAL
 #undef HILOG_FATAL
 #endif
