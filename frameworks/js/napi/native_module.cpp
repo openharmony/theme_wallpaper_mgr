@@ -32,11 +32,11 @@ static napi_value InitWallpaperType(napi_env &env)
     napi_value wallpaperType = nullptr;
     napi_value systemType = nullptr;
     napi_value lockscreenType = nullptr;
-    TF_CALL(napi_create_int32(env, static_cast<int32_t>(WALLPAPER_SYSTEM), &systemType));
-    TF_CALL(napi_create_int32(env, static_cast<int32_t>(WALLPAPER_LOCKSCREEN), &lockscreenType));
-    TF_CALL(napi_create_object(env, &wallpaperType));
-    TF_CALL(napi_set_named_property(env, wallpaperType, "WALLPAPER_SYSTEM", systemType));
-    TF_CALL(napi_set_named_property(env, wallpaperType, "WALLPAPER_LOCKSCREEN", lockscreenType));
+    WALLPAPER_NAPI_CALL(napi_create_int32(env, static_cast<int32_t>(WALLPAPER_SYSTEM), &systemType));
+    WALLPAPER_NAPI_CALL(napi_create_int32(env, static_cast<int32_t>(WALLPAPER_LOCKSCREEN), &lockscreenType));
+    WALLPAPER_NAPI_CALL(napi_create_object(env, &wallpaperType));
+    WALLPAPER_NAPI_CALL(napi_set_named_property(env, wallpaperType, "WALLPAPER_SYSTEM", systemType));
+    WALLPAPER_NAPI_CALL(napi_set_named_property(env, wallpaperType, "WALLPAPER_LOCKSCREEN", lockscreenType));
     return wallpaperType;
 }
 
@@ -47,15 +47,15 @@ static napi_value InitWallpaperResourceType(napi_env &env)
     napi_value wallpaperResPicture = nullptr;
     napi_value wallpaperResVideo = nullptr;
     napi_value wallpaperResPackage = nullptr;
-    TF_CALL(napi_create_int32(env, static_cast<int32_t>(DEFAULT), &wallpaperResDefault));
-    TF_CALL(napi_create_int32(env, static_cast<int32_t>(PICTURE), &wallpaperResPicture));
-    TF_CALL(napi_create_int32(env, static_cast<int32_t>(VIDEO), &wallpaperResVideo));
-    TF_CALL(napi_create_int32(env, static_cast<int32_t>(PACKAGE), &wallpaperResPackage));
-    TF_CALL(napi_create_object(env, &wallpaperResourceType));
-    TF_CALL(napi_set_named_property(env, wallpaperResourceType, "DEFAULT", wallpaperResDefault));
-    TF_CALL(napi_set_named_property(env, wallpaperResourceType, "PICTURE", wallpaperResPicture));
-    TF_CALL(napi_set_named_property( env, wallpaperResourceType, "VIDEO", wallpaperResVideo));
-    TF_CALL(napi_set_named_property(env, wallpaperResourceType, "PACKAGE", wallpaperResPackage));
+    WALLPAPER_NAPI_CALL(napi_create_int32(env, static_cast<int32_t>(DEFAULT), &wallpaperResDefault));
+    WALLPAPER_NAPI_CALL(napi_create_int32(env, static_cast<int32_t>(PICTURE), &wallpaperResPicture));
+    WALLPAPER_NAPI_CALL(napi_create_int32(env, static_cast<int32_t>(VIDEO), &wallpaperResVideo));
+    WALLPAPER_NAPI_CALL(napi_create_int32(env, static_cast<int32_t>(PACKAGE), &wallpaperResPackage));
+    WALLPAPER_NAPI_CALL(napi_create_object(env, &wallpaperResourceType));
+    WALLPAPER_NAPI_CALL(napi_set_named_property(env, wallpaperResourceType, "DEFAULT", wallpaperResDefault));
+    WALLPAPER_NAPI_CALL(napi_set_named_property(env, wallpaperResourceType, "PICTURE", wallpaperResPicture));
+    WALLPAPER_NAPI_CALL(napi_set_named_property( env, wallpaperResourceType, "VIDEO", wallpaperResVideo));
+    WALLPAPER_NAPI_CALL(napi_set_named_property(env, wallpaperResourceType, "PACKAGE", wallpaperResPackage));
     return wallpaperResourceType;
 }
 
@@ -64,13 +64,13 @@ static napi_value InitRotateState(napi_env &env)
     napi_value rotateState = nullptr;
     napi_value port = nullptr;
     napi_value land = nullptr;
-    TF_CALL(napi_create_int32(env, static_cast<int32_t>(RotateState::PORT), &port));
-    TF_CALL(napi_create_int32(env, static_cast<int32_t>(RotateState::LAND), &land));
-    TF_CALL(napi_create_object(env, &rotateState));
-    TF_CALL(napi_set_named_property(env, rotateState, "PORT", port));
-    TF_CALL(napi_set_named_property(env, rotateState, "PORTRAIT", port));
-    TF_CALL(napi_set_named_property(env, rotateState, "LAND", land));
-    TF_CALL(napi_set_named_property(env, rotateState, "LANDSCAPE", land));
+    WALLPAPER_NAPI_CALL(napi_create_int32(env, static_cast<int32_t>(RotateState::PORT), &port));
+    WALLPAPER_NAPI_CALL(napi_create_int32(env, static_cast<int32_t>(RotateState::LAND), &land));
+    WALLPAPER_NAPI_CALL(napi_create_object(env, &rotateState));
+    WALLPAPER_NAPI_CALL(napi_set_named_property(env, rotateState, "PORT", port));
+    WALLPAPER_NAPI_CALL(napi_set_named_property(env, rotateState, "PORTRAIT", port));
+    WALLPAPER_NAPI_CALL(napi_set_named_property(env, rotateState, "LAND", land));
+    WALLPAPER_NAPI_CALL(napi_set_named_property(env, rotateState, "LANDSCAPE", land));
     return rotateState;
 }
 
@@ -80,15 +80,15 @@ static napi_value InitFoldState(napi_env &env)
     napi_value normal = nullptr;
     napi_value unfold_1 = nullptr;
     napi_value unfold_2 = nullptr;
-    TF_CALL(napi_create_int32(env, static_cast<int32_t>(FoldState::NORMAL), &normal));
-    TF_CALL(napi_create_int32(env, static_cast<int32_t>(FoldState::UNFOLD_1), &unfold_1));
-    TF_CALL(napi_create_int32(env, static_cast<int32_t>(FoldState::UNFOLD_2), &unfold_2));
-    TF_CALL(napi_create_object(env, &foldState));
-    TF_CALL(napi_set_named_property(env, foldState, "NORMAL", normal));
-    TF_CALL(napi_set_named_property(env, foldState, "UNFOLD_1", unfold_1));
-    TF_CALL(napi_set_named_property(env, foldState, "UNFOLD_ONCE_STATE", unfold_1));
-    TF_CALL(napi_set_named_property(env, foldState, "UNFOLD_2", unfold_2));
-    TF_CALL(napi_set_named_property(env, foldState, "UNFOLD_TWICE_STATE", unfold_2));
+    WALLPAPER_NAPI_CALL(napi_create_int32(env, static_cast<int32_t>(FoldState::NORMAL), &normal));
+    WALLPAPER_NAPI_CALL(napi_create_int32(env, static_cast<int32_t>(FoldState::UNFOLD_1), &unfold_1));
+    WALLPAPER_NAPI_CALL(napi_create_int32(env, static_cast<int32_t>(FoldState::UNFOLD_2), &unfold_2));
+    WALLPAPER_NAPI_CALL(napi_create_object(env, &foldState));
+    WALLPAPER_NAPI_CALL(napi_set_named_property(env, foldState, "NORMAL", normal));
+    WALLPAPER_NAPI_CALL(napi_set_named_property(env, foldState, "UNFOLD_1", unfold_1));
+    WALLPAPER_NAPI_CALL(napi_set_named_property(env, foldState, "UNFOLD_ONCE_STATE", unfold_1));
+    WALLPAPER_NAPI_CALL(napi_set_named_property(env, foldState, "UNFOLD_2", unfold_2));
+    WALLPAPER_NAPI_CALL(napi_set_named_property(env, foldState, "UNFOLD_TWICE_STATE", unfold_2));
     return foldState;
 }
 
@@ -131,7 +131,7 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_STATIC_PROPERTY("FoldState", foldState),
     };
 
-    TF_CALL(napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc));
+    WALLPAPER_NAPI_CALL(napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc));
     HILOG_DEBUG("napi_module Init end...");
     return exports;
 }
