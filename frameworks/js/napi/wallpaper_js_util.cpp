@@ -26,7 +26,7 @@ std::string WallpaperJSUtil::Convert2String(napi_env env, napi_value jsString)
     size_t maxLen = WallpaperJSUtil::MAX_LEN;
     napi_status status = napi_get_value_string_utf8(env, jsString, NULL, 0, &maxLen);
     if (status != napi_ok) {
-        HILOG_ERROR("napi call failed, theCall: %{public}s", get_and_throw_last_error);
+        HILOG_ERROR("napi call failed, theCall: %{public}s", "get_and_throw_last_error");
         maxLen = WallpaperJSUtil::MAX_LEN;
     }
     if (maxLen == 0) {
@@ -39,7 +39,7 @@ std::string WallpaperJSUtil::Convert2String(napi_env env, napi_value jsString)
     size_t len = 0;
     status = napi_get_value_string_utf8(env, jsString, buf, maxLen + 1, &len);
     if (status != napi_ok) {
-        HILOG_ERROR("napi call failed, theCall: %{public}s", get_and_throw_last_error);
+        HILOG_ERROR("napi call failed, theCall: %{public}s", "get_and_throw_last_error");
     }
     buf[len] = 0;
     std::string value(buf);
