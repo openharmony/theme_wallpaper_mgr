@@ -72,6 +72,16 @@ static constexpr OHOS::HiviewDFX::HiLogLabel LOG_LABEL = { LOG_CORE, WP_DOMAIN, 
     (void)HILOG_IMPL(LOG_CORE, LOG_WARN, OHOS::WallpaperMgrService::LOG_LABEL.domain,                        \
         OHOS::WallpaperMgrService::LOG_LABEL.tag, "[%{public}s(%{public}s:%{public}d)]" fmt, WALLFILENAME__, \
         __FUNCTION__, __LINE__, ##__VA_ARGS__)
+
+#define WALLPAPER_NAPI_CALL_BASE(theCall, retVal)                                      \
+    do {                                                                    \
+        if ((theCall) != napi_ok) {                                         \
+            HILOG_ERROR("napi call failed, theCall: %{public}s", #theCall); \
+            return retVal;                                                  \
+        }                                                                   \
+    } while (0)
+#define WALLPAPER_NAPI_CALL(theCall)             WALLPAPER_NAPI_CALL_BASE(theCall, nullptr)
+
 #else
 
 #define HILOG_FATAL(...)
