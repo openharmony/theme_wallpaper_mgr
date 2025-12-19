@@ -54,7 +54,7 @@ static napi_value InitWallpaperResourceType(napi_env &env)
     WALLPAPER_NAPI_CALL(napi_create_object(env, &wallpaperResourceType));
     WALLPAPER_NAPI_CALL(napi_set_named_property(env, wallpaperResourceType, "DEFAULT", wallpaperResDefault));
     WALLPAPER_NAPI_CALL(napi_set_named_property(env, wallpaperResourceType, "PICTURE", wallpaperResPicture));
-    WALLPAPER_NAPI_CALL(napi_set_named_property( env, wallpaperResourceType, "VIDEO", wallpaperResVideo));
+    WALLPAPER_NAPI_CALL(napi_set_named_property(env, wallpaperResourceType, "VIDEO", wallpaperResVideo));
     WALLPAPER_NAPI_CALL(napi_set_named_property(env, wallpaperResourceType, "PACKAGE", wallpaperResPackage));
     return wallpaperResourceType;
 }

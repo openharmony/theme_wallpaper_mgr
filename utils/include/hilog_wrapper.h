@@ -20,8 +20,6 @@
 #ifdef CONFIG_HILOG
 #include "hilog/log.h"
 
- 
-
 #ifdef HILOG_FATAL
 #undef HILOG_FATAL
 #endif
