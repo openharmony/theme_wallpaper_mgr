@@ -176,7 +176,7 @@ HWTEST_F(WallpaperPermissionTest, SetWallpaperByMapPermission001, TestSize.Level
 * @tc.name:    SetWallpaperByMapPermission002
 * @tc.desc:    SetWallpaperByMap with wallpaperType[1] throw not system app.
 * @tc.type:    FUNC
-* @tc.require:
+* @tc.require: issueI60MT1
 */
 HWTEST_F(WallpaperPermissionTest, SetWallpaperByMapPermission002, TestSize.Level0)
 {
