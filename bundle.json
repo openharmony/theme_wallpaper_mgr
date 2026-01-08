@@ -72,7 +72,7 @@
             "//base/theme/wallpaper_mgr:wallpaper_mgr_packages"
           ]
         },
-        "inner_api": [
+        "inner_kits": [
           {
             "name":"//base/theme/wallpaper_mgr/frameworks/native:wallpapermanager",
             "header":{
