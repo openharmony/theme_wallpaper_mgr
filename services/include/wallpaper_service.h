@@ -39,7 +39,6 @@
 #include "wallpaper_event_listener.h"
 #include "wallpaper_manager_common_info.h"
 #include "wallpaper_service_stub.h"
-#include "want.h"
 
 #ifndef THEME_SERVICE
 #include "ability_connect_callback_interface.h"
