@@ -196,7 +196,6 @@ private:
     void InitServiceHandler();
     static std::shared_ptr<AppExecFwk::EventHandler> serviceHandler_;
     std::string wallpaperLockScreenFilePath_;
-    std::string wallpaperSystemFilePath_;
     std::string wallpaperLockScreenFileFullPath_;
     std::string wallpaperSystemFileFullPath_;
     std::string wallpaperLockScreenCropFileFullPath_;
@@ -219,6 +218,8 @@ private:
     sptr<IRemoteObject::DeathRecipient> recipient_;
     sptr<IRemoteObject> extensionRemoteObject_;
     std::mutex remoteObjectMutex_;
+    std::mutex subscriberMutex_;
+    std::mutex callbackProxyMutex_;
 
     std::mutex mtx_;
     uint64_t lockWallpaperColor_;
