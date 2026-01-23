@@ -61,6 +61,9 @@ void WallpaperTestMock::SetUp()
 {
     wallpaperMock = std::make_shared<WallpaperMgrCjsonMock>();
     OHOS::WallpaperMgrCjson::wallpaperMgrCjson = wallpaperMock;
+    
+    wallpaperMock = std::make_shared<WallpaperMgrCjsonMock>();
+    OHOS::WallpaperMgrCjson::wallpaperMgrCjson = wallpaperMock;
 }
 
 void WallpaperTestMock::TearDown()
@@ -126,7 +129,8 @@ HWTEST_F(WallpaperTestMock, SaveWallpaperState003, TestSize.Level0)
 {
     HILOG_INFO("SaveWallpaperState003 begin");
     std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
-    wallpaperService->LoadWallpaperState();
+    auto image =  cJSON_Parse("");
+    EXPECT_CALL(*wallpaperMock, cJSON_Parse(_)).WillRepeatedly(Return(image));
     EXPECT_CALL(*wallpaperMock, cJSON_Parse(_)).WillRepeatedly(Return(nullptr));
     int32_t userId = wallpaperService->QueryActiveUserId();
     auto ret =

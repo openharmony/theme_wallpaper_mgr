@@ -35,6 +35,7 @@
 #include "wallpaper_manager.h"
 #include "wallpaper_manager_client.h"
 #include "wallpaper_service.h"
+#include "permission_utils_mock.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -73,6 +74,7 @@ constexpr const char *WALLPAPER_DEFAULT = "wallpaperdefault.jpeg";
 constexpr const char *HOME_WALLPAPER = "home_wallpaper_0.jpg";
 
 std::shared_ptr<WallpaperCommonEventSubscriber> subscriber = nullptr;
+static MockToken* g_mock = nullptr;
 
 using namespace testing::ext;
 using namespace testing;
@@ -141,6 +143,8 @@ void GrantNativePermission()
 {
     selfTokenID_ = GetSelfTokenID();
     AccessTokenIDEx tokenIdEx = { 0 };
+    MockPermission::SetTestEvironment(selfTokenID_);
+    g_mock = new (std::nothrow) MockToken("foundation");
     tokenIdEx = AccessTokenKit::AllocHapToken(infoParams, policyParams);
     int32_t ret = SetSelfTokenID(tokenIdEx.tokenIDEx);
     if (ret == 0) {
@@ -186,6 +190,11 @@ void WallpaperTest::TearDownTestCase(void)
     WallpaperManager::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
     WallpaperManager::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
     auto ret = SetSelfTokenID(selfTokenID_);
+    if (g_mock != nullptr) {
+        delete g_mock;
+        g_mock = nullptr;
+    }
+    MockPermission::ResetTestEvironment();
     HILOG_INFO("SetSelfTokenID ret = %{public}d", ret);
 }
 
@@ -1699,5 +1708,55 @@ HWTEST_F(WallpaperTest, ToBeAnonymous002, TestSize.Level0)
     EXPECT_EQ(ret, expectPath) << "Failed to ToBeAnonymous";
 }
 /*********************   Wallpaper_file_deal   *********************/
+
+/*********************   Wallpaper_manager   *********************/
+/**
+* @tc.name: CreatePixelMapByFd001
+* @tc.desc: CreatePixelMapByFd test is size = 0.
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, CreatePixelMapByFd001, TestSize.Level0)
+{
+    HILOG_INFO("CreatePixelMapByFd001 begin");
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+    int32_t size = -1;
+    int32_t fd = 100;
+    auto ret = WallpaperMgrService::WallpaperManager::GetInstance().CreatePixelMapByFd(fd, size, pixelMap);
+    EXPECT_EQ(ret, static_cast<int32_t>(E_IMAGE_ERRCODE)) << "Failed to CreatePixelMapByFd";
+}
+
+/**
+* @tc.name: CreatePixelMapByFd002
+* @tc.desc: CreatePixelMapByFd test is size > 104857600.
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, CreatePixelMapByFd002, TestSize.Level0)
+{
+    HILOG_INFO("CreatePixelMapByFd002 begin");
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+    int32_t size = 104857601;
+    int32_t fd = 100;
+    auto ret = WallpaperMgrService::WallpaperManager::GetInstance().CreatePixelMapByFd(fd, size, pixelMap);
+    EXPECT_EQ(ret, static_cast<int32_t>(E_IMAGE_ERRCODE)) << "Failed to CreatePixelMapByFd";
+}
+
+/**
+* @tc.name: CreatePixelMapByFd003
+* @tc.desc: CreatePixelMapByFd test is 0 < size < 104857600, fd < 0.
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, CreatePixelMapByFd003, TestSize.Level0)
+{
+    HILOG_INFO("CreatePixelMapByFd003 begin");
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+    int32_t size = 10485760;
+    int32_t fd = -1;
+    auto ret = WallpaperMgrService::WallpaperManager::GetInstance().CreatePixelMapByFd(fd, size, pixelMap);
+    EXPECT_EQ(ret, static_cast<int32_t>(E_IMAGE_ERRCODE)) << "Failed to CreatePixelMapByFd";
+}
+/*********************   Wallpaper_manager   *********************/
 } // namespace WallpaperMgrService
 } // namespace OHOS
