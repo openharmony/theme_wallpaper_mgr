@@ -48,8 +48,6 @@ AccessTokenID GetNativeTokenIdFromProcess(const std::string &process)
 {
     uint64_t selfTokenId = GetSelfTokenID();
     EXPECT_EQ(0, SetSelfTokenID(MockPermission::GetShellTokenId()));
-    HILOG_INFO("GetNativeTokenIdFromProcess process= %{public}s   selfTokenId= %{public}llu",
-        process.c_str(), selfTokenId);
     std::string dumpInfo;
     AtmToolsParamInfo info;
     info.processName = process;
@@ -76,7 +74,6 @@ MockToken::MockToken(const std::string &process)
 {
     selfToken_ = GetSelfTokenID();
     uint32_t tokenId = GetNativeTokenIdFromProcess(process);
-    HILOG_INFO("MockToken selfToken_= %{public}llu, tokenId= %{public}zu", selfToken_, tokenId);
     SetSelfTokenID(tokenId);
 }
 
