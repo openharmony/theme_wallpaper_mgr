@@ -193,7 +193,8 @@ private:
     sptr<IWallpaperService> GetService();
     int64_t WritePixelMapToStream(std::ostream &outputStream, std::shared_ptr<OHOS::Media::PixelMap> pixelMap);
     FILE *OpenFile(const std::string &fileName, int &fd, int64_t &fileSize);
-    ErrorCode CheckWallpaperFormat(const std::string &realPath, bool isLive, long &length);
+    ErrorCode CheckWallpaperFormat(const std::string &realPath, bool isLive);
+    ErrorCode GetWallpaperSize(const std::string &realPath, bool isLive, int32_t &leng);
     ErrorCode CreatePixelMapByFd(int32_t fd, int32_t size, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap);
     ErrorCode GetFdByPath(
         const WallpaperInfo &wallpaperInfo, WallpaperPictureInfo &wallpaperPictureInfo, std::string fileRealPath);

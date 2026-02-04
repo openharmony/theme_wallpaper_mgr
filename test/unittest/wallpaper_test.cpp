@@ -53,6 +53,7 @@ constexpr int32_t UNFOLD_2 = 2;
 constexpr int32_t PORT = 0;
 constexpr int32_t LAND = 1;
 constexpr int32_t DEFAULT_USERID = 100;
+constexpr int32_t MODE = 0777;
 uint64_t selfTokenID_ = 0;
 constexpr const char *URI = "/data/test/theme/wallpaper/wallpaper_test.JPG";
 constexpr const char *NORMAL_PORT_URI = "/data/test/theme/wallpaper/normal_port_wallpaper.jpg";
@@ -71,6 +72,7 @@ constexpr const char *LOCKSCREEN_DIR = "/lockscreen";
 constexpr const char *LOCKSCREEN_FILE = "/lockscreen/wallpaper_lock";
 constexpr const char *WALLPAPER_DEFAULT = "wallpaperdefault.jpeg";
 constexpr const char *HOME_WALLPAPER = "home_wallpaper_0.jpg";
+constexpr const char *ERR_URI = "/data/test/theme/wallpaper/wallpaper_err.jpg";
 
 std::shared_ptr<WallpaperCommonEventSubscriber> subscriber = nullptr;
 
@@ -997,6 +999,26 @@ HWTEST_F(WallpaperTest, SetWallpaper001, TestSize.Level0)
     EXPECT_EQ(wallpaperErrorCode, E_PICTURE_OVERSIZED) << "Failed to throw error";
 }
 
+/**
+ * @tc.name: SetWallpaper002
+ * @tc.desc: Test SetWallpaper when GetWallpaperSize fails with empty file
+ * @tc.type: FUNC
+ */
+HWTEST_F(WallpaperTest, SetWallpaper002, TestSize.Level0)
+{
+    HILOG_INFO("SetWallpaper002 begin");
+    std::string emptyFile = "/data/test/theme/wallpaper/empty_wallpaper.jpg";
+    FILE *fp = fopen(emptyFile.c_str(), "wb");
+    chmod(emptyFile.c_str(), MODE);
+    ASSERT_NE(fp, nullptr) << "Failed to create empty test file";
+    fclose(fp);
+
+    ApiInfo apiInfo{ false, false };
+    ErrorCode ret = WallpaperManager::GetInstance().SetWallpaper(emptyFile, SYSTYEM, apiInfo);
+    EXPECT_NE(ret, E_OK) << "Failed to SetWallpaper";
+    remove(emptyFile.c_str());
+}
+
 /*********************   USER_DEAL   *********************/
 /**
 * @tc.name:    AddUsersDeal001
@@ -1230,6 +1252,25 @@ HWTEST_F(WallpaperTest, SetVideo008, TestSize.Level0)
     ErrorCode ret = WallpaperManager::GetInstance().SetVideo(URI_15FPS_7S_MP4, LOCKSCREEN);
     EXPECT_EQ(ret, E_PARAMETERS_INVALID);
 }
+
+/**
+ * @tc.name: SetVideo009
+ * @tc.desc: Test SetWallpaper when GetWallpaperSize fails with empty .mp4 file
+ * @tc.type: FUNC
+ */
+HWTEST_F(WallpaperTest, SetVideo009, TestSize.Level0)
+{
+    HILOG_INFO("SetVideo009 begin");
+    std::string emptyFile = "/data/test/theme/wallpaper/empty_wallpaper.mp4";
+    FILE *fp = fopen(emptyFile.c_str(), "wb");
+    chmod(emptyFile.c_str(), MODE);
+    ASSERT_NE(fp, nullptr) << "Failed to create empty test file";
+    fclose(fp);
+
+    ErrorCode ret = WallpaperManager::GetInstance().SetVideo(emptyFile, SYSTYEM);
+    EXPECT_NE(ret, E_OK) << "Failed to SetVideo009";
+    remove(emptyFile.c_str());
+}
 /*********************   SetVideo    *********************/
 
 /**
@@ -1249,6 +1290,25 @@ HWTEST_F(WallpaperTest, SetCustomWallpaper001, TestSize.Level0)
     EXPECT_EQ(ret, testErrorCode);
     ret = WallpaperManager::GetInstance().SetCustomWallpaper(URI_ZIP, LOCKSCREEN);
     EXPECT_EQ(ret, testErrorCode);
+}
+
+/**
+ * @tc.name: SetCustomWallpaper002
+ * @tc.desc: Test SetWallpaper when GetWallpaperSize fails with empty zip file
+ * @tc.type: FUNC
+ */
+HWTEST_F(WallpaperTest, SetWallpaper_GetWallpaperSize001, TestSize.Level0)
+{
+    HILOG_INFO("SetWallpaper_GetWallpaperSize001 begin");
+    std::string emptyFile = "/data/test/theme/wallpaper/empty_wallpaper.zip";
+    FILE *fp = fopen(emptyFile.c_str(), "wb");
+    chmod(emptyFile.c_str(), MODE);
+    ASSERT_NE(fp, nullptr) << "Failed to create empty test file";
+    fclose(fp);
+
+    ErrorCode ret = WallpaperManager::GetInstance().SetCustomWallpaper(emptyFile, SYSTYEM);
+    EXPECT_NE(ret, E_OK) << "Failed to SetCustomWallpaper";
+    remove(emptyFile.c_str());
 }
 
 /*********************   SendEvent    *********************/
@@ -1699,5 +1759,103 @@ HWTEST_F(WallpaperTest, ToBeAnonymous002, TestSize.Level0)
     EXPECT_EQ(ret, expectPath) << "Failed to ToBeAnonymous";
 }
 /*********************   Wallpaper_file_deal   *********************/
+
+/*********************   Wallpaper_manager   *********************/
+/**
+* @tc.name: CreatePixelMapByFd001
+* @tc.desc: CreatePixelMapByFd test is size = 0.
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, CreatePixelMapByFd001, TestSize.Level0)
+{
+    HILOG_INFO("CreatePixelMapByFd001 begin");
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+    int32_t size = -1;
+    int32_t fd = 100;
+    auto ret = WallpaperMgrService::WallpaperManager::GetInstance().CreatePixelMapByFd(fd, size, pixelMap);
+    EXPECT_EQ(ret, static_cast<int32_t>(E_IMAGE_ERRCODE)) << "Failed to CreatePixelMapByFd";
+}
+
+/**
+* @tc.name: CreatePixelMapByFd002
+* @tc.desc: CreatePixelMapByFd test is size > 104857600.
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, CreatePixelMapByFd002, TestSize.Level0)
+{
+    HILOG_INFO("CreatePixelMapByFd002 begin");
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+    int32_t size = 104857601;
+    int32_t fd = 100;
+    auto ret = WallpaperMgrService::WallpaperManager::GetInstance().CreatePixelMapByFd(fd, size, pixelMap);
+    EXPECT_EQ(ret, static_cast<int32_t>(E_IMAGE_ERRCODE)) << "Failed to CreatePixelMapByFd";
+}
+
+/**
+* @tc.name: CreatePixelMapByFd003
+* @tc.desc: CreatePixelMapByFd test is 0 < size < 104857600, fd < 0.
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, CreatePixelMapByFd003, TestSize.Level0)
+{
+    HILOG_INFO("CreatePixelMapByFd003 begin");
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+    int32_t size = 10485760;
+    int32_t fd = -1;
+    auto ret = WallpaperMgrService::WallpaperManager::GetInstance().CreatePixelMapByFd(fd, size, pixelMap);
+    EXPECT_EQ(ret, static_cast<int32_t>(E_IMAGE_ERRCODE)) << "Failed to CreatePixelMapByFd";
+}
+
+/**
+ * @tc.name: CheckWallpaperFormat001
+ * @tc.desc: Test CheckWallpaperFormat with isLive=false (should return E_OK)
+ * @tc.type: FUNC
+ */
+HWTEST_F(WallpaperTest, CheckWallpaperFormat001, TestSize.Level0)
+{
+    HILOG_INFO("CheckWallpaperFormat001 begin");
+    ErrorCode ret = WallpaperManager::GetInstance().CheckWallpaperFormat(URI, false);
+    EXPECT_EQ(ret, E_OK) << "Failed to CheckWallpaperFormat";
+}
+
+/**
+ * @tc.name: CheckWallpaperFormat002
+ * @tc.desc: Test CheckWallpaperFormat with isLive=false, path is err_uri
+ * @tc.type: FUNC
+ */
+HWTEST_F(WallpaperTest, CheckWallpaperFormat002, TestSize.Level0)
+{
+    HILOG_INFO("CheckWallpaperFormat002 begin");
+    ErrorCode ret = WallpaperManager::GetInstance().CheckWallpaperFormat(ERR_URI, false);
+    EXPECT_EQ(ret, E_OK) << "Failed to CheckWallpaperFormat";
+}
+
+/**
+ * @tc.name: CheckWallpaperFormat003
+ * @tc.desc: Test CheckWallpaperFormat with isLive=true and video is .mov
+ * @tc.type: FUNC
+ */
+HWTEST_F(WallpaperTest, CheckWallpaperFormat003, TestSize.Level0)
+{
+    HILOG_INFO("CheckWallpaperFormat003 begin");
+    ErrorCode ret = WallpaperManager::GetInstance().CheckWallpaperFormat(URI_30FPS_3S_MOV, true);
+    EXPECT_EQ(ret, E_PARAMETERS_INVALID) << "Failed to CheckWallpaperFormat";
+}
+
+/**
+ * @tc.name: CheckWallpaperFormat004
+ * @tc.desc: Test CheckWallpaperFormat with isLive=true and video is .mp4
+ * @tc.type: FUNC
+ */
+HWTEST_F(WallpaperTest, CheckWallpaperFormat004, TestSize.Level0)
+{
+    HILOG_INFO("CheckWallpaperFormat004 begin");
+    ErrorCode ret = WallpaperManager::GetInstance().CheckWallpaperFormat(URI_30FPS_3S_MP4, true);
+    EXPECT_EQ(ret, E_OK) << "Failed to CheckWallpaperFormat";
+}
+/*********************   Wallpaper_manager   *********************/
 } // namespace WallpaperMgrService
 } // namespace OHOS
