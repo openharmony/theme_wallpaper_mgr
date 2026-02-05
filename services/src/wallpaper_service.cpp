@@ -1165,6 +1165,11 @@ ErrCode WallpaperService::RegisterWallpaperCallback(
 {
     HILOG_INFO("  WallpaperService::RegisterWallpaperCallback.");
     std::lock_guard<std::mutex> lock(callbackProxyMutex_);
+    if (!IsSystemApp()) {
+        HILOG_ERROR("current app is not SystemApp.");
+        registerWallpaperCallback = false;
+        return E_NOT_SYSTEM_APP;
+    }
     callbackProxy_ = wallpaperCallback;
     registerWallpaperCallback = true;
     return NO_ERROR;
