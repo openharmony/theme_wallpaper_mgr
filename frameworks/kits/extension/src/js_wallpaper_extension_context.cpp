@@ -612,11 +612,11 @@ void JSWallpaperExtensionConnection::HandleOnAbilityDisconnectDone(
     }
 
     // release connect
-    HILOG_INFO("OnAbilityDisconnectDone connects_.size:%{public}zu", connects_.size());
     std::string bundleName = element.GetBundleName();
     std::string abilityName = element.GetAbilityName();
     {
         std::lock_guard<std::mutex> lock(g_connectMapMtx);
+        HILOG_INFO("OnAbilityDisconnectDone connects_.size:%{public}zu", connects_.size());
         auto item = std::find_if(connects_.begin(), connects_.end(),
             [bundleName, abilityName](
                 const std::map<ConnecttionKey, sptr<JSWallpaperExtensionConnection>>::value_type &obj) {

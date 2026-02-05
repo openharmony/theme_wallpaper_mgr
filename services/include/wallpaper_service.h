@@ -195,18 +195,8 @@ private:
     ServiceRunningState state_;
     void InitServiceHandler();
     static std::shared_ptr<AppExecFwk::EventHandler> serviceHandler_;
-    std::string wallpaperLockScreenFilePath_;
-    std::string wallpaperLockScreenFileFullPath_;
-    std::string wallpaperSystemFileFullPath_;
-    std::string wallpaperLockScreenCropFileFullPath_;
-    std::string wallpaperSystemCropFileFullPath_;
     std::string wallpaperTmpFullPath_;
     std::string wallpaperCropPath_;
-    typedef std::map<int32_t, WallpaperEventListener *> DISPLAYIDCOLORSLISTENERMAP;
-    typedef std::map<int32_t, DISPLAYIDCOLORSLISTENERMAP> COLORSLISTENERMAP;
-    typedef std::list<WallpaperEventListener *> LISTENERLIST;
-    LISTENERLIST colorListeners_;
-    COLORSLISTENERMAP colorsChangedListeners_;
     ConcurrentMap<int32_t, WallpaperData> systemWallpaperMap_;
     ConcurrentMap<int32_t, WallpaperData> lockWallpaperMap_;
     atomic<int32_t> wallpaperId_;

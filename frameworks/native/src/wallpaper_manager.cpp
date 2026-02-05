@@ -666,25 +666,25 @@ FILE *WallpaperManager::OpenFile(const std::string &fileName, int &fd, int64_t &
         return nullptr;
     }
 
-    FILE *file = fopen(fileName.c_str(), "r");
-    if (file == nullptr) {
+    FILE *wallpaperFile = fopen(fileName.c_str(), "r");
+    if (wallpaperFile == nullptr) {
         HILOG_ERROR("Get video file failed!");
         return nullptr;
     }
-    fd = fileno(file);
+    fd = fileno(wallpaperFile);
     if (fd < 0) {
         HILOG_ERROR("Get video videoFd failed!");
-        fclose(file);
+        fclose(wallpaperFile);
         return nullptr;
     }
     struct stat64 st;
     if (fstat64(fd, &st) != 0) {
         HILOG_ERROR("Failed to fstat64!");
-        fclose(file);
+        fclose(wallpaperFile);
         return nullptr;
     }
     fileSize = static_cast<int64_t>(st.st_size);
-    return file;
+    return wallpaperFile;
 }
 
 ErrorCode WallpaperManager::CheckWallpaperFormat(const std::string &realPath, bool isLive, long &length)
