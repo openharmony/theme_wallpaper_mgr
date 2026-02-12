@@ -44,6 +44,7 @@ public:
     void TearDown();
     static void CreateTempImage();
     static std::shared_ptr<PixelMap> CreateTempPixelMap();
+    static bool TestCallBack(int32_t num);
 };
 const std::string VALID_SCHEMA_STRICT_DEFINE = "{\"SCHEMA_VERSION\":\"1.0\","
                                                "\"SCHEMA_MODE\":\"STRICT\","
@@ -100,6 +101,14 @@ std::shared_ptr<PixelMap> WallpaperPermissionTest::CreateTempPixelMap()
     std::unique_ptr<PixelMap> uniquePixelMap = PixelMap::Create(color, sizeof(color) / sizeof(color[0]), opts);
     std::shared_ptr<PixelMap> pixelMap = std::move(uniquePixelMap);
     return pixelMap;
+}
+
+bool WallpaperPermissionTest::TestCallBack(int32_t num)
+{
+    if (num > 0) {
+        return true;
+    }
+    return false;
 }
 
 /*********************   ResetWallpaper   *********************/
@@ -242,5 +251,21 @@ HWTEST_F(WallpaperPermissionTest, GetColorPermission001, TestSize.Level0)
     HILOG_INFO("GetColorPermission001 end");
 }
 /*********************   GetColor   *********************/
+
+/*********************   RegisterWallpaperCallback   *********************/
+/**
+* @tc.name:    RegisterWallpaperCallbackPermission001
+* @tc.desc:    RegisterWallpaperCallback throw not system app.
+* @tc.type:    FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperPermissionTest, RegisterWallpaperCallbackPermission001, TestSize.Level0)
+{
+    HILOG_INFO("RegisterWallpaperCallbackPermission001 begin");
+    JScallback callback = &WallpaperPermissionTest::TestCallBack;
+    bool res = WallpaperManager::GetInstance().RegisterWallpaperCallback(callback);
+    EXPECT_EQ(res, false);
+}
+/*********************   RegisterWallpaperCallback   *********************/
 } // namespace WallpaperMgrService
 } // namespace OHOS
