@@ -903,8 +903,7 @@ bool WallpaperService::SendWallpaperChangeEvent(int32_t userId, WallpaperType wa
     }
     HILOG_INFO("SetWallpaperBackupData callbackProxy_->OnCall start.");
     std::lock_guard<std::mutex> lock(callbackProxyMutex_);
-    if (callbackProxy_ != nullptr
-        && (wallpaperData.resourceType == PICTURE || wallpaperData.resourceType == DEFAULT)) {
+    if (callbackProxy_ != nullptr && (wallpaperData.resourceType == PICTURE || wallpaperData.resourceType == DEFAULT)) {
         callbackProxy_->OnCall(wallpaperType);
     }
     std::string uri;
