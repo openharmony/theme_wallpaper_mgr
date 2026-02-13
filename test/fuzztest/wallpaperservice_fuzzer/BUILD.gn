@@ -207,7 +207,6 @@ foreach(item, wallpaper_fuzztests) {
       "ipc:ipc_single",
       "os_account:os_account_innerkits",
       "safwk:system_ability_fwk",
-      "selinux_adapter:librestorecon",
       "window_manager:libwm",
     ]
   }

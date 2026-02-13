@@ -54,6 +54,7 @@ constexpr int32_t MAX_VIDEO_SIZE = 104857600;
 constexpr int32_t MAX_RETRY_TIMES = 10;
 constexpr int32_t TIME_INTERVAL = 500000;
 constexpr int32_t BASE_NUMBER = 10;
+constexpr int32_t LOAD_TIME = 4;
 constexpr mode_t MODE = 0660;
 
 using namespace OHOS::Media;
@@ -106,12 +107,16 @@ sptr<IWallpaperService> WallpaperManager::GetService()
         HILOG_ERROR("Get samgr failed!");
         return nullptr;
     }
-    sptr<IRemoteObject> object = samgr->GetSystemAbility(WALLPAPER_MANAGER_SERVICE_ID);
+    sptr<IRemoteObject> object = samgr->CheckSystemAbility(WALLPAPER_MANAGER_SERVICE_ID);
     if (object == nullptr) {
-        HILOG_ERROR("Get wallpaper object from samgr failed!");
-        return nullptr;
+        HILOG_ERROR("Check wallpaper object from samgr failed!");
+        object = samgr->LoadSystemAbility(WALLPAPER_MANAGER_SERVICE_ID, LOAD_TIME);
+        if (object == nullptr) {
+            HILOG_ERROR("Load samgr failed!");
+            return nullptr;
+        }
     }
-
+    
     if (deathRecipient_ == nullptr) {
         deathRecipient_ = new DeathRecipient();
     }
@@ -666,25 +671,25 @@ FILE *WallpaperManager::OpenFile(const std::string &fileName, int &fd, int64_t &
         return nullptr;
     }
 
-    FILE *file = fopen(fileName.c_str(), "r");
-    if (file == nullptr) {
+    FILE *wallpaperFile = fopen(fileName.c_str(), "r");
+    if (wallpaperFile == nullptr) {
         HILOG_ERROR("Get video file failed!");
         return nullptr;
     }
-    fd = fileno(file);
+    fd = fileno(wallpaperFile);
     if (fd < 0) {
         HILOG_ERROR("Get video videoFd failed!");
-        fclose(file);
+        fclose(wallpaperFile);
         return nullptr;
     }
     struct stat64 st;
     if (fstat64(fd, &st) != 0) {
         HILOG_ERROR("Failed to fstat64!");
-        fclose(file);
+        fclose(wallpaperFile);
         return nullptr;
     }
     fileSize = static_cast<int64_t>(st.st_size);
-    return file;
+    return wallpaperFile;
 }
 
 ErrorCode WallpaperManager::CheckWallpaperFormat(const std::string &realPath, bool isLive, long &length)

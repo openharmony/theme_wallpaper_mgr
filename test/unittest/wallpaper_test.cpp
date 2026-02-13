@@ -35,6 +35,7 @@
 #include "wallpaper_manager.h"
 #include "wallpaper_manager_client.h"
 #include "wallpaper_service.h"
+#include "permission_utils_mock.h"
 
 namespace OHOS {
 namespace WallpaperMgrService {
@@ -73,6 +74,7 @@ constexpr const char *WALLPAPER_DEFAULT = "wallpaperdefault.jpeg";
 constexpr const char *HOME_WALLPAPER = "home_wallpaper_0.jpg";
 
 std::shared_ptr<WallpaperCommonEventSubscriber> subscriber = nullptr;
+static MockToken* g_mock = nullptr;
 
 using namespace testing::ext;
 using namespace testing;
@@ -141,6 +143,8 @@ void GrantNativePermission()
 {
     selfTokenID_ = GetSelfTokenID();
     AccessTokenIDEx tokenIdEx = { 0 };
+    MockPermission::SetTestEvironment(selfTokenID_);
+    g_mock = new (std::nothrow) MockToken("foundation");
     tokenIdEx = AccessTokenKit::AllocHapToken(infoParams, policyParams);
     int32_t ret = SetSelfTokenID(tokenIdEx.tokenIDEx);
     if (ret == 0) {
@@ -186,6 +190,11 @@ void WallpaperTest::TearDownTestCase(void)
     WallpaperManager::GetInstance().ResetWallpaper(SYSTYEM, apiInfo);
     WallpaperManager::GetInstance().ResetWallpaper(LOCKSCREEN, apiInfo);
     auto ret = SetSelfTokenID(selfTokenID_);
+    if (g_mock != nullptr) {
+        delete g_mock;
+        g_mock = nullptr;
+    }
+    MockPermission::ResetTestEvironment();
     HILOG_INFO("SetSelfTokenID ret = %{public}d", ret);
 }
 

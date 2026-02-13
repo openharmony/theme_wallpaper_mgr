@@ -253,13 +253,11 @@ void WallpaperService::OnStop()
         recipient_ = nullptr;
         extensionRemoteObject_ = nullptr;
     }
-    {
-        std::lock_guard<std::mutex> lock(subscriberMutex_);
-        if (subscriber_ != nullptr) {
-            bool unSubscribeResult = OHOS::EventFwk::CommonEventManager::UnSubscribeCommonEvent(subscriber_);
-            subscriber_ = nullptr;
-            HILOG_INFO("UnregisterSubscriber end, unSubscribeResult = %{public}d", unSubscribeResult);
-        }
+    std::lock_guard<std::mutex> lock(subscriberMutex_);
+    if (subscriber_ != nullptr) {
+        bool unSubscribeResult = OHOS::EventFwk::CommonEventManager::UnSubscribeCommonEvent(subscriber_);
+        subscriber_ = nullptr;
+        HILOG_INFO("UnregisterSubscriber end, unSubscribeResult = %{public}d", unSubscribeResult);
     }
     state_ = ServiceRunningState::STATE_NOT_START;
     int32_t pid = getpid();
@@ -695,7 +693,7 @@ bool WallpaperService::SaveColor(int32_t userId, WallpaperType wallpaperType)
     imageSource->GetImageInfo(imageInfo);
     int32_t height = imageInfo.size.height;
     int32_t width = imageInfo.size.width;
-    if (height >= MIN_SIZE || width >= MIN_SIZE) {
+    if (height >= MIN_SIZE && width >= MIN_SIZE) {
         decodeOpts.desiredSize = {width / COMPRESSION_RATIO, height / COMPRESSION_RATIO};
     }
     std::unique_ptr<PixelMap> wallpaperPixelMap = imageSource->CreatePixelMap(decodeOpts, errorCode);
@@ -903,13 +901,11 @@ bool WallpaperService::SendWallpaperChangeEvent(int32_t userId, WallpaperType wa
         HILOG_INFO("Send wallpaper lock setting message.");
         wallpaperCommonEventManager->SendWallpaperLockSettingMessage(wallpaperData.resourceType);
     }
-    {
-        HILOG_INFO("SetWallpaperBackupData callbackProxy_->OnCall start.");
-        std::lock_guard<std::mutex> lock(callbackProxyMutex_);
-        if (callbackProxy_ != nullptr
-            && (wallpaperData.resourceType == PICTURE || wallpaperData.resourceType == DEFAULT)) {
-            callbackProxy_->OnCall(wallpaperType);
-        }
+    HILOG_INFO("SetWallpaperBackupData callbackProxy_->OnCall start.");
+    std::lock_guard<std::mutex> lock(callbackProxyMutex_);
+    if (callbackProxy_ != nullptr
+        && (wallpaperData.resourceType == PICTURE || wallpaperData.resourceType == DEFAULT)) {
+        callbackProxy_->OnCall(wallpaperType);
     }
     std::string uri;
     WallpaperChanged(wallpaperType, wallpaperData.resourceType, uri);
@@ -1165,6 +1161,11 @@ ErrCode WallpaperService::RegisterWallpaperCallback(
 {
     HILOG_INFO("  WallpaperService::RegisterWallpaperCallback.");
     std::lock_guard<std::mutex> lock(callbackProxyMutex_);
+    if (!IsSystemApp()) {
+        HILOG_ERROR("current app is not SystemApp.");
+        registerWallpaperCallback = false;
+        return E_NOT_SYSTEM_APP;
+    }
     callbackProxy_ = wallpaperCallback;
     registerWallpaperCallback = true;
     return NO_ERROR;
