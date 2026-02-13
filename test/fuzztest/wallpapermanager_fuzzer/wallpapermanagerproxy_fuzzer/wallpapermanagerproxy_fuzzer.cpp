@@ -61,7 +61,7 @@ void WallpaperManagerProxyFuzzTest(FuzzedDataProvider &provider)
     auto wallpaperProxy = WallpaperMgrService::WallpaperManager::GetInstance().GetService();
     int32_t fd = provider.ConsumeIntegral<int32_t>();
     int32_t wallpaperType = provider.ConsumeIntegral<int32_t>();
-    long length = provider.ConsumeIntegral<long>();
+    int32_t length = provider.ConsumeIntegral<int32_t>();
     wallpaperProxy->SetWallpaperV9(fd, wallpaperType, length);
     wallpaperProxy->SetWallpaper(fd, wallpaperType, length);
     wallpaperProxy->SetVideo(fd, wallpaperType, length);

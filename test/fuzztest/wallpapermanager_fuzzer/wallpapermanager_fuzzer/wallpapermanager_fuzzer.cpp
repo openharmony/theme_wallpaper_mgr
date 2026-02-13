@@ -85,9 +85,10 @@ void WallpaperManagerFuzzTest(FuzzedDataProvider &provider)
     int64_t fileSize;
     int32_t fdVedio;
     WallpaperMgrService::WallpaperManager::GetInstance().OpenFile(fileName, fdVedio, fileSize);
-    long fdLength;
+    int32_t fdLength;
     bool idLive = provider.ConsumeBool();
-    WallpaperMgrService::WallpaperManager::GetInstance().CheckWallpaperFormat(fileName, idLive, fdLength);
+    WallpaperMgrService::WallpaperManager::GetInstance().CheckWallpaperFormat(fileName, idLive);
+    WallpaperMgrService::WallpaperManager::GetInstance().GetWallpaperSize(fileName, idLive, fdLength);
     WallpaperInfo wallpaperInfo;
     wallpaperInfo.foldState = FoldState::NORMAL;
     wallpaperInfo.rotateState = RotateState::PORT;
@@ -96,7 +97,7 @@ void WallpaperManagerFuzzTest(FuzzedDataProvider &provider)
     wallpaperPictureInfo.foldState = FoldState::NORMAL;
     wallpaperPictureInfo.rotateState = RotateState::PORT;
     wallpaperPictureInfo.fd = fd;
-    wallpaperPictureInfo.length = provider.ConsumeIntegral<long>();
+    wallpaperPictureInfo.length = provider.ConsumeIntegral<int32_t>();
     WallpaperMgrService::WallpaperManager::GetInstance().GetFdByPath(wallpaperInfo, wallpaperPictureInfo, fileName);
     WallpaperMgrService::WallpaperManager::GetInstance().ConverString2Int(fileName);
 }

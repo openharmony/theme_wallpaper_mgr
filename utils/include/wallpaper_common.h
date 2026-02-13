@@ -70,7 +70,7 @@ struct WallpaperPictureInfo {
     FoldState foldState;
     RotateState rotateState;
     int32_t fd;
-    long length;
+    int32_t length;
     std::string tempPath;
 };
 

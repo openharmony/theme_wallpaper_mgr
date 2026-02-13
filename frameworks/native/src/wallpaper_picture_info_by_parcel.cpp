@@ -32,7 +32,7 @@ bool WallpaperPictureInfoByParcel::Marshalling(Parcel &parcel) const
         status &= parcel.WriteInt32(static_cast<int32_t>(wallpaperInfo.foldState));
         status &= parcel.WriteInt32(static_cast<int32_t>(wallpaperInfo.rotateState));
         status &= parcel.WriteInt32(wallpaperInfo.fd);
-        status &= parcel.WriteInt64(wallpaperInfo.length);
+        status &= parcel.WriteInt32(wallpaperInfo.length);
     }
     return status;
 }
@@ -67,7 +67,7 @@ WallpaperPictureInfoByParcel *WallpaperPictureInfoByParcel::Unmarshalling(Parcel
             wallpaperInfo.rotateState = LAND;
         }
         wallpaperInfo.fd = parcel.ReadInt32();
-        wallpaperInfo.length = parcel.ReadInt64();
+        wallpaperInfo.length = parcel.ReadInt32();
         obj->wallpaperPictureInfo_.push_back(wallpaperInfo);
     }
     return obj;

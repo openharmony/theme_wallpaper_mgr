@@ -215,10 +215,15 @@ ErrorCode WallpaperManager::SetWallpaper(std::string uri, int32_t wallpaperType,
         return E_PARAMETERS_INVALID;
     }
 
-    long length = 0;
-    ErrorCode wallpaperErrorCode = CheckWallpaperFormat(fileRealPath, false, length);
+    ErrorCode wallpaperErrorCode = CheckWallpaperFormat(fileRealPath, false);
     if (wallpaperErrorCode != E_OK) {
         HILOG_ERROR("Check wallpaper format failed!");
+        return wallpaperErrorCode;
+    }
+    int32_t length = 0;
+    wallpaperErrorCode = GetWallpaperSize(fileRealPath, false, length);
+    if (wallpaperErrorCode != E_OK) {
+        HILOG_ERROR("get wallpaper size failed!");
         return wallpaperErrorCode;
     }
 
@@ -291,12 +296,18 @@ ErrorCode WallpaperManager::SetVideo(const std::string &uri, const int32_t wallp
         return E_PARAMETERS_INVALID;
     }
 
-    long length = 0;
-    ErrorCode wallpaperErrorCode = CheckWallpaperFormat(fileRealPath, true, length);
+    ErrorCode wallpaperErrorCode = CheckWallpaperFormat(fileRealPath, true);
     if (wallpaperErrorCode != E_OK) {
         HILOG_ERROR("Check wallpaper format failed!");
         return wallpaperErrorCode;
     }
+    int32_t length = 0;
+    wallpaperErrorCode = GetWallpaperSize(fileRealPath, true, length);
+    if (wallpaperErrorCode != E_OK) {
+        HILOG_ERROR("get wallpaper size failed!");
+        return wallpaperErrorCode;
+    }
+
     int32_t fd = open(fileRealPath.c_str(), O_RDONLY, MODE);
     if (fd < 0) {
         HILOG_ERROR("Open file failed, errno %{public}d!", errno);
@@ -326,10 +337,16 @@ ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int
     if (!FileDeal::IsZipFile(uri)) {
         return E_FILE_ERROR;
     }
-    long length = 0;
-    ErrorCode wallpaperErrorCode = CheckWallpaperFormat(fileRealPath, false, length);
+
+    ErrorCode wallpaperErrorCode = CheckWallpaperFormat(fileRealPath, false);
     if (wallpaperErrorCode != E_OK) {
         HILOG_ERROR("Check wallpaper format failed!");
+        return wallpaperErrorCode;
+    }
+    int32_t length = 0;
+    wallpaperErrorCode = GetWallpaperSize(fileRealPath, false, length);
+    if (wallpaperErrorCode != E_OK) {
+        HILOG_ERROR("get wallpaper size failed!");
         return wallpaperErrorCode;
     }
     int32_t fd = open(fileRealPath.c_str(), O_RDONLY, MODE);
@@ -692,28 +709,46 @@ FILE *WallpaperManager::OpenFile(const std::string &fileName, int &fd, int64_t &
     return wallpaperFile;
 }
 
-ErrorCode WallpaperManager::CheckWallpaperFormat(const std::string &realPath, bool isLive, long &length)
+ErrorCode WallpaperManager::CheckWallpaperFormat(const std::string &realPath, bool isLive)
 {
     if (isLive && (FileDeal::GetExtension(realPath) != ".mp4" || !CheckVideoFormat(realPath))) {
         HILOG_ERROR("Check live wallpaper file failed!");
         return E_PARAMETERS_INVALID;
     }
+    return E_OK;
+}
 
-    FILE *file = std::fopen(realPath.c_str(), "rb");
-    if (file == nullptr) {
+ErrorCode WallpaperManager::GetWallpaperSize(const std::string &realPath, bool isLive, int32_t &length)
+{
+    FILE *wallpaperFile = std::fopen(realPath.c_str(), "rb");
+    if (wallpaperFile == nullptr) {
         HILOG_ERROR("Fopen failed, %{public}s, %{public}s!", realPath.c_str(), strerror(errno));
         return E_FILE_ERROR;
     }
 
-    int32_t fend = fseek(file, 0, SEEK_END);
-    length = ftell(file);
-    int32_t fset = fseek(file, 0, SEEK_SET);
-    if (length <= 0 || (isLive && length > MAX_VIDEO_SIZE) || fend != 0 || fset != 0) {
+    int32_t fend = fseek(wallpaperFile, 0, SEEK_END);
+    long wallpaperSize = 0;
+    wallpaperSize = ftell(wallpaperFile);
+    int32_t fset = fseek(wallpaperFile, 0, SEEK_SET);
+    if (wallpaperSize <= 0 || wallpaperSize > INT32_MAX || fend != 0 || fset != 0) {
         HILOG_ERROR("ftell file failed or fseek file failed, errno %{public}d!", errno);
-        fclose(file);
+        fclose(wallpaperFile);
+        length = 0;
         return E_FILE_ERROR;
     }
-    fclose(file);
+    if (isLive && wallpaperSize > MAX_VIDEO_SIZE) {
+        HILOG_ERROR("video size is too large!");
+        fclose(wallpaperFile);
+        length = 0;
+        return E_PICTURE_OVERSIZED;
+    }
+    auto ret = fclose(wallpaperFile);
+    if (ret != 0) {
+        HILOG_ERROR("fclose failed, errno %{public}d!", errno);
+        length = 0;
+        return E_FILE_ERROR;
+    }
+    length = static_cast<int32_t>(wallpaperSize);
     return E_OK;
 }
 
@@ -767,11 +802,17 @@ ErrorCode WallpaperManager::GetFdByPath(
         return E_FILE_ERROR;
     }
     fdsan_exchange_owner_tag(wallpaperPictureInfo.fd, 0, WP_DOMAIN);
-    ErrorCode wallpaperErrorCode = CheckWallpaperFormat(fileRealPath, false, wallpaperPictureInfo.length);
+    ErrorCode wallpaperErrorCode = CheckWallpaperFormat(fileRealPath, false);
     if (wallpaperErrorCode != E_OK) {
         HILOG_ERROR("Check wallpaper format failed!");
         return wallpaperErrorCode;
     }
+    wallpaperErrorCode = GetWallpaperSize(fileRealPath, false, wallpaperPictureInfo.length);
+    if (wallpaperErrorCode != E_OK) {
+        HILOG_ERROR("get wallpaper size failed!");
+        return wallpaperErrorCode;
+    }
+    
     uint32_t errorCode = 0;
     OHOS::Media::SourceOptions opts;
     std::unique_ptr<OHOS::Media::ImageSource> imageSource =
