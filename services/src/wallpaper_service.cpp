@@ -1675,12 +1675,13 @@ void WallpaperService::LoadWallpaperState()
     fdsan_exchange_owner_tag(fd, 0, WP_DOMAIN);
     const size_t len = 255;
     char buf[len] = { 0 };
-    ssize_t size = read(fd, buf, len);
+    ssize_t size = read(fd, buf, len - 1);
     if (size <= 0) {
         HILOG_ERROR("read user config file failed!");
         fdsan_close_with_tag(fd, WP_DOMAIN);
         return;
     }
+    buf[size] = '\0';
     fdsan_close_with_tag(fd, WP_DOMAIN);
 
     if (buf[0] == '\0') {
