@@ -18,8 +18,6 @@
 #include <algorithm>
 #include <endian.h>
 
-#include "hilog_wrapper.h"
-
 namespace ani_wallpaper {
 
 std::shared_ptr<OHOS::AppExecFwk::EventHandler> JsBaseObserver::mainHandler_;
@@ -52,7 +50,10 @@ void JsBaseObserver::Release()
     std::lock_guard<std::recursive_mutex> lock(mutex_);
     taihe::env_guard guard;
     if (auto *env = guard.get_env()) {
-        env->GlobalReference_Delete(jsCallbackRef_);
+        auto ret = env->GlobalReference_Delete(jsCallbackRef_);
+        if (ret != ANI_OK) {
+            HILOG_ERROR("Release, GlobalReference_Delete failed %{public}d!", ret);
+        }
         jsCallbackRef_ = nullptr;
     }
 }
