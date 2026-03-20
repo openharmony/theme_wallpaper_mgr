@@ -350,7 +350,7 @@ void OffWallpaperChange(::taihe::optional_view<uintptr_t> opaque)
         if (jsCallbackRef == nullptr) {
             return true;
         }
-        return (ANI_OK == env->Reference_StrictEquals(jsCallbackRef, obj->jsCallbackRef_, &is_equal)) && is_equal;
+        return (env->Reference_StrictEquals(jsCallbackRef, obj->jsCallbackRef_, &is_equal) == ANI_OK) && is_equal;
     };
     for (auto iter = jsWallpaperChangeCbList_.begin(); iter != jsWallpaperChangeCbList_.end();) {
         if (pred(*iter) == true) {
