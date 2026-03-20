@@ -24,11 +24,11 @@
 ANI_EXPORT ani_status ANI_Constructor(ani_vm *vm, uint32_t *result)
 {
     ani_env *env;
-    if (ANI_OK != vm->GetEnv(ANI_VERSION_1, &env)) {
+    if (vm->GetEnv(ANI_VERSION_1, &env) != ANI_OK) {
         return ANI_ERROR;
     }
     ani_status status = ANI_OK;
-    if (ANI_OK != ohos::wallpaper::ANIRegister(env)) {
+    if (ohos::wallpaper::ANIRegister(env) != ANI_OK) {
         std::cerr << "Error from ohos::wallpaper::ANIRegister" << std::endl;
         status = ANI_ERROR;
     }

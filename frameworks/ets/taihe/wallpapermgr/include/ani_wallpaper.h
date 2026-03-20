@@ -25,6 +25,7 @@
 #include "event_handler.h"
 #include "event_runner.h"
 #include "wallpaper_event_listener.h"
+#include "hilog_wrapper.h"
 
 namespace ani_wallpaper {
 
@@ -39,7 +40,7 @@ public:
     {
         if (!env_ || !obj)
             return;
-        if (ANI_OK != env_->GlobalReference_Create(obj, &ref_)) {
+        if (env_->GlobalReference_Create(obj, &ref_) != ANI_OK) {
             ref_ = nullptr;
         }
     }
@@ -54,7 +55,11 @@ public:
     ~GlobalRefGuard()
     {
         if (env_ && ref_) {
-            env_->GlobalReference_Delete(ref_);
+            auto ret = env_->GlobalReference_Delete(ref_);
+            if (ret != ANI_OK) {
+                HILOG_ERROR("GlobalRefGuard, GlobalReference_Delete failed %{public}d!", ret);
+            }
+            ref_ = nullptr;
         }
     }
 
@@ -95,8 +100,12 @@ ani_ref CreateCallbackRefIfNotDuplicate(std::vector<std::shared_ptr<DerivedObser
             return (ANI_OK == env->Reference_StrictEquals(callbackRef, obj->jsCallbackRef_, &isEqual)) && isEqual;
         });
     if (isDuplicate) {
-        env->GlobalReference_Delete(callbackRef);
-        return nullptr;
+        auto ret = env->GlobalReference_Delete(callbackRef);
+        if (ret != ANI_OK) {
+            HILOG_ERROR("CreateCallbackRefIfNotDuplicate, GlobalReference_Delete failed %{public}d!", ret);
+        }
+        callbackRef = nullptr;
+        return callbackRef;
     }
     return callbackRef;
 }
