@@ -16,6 +16,7 @@
 #ifndef SERVICES_INCLUDE_WALLPAPER_SERVICES_H
 #define SERVICES_INCLUDE_WALLPAPER_SERVICES_H
 
+#include <atomic>
 #include <list>
 #include <map>
 #include <mutex>
@@ -192,7 +193,7 @@ private:
 
 private:
     int32_t Init();
-    ServiceRunningState state_;
+    std::atomic<ServiceRunningState> state_;
     void InitServiceHandler();
     static std::shared_ptr<AppExecFwk::EventHandler> serviceHandler_;
     std::string wallpaperTmpFullPath_;
