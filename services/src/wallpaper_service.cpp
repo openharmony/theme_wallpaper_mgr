@@ -163,7 +163,7 @@ int32_t WallpaperService::Init()
         return -1;
     }
     HILOG_INFO("Publish success.");
-    state_ = ServiceRunningState::STATE_RUNNING;
+    state_.store(ServiceRunningState::STATE_RUNNING);
 #ifndef THEME_SERVICE
     StartExtensionAbility(CONNECT_EXTENSION_MAX_RETRY_TIMES);
 #endif
@@ -174,7 +174,7 @@ void WallpaperService::OnStart()
 {
     HILOG_INFO("Enter OnStart.");
     MemoryGuard cacheGuard;
-    if (state_ == ServiceRunningState::STATE_RUNNING) {
+    if (state_.load() == ServiceRunningState::STATE_RUNNING) {
         HILOG_ERROR("WallpaperService is already running.");
         return;
     }
@@ -241,7 +241,8 @@ void WallpaperService::InitServiceHandler()
 void WallpaperService::OnStop()
 {
     HILOG_INFO("OnStop started.");
-    if (state_ != ServiceRunningState::STATE_RUNNING) {
+    if (state_.load() != ServiceRunningState::STATE_RUNNING) {
+        HILOG_ERROR("WallpaperService is not already running.");
         return;
     }
     serviceHandler_ = nullptr;
@@ -261,7 +262,7 @@ void WallpaperService::OnStop()
             HILOG_INFO("UnregisterSubscriber end, unSubscribeResult = %{public}d", unSubscribeResult);
         }
     }
-    state_ = ServiceRunningState::STATE_NOT_START;
+    state_.store(ServiceRunningState::STATE_NOT_START);
     int32_t pid = getpid();
     Memory::MemMgrClient::GetInstance().NotifyProcessStatus(pid, 1, 0, WALLPAPER_MANAGER_SERVICE_ID);
 }
@@ -571,7 +572,7 @@ bool WallpaperService::GetPictureFileName(int32_t userId, WallpaperType wallpape
                                                      : lockWallpaperMap_.Find(userId);
     }
     filePathName = iterator.second.wallpaperFile;
-    HILOG_INFO("GetPictureFileName filePathName : %{public}s", filePathName.c_str());
+    HILOG_INFO("GetPictureFileName filePathName : %{public}s", FileDeal::ToBeAnonymous(filePathName).c_str());
     return filePathName != "";
 }
 
@@ -1338,13 +1339,14 @@ ErrorCode WallpaperService::GetImageSize(int32_t userId, WallpaperType wallpaper
         return E_FILE_ERROR;
     }
     int32_t fend = fseek(fd, 0, SEEK_END);
-    size = ftell(fd);
+    long length = ftell(fd);
     int32_t fset = fseek(fd, 0, SEEK_SET);
-    if (size <= 0 || fend != 0 || fset != 0) {
+    if (length <= 0 || length > INT32_MAX || fend != 0 || fset != 0) {
         HILOG_ERROR("ftell file failed or fseek file failed, errno %{public}d", errno);
         fclose(fd);
         return E_FILE_ERROR;
     }
+    size = static_cast<int32_t>(length);
     fclose(fd);
     return NO_ERROR;
 }
@@ -1717,7 +1719,7 @@ std::string WallpaperService::GetDefaultResDir()
     if (cfgFiles != nullptr) {
         for (auto &cfgPath : cfgFiles->paths) {
             if (cfgPath != nullptr) {
-                HILOG_DEBUG("GetCfgFiles path is :%{public}s", cfgPath);
+                HILOG_DEBUG("GetCfgFiles path is :%{public}s", FileDeal::ToBeAnonymous(cfgPath).c_str());
                 resPath = cfgPath + std::string(DEFAULT_PATH);
                 break;
             }
@@ -1738,7 +1740,7 @@ std::string WallpaperService::GetWallpaperPathInJson(const std::string manifestN
     std::string manifestFile = resPath + manifestName;
     std::ifstream file(manifestFile);
     if (!file.is_open()) {
-        HILOG_ERROR("open fail:%{public}s", manifestFile.c_str());
+        HILOG_ERROR("open fail:%{public}s", FileDeal::ToBeAnonymous(manifestFile).c_str());
         file.close();
         return "";
     }
@@ -1766,7 +1768,7 @@ std::string WallpaperService::GetWallpaperPathInJson(const std::string manifestN
 std::string WallpaperService::GetExistFilePath(const std::string &filePath)
 {
     if (!FileDeal::IsFileExist(filePath)) {
-        HILOG_ERROR("path file is not exist! %{public}s", filePath.c_str());
+        HILOG_ERROR("path file is not exist! %{public}s", FileDeal::ToBeAnonymous(filePath).c_str());
         return "";
     }
     return filePath;
@@ -2047,7 +2049,7 @@ ErrorCode WallpaperService::GetImageSize(
     if (!GetWallpaperDataPath(userId, wallpaperType, filePathName, foldState, rotateState)) {
         return E_DEAL_FAILED;
     }
-    HILOG_INFO("GetImageSize file: %{public}s", filePathName.c_str());
+    HILOG_INFO("GetImageSize file: %{public}s", FileDeal::ToBeAnonymous(filePathName).c_str());
     if (!OHOS::FileExists(filePathName)) {
         HILOG_ERROR("file is not exist.");
         return E_NOT_FOUND;

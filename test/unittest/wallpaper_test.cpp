@@ -1866,5 +1866,30 @@ HWTEST_F(WallpaperTest, CheckWallpaperFormat004, TestSize.Level0)
     EXPECT_EQ(ret, E_OK) << "Failed to CheckWallpaperFormat";
 }
 /*********************   Wallpaper_manager   *********************/
+
+/*********************   Wallpaper_service   *********************/
+/**
+ * @tc.name: WallpaperTest_StateAtomic001
+ * @tc.desc: Test state_ atomic compare and exchange operations
+ * @tc.type: FUNC
+ */
+HWTEST_F(WallpaperTest, WallpaperTest_StateAtomic001, TestSize.Level1)
+{
+    HILOG_INFO("WallpaperTest_StateAtomic001 begin");
+    std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
+    wallpaperService->state_.store(WallpaperService::ServiceRunningState::STATE_RUNNING);
+    wallpaperService->OnStart();
+    EXPECT_EQ(wallpaperService->state_.load(),
+        WallpaperService::ServiceRunningState::STATE_RUNNING) << "Failed to State";
+    wallpaperService->state_.store(WallpaperService::ServiceRunningState::STATE_NOT_START);
+    wallpaperService->OnStop();
+    EXPECT_EQ(wallpaperService->state_.load(),
+        WallpaperService::ServiceRunningState::STATE_NOT_START) << "Failed to State";
+    wallpaperService->state_.store(WallpaperService::ServiceRunningState::STATE_RUNNING);
+    wallpaperService->OnStop();
+    EXPECT_EQ(wallpaperService->state_.load(),
+        WallpaperService::ServiceRunningState::STATE_NOT_START) << "Failed to State";
+}
+/*********************   Wallpaper_service   *********************/
 } // namespace WallpaperMgrService
 } // namespace OHOS
