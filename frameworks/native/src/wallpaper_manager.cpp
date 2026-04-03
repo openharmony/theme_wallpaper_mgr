@@ -292,7 +292,7 @@ ErrorCode WallpaperManager::SetVideo(const std::string &uri, const int32_t wallp
     }
     std::string fileRealPath;
     if (!FileDeal::GetRealPath(uri, fileRealPath)) {
-        HILOG_ERROR("Get real path failed, uri: %{public}s!", uri.c_str());
+        HILOG_ERROR("Get real path failed, uri: %{public}s!", FileDeal::ToBeAnonymous(uri).c_str());
         return E_PARAMETERS_INVALID;
     }
 
@@ -331,7 +331,7 @@ ErrorCode WallpaperManager::SetCustomWallpaper(const std::string &uri, const int
     }
     std::string fileRealPath;
     if (!FileDeal::GetRealPath(uri, fileRealPath)) {
-        HILOG_ERROR("Get real path failed, uri: %{public}s!", uri.c_str());
+        HILOG_ERROR("Get real path failed, uri: %{public}s!", FileDeal::ToBeAnonymous(uri).c_str());
         return E_PARAMETERS_INVALID;
     }
     if (!FileDeal::IsZipFile(uri)) {
@@ -636,7 +636,7 @@ bool WallpaperManager::CheckVideoFormat(const std::string &fileName)
     int64_t length = 0;
     FILE *wallpaperFile = OpenFile(fileName, fd, length);
     if (wallpaperFile == nullptr) {
-        HILOG_ERROR("Open file: %{public}s failed!", fileName.c_str());
+        HILOG_ERROR("Open file: %{public}s failed!", FileDeal::ToBeAnonymous(fileName).c_str());
         return false;
     }
     std::shared_ptr<Media::AVMetadataHelper> helper = Media::AVMetadataHelperFactory::CreateAVMetadataHelper();
@@ -684,7 +684,7 @@ bool WallpaperManager::CheckVideoFormat(const std::string &fileName)
 FILE *WallpaperManager::OpenFile(const std::string &fileName, int &fd, int64_t &fileSize)
 {
     if (!OHOS::FileExists(fileName)) {
-        HILOG_ERROR("File is not exist, file: %{public}s.", fileName.c_str());
+        HILOG_ERROR("File is not exist, file: %{public}s.", FileDeal::ToBeAnonymous(fileName).c_str());
         return nullptr;
     }
 
@@ -722,7 +722,8 @@ ErrorCode WallpaperManager::GetWallpaperSize(const std::string &realPath, bool i
 {
     FILE *wallpaperFile = std::fopen(realPath.c_str(), "rb");
     if (wallpaperFile == nullptr) {
-        HILOG_ERROR("Fopen failed, %{public}s, %{public}s!", realPath.c_str(), strerror(errno));
+        HILOG_ERROR(
+            "Fopen failed, %{public}s, %{public}s!", FileDeal::ToBeAnonymous(realPath).c_str(), strerror(errno));
         return E_FILE_ERROR;
     }
 
