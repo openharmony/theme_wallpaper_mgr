@@ -49,7 +49,8 @@
           "memmgr",
           "config_policy",
           "cJSON",
-          "selinux_adapter"
+          "selinux_adapter",
+          "graphic_surface"
         ],
         "third_party": []
       },

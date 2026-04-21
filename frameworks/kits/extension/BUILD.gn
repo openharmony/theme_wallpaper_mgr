@@ -68,6 +68,7 @@ ohos_shared_library("wallpaperextensionability") {
     "ability_runtime:runtime",
     "c_utils:utils",
     "eventhandler:libeventhandler",
+    "graphic_surface:surface",
     "hilog:libhilog",
     "hitrace:hitrace_meter",
     "ipc:ipc_napi",

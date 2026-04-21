@@ -61,13 +61,11 @@ void WallpaperTestMock::SetUp()
 {
     wallpaperMock = std::make_shared<WallpaperMgrCjsonMock>();
     OHOS::WallpaperMgrCjson::wallpaperMgrCjson = wallpaperMock;
-    
-    wallpaperMock = std::make_shared<WallpaperMgrCjsonMock>();
-    OHOS::WallpaperMgrCjson::wallpaperMgrCjson = wallpaperMock;
 }
 
 void WallpaperTestMock::TearDown()
 {
+    OHOS::WallpaperMgrCjson::wallpaperMgrCjson = nullptr;
     wallpaperMock = nullptr;
 }
 
