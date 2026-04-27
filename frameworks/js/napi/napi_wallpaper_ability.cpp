@@ -35,7 +35,6 @@ const int32_t ONE = 1;
 const int32_t TWO = 2;
 const int32_t THREE = 3;
 const int32_t EVENTTYPESIZE = 64;
-const int32_t BUFFERSIZE = 100;
 const int32_t PARAMETER_ERROR_CODE = 401;
 constexpr const char *COLOR_CHANGE_EVENT = "colorChange";
 constexpr const char *WALLPAPER_CHANGE_EVENT = "wallpaperChange";
@@ -454,7 +453,7 @@ void NapiWallpaperAbility::SendEventInner(std::shared_ptr<GetContextInfo> contex
             return napi_invalid_arg;
         }
         char eventType[EVENTTYPESIZE] = { 0 };
-        size_t bufSize = BUFFERSIZE;
+        size_t bufSize = EVENTTYPESIZE;
         size_t len = 0;
         napi_get_value_string_utf8(env, argv[0], eventType, bufSize, &len);
         context->eventType = eventType;
