@@ -75,6 +75,7 @@ ohos_shared_library("wallpaperextensionability") {
     "ipc:ipc_single",
     "napi:ace_napi",
     "player_framework:media_client",
+    "media_foundation:media_foundation",
     "window_manager:libwm",
   ]
 
