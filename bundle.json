@@ -50,7 +50,8 @@
           "config_policy",
           "cJSON",
           "selinux_adapter",
-          "graphic_surface"
+          "graphic_surface",
+          "media_foundation"
         ],
         "third_party": []
       },

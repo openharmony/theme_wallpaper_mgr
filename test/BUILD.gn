@@ -60,6 +60,7 @@ ohos_unittest("wallpaper_test") {
     "ipc:ipc_single",
     "os_account:os_account_innerkits",
     "player_framework:media_client",
+    "media_foundation:media_foundation",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libwm",
@@ -85,6 +86,7 @@ ohos_unittest("wallpaper_permission_test") {
     "image_framework:image_native",
     "ipc:ipc_single",
     "player_framework:media_client",
+    "media_foundation:media_foundation",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libwm",
@@ -108,6 +110,7 @@ ohos_unittest("wallpaper_dfx_test") {
     "hisysevent:libhisysevent",
     "hitrace:hitrace_meter",
     "player_framework:media_client",
+    "media_foundation:media_foundation",
   ]
 }
 
@@ -154,6 +157,7 @@ ohos_unittest("wallpaper_cjson_mock_test") {
     "ipc:ipc_single",
     "os_account:os_account_innerkits",
     "player_framework:media_client",
+    "media_foundation:media_foundation",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
     "window_manager:libwm",

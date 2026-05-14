@@ -96,6 +96,7 @@ ohos_shared_library("wallpapermanager") {
     "ipc:ipc_single",
     "napi:ace_napi",
     "player_framework:media_client",
+    "media_foundation:media_foundation",
     "samgr:samgr_proxy",
     "window_manager:libdm",
   ]
@@ -139,6 +140,7 @@ ohos_static_library("wallpapermanager_static") {
     "ipc:ipc_single",
     "napi:ace_napi",
     "player_framework:media_client",
+    "media_foundation:media_foundation",
     "samgr:samgr_proxy",
     "window_manager:libdm",
   ]
