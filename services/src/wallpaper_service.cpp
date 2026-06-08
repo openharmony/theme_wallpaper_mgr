@@ -721,6 +721,10 @@ bool WallpaperService::SaveColor(int32_t userId, WallpaperType wallpaperType)
 
 ErrCode WallpaperService::SetWallpaper(int fd, int32_t wallpaperType, int32_t length)
 {
+    if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
+        HILOG_ERROR("SetWallpaper no set permission.");
+        return E_NO_PERMISSION;
+    }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
     ErrorCode wallpaperErrorCode = SetWallpaper(fd, wallpaperType, length, PICTURE);
     FinishAsyncTrace(HITRACE_TAG_MISC, "SetWallpaper", static_cast<int32_t>(TraceTaskId::SET_WALLPAPER));
@@ -730,6 +734,10 @@ ErrCode WallpaperService::SetWallpaper(int fd, int32_t wallpaperType, int32_t le
 
 ErrCode WallpaperService::SetWallpaperByPixelMap(const WallpaperRawData &wallpaperRawdata, int32_t wallpaperType)
 {
+    if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
+        HILOG_ERROR("SetWallpaper no set permission.");
+        return E_NO_PERMISSION;
+    }
     auto *rawData = (uint8_t *)wallpaperRawdata.data;
     if (rawData == nullptr) {
         HILOG_ERROR("rawData is nullptr!");
@@ -923,6 +931,10 @@ ErrCode WallpaperService::SetVideo(int fd, int32_t wallpaperType, int32_t length
         HILOG_ERROR("current app is not SystemApp.");
         close(fd);
         return E_NOT_SYSTEM_APP;
+    }
+    if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
+        HILOG_ERROR("SetWallpaper no set permission.");
+        return E_NO_PERMISSION;
     }
     StartAsyncTrace(HITRACE_TAG_MISC, "SetVideo", static_cast<int32_t>(TraceTaskId::SET_VIDEO));
     ErrorCode wallpaperErrorCode = SetWallpaper(fd, wallpaperType, length, VIDEO);
@@ -1550,10 +1562,6 @@ void WallpaperService::OnColorsChange(WallpaperType wallpaperType, const ColorMa
 
 ErrorCode WallpaperService::CheckValid(int32_t wallpaperType, int32_t length, WallpaperResourceType resourceType)
 {
-    if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
-        HILOG_ERROR("SetWallpaper no set permission.");
-        return E_NO_PERMISSION;
-    }
     if (wallpaperType != static_cast<int32_t>(WALLPAPER_LOCKSCREEN)
         && wallpaperType != static_cast<int32_t>(WALLPAPER_SYSTEM)) {
         return E_PARAMETERS_INVALID;
@@ -1820,6 +1828,10 @@ ErrorCode WallpaperService::SetAllWallpapers(
     if (!IsSystemApp() && !IsNativeSa()) {
         HILOG_ERROR("Is not SystemApp or NativeSA.");
         return E_NOT_SYSTEM_APP;
+    }
+    if (!CheckCallingPermission(WALLPAPER_PERMISSION_NAME_SET_WALLPAPER)) {
+        HILOG_ERROR("SetWallpaper no set permission.");
+        return E_NO_PERMISSION;
     }
     int32_t userId = QueryActiveUserId();
     HILOG_INFO("SetAllWallpapers userId: %{public}d", userId);
