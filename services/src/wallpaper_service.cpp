@@ -282,7 +282,10 @@ void WallpaperService::InitData()
         lockWallpaperColor_ = 0;
     }
     currentUserId_ = userId;
-    wallpaperEventMap_.clear();
+    {
+        std::lock_guard<std::mutex> autoLock(listenerMapMutex_);
+        wallpaperEventMap_.clear();
+    }
     appBundleName_ = SCENEBOARD_BUNDLE_NAME;
     InitUserDir(userId);
     UpdataWallpaperMap(userId, WALLPAPER_SYSTEM);
