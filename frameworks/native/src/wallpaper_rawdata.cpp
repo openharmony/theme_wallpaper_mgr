@@ -44,7 +44,6 @@ int32_t WallpaperRawData::RawDataCpy(const void *readData)
         free(const_cast<void *>(data));
     }
     data = tempData;
-    free(tempData);
     return 0;
 }
 } // namespace OHOS::WallpaperMgrService
