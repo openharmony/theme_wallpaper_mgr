@@ -69,6 +69,13 @@ ohos_source_set("wallpaper_service_proxy") {
 }
 
 ohos_shared_library("wallpapermanager") {
+
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
+
   sources = [
     "src/wallpaper_event_listener_client.cpp",
     "src/wallpaper_event_listener_stub.cpp",
@@ -144,6 +151,7 @@ ohos_static_library("wallpapermanager_static") {
     "samgr:samgr_proxy",
     "window_manager:libdm",
   ]
+  branch_protector_ret = "pac_ret"
   subsystem_name = "theme"
   part_name = "wallpaper_mgr"
 }
