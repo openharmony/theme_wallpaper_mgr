@@ -1112,7 +1112,7 @@ bool NapiWallpaperAbility::IsValidArgRange(napi_env env, napi_value argValue)
     auto res = napi_get_value_int32(env, argValue, &wallpaperType);
     if (res != napi_ok) {
         HILOG_ERROR("get wallpaperType failed, res:%{public}d", res);
-        return res;
+        return false;
     }
     return (wallpaperType != WALLPAPER_LOCKSCREEN && wallpaperType != WALLPAPER_SYSTEM) ? false : true;
 }
@@ -1137,7 +1137,7 @@ bool NapiWallpaperAbility::IsValidFoldStateRange(napi_env env, napi_value argVal
     auto res = napi_get_value_int32(env, argValue, &foldState);
     if (res != napi_ok) {
         HILOG_ERROR("get foldState failed, res:%{public}d", res);
-        return res;
+        return false;
     }
     return foldState == NORMAL || foldState == UNFOLD_1 || foldState == UNFOLD_2;
 }
@@ -1148,7 +1148,7 @@ bool NapiWallpaperAbility::IsValidRotateStateRange(napi_env env, napi_value argV
     auto res = napi_get_value_int32(env, argValue, &rotateState);
     if (res != napi_ok) {
         HILOG_ERROR("get rotateState failed, res:%{public}d", res);
-        return res;
+        return false;
     }
     return rotateState == PORT || rotateState == LAND;
 }

@@ -232,7 +232,7 @@ uintptr_t GetImageAsync(::ohos::wallpaper::WallpaperType wallpaperType)
         setErrorCode(wallpaperErrorCode);
         return 0;
     }
-    return reinterpret_cast<uintptr_t>(pixelMap.get());
+    return reinterpret_cast<uintptr_t>(OHOS::Media::PixelMapTaiheAni::CreateEtsPixelMap(taihe::get_env(), pixelMap));
 }
 
 uintptr_t GetWallpaperByStateSync(::ohos::wallpaper::WallpaperType wallpaperType,
@@ -267,7 +267,7 @@ uintptr_t GetWallpaperByStateSync(::ohos::wallpaper::WallpaperType wallpaperType
         setErrorCode(wallpaperErrorCode);
         return 0;
     }
-    return reinterpret_cast<uintptr_t>(pixelMap.get());
+    return reinterpret_cast<uintptr_t>(OHOS::Media::PixelMapTaiheAni::CreateEtsPixelMap(taihe::get_env(), pixelMap));
 }
 
 void SetAllWallpapersSync(::taihe::array_view<::ohos::wallpaper::WallpaperInfo> wallpaperInfos,

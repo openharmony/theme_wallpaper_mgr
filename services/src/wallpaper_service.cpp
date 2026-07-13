@@ -1733,7 +1733,7 @@ std::string WallpaperService::GetWallpaperPathInJson(const std::string manifestN
 {
     std::string wallpaperPath;
     std::string resPath = GetDefaultResDir();
-    if (resPath.empty() && !FileDeal::IsDirExist(resPath)) {
+    if (resPath.empty() || !FileDeal::IsDirExist(resPath)) {
         HILOG_ERROR("wallpaperDefaultDir get failed!");
         return "";
     }
@@ -2105,6 +2105,10 @@ bool WallpaperService::GetWallpaperDataPath(
         OnInitUser(userId);
         iterator = wallpaperType == WALLPAPER_SYSTEM ? systemWallpaperMap_.Find(userId)
                                                      : lockWallpaperMap_.Find(userId);
+        if (!iterator.first) {
+            HILOG_ERROR("Fail to init wallpaper data");
+            return false;
+        }
     }
     filePathName = GetWallpaperPath(foldState, rotateState, iterator.second);
     return filePathName != "";
