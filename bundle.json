@@ -51,7 +51,8 @@
           "cJSON",
           "selinux_adapter",
           "graphic_surface",
-          "media_foundation"
+          "media_foundation",
+          "taihe_ffi_gen"
         ],
         "third_party": []
       },
