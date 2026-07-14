@@ -20,6 +20,7 @@
 
 namespace OHOS::WallpaperMgrService {
 constexpr int32_t VECTOR_MAX_SIZE = 6;
+constexpr int32_t VECTOR_MIN_SIZE = 0;
 WallpaperPictureInfoByParcel::WallpaperPictureInfoByParcel()
 {
 }
@@ -45,8 +46,8 @@ WallpaperPictureInfoByParcel *WallpaperPictureInfoByParcel::Unmarshalling(Parcel
         return nullptr;
     }
     int32_t vectorSize = parcel.ReadInt32();
-    if (vectorSize > VECTOR_MAX_SIZE) {
-        HILOG_ERROR("More than maxNum 6 of wallpaper pictures, size:%{public}d", vectorSize);
+    if (vectorSize > VECTOR_MAX_SIZE || vectorSize < VECTOR_MIN_SIZE) {
+        HILOG_ERROR("More than maxNum 6 or less than minNum 0 of wallpaper pictures, size:%{public}d", vectorSize);
         delete obj;
         return nullptr;
     }
@@ -60,11 +61,19 @@ WallpaperPictureInfoByParcel *WallpaperPictureInfoByParcel::Unmarshalling(Parcel
             wallpaperInfo.foldState = UNFOLD_1;
         } else if (foldStateVale == static_cast<int32_t>(FoldState::UNFOLD_2)) {
             wallpaperInfo.foldState = UNFOLD_2;
+        } else {
+            HILOG_ERROR("invalid foldState.");
+            delete obj;
+            return nullptr;
         }
         if (rotateStateVale == static_cast<int32_t>(RotateState::PORT)) {
             wallpaperInfo.rotateState = PORT;
         } else if (rotateStateVale == static_cast<int32_t>(RotateState::LAND)) {
             wallpaperInfo.rotateState = LAND;
+        } else {
+            HILOG_ERROR("invalid rotateState.");
+            delete obj;
+            return nullptr;
         }
         wallpaperInfo.fd = parcel.ReadInt32();
         wallpaperInfo.length = parcel.ReadInt32();

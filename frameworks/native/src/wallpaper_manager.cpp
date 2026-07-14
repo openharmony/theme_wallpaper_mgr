@@ -755,6 +755,10 @@ ErrorCode WallpaperManager::GetWallpaperSize(const std::string &realPath, bool i
 
 ErrorCode WallpaperManager::SetAllWallpapers(std::vector<WallpaperInfo> allWallpaperInfos, int32_t wallpaperType)
 {
+    if (allWallpaperInfos.empty()) {
+        HILOG_ERROR("wallpaperInfos is empty!");
+        return E_PARAMETERS_INVALID;
+    }
     auto wallpaperServerProxy = GetService();
     if (wallpaperServerProxy == nullptr) {
         HILOG_ERROR("Get proxy failed!");
@@ -772,7 +776,6 @@ ErrorCode WallpaperManager::SetAllWallpapers(std::vector<WallpaperInfo> allWallp
         }
         wallpaperCode = GetFdByPath(wallpaperInfo, wallpaperPictureInfo, fileRealPath);
         if (wallpaperCode != E_OK) {
-            CloseWallpaperInfoFd(wallpaperPictureInfoByParcel.wallpaperPictureInfo_);
             HILOG_ERROR("PathConvertFd failed");
             return wallpaperCode;
         }
@@ -806,11 +809,13 @@ ErrorCode WallpaperManager::GetFdByPath(
     ErrorCode wallpaperErrorCode = CheckWallpaperFormat(fileRealPath, false);
     if (wallpaperErrorCode != E_OK) {
         HILOG_ERROR("Check wallpaper format failed!");
+        fdsan_close_with_tag(wallpaperPictureInfo.fd, WP_DOMAIN);
         return wallpaperErrorCode;
     }
     wallpaperErrorCode = GetWallpaperSize(fileRealPath, false, wallpaperPictureInfo.length);
     if (wallpaperErrorCode != E_OK) {
         HILOG_ERROR("get wallpaper size failed!");
+        fdsan_close_with_tag(wallpaperPictureInfo.fd, WP_DOMAIN);
         return wallpaperErrorCode;
     }
     
@@ -820,11 +825,13 @@ ErrorCode WallpaperManager::GetFdByPath(
         OHOS::Media::ImageSource::CreateImageSource(fileRealPath, opts, errorCode);
     if (errorCode != 0 || imageSource == nullptr) {
         HILOG_ERROR("CreateImageSource failed!");
+        fdsan_close_with_tag(wallpaperPictureInfo.fd, WP_DOMAIN);
         return E_PARAMETERS_INVALID;
     }
     ImageInfo imageInfo;
     if (imageSource->GetImageInfo(imageInfo) != 0) {
         HILOG_ERROR("GetImageInfo failed!");
+        fdsan_close_with_tag(wallpaperPictureInfo.fd, WP_DOMAIN);
         return E_PARAMETERS_INVALID;
     }
     return wallpaperErrorCode;

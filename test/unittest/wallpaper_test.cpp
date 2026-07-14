@@ -1718,6 +1718,81 @@ HWTEST_F(WallpaperTest, SetAllWallpapersClient002, TestSize.Level0)
     auto ret = WallpaperManagerClient::GetInstance().SetAllWallpapers(wallpaperInfo, LOCKSCREEN);
     EXPECT_EQ(ret, static_cast<int32_t>(E_OK)) << "Failed to SetAllWallpapers";
 }
+
+/**
+* @tc.name: SetAllWallpapers
+* @tc.desc: SetAllWallpapers err foldState.
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, SetAllWallpapersClient003, TestSize.Level0)
+{
+    HILOG_INFO("SetAllWallpapersClient003 begin");
+    std::vector<WallpaperInfo> wallpaperInfo;
+    FoldState foldState = static_cast<FoldState>(100);
+    WallpaperInfo wallpaperInfo_err = { foldState, RotateState::PORT, NORMAL_PORT_URI };
+    wallpaperInfo.push_back(wallpaperInfo_normal_port);
+    wallpaperInfo.push_back(wallpaperInfo_normal_land);
+    wallpaperInfo.push_back(wallpaperInfo_err);
+    auto ret = WallpaperManagerClient::GetInstance().SetAllWallpapers(wallpaperInfo, LOCKSCREEN);
+    EXPECT_EQ(ret, static_cast<int32_t>(E_UNKNOWN)) << "Failed to SetAllWallpapers";
+}
+
+/**
+* @tc.name: SetAllWallpapers
+* @tc.desc: SetAllWallpapers err RotateState.
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, SetAllWallpapersClient004, TestSize.Level0)
+{
+    HILOG_INFO("SetAllWallpapersClient004 begin");
+    std::vector<WallpaperInfo> wallpaperInfo;
+    RotateState rotateState = static_cast<RotateState>(100);
+    WallpaperInfo wallpaperInfo_err = { FoldState::NORMAL, rotateState, NORMAL_PORT_URI };
+    wallpaperInfo.push_back(wallpaperInfo_normal_port);
+    wallpaperInfo.push_back(wallpaperInfo_normal_land);
+    wallpaperInfo.push_back(wallpaperInfo_err);
+    auto ret = WallpaperManagerClient::GetInstance().SetAllWallpapers(wallpaperInfo, LOCKSCREEN);
+    EXPECT_EQ(ret, static_cast<int32_t>(E_UNKNOWN)) << "Failed to SetAllWallpapers";
+}
+
+/**
+* @tc.name: SetAllWallpapers
+* @tc.desc: SetAllWallpapers more than max size
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, SetAllWallpapersClient005, TestSize.Level0)
+{
+    HILOG_INFO("SetAllWallpapersClient005 begin");
+    std::vector<WallpaperInfo> wallpaperInfo;
+    RotateState rotateState = static_cast<RotateState>(100);
+    WallpaperInfo wallpaperInfo_err = { FoldState::NORMAL, rotateState, NORMAL_LAND_URI };
+    wallpaperInfo.push_back(wallpaperInfo_normal_port);
+    wallpaperInfo.push_back(wallpaperInfo_normal_land);
+    wallpaperInfo.push_back(wallpaperInfo_unfold1_port);
+    wallpaperInfo.push_back(wallpaperInfo_unfold1_land);
+    wallpaperInfo.push_back(wallpaperInfo_unfold2_port);
+    wallpaperInfo.push_back(wallpaperInfo_unfold2_land);
+    wallpaperInfo.push_back(wallpaperInfo_err);
+    auto ret = WallpaperManagerClient::GetInstance().SetAllWallpapers(wallpaperInfo, LOCKSCREEN);
+    EXPECT_EQ(ret, static_cast<int32_t>(E_UNKNOWN)) << "Failed to SetAllWallpapers";
+}
+
+/**
+* @tc.name: SetAllWallpapers
+* @tc.desc: SetAllWallpapers wallpaperInfo is empty
+* @tc.type: FUNC
+* @tc.require:
+*/
+HWTEST_F(WallpaperTest, SetAllWallpapersClient006, TestSize.Level0)
+{
+    HILOG_INFO("SetAllWallpapersClient006 begin");
+    std::vector<WallpaperInfo> wallpaperInfo = {};
+    auto ret = WallpaperManagerClient::GetInstance().SetAllWallpapers(wallpaperInfo, LOCKSCREEN);
+    EXPECT_EQ(ret, static_cast<int32_t>(E_PARAMETERS_INVALID)) << "Failed to SetAllWallpapers";
+}
 /*********************   Wallpaper_Inner_Api   *********************/
 
 /*********************   Wallpaper_SaveWallpaperState   *********************/
