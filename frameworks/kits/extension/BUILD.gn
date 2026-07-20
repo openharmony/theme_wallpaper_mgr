@@ -73,7 +73,9 @@ ohos_shared_library("wallpaperextensionability") {
     "hitrace:hitrace_meter",
     "ipc:ipc_napi",
     "ipc:ipc_single",
+    "libuv:uv",
     "napi:ace_napi",
+    "node:node_header_notice",
     "player_framework:media_client",
     "media_foundation:media_foundation",
     "window_manager:libwm",
@@ -115,6 +117,7 @@ ohos_shared_library("wallpaper_extension_module") {
     "ipc:ipc_napi",
     "ipc:ipc_single",
     "napi:ace_napi",
+    "node:node_header_notice",
   ]
   sanitize = {
     cfi = true

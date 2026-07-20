@@ -76,6 +76,7 @@ taihe_shared_library("wallpapermgr_ani") {
     "hilog:libhilog",
     "player_framework:media_client",
     "media_foundation:media_foundation",
+    "node:node_header_notice",
     "image_framework:image_taihe",
     "image_framework:image_native",
     "eventhandler:libeventhandler"

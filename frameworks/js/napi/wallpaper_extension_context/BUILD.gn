@@ -48,7 +48,11 @@ ohos_shared_library("wallpaperextensioncontext_napi") {
     "-Os",
   ]
 
-  external_deps = [ "napi:ace_napi" ]
+  external_deps = [
+    "libuv:uv",
+    "napi:ace_napi",
+    "node:node_header_notice",
+  ]
   sanitize = {
     cfi = true
     cfi_cross_dso = true
