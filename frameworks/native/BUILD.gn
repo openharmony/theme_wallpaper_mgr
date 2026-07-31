@@ -64,6 +64,7 @@ ohos_source_set("wallpaper_service_proxy") {
     "ipc:ipc_single",
     "samgr:samgr_proxy",
   ]
+  branch_protector_ret = "pac_ret"
   subsystem_name = "theme"
   part_name = "wallpaper_mgr"
 }
