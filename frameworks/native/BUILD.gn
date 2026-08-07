@@ -109,6 +109,7 @@ ohos_shared_library("wallpapermanager") {
     "window_manager:libdm",
   ]
   branch_protector_ret = "pac_ret"
+  branch_protector_ret = "bti"
   subsystem_name = "theme"
   innerapi_tags = [ "platformsdk" ]
   part_name = "wallpaper_mgr"

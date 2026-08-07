@@ -91,6 +91,7 @@ ohos_shared_library("wallpaperextensionability") {
     ubsan = true
   }
   branch_protector_ret = "pac_ret"
+  branch_protector_ret = "bti"
   subsystem_name = "theme"
   part_name = "wallpaper_mgr"
 }
@@ -129,6 +130,7 @@ ohos_shared_library("wallpaper_extension_module") {
     ubsan = true
   }
   branch_protector_ret = "pac_ret"
+  branch_protector_ret = "bti"
   relative_install_dir = "extensionability/"
   subsystem_name = "theme"
   part_name = "wallpaper_mgr"
