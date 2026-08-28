@@ -287,9 +287,7 @@ void WallpaperService::InitData()
         wallpaperEventMap_.clear();
     }
     appBundleName_ = SCENEBOARD_BUNDLE_NAME;
-    InitUserDir(userId);
-    UpdataWallpaperMap(userId, WALLPAPER_SYSTEM);
-    UpdataWallpaperMap(userId, WALLPAPER_LOCKSCREEN);
+    OnInitUser(userId);
     LoadWallpaperState();
     ClearRedundantFile(userId, WALLPAPER_SYSTEM, WALLPAPER_SYSTEM_ORIG);
     ClearRedundantFile(userId, WALLPAPER_LOCKSCREEN, WALLPAPER_LOCK_ORIG);
@@ -359,9 +357,7 @@ bool WallpaperService::InitUsersOnBoot()
     for (const auto &osAccountInfo : osAccountInfos) {
         int32_t userId = osAccountInfo.GetLocalId();
         HILOG_INFO("InitUsersOnBoot Current userId: %{public}d", userId);
-        InitUserDir(userId);
-        UpdataWallpaperMap(userId, WALLPAPER_SYSTEM);
-        UpdataWallpaperMap(userId, WALLPAPER_LOCKSCREEN);
+        OnInitUser(userId);
         ClearRedundantFile(userId, WALLPAPER_SYSTEM, WALLPAPER_SYSTEM_ORIG);
         ClearRedundantFile(userId, WALLPAPER_LOCKSCREEN, WALLPAPER_LOCK_ORIG);
     }
@@ -381,42 +377,13 @@ void WallpaperService::OnInitUser(int32_t userId)
         HILOG_ERROR("userId error, userId = %{public}d", userId);
         return;
     }
-    std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
-    if (FileDeal::IsFileExist(userDir)) {
-        std::lock_guard<std::mutex> lock(mtx_);
-        if (!FileDeal::DeleteDir(userDir, true)) {
-            HILOG_ERROR("Force remove user directory path failed, errno %{public}d", errno);
-            return;
-        }
-    }
-    if (!InitUserDir(userId)) {
+    if (!EnsureWallpaperDir(userId, WALLPAPER_SYSTEM) || !EnsureWallpaperDir(userId, WALLPAPER_LOCKSCREEN)) {
+        HILOG_ERROR("Wallpaper dir not exist, userId = %{public}d", userId);
         return;
     }
     UpdataWallpaperMap(userId, WALLPAPER_SYSTEM);
     UpdataWallpaperMap(userId, WALLPAPER_LOCKSCREEN);
     HILOG_INFO("OnInitUser success, userId = %{public}d", userId);
-}
-
-bool WallpaperService::InitUserDir(int32_t userId)
-{
-    std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
-    if (!FileDeal::Mkdir(userDir)) {
-        HILOG_ERROR("Failed to create destination path, userId:%{public}d", userId);
-        return false;
-    }
-    std::string wallpaperSystemFilePath = userDir + "/" + WALLPAPER_SYSTEM_DIRNAME;
-    if (!FileDeal::Mkdir(wallpaperSystemFilePath)) {
-        HILOG_ERROR("Failed to create destination wallpaper system path, userId:%{public}d, type:%{public}s.", userId,
-            WALLPAPER_SYSTEM_DIRNAME);
-        return false;
-    }
-    std::string wallpaperLockScreenFilePath = userDir + "/" + WALLPAPER_LOCKSCREEN_DIRNAME;
-    if (!FileDeal::Mkdir(wallpaperLockScreenFilePath)) {
-        HILOG_ERROR("Failed to create destination wallpaper lockscreen path, userId:%{public}d, type:%{public}s.",
-            userId, WALLPAPER_LOCKSCREEN_DIRNAME);
-        return false;
-    }
-    return true;
 }
 
 bool WallpaperService::RestoreUserResources(int32_t userId, WallpaperData &wallpaperData, WallpaperType wallpaperType)
@@ -511,9 +478,7 @@ void WallpaperService::OnSwitchedUser(int32_t userId)
     std::string userDir = WALLPAPER_USERID_PATH + std::to_string(userId);
     if (!FileDeal::IsFileExist(userDir)) {
         HILOG_INFO("User file is not exist, userId = %{public}d", userId);
-        InitUserDir(userId);
-        UpdataWallpaperMap(userId, WALLPAPER_SYSTEM);
-        UpdataWallpaperMap(userId, WALLPAPER_LOCKSCREEN);
+        OnInitUser(userId);
     }
     LoadWallpaperState();
     SendWallpaperChangeEvent(userId, WALLPAPER_SYSTEM);
@@ -1945,6 +1910,7 @@ ErrorCode WallpaperService::SetAllWallpaperBackupData(std::vector<WallpaperPictu
         std::string wallpaperFile = GetWallpaperDataFile(wallpaperInfo, userId, wallpaperType);
         {
             std::lock_guard<std::mutex> lock(mtx_);
+            EnsureWallpaperDir(userId, wallpaperType);
             if (!FileDeal::CopyFile(wallpaperInfo.tempPath, wallpaperFile)) {
                 HILOG_ERROR("CopyFile failed!");
                 FileDeal::DeleteFile(wallpaperInfo.tempPath);
@@ -2417,6 +2383,28 @@ int32_t WallpaperService::SetwallpaperByPixelMapParcel(MessageParcel &data, Mess
         return E_OK;
     }
     return errCode;
+}
+
+bool WallpaperService::EnsureWallpaperDir(int32_t userId, WallpaperType wallpaperType)
+{
+    std::string userIdPath = WALLPAPER_USERID_PATH + std::to_string(userId);
+    if (!FileDeal::IsDirExist(userIdPath)) {
+        if (!FileDeal::Mkdir(userIdPath)) {
+            HILOG_ERROR("Failed to create path, userId:%{public}d, userIdPath:%{public}s.", userId,
+                FileDeal::ToBeAnonymous(userIdPath).c_str());
+            return false;
+        }
+    }
+    std::string wallpaperPath = GetWallpaperDir(userId, wallpaperType);
+    if (FileDeal::IsDirExist(wallpaperPath)) {
+        return true;
+    }
+    if (!FileDeal::Mkdir(wallpaperPath)) {
+        HILOG_ERROR("Failed to create path, userId:%{public}d, wallpaperPath:%{public}s.", userId,
+            FileDeal::ToBeAnonymous(wallpaperPath).c_str());
+        return false;
+    }
+    return true;
 }
 } // namespace WallpaperMgrService
 } // namespace OHOS

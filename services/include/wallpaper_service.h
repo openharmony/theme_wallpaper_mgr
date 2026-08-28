@@ -137,7 +137,6 @@ private:
     ErrorCode GetImageFd(int32_t userId, WallpaperType wallpaperType, int32_t &fd);
     ErrorCode GetImageSize(int32_t userId, WallpaperType wallpaperType, int32_t &size);
     bool RestoreUserResources(int32_t userId, WallpaperData &wallpaperData, WallpaperType wallpaperType);
-    bool InitUserDir(int32_t userId);
     int32_t QueryActiveUserId();
     bool CheckUserPermissionById(int32_t userId);
 
@@ -190,6 +189,7 @@ private:
     void CloseVectorFd(const std::vector<int> &fdVector);
     void CloseWallpaperInfoFd(const std::vector<WallpaperPictureInfo> &wallpaperPictureInfo);
     bool WriteWallpapercfgFile(char *wallpaperJson, int32_t userId);
+    bool EnsureWallpaperDir(int32_t userId, WallpaperType wallpaperType);
 
 private:
     int32_t Init();
