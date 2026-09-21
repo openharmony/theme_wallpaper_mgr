@@ -54,7 +54,8 @@
           "media_foundation",
           "taihe_ffi_gen",
           "libuv",
-          "node"
+          "node",
+          "bounds_checking_function"
         ],
         "third_party": []
       },

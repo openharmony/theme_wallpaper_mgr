@@ -105,6 +105,7 @@ ohos_unittest("wallpaper_dfx_test") {
     "${wallpaper_path}/services:wallpaper_service_static",
   ]
   external_deps = [
+    "bounds_checking_function:libsec_shared",
     "c_utils:utils",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
