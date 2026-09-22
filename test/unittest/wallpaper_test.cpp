@@ -21,6 +21,9 @@
 #include <gtest/gtest.h>
 
 #include <ctime>
+#include <fcntl.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #include "accesstoken_kit.h"
 #include "directory_ex.h"
@@ -1001,9 +1004,13 @@ HWTEST_F(WallpaperTest, SetWallpaper001, TestSize.Level0)
 {
     HILOG_INFO("SetWallpaper001  begin");
     std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
-    ErrCode wallpaperErrorCode = wallpaperService->SetWallpaper(0, 0, -1);
+    int32_t fd = open(URI, O_RDONLY);
+    ASSERT_GE(fd, 0) << "Failed to open test file";
+    ErrCode wallpaperErrorCode = wallpaperService->SetWallpaper(fd, 0, -1);
     EXPECT_EQ(wallpaperErrorCode, E_PARAMETERS_INVALID) << "Failed to throw error";
-    wallpaperErrorCode = wallpaperService->SetWallpaper(0, 0, FOO_MAX_LEN);
+    fd = open(URI, O_RDONLY);
+    ASSERT_GE(fd, 0) << "Failed to open test file";
+    wallpaperErrorCode = wallpaperService->SetWallpaper(fd, 0, FOO_MAX_LEN);
 
     EXPECT_EQ(wallpaperErrorCode, E_PICTURE_OVERSIZED) << "Failed to throw error";
 }
@@ -1856,7 +1863,7 @@ HWTEST_F(WallpaperTest, CreatePixelMapByFd001, TestSize.Level0)
     HILOG_INFO("CreatePixelMapByFd001 begin");
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     int32_t size = -1;
-    int32_t fd = 100;
+    int32_t fd = open("/dev/null", O_RDONLY);
     auto ret = WallpaperMgrService::WallpaperManager::GetInstance().CreatePixelMapByFd(fd, size, pixelMap);
     EXPECT_EQ(ret, static_cast<int32_t>(E_IMAGE_ERRCODE)) << "Failed to CreatePixelMapByFd";
 }
@@ -1872,7 +1879,7 @@ HWTEST_F(WallpaperTest, CreatePixelMapByFd002, TestSize.Level0)
     HILOG_INFO("CreatePixelMapByFd002 begin");
     std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
     int32_t size = 104857601;
-    int32_t fd = 100;
+    int32_t fd = open("/dev/null", O_RDONLY);
     auto ret = WallpaperMgrService::WallpaperManager::GetInstance().CreatePixelMapByFd(fd, size, pixelMap);
     EXPECT_EQ(ret, static_cast<int32_t>(E_IMAGE_ERRCODE)) << "Failed to CreatePixelMapByFd";
 }
@@ -1891,6 +1898,34 @@ HWTEST_F(WallpaperTest, CreatePixelMapByFd003, TestSize.Level0)
     int32_t fd = -1;
     auto ret = WallpaperMgrService::WallpaperManager::GetInstance().CreatePixelMapByFd(fd, size, pixelMap);
     EXPECT_EQ(ret, static_cast<int32_t>(E_IMAGE_ERRCODE)) << "Failed to CreatePixelMapByFd";
+}
+
+/**
+* @tc.name: SetWallpaper_InvalidFd_NoAbort
+* @tc.desc: SetWallpaper with fd=-1, verify no fdsan abort triggered.
+* @tc.type: FUNC
+*/
+HWTEST_F(WallpaperTest, SetWallpaper_InvalidFd_NoAbort, TestSize.Level0)
+{
+    HILOG_INFO("SetWallpaper_InvalidFd_NoAbort begin");
+    std::shared_ptr<WallpaperService> wallpaperService = std::make_shared<WallpaperService>();
+    ErrCode wallpaperErrorCode = wallpaperService->SetWallpaper(-1, 0, -1);
+    EXPECT_EQ(wallpaperErrorCode, E_PARAMETERS_INVALID) << "Failed to throw error for invalid fd";
+}
+
+/**
+* @tc.name: CreatePixelMapByFd_InvalidFd_NoAbort
+* @tc.desc: CreatePixelMapByFd with fd=-1, verify no fdsan abort triggered.
+* @tc.type: FUNC
+*/
+HWTEST_F(WallpaperTest, CreatePixelMapByFd_InvalidFd_NoAbort, TestSize.Level0)
+{
+    HILOG_INFO("CreatePixelMapByFd_InvalidFd_NoAbort begin");
+    std::shared_ptr<OHOS::Media::PixelMap> pixelMap;
+    int32_t size = 1024;
+    int32_t fd = -1;
+    auto ret = WallpaperMgrService::WallpaperManager::GetInstance().CreatePixelMapByFd(fd, size, pixelMap);
+    EXPECT_EQ(ret, static_cast<int32_t>(E_IMAGE_ERRCODE)) << "Failed to handle invalid fd";
 }
 
 /**
