@@ -20,6 +20,7 @@
 #include <list>
 #include <map>
 #include <mutex>
+#include <shared_mutex>
 
 #include "accesstoken_kit.h"
 #include "component_name.h"
@@ -195,6 +196,7 @@ private:
     int32_t Init();
     std::atomic<ServiceRunningState> state_;
     void InitServiceHandler();
+    void UpdateWallpaperMap(int32_t userId, WallpaperType wallpaperType, const WallpaperData &wallpaperData);
     static std::shared_ptr<AppExecFwk::EventHandler> serviceHandler_;
     std::string wallpaperTmpFullPath_;
     std::string wallpaperCropPath_;
@@ -213,6 +215,7 @@ private:
     std::mutex callbackProxyMutex_;
 
     std::mutex mtx_;
+    mutable std::shared_mutex wallpaperMapMutex_;
     uint64_t lockWallpaperColor_;
     uint64_t systemWallpaperColor_;
     std::map<std::string, WallpaperListenerMap> wallpaperEventMap_;

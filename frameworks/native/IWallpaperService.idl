@@ -20,13 +20,13 @@ interface OHOS.WallpaperMgrService.IWallpaperEventListener;
 interface OHOS.WallpaperMgrService.IWallpaperCallback;
 
 interface OHOS.WallpaperMgrService.IWallpaperService {
-    void SetWallpaper([in] FileDescriptor fd, [in] int wallpaperType, [in] int length);
-    void SetAllWallpapers([in] WallpaperPictureInfoByParcel allWallpaperPictures, [in] int wallpaperType, [in] FileDescriptor[] fdVector);
+    void SetWallpaper([in] FileDescriptorSan fd, [in] int wallpaperType, [in] int length);
+    void SetAllWallpapers([in] WallpaperPictureInfoByParcel allWallpaperPictures, [in] int wallpaperType, [in] FileDescriptorSan[] fdVector);
     void SetWallpaperByPixelMap([in] WallpaperRawData wallpaperRawdata, [in] int wallpaperType);
-    void GetPixelMap([in] int wallpaperType, [out] int size, [out] FileDescriptor fd);
-    void GetCorrespondWallpaper([in] int wallpaperType, [in] int foldState, [in] int rotateState, [out] int size, [out] FileDescriptor fd);
+    void GetPixelMap([in] int wallpaperType, [out] int size, [out] FileDescriptorSan fd);
+    void GetCorrespondWallpaper([in] int wallpaperType, [in] int foldState, [in] int rotateState, [out] int size, [out] FileDescriptorSan fd);
     void GetColors([in] int wallpaperType, [out] unsigned long[] colors);
-    void GetFile([in] int wallpaperType, [out] FileDescriptor wallpaperFd);
+    void GetFile([in] int wallpaperType, [out] FileDescriptorSan wallpaperFd);
     void GetWallpaperId([in] int wallpaperType);
     void IsChangePermitted([out] boolean isChangePermitted);
     void IsOperationAllowed([out] boolean isOperationAllowed);
@@ -34,13 +34,13 @@ interface OHOS.WallpaperMgrService.IWallpaperService {
     void On([in] String type, [in] IWallpaperEventListener listener);
     void Off([in] String type, [in] IWallpaperEventListener listener);
     void RegisterWallpaperCallback([in] IWallpaperCallback wallpaperCallback, [out] boolean registerWallpaperCallback);
-    void SetWallpaperV9([in] FileDescriptor fd, [in] int wallpaperType, [in] int length);
+    void SetWallpaperV9([in] FileDescriptorSan fd, [in] int wallpaperType, [in] int length);
     void SetWallpaperV9ByPixelMap([in] WallpaperRawData wallpaperRawdata, [in] int wallpaperType);
-    void GetPixelMapV9([in] int wallpaperType, [out] int size, [out] FileDescriptor fd);
+    void GetPixelMapV9([in] int wallpaperType, [out] int size, [out] FileDescriptorSan fd);
     void GetColorsV9([in] int wallpaperType, [out] unsigned long[] colors);
     void ResetWallpaperV9([in] int wallpaperType);
-    void SetVideo([in] FileDescriptor fd, [in] int wallpaperType, [in] int length);
-    void SetCustomWallpaper([in] FileDescriptor fd, [in] int wallpaperType, [in] int length);
+    void SetVideo([in] FileDescriptorSan fd, [in] int wallpaperType, [in] int length);
+    void SetCustomWallpaper([in] FileDescriptorSan fd, [in] int wallpaperType, [in] int length);
     void SendEvent([in] String eventType);
     void IsDefaultWallpaperResource([in] int userId, [in] int wallpaperType, [out] boolean isDefaultWallpaperResource);
 }

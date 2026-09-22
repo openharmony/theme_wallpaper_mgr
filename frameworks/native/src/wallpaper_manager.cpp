@@ -399,8 +399,12 @@ ErrorCode WallpaperManager::GetPixelMap(
 ErrorCode WallpaperManager::CreatePixelMapByFd(
     int32_t fd, int32_t size, std::shared_ptr<OHOS::Media::PixelMap> &pixelMap)
 {
+    fdsan_exchange_owner_tag(fd, 0, WP_DOMAIN);
     if (size <= 0 || size > MAX_VIDEO_SIZE || fd < 0) {
         HILOG_ERROR("Size or fd error!");
+        if (fd >= 0) {
+            fdsan_close_with_tag(fd, WP_DOMAIN);
+        }
         return E_IMAGE_ERRCODE;
     }
     uint8_t *buffer = new uint8_t[size];
@@ -408,7 +412,7 @@ ErrorCode WallpaperManager::CreatePixelMapByFd(
     if (bytesRead < 0) {
         HILOG_ERROR("Read fd to buffer fail!");
         delete[] buffer;
-        close(fd);
+        fdsan_close_with_tag(fd, WP_DOMAIN);
         return E_IMAGE_ERRCODE;
     }
     uint32_t errorCode = 0;
@@ -419,7 +423,7 @@ ErrorCode WallpaperManager::CreatePixelMapByFd(
     if (errorCode != 0 || imageSource == nullptr) {
         HILOG_ERROR("ImageSource::CreateImageSource failed, errcode= %{public}d!", errorCode);
         delete[] buffer;
-        close(fd);
+        fdsan_close_with_tag(fd, WP_DOMAIN);
         return E_IMAGE_ERRCODE;
     }
     OHOS::Media::DecodeOptions decodeOpts;
@@ -427,11 +431,11 @@ ErrorCode WallpaperManager::CreatePixelMapByFd(
     if (errorCode != 0) {
         HILOG_ERROR("ImageSource::CreatePixelMap failed, errcode= %{public}d!", errorCode);
         delete[] buffer;
-        close(fd);
+        fdsan_close_with_tag(fd, WP_DOMAIN);
         return E_IMAGE_ERRCODE;
     }
     delete[] buffer;
-    close(fd);
+    fdsan_close_with_tag(fd, WP_DOMAIN);
     return E_OK;
 }
 
@@ -772,11 +776,13 @@ ErrorCode WallpaperManager::SetAllWallpapers(std::vector<WallpaperInfo> allWallp
         std::string fileRealPath;
         if (!FileDeal::GetRealPath(wallpaperInfo.source, fileRealPath)) {
             HILOG_ERROR("get real path file failed, len = %{public}zu.", wallpaperInfo.source.size());
+            CloseWallpaperInfoFd(wallpaperPictureInfoByParcel.wallpaperPictureInfo_);
             return E_PARAMETERS_INVALID;
         }
         wallpaperCode = GetFdByPath(wallpaperInfo, wallpaperPictureInfo, fileRealPath);
         if (wallpaperCode != E_OK) {
             HILOG_ERROR("PathConvertFd failed");
+            CloseWallpaperInfoFd(wallpaperPictureInfoByParcel.wallpaperPictureInfo_);
             return wallpaperCode;
         }
         wallpaperPictureInfoByParcel.wallpaperPictureInfo_.push_back(wallpaperPictureInfo);
